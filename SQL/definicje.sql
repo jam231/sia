@@ -12,7 +12,7 @@ CREATE TABLE zasob (
 	w_ksiegowa	INTEGER, --na poczatku moze byc puste, docelowo to realna wycena spolki sciagnieta z internetu
 	zysk		INTEGER,
 	dlug		INTEGER,
-	liczba_akcji	INTEGER, --na poczatku to moze byc wartosc wyliczana
+	liczba_akcji	INTEGER --na poczatku to moze byc wartosc wyliczana
 );
 	
 --ponizej sa dwie tabele dla zlecen kupna i sprzedazy: jesli ktos uwaza to za niestosowne, mozna to zmienic w jedna.
