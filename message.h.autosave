@@ -1,0 +1,22 @@
+#ifndef MESSAGE_H
+#define MESSAGE_H
+
+class Message
+{
+
+    int m_userId;
+public:
+    virtual MessageType type() const = 0;
+
+    enum MessageType
+    {
+        SUBSCRIBE_STOCK,
+        UNSUBSCRIBE_STOCK,
+        SELL_STOCK,
+        BUY_STOCK,
+        LIST_OF_STOCKS,
+        CHANGE
+    };
+};
+
+#endif // MESSAGE_H

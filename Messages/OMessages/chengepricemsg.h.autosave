@@ -1,0 +1,18 @@
+#ifndef CHENGEPRICEMSG_H
+#define CHENGEPRICEMSG_H
+
+class ChengePriceMsg : public OMessage
+{
+    QVector<Stock m_stocks;
+
+    qint32 length() const;
+public:
+    ChengePriceMsg(const QVector<Stock>& stocks);
+
+    MessageType type() const;
+    void send(QIODevice* connection);
+
+    addStock(const Stock& stock);
+};
+
+#endif // CHENGEPRICEMSG_H
