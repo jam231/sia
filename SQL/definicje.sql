@@ -54,3 +54,18 @@ CREATE TABLE zrealizowane_zlecenia (
 	ilosc		INTEGER NOT NULL,
 	czas		TIMESTAMP NOT NULL
 );
+
+CREATE TABLE subskrypcje (
+	id_uz		INTEGER REFERENCES uzytkownik(id_uz)	NOT NULL,
+	id_zasobu	INTEGER REFERENCES zasob(id_zasobu) NOT NULL
+);
+
+CREATE FUNCTION nowy_uzytkownik() RETURNS integer AS
+DECLARE
+	new_id integer
+$X$
+	new_id := nextval('nr_uz');
+	INSERT INTO uzytkownik(id_uz) VALUES(new_id);
+	SELECT new_id;
+$X$ LANGUAGE plpgsql;
+
