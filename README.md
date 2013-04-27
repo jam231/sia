@@ -1,4 +1,4 @@
-﻿				## Systemy inteligetnych agentów, 2013
+﻿				Systemy inteligetnych agentów, 2013
 =======
 
 Sprawy techniczne:  
