@@ -1,9 +1,11 @@
-CREATE SEQUENCE nr_uz;
+﻿CREATE SEQUENCE nr_uz;
 CREATE SEQUENCE nr_zlecenia;
 CREATE SEQUENCE nr_zasobu;
 
 CREATE TABLE uzytkownik (
-    id_uz       INTEGER      PRIMARY KEY
+    id_uz		INTEGER PRIMARY KEY,
+	login		varchar(15) NOT NULL UNIQUE,
+	password	varchar(15) NOT NULL
 );
 
 CREATE TABLE zasob (
@@ -60,12 +62,11 @@ CREATE TABLE subskrypcje (
 	id_zasobu	INTEGER REFERENCES zasob(id_zasobu) NOT NULL
 );
 
-CREATE FUNCTION nowy_uzytkownik() RETURNS integer AS
+CREATE FUNCTION nowy_uzytkownik(new_login varchar(15), new_password varchar(15)) RETURNS integer AS $$
 DECLARE
-	new_id integer
-$X$
-	new_id := nextval('nr_uz');
-	INSERT INTO uzytkownik(id_uz) VALUES(new_id);
-	SELECT new_id;
-$X$ LANGUAGE plpgsql;
-
+	new_id integer := nextval('nr_uz');
+BEGIN
+	INSERT INTO uzytkownik(id_uz, login, password) VALUES(new_id, new_login, new_password);
+	RETURN new_id;
+END;
+$$ LANGUAGE plpgsql;
