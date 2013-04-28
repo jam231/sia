@@ -1,3 +1,7 @@
+QT += sql \
+    network \
+    widgets
+
 HEADERS += \
     user.h \
     server.h \
@@ -53,8 +57,6 @@ INCLUDEPATH += Messages \
     Messages/IMessages \
     Messages/OMessages
 
-QT += sql \
-    network
 
 
 
