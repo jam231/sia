@@ -43,22 +43,22 @@ CREATE TABLE zlecenia_sprzedazy (
 );
 
 CREATE TABLE posiadane_dobra (
-	id_uz		INTEGER REFERENCES uzytkownik(id_uz)	NOT NULL,
-	id_zasobu	INTEGER REFERENCES zasob(id_zasobu)		NOT NULL,
+	id_uz		INTEGER REFERENCES uzytkownik(id_uz) NOT NULL,
+	id_zasobu	INTEGER REFERENCES zasob(id_zasobu) NOT NULL,
 	ilosc		INTEGER,
 	PRIMARY KEY (id_uz, id_zasobu)
 );
 
 CREATE TABLE zrealizowane_zlecenia (
-	uz_kupil	INTEGER REFERENCES uzytkownik(id_uz)	NOT NULL,
-	uz_sprzedal INTEGER REFERENCES uzytkownik(id_uz)	NOT NULL,
+	uz_kupil	INTEGER REFERENCES uzytkownik(id_uz) NOT NULL,
+	uz_sprzedal INTEGER REFERENCES uzytkownik(id_uz) NOT NULL,
 	id_zasobu	INTEGER REFERENCES zasob(id_zasobu) NOT NULL,
 	ilosc		INTEGER NOT NULL,
 	czas		TIMESTAMP NOT NULL
 );
 
 CREATE TABLE subskrypcje (
-	id_uz		INTEGER REFERENCES uzytkownik(id_uz)	NOT NULL,
+	id_uz		INTEGER REFERENCES uzytkownik(id_uz) NOT NULL,
 	id_zasobu	INTEGER REFERENCES zasob(id_zasobu) NOT NULL
 );
 
