@@ -12,7 +12,7 @@ User::User(qint32 userId, double cash) : m_userId(userId), m_cash(cash)
 
 User::User(qint32 userId, QSqlDatabase& db) : m_userId(userId)
 {
-    //zapytanie powinno zwracaæ dok³¹dnie 1 rekord z 1 polem zawierajacym stan konta usera
+    //zapytanie powinno zwracaÄ‡ dokÅ‚Ä…dnie 1 rekord z 1 polem zawierajacym stan konta usera
     QString queryString;
 
     QSqlQuery query(db);

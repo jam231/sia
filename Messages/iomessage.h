@@ -15,9 +15,9 @@ public:
         SELL_STOCK_RESP,         //wiadomosc o zrealizowanej transakcji
         BUY_STOCK_REQ,          //zlecenie kupna
         BUY_STOCK_RESP,         //wiadomosc o zrealizowanej transakcji
-        GET_STOCKS,         //poproszenei serwera o wys³¹nie listy akcji
-        LIST_OF_STOCKS,     //wys¹³nie przez serwer listy akcji
-        CHANGE_PRICE,        //wys³anie do u¿ytkownika informacji o zmianie cen akcji
+        GET_STOCKS,         //poproszenei serwera o wysÅ‚Ä…nie listy akcji
+        LIST_OF_STOCKS,     //wysÄ…Å‚nie przez serwer listy akcji
+        CHANGE_PRICE,        //wysÅ‚anie do uÅ¼ytkownika informacji o zmianie cen akcji
         UNRECOGNIZED_USER,   //odpowiedz serwera na wiadomosc uzytkownika ktory sie wczesniej nie zalogowal
         UNDEFINED
     };

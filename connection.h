@@ -22,7 +22,7 @@ public:
     int userId() const;
     bool isUserAssigned() const;
     void setTmpUserId(qint32 tmpUserId);
-    //dopiero od tego momentu zacyznamy odbieraæ wiadomoœci
+    //dopiero od tego momentu zacyznamy odbieraÄ‡ wiadomoÅ›ci
     void start();
 
 public slots:

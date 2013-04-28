@@ -8,7 +8,7 @@ ChangePriceMsg::ChangePriceMsg(const Stock& stock) : OMessage(), m_stock(stock)
 
 qint32 ChangePriceMsg::length() const
 {
-    //8 bajtów na typ i dlugosc
+    //8 bajtÃ³w na typ i dlugosc
     return 8 + sizeof(ChangePriceMsg);
 }
 

@@ -8,7 +8,7 @@ RegisterUserRespMsg::RegisterUserRespMsg(qint32 userId) : OMessage(), m_userId(u
 
 qint32 RegisterUserRespMsg::length() const
 {
-    //8 bajtów na typ i dlugosc
+    //8 bajtÃ³w na typ i dlugosc
     return 8 + sizeof(RegisterUserRespMsg);
 }
 

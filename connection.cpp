@@ -39,12 +39,12 @@ void Connection::start()
     connect(m_socket, SIGNAL(disconnected()), this, SLOT(disconect()));
     if(!m_socket->isValid())
     {
-        disconect(); //jak po³¹czenie sie zerwa³o zanim po³¹czyliœmy sloty
+        disconect(); //jak poÅ‚Ä…czenie sie zerwaÅ‚o zanim poÅ‚Ä…czyliÅ›my sloty
         return;
     }
     connect(m_socket, SIGNAL(readyRead()), this, SLOT(readData()));
 
-    //tak na wszelki wypadek jakbysmy dostali ju¿ jakieœ dane zanim zd¹¿yliœmy po³¹czyæ sygna³y
+    //tak na wszelki wypadek jakbysmy dostali juÅ¼ jakieÅ› dane zanim zdÄ…Å¼yliÅ›my poÅ‚Ä…czyÄ‡ sygnaÅ‚y
     readData();
 }
 
@@ -69,7 +69,7 @@ void Connection::disconect()
 
 void Connection::readData()
 {
-    //otrzymaliœmy za ma³o danych, aby przetworzyæ wiadomosc w calosci
+    //otrzymaliÅ›my za maÅ‚o danych, aby przetworzyÄ‡ wiadomosc w calosci
     if(!IMessage::isEnoughData(m_socket))
         return;
 

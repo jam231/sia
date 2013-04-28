@@ -12,7 +12,7 @@ IOMessage::MessageType unrecognizedUserMsg::type() const
 
 qint32 unrecognizedUserMsg::length() const
 {
-    //8 bajtów na typ i dlugosc
+    //8 bajtÃ³w na typ i dlugosc
     return 8;
 }
 

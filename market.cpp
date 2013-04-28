@@ -30,7 +30,6 @@ Market::Market(QObject* parent)
     m_database.setPort(DATABASE_PORT);
 
     m_database.open();
-
     connect(m_server, SIGNAL(registerUserReq(qint32, double)),
             this, SLOT(registerUserReq(qint32, double)) );
     connect(m_server, SIGNAL(subscribeStock(qint32, qint32)),
@@ -46,7 +45,7 @@ Market::Market(QObject* parent)
 
 void Market::registerUserReq(qint32 tmpId, double cash)
 {
-    //zapytanie rejestruj¹ce u¿ytkownika powinno zwracaæ dok³¹dnie 1 rekord z nowym id
+    //zapytanie rejestrujÄ…ce uÅ¼ytkownika powinno zwracaÄ‡ dokÅ‚Ä…dnie 1 rekord z nowym id
     QString queryString;
 
     QSqlQuery query(m_database);
@@ -96,8 +95,8 @@ void Market::unsubscribeStock(qint32 userId, qint32 stockId)
 
 void Market::sellStock(qint32 userId, Offer offer)
 {
-    //zapytanie powinno zwróciæ tyle transakcji do ilu dosz³o w wyniku do dania tej oferty
-    //ka¿d¹ w osobnym rekordzie, ka¿dy rekord powinien zawieraæ
+    //zapytanie powinno zwrÃ³ciÄ‡ tyle transakcji do ilu doszÅ‚o w wyniku do dania tej oferty
+    //kaÅ¼dÄ… w osobnym rekordzie, kaÅ¼dy rekord powinien zawieraÄ‡
     //id_transakcji,
     //id_usera sprzedajacego, id_usera kupujacego, id_akcji, ilosc_akcji, cene za akcje
     //w dokladnie takiej kolejnosci
@@ -135,8 +134,8 @@ void Market::sellStock(qint32 userId, Offer offer)
 
 void Market::buyStock(qint32 userId, Offer offer)
 {
-    //zapytanie powinno zwróciæ tyle transakcji do ilu dosz³o w wyniku do dania tej oferty
-    //ka¿d¹ w osobnym rekordzie, ka¿dy rekord powinien zawieraæ
+    //zapytanie powinno zwrÃ³ciÄ‡ tyle transakcji do ilu doszÅ‚o w wyniku do dania tej oferty
+    //kaÅ¼dÄ… w osobnym rekordzie, kaÅ¼dy rekord powinien zawieraÄ‡
     //id_transakcji(jesli bedziemy je wszystkie przechowywac w bazie),
     //id_usera sprzedajacego, id_usera kupujacego, id_akcji, ilosc_akcji, cene za akcje
     //w dokladnie takiej kolejnosci
@@ -208,7 +207,7 @@ void Market::getStocks(qint32 userId)
 
 void Market::noticeChangePrice(qint32 stockId)
 {
-    //zapytanie powinno zwracaæ id wszystkich uzytkownikow ktorzy zapisali sie na subskrypcje danej akcji
+    //zapytanie powinno zwracaÄ‡ id wszystkich uzytkownikow ktorzy zapisali sie na subskrypcje danej akcji
     QString queryString;
 
     QSqlQuery query(m_database);

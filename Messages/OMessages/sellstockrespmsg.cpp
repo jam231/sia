@@ -9,7 +9,7 @@ SellStockRespMsg::SellStockRespMsg(const Transaction& transaction)
 
 qint32 SellStockRespMsg::length() const
 {
-    //8 bajtów na typ i dlugosc
+    //8 bajtÃ³w na typ i dlugosc
     return 8 + sizeof(SellStockRespMsg);
 }
 

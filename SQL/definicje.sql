@@ -1,4 +1,4 @@
-﻿CREATE SEQUENCE nr_uz;
+CREATE SEQUENCE nr_uz;
 CREATE SEQUENCE nr_zlecenia;
 CREATE SEQUENCE nr_zasobu;
 
