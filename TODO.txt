@@ -1,0 +1,11 @@
+TODO LIST:
+
+    - Choose a logging facility,
+    - Incorporate chosen logging facility,
+
+    - Test ConfigManager class      // Done
+    - After it has been proven (by test not formally) to work,
+      incorporate ConfigManager into Marker class, deleting
+      static const fields. // Done.
+
+    - Error handling (!)
