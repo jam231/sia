@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "connection.h"
 
 #include "iomessage.h"
@@ -36,9 +38,12 @@ void Connection::setTmpUserId(qint32 tmpUserId)
 
 void Connection::start()
 {
+    qDebug() << "[Connection] Starting new connection.";
     connect(m_socket, SIGNAL(disconnected()), this, SLOT(disconect()));
     if(!m_socket->isValid())
     {
+        qDebug() << "[Connection] Error " << m_socket->errorString()
+                 << " occured while establishing new connection.";
         disconect(); //jak połączenie sie zerwało zanim połączyliśmy sloty
         return;
     }
@@ -67,18 +72,21 @@ void Connection::disconect()
     deleteLater();
 }
 
+
 void Connection::readData()
 {
     //otrzymaliśmy za mało danych, aby przetworzyć wiadomosc w calosci
-    if(!IMessage::isEnoughData(m_socket))
+    if(!IMessage::isEnoughData(m_socket)) {
+        qDebug() << "[Connection] Not enough data for a valid message.";
         return;
-
+    }
     IOMessage::MessageType msgType = IMessage::getMsgType(m_socket);
 
     switch(msgType)
     {
         case IOMessage::REGISTER_USER_REQ:
         {
+            qDebug() << "[Connection] Registration request.";
             RegisterUserReqMsg Msg(m_socket);
             emit registerReq(this, Msg.cash());
             return;
@@ -91,7 +99,9 @@ void Connection::readData()
             emit assigned(this, m_userId);
             return;
         }
-    };
+        default:
+            break;
+    }
 
     //jesli nie mamy przypisanego usera do tego polaczenia wysylamy UNRECOGNIZED
     if(!isUserAssigned())
@@ -128,6 +138,12 @@ void Connection::readData()
         {
             UnsubscribeStockMsg Msg(m_socket);
             emit unsubscribeStock(m_userId, Msg.stockId());
+            break;
+        }
+        default:
+        {
+            qDebug() << "[Connection] Received invalid message type: "
+                     << msgType << " .";
             break;
         }
     }
