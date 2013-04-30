@@ -106,8 +106,8 @@ public:
        QFile iniFile(pathToIni);
 
        if(!iniFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-           qDebug() << "[IniParser] Error: file " << pathToIni
-                    << " could not be open.";
+           qDebug() << "[IniParser] Error " << iniFile.errorString()
+                    << "occured while opening " << pathToIni << ".";
            throw DummyException();
        }
 
