@@ -1,0 +1,31 @@
+TODO LIST:
+
+Top priority:
+    - Object market, which handles all the logic and
+      QApplication are disjoint. What I mean is...
+      there's NO working server!
+      After market object initialization, loading config, setting up
+      the connections there's just nothing for the market left to do,
+      so it ends it's life, and after that QApplication starts... !
+      Must fix !
+
+Urgent:
+    - Choose error handling strategy // Done, oexceptions.
+
+
+
+    - Test ConfigManager class      // Done
+    - After it has been proven (by test not formally) to work,
+      incorporate ConfigManager into Marker class, deleting
+      static const fields. // Done.
+
+Quite important:
+
+    - Choose a logging facility,
+    - Incorporate chosen logging facility,
+
+Maybe someday:
+
+    - initParser::parseINI returns QVector<QPair<QString, QString> >
+      It may be slow (not likely for the current usage, but still..)
+      Find a clever way to overcome this (check if it's even an issue).
