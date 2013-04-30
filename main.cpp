@@ -1,4 +1,4 @@
-#include <QApplication>
+#include <QCoreApplication>
 #include <QString>
 
 
@@ -11,7 +11,7 @@ int main(int argv, char **args)
 {
 
 
-    //QApplication app(argv, args);
+    QCoreApplication app(argv, args);
 
     try {
 
@@ -28,6 +28,8 @@ int main(int argv, char **args)
          */
         ConfigManager<> config(configFilePath);
         Market market(config);
+        //return 0;
+        return app.exec();    //That's just wrong.
 
     }catch(const std::exception& e)
     {
@@ -37,7 +39,7 @@ int main(int argv, char **args)
     catch(...)
     {
         qDebug() << "[main] Unknown exception detected.";
+        return 2;
     }
     return 0;
-    //return app.exec();    //That's just wrong.
 }
