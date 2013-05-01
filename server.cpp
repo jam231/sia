@@ -13,6 +13,8 @@ Server::Server(QObject *parent, int portNumber)
     qDebug() << "[Server] Starting new tcp connection listening on port"
              << portNumber << "...";
 
+    connect(m_server, SIGNAL(newConnection()), this, SLOT(addNewConnection()));
+
     if(!m_server->listen(QHostAddress::Any, portNumber))
     {
         qDebug() << "[Server] Error " << m_server->errorString()
@@ -20,7 +22,6 @@ Server::Server(QObject *parent, int portNumber)
         throw DummyException();
     }
 
-    connect(m_server, SIGNAL(newConnection()), this, SLOT(addNewConnection()));
 }
 
 Server::~Server()
@@ -52,17 +53,21 @@ bool Server::send(RegisterUserRespMsg& msg, qint32 userTmpId)
 
 void Server::addNewConnection()
 {
-    qDebug() << "[Server] Adding a new connection from pending connections.";
+    qDebug() << "[Server] Acquiring new connection.";
     Connection* newConn = new Connection(m_server->nextPendingConnection(), this);
 
     connect(newConn, SIGNAL(disconnected(qint32, bool)),
               this, SLOT(disconnectUser(qint32, bool)));
     connect(newConn, SIGNAL(assigned(Connection *, qint32)),
               this, SLOT(assignedUser(Connection *, qint32)));
-
     connect(newConn, SIGNAL(registerReq(Connection *, double)),
               this, SLOT(registerUserReq(Connection *, double)));
 
+/* There is a duplicate name issue here which needs resolving.
+ * There are already signals in Server class
+ * (used in Market class) with those names.
+ */
+/*
     connect(newConn, SIGNAL(subscribeStock(qint32, qint32)),
             this, SLOT(subscribeStock(qint32, qint32)) );
     connect(newConn, SIGNAL(unsubscribeStock(qint32, qint32)),
@@ -72,7 +77,7 @@ void Server::addNewConnection()
     connect(newConn, SIGNAL(buyStock(qint32, Offer)),
             this, SLOT(buyStock(qint32, Offer)) );
     connect(newConn, SIGNAL(getStocks(qint32)),this, SLOT(getStocks(qint32)) );
-
+*/
     //od teraz dopiero zaczniemy przetwarzac wiadomosci z tego polaczenia
     //abysmy nie robili tego zanim polaczylismy sygnaly i sloty
     //bo moglibysmy stracic wiadomosci
@@ -98,12 +103,12 @@ void Server::assignedUser(Connection* conn, qint32 userId)
 
 void Server::registerUserReq(Connection* conn, double cash)
 {
-    for(int i = m_lastTmpUserId + 1; i < m_lastTmpUserId; i = (i + 1) % MAX_USER_PENDING)
+    for(int i = m_lastTmpUserId + 1; i < MAX_USER_PENDING; i = (i + 1) % MAX_USER_PENDING)
         if(m_usersRegisterPending[i] == NULL)
         {
             m_usersRegisterPending[i] = conn;
             m_usersRegisterPending[i]->setTmpUserId(i);
-
+            m_lastTmpUserId = i;
             emit registerUserReq(i, cash);
             return;
         }

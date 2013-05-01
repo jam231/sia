@@ -12,7 +12,6 @@
 
 #include <map>
 
-
 using std::map;
 
 class Server : public QObject
@@ -34,6 +33,7 @@ public slots:
     bool send(RegisterUserRespMsg& msg, qint32 userTmpId);
 
 signals:
+
     void registerUserReq(qint32 tmpUserId, double cash);
     void subscribeStock(qint32 userId, qint32 stockId);
     void unsubscribeStock(qint32 userId, qint32 stockId);
@@ -41,11 +41,14 @@ signals:
     void buyStock(qint32 userId, Offer offer);
     void getStocks(qint32 userId);
 
+
+
 private slots:
     void addNewConnection();
     void disconnectUser(qint32 userId, bool isTmpUser);
     void assignedUser(Connection* conn, qint32 userId);
     void registerUserReq(Connection* conn, double cash);
+
 };
 
 #endif // SERWER_H
