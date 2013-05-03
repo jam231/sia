@@ -19,8 +19,9 @@ IOMessage::MessageType RegisterUserRespMsg::type() const
 
 void RegisterUserRespMsg::send(QIODevice* connection)
 {
-    QDataStream tmpStream(connection);
-    tmpStream<<length();
-    tmpStream<<static_cast<qint32>(type());
-    tmpStream<<m_userId;
+    QDataStream in(connection);
+    in.setByteOrder(QDataStream::BigEndian);
+    in << length();
+    in << static_cast<qint32>(type());
+    in << m_userId;
 }
