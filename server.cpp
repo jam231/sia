@@ -1,33 +1,37 @@
 #include "server.h"
-#include "exceptionhierarchy.h"
 
 const int Server::MAX_USER_PENDING = 500;
 
 Server::Server(QObject *parent, int portNumber)
     : QObject(parent), m_server(new QTcpServer(this)), m_lastTmpUserId(0)
 {
+    qDebug() << "[Server] Starting new tcp connection on port"
+             << portNumber << "...";
 
     for(int i = 0; i < MAX_USER_PENDING; ++i)
         m_usersRegisterPending[i] = NULL;
 
-    qDebug() << "[Server] Starting new tcp connection listening on port"
-             << portNumber << "...";
+    m_server = new QTcpServer(this);
 
-    connect(m_server, SIGNAL(newConnection()), this, SLOT(addNewConnection()));
+    connect(m_server, SIGNAL(newConnection()),
+            this, SLOT(addNewConnection()));
 
     if(!m_server->listen(QHostAddress::Any, portNumber))
     {
         qDebug() << "[Server] Error " << m_server->errorString()
                  << "occured while starting tcp connection.";
-        throw DummyException();
+        throw TcpConnectionError();
     }
+
+    qDebug() << "[Server] Tcp connection on port"
+             << portNumber << " has been established.";
 
 }
 
 Server::~Server()
 {
     m_server->close();
-    qDebug() << "[Server] Tcp connection closed.";
+    qDebug() << "[Server] Tcp connection has been closed.";
     delete m_server;
 }
 
@@ -54,14 +58,15 @@ bool Server::send(RegisterUserRespMsg& msg, qint32 userTmpId)
 void Server::addNewConnection()
 {
     qDebug() << "[Server] Acquiring new connection.";
-    Connection* newConn = new Connection(m_server->nextPendingConnection(), this);
+    Connection* newConn = new Connection(m_server->nextPendingConnection(),
+                                         this);
 
     connect(newConn, SIGNAL(disconnected(qint32, bool)),
               this, SLOT(disconnectUser(qint32, bool)));
     connect(newConn, SIGNAL(assigned(Connection *, qint32)),
               this, SLOT(assignedUser(Connection *, qint32)));
-    connect(newConn, SIGNAL(registerReq(Connection *, double)),
-              this, SLOT(registerUserReq(Connection *, double)));
+    connect(newConn, SIGNAL(registerReq(Connection *, QString)),
+              this, SLOT(registerUserReq(Connection *, QString)));
 
 /* There is a duplicate name issue here which needs resolving.
  * There are already signals in Server class
@@ -101,7 +106,7 @@ void Server::assignedUser(Connection* conn, qint32 userId)
     m_userConnections[userId] = conn;
 }
 
-void Server::registerUserReq(Connection* conn, double cash)
+void Server::registerUserReq(Connection* conn, QString password)
 {
     for(int i = m_lastTmpUserId + 1; i < MAX_USER_PENDING; i = (i + 1) % MAX_USER_PENDING)
         if(m_usersRegisterPending[i] == NULL)
@@ -109,7 +114,7 @@ void Server::registerUserReq(Connection* conn, double cash)
             m_usersRegisterPending[i] = conn;
             m_usersRegisterPending[i]->setTmpUserId(i);
             m_lastTmpUserId = i;
-            emit registerUserReq(i, cash);
+            emit registerUserReq(i, password);
             return;
         }
 }

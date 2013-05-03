@@ -11,6 +11,15 @@
 #include <QTcpServer>
 
 #include <map>
+#include <exception>
+
+class TcpConnectionError : public std::exception
+{
+    virtual const char* what() const throw()
+    {
+        return "Tcp connection error.";
+    }
+};
 
 using std::map;
 
@@ -34,7 +43,7 @@ public slots:
 
 signals:
 
-    void registerUserReq(qint32 tmpUserId, double cash);
+    void registerUserReq(qint32 tmpUserId, QString password);
     void subscribeStock(qint32 userId, qint32 stockId);
     void unsubscribeStock(qint32 userId, qint32 stockId);
     void sellStock(qint32 userId, Offer offer);
@@ -47,7 +56,7 @@ private slots:
     void addNewConnection();
     void disconnectUser(qint32 userId, bool isTmpUser);
     void assignedUser(Connection* conn, qint32 userId);
-    void registerUserReq(Connection* conn, double cash);
+    void registerUserReq(Connection* conn, QString password);
 
 };
 
