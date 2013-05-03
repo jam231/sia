@@ -11,7 +11,7 @@ Warning !!:
     nr_uz sequence in Postgres has min_value = 1 and max_value = 2^63,
     We on the other hand choose qint32 for user_id.
     We must decide either to change sequence max_value to qint32 bounds
-    or the other way.
+    or the other way. For know I changed sequence in database.
 
 Top priority:
     - Error-free registration of new users with full debug logging.

@@ -28,17 +28,18 @@ int main(int argv, char **args)
          */
         ConfigManager<> config(configFilePath);
         Market market(config);
-        //return 0;
-        return app.exec();    //That's just wrong.
+
+        return app.exec();
 
     }catch(const std::exception& e)
     {
-        qDebug() << "[main] Exception was thrown with message: " << e.what();
+        qDebug() << "[main] Exception has been thrown with message: "
+                 << e.what();
         return 1;
     }
     catch(...)
     {
-        qDebug() << "[main] Unknown exception detected.";
+        qDebug() << "[main] Unknown type of exception has been detected.";
         return 2;
     }
     return 0;
