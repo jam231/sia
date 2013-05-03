@@ -1,5 +1,4 @@
 #include "configmanager.h"
-#include "exceptionhierarchy.h"
 
 
 template<>
@@ -8,8 +7,8 @@ QString ConfigManager<>::operator[](const QString& key) const
     QString keyLower = key.toLower();
     if(!m_Container.contains(keyLower))
     {
-        qDebug() << "[ConfigManager] Key " << key << "not found.";
-        throw DummyException();
+        qDebug() << "[ConfigManager] Key " << key << "has not been found.";
+        throw KeyNotFound();
     }
     return m_Container[keyLower];
 }
@@ -27,9 +26,9 @@ int ConfigManager<>::intAt(const QString& key) const
     if(!ok)
     {
         qDebug() << "[ConfigManager] Invalid conversion of"
-                 << m_Container[key]
-                    << "to int for key" << key << ".";
-        throw DummyException();
+                 << m_Container[key] << "to int for key"
+                 << key << ".";
+        throw InvalidValue();
     }
     return val;
 }

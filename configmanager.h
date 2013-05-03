@@ -1,7 +1,7 @@
 #ifndef CONFIGMANAGER_H
 #define CONFIGMANAGER_H
 
-#include "exceptionhierarchy.h"
+#include <exception>
 
 #include <QFile>
 #include <QTextStream>
@@ -12,16 +12,34 @@
 
 
 /*
- *  TODO:
+ * I know about fstream exceptions, but I do not use
+ * fstream for file manipulation in the code below.
  *
- *      - Reduce boilerplatet,
- *      - Settle the matter of error passing style.
- *      - Change code to conform into settled error passing style.
- *      - Comments and doxygen.
+ *  --jam231
  */
+class FileError : public std::exception
+{
+    virtual const char* what() const throw()
+    {
+        return "File error";
+    }
+};
 
+class KeyNotFound : public std::exception
+{
+    virtual const char* what() const throw()
+    {
+        return "Key not found";
+    }
+};
 
-
+class InvalidValue : public std::exception
+{
+    virtual const char* what() const throw()
+    {
+        return "Invalid value";
+    }
+};
 
 
 class IniParser
@@ -67,7 +85,7 @@ class IniParser
                                      keyValue[1].trimmed()));
            }
            else
-               qDebug() << "[parseINI]: Not a statement " << statement;
+               qDebug() << "[parseINI] Not a statement: " << statement;
        }
        return keyValuePairs;
 
@@ -108,16 +126,15 @@ public:
        if(!iniFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
            qDebug() << "[IniParser] Error " << iniFile.errorString()
                     << "occured while opening " << pathToIni << ".";
-           throw DummyException();
+           throw FileError();
        }
 
        QTextStream iniStream(&iniFile);
        unsigned int linesRead = 0;
        QStringList lines;
-       qDebug() << "[IniParser] Parsing...";
+       qDebug() << "[IniParser] Parsing file...";
        while(!iniStream.atEnd())
        {
-
            lines += iniStream.readLine();
            linesRead++;
            if(linesRead == chunkSizeInLines)
@@ -128,10 +145,10 @@ public:
            }
        }
        IniParser::parseAndBuildFromLines(lines, container);
-       qDebug() << "[IniParser] Parsing finished."
-                << "[IniParser] Closing file " << pathToIni << "...";
+       qDebug() << "[IniParser] Parsing is finished."
+                << "[IniParser] Closing file: " << pathToIni << "...";
        iniFile.close();
-       qDebug() << "[IniParser] File closed.";
+       qDebug() << "[IniParser] File has been closed.";
    }
 };
 
@@ -163,10 +180,10 @@ class ConfigManager
 public:
     ConfigManager(const QString& pathToConfigFile)
     {
-        qDebug() << "[ConfigManager] Creating a config using "
-                 << pathToConfigFile << ".";
+        qDebug() << "[ConfigManager] Creating a config using"
+                 << pathToConfigFile << "...";
         ConfigFormat::parseFile(pathToConfigFile, m_Container, 100);
-        qDebug() << "[ConfigManager] Config created.";
+        qDebug() << "[ConfigManager] Config has been created.";
     }
 
     QString operator[](const QString& key) const;
