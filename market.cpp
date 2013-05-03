@@ -1,7 +1,7 @@
 #include "market.h"
 
 #include "transaction.h"
-#include "Stock.h"
+#include "stock.h"
 
 #include "registeruserrespmsg.h"
 #include "buystockrespmsg.h"
@@ -10,7 +10,6 @@
 #include "changepricemsg.h"
 
 #include "configmanager.h"
-#include "exception"
 
 #include <QSqlQuery>
 #include <QSqlError>
@@ -29,9 +28,8 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
     QString dbHost = config["DATABASE HOST"];
     int dbPort = config.intAt("DATABASE PORT");
 
-    qDebug() << "[Market] Starting new server...";
-    m_server = new Server(this, serverPort);
-    m_database = QSqlDatabase::addDatabase("QPSQL");
+    m_database = QSqlDatabase::addDatabase("QPSQL",
+                                           QLatin1String("Rynki finansowe 1"));
 
     m_database.setHostName(dbHost);
     m_database.setDatabaseName(dbName);
@@ -43,13 +41,18 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
     if(!m_database.open())
     {
         qDebug() << "[Market] Error " << m_database.lastError().text()
-                 << " occured while opening the database.";
-        throw DummyException();
+                 << "occured while opening the database.";
+        throw DatabaseError();
     }
-    //qDebug() << "Database tables:\n" << m_database.tables();
+    qDebug() << "[Market] Database connection has been established.";
 
-    connect(m_server, SIGNAL(registerUserReq(qint32, double)),
-            this, SLOT(registerUserReq(qint32, double)) );
+    qDebug() << "Database tables:\n" << m_database.tables();
+
+    qDebug() << "[Market] Starting new server...";
+    m_server = new Server(this, serverPort);
+
+    connect(m_server, SIGNAL(registerUserReq(qint32, QString)),
+            this, SLOT(registerNewUser(qint32, QString)) );
     connect(m_server, SIGNAL(subscribeStock(qint32, qint32)),
             this, SLOT(subscribeStock(qint32, qint32)) );
     connect(m_server, SIGNAL(unsubscribeStock(qint32, qint32)),
@@ -58,8 +61,10 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
             this, SLOT(sellStock(qint32, Offer)) );
     connect(m_server, SIGNAL(buyStock(qint32, Offer)),
             this, SLOT(buyStock(qint32, Offer)) );
-    connect(m_server, SIGNAL(getStocks(qint32)),this, SLOT(getStocks(qint32)) );
+    connect(m_server, SIGNAL(getStocks(qint32)),
+            this, SLOT(getStocks(qint32)) );
 
+    qDebug() << "[Market] Server is running.";
 }
 
 Market::~Market()
@@ -72,33 +77,44 @@ Market::~Market()
     qDebug() << "[Market] Server closed.";
 }
 
-void Market::registerUserReq(qint32 tmpId, double cash)
+void Market::registerNewUser(qint32 tmpUserId, QString password)
 {
     //zapytanie rejestrujące użytkownika powinno zwracać dokłądnie 1 rekord z nowym id
-    QString queryString;
+    //QString queryString;
 
     QSqlQuery query(m_database);
+    //
+    query.prepare("SELECT nowy_uzytkownik(:password);");
+    query.bindValue(":password", password);
+    //
     query.setForwardOnly(true);
 
     m_database.transaction();
 
-    query.exec(queryString);
+    query.exec();
 
     m_database.commit();
+    /*
+     *  TODO:
+     *      Implement proper behaviours.
+     */
+    if(query.first())
+    {
+        RegisterUserRespMsg Msg(query.value(0).toInt());
+        m_server->send(Msg, tmpUserId);
+    }
+    else
+    {
+        qDebug() << "[Market] No new_id has been returned from database."
+                 << "[Market] Error:" << query.lastError().text();
+    }
 
-    RegisterUserRespMsg Msg(query.value(0).toInt());
-
-    m_server->send(Msg, tmpId);
 }
 
 void Market::subscribeStock(qint32 userId, qint32 stockId)
 {
     //zapytanie nie powinno nic zwracac
 
-    /* Noo, ale to czasem nie jest tak, ze pownnismy sie
-     * dowiedziec, czy transakcja sie powiodla, czy nie?
-     *                                  --jam231
-     */
     QString queryString;
 
     QSqlQuery query(m_database);
@@ -107,7 +123,6 @@ void Market::subscribeStock(qint32 userId, qint32 stockId)
     m_database.transaction();
 
     query.exec(queryString);
-
 
 
     +m_database.commit();
