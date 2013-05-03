@@ -1,5 +1,18 @@
 TODO LIST:
 
+Warning !:
+
+    Sending floating points across network (different architectures)
+    is dangerous and should be avoided:
+    http://stackoverflow.com/questions/6084279/host-to-network-double
+
+Warning !!:
+
+    nr_uz sequence in Postgres has min_value = 1 and max_value = 2^63,
+    We on the other hand choose qint32 for user_id.
+    We must decide either to change sequence max_value to qint32 bounds
+    or the other way.
+
 Top priority:
     - Error-free registration of new users with full debug logging.
     - Some clever (or at least not ugly) way to incorporate
@@ -41,6 +54,7 @@ Quite important:
     - Create a proper hierarchy of exceptions.
     - Choose a logging facility - for nondebug.
     - Incorporate chosen logging facility.
+
 
 Maybe someday:
 
