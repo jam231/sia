@@ -38,7 +38,7 @@ void Connection::setTmpUserId(qint32 tmpUserId)
 
 void Connection::start()
 {
-    qDebug() << "[Connection] Starting new connection.";
+    qDebug() << "[Connection] Starting new connection...";
     connect(m_socket, SIGNAL(disconnected()), this, SLOT(disconect()));
     if(!m_socket->isValid())
     {
@@ -48,7 +48,7 @@ void Connection::start()
         return;
     }
     connect(m_socket, SIGNAL(readyRead()), this, SLOT(readData()));
-
+    qDebug() << "[Connection] Connection has been established.";
     //tak na wszelki wypadek jakbysmy dostali już jakieś dane zanim zdążyliśmy połączyć sygnały
     readData();
 }
@@ -69,6 +69,7 @@ void Connection::disconect()
     if(m_tmpUserId >= 0)
         emit disconnected(m_tmpUserId, true);
 
+    // delete object after all signals have been processed.
     deleteLater();
 }
 
@@ -82,30 +83,58 @@ void Connection::readData()
     }
     IOMessage::MessageType msgType = IMessage::getMsgType(m_socket);
 
+    qDebug() << "[Connection] message id:" << msgType;
+
     switch(msgType)
     {
         case IOMessage::REGISTER_USER_REQ:
         {
             qDebug() << "[Connection] Registration request.";
-            RegisterUserReqMsg Msg(m_socket);
-            emit registerReq(this, Msg.cash());
+            try {
+                RegisterUserReqMsg Msg(m_socket);
+                emit registerReq(this, Msg.getPassword());
+            }catch(const std::exception& e)
+            {
+                qDebug() << "[Connection] Exception" << e.what()
+                         << "has been thrown.";
+            }catch(...)
+            {
+                qDebug() << "[Connection] Unknown exception occurred"
+                         << "while processing register request.";
+            }
             return;
         }
         case IOMessage::LOGIN_USER:
         {
+            qDebug() << "[Connection] Login request.";
             LoginUserMsg Msg(m_socket);
-
+            qDebug() << "[Connection] User id: " << m_userId;
             m_userId = Msg.userId();
             emit assigned(this, m_userId);
             return;
         }
+        /*
+         *  Added because, when I get undefined messsage I want
+         *  to know that I got undefined message and not
+         *  user not assigned !
+         */
+        case IOMessage::UNDEFINED:
+        {
+            qDebug() << "[Connection] Received unrecognised message type: "
+                     << msgType << ".";
+            return;
+        }
         default:
-            break;
+        {
+            qDebug() << "[Connection] Fatal error 1 occured while message handling.";
+            return;
+        }
     }
 
     //jesli nie mamy przypisanego usera do tego polaczenia wysylamy UNRECOGNIZED
     if(!isUserAssigned())
     {
+        qDebug() << "[Connection] User has not been recognised.";
         unrecognizedUserMsg Msg;
         Msg.send(m_socket);
         return;
@@ -142,10 +171,8 @@ void Connection::readData()
         }
         default:
         {
-            qDebug() << "[Connection] Received invalid message type: "
-                     << msgType << " .";
+            qDebug() << "[Connection] Fatal error 2 occured while message handling.";
             break;
         }
     }
-
 }

@@ -22,7 +22,7 @@ public:
     int userId() const;
     bool isUserAssigned() const;
     void setTmpUserId(qint32 tmpUserId);
-    //dopiero od tego momentu zacyznamy odbierać wiadomości
+    //dopiero od tego momentu zaczynamy odbierać wiadomości
     void start();
 
 public slots:
@@ -36,7 +36,7 @@ signals:
     void disconnected(qint32 userId, bool isTmpUserId);
     void assigned(Connection* conn, qint32 userId);
 
-    void registerReq(Connection* conn, double cash);
+    void registerReq(Connection* conn, QString password);
 
     void subscribeStock(qint32 userId, qint32 stockId);
     void unsubscribeStock(qint32 userId, qint32 stockId);
