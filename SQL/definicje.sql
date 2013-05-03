@@ -1,19 +1,20 @@
-CREATE SEQUENCE nr_uz;
+CREATE SEQUENCE nr_uz MAXVALUE 4294967295;	-- 2^32 - 1
 CREATE SEQUENCE nr_zlecenia;
 CREATE SEQUENCE nr_zasobu;
 
 CREATE TABLE uzytkownik (
     id_uz		INTEGER PRIMARY KEY,
-	login		varchar(15) NOT NULL UNIQUE,
-	password	varchar(15) NOT NULL
+	haslo		varchar(15) NOT NULL 
+							CONSTRAINT more_than_4 CHECK (character_length(haslo) > 4)
+							CONSTRAINT no_white_spaces CHECK (haslo !~ '_*\s_*')
 );
 
 CREATE TABLE zasob (
-	id_zasobu	INTEGER PRIMARY KEY DEFAULT nextval('nr_zasobu'),
-	nazwa		VARCHAR(50),
-	w_ksiegowa	INTEGER, --na poczatku moze byc puste, docelowo to realna wycena spolki sciagnieta z internetu
-	zysk		INTEGER,
-	dlug		INTEGER,
+	id_zasobu		INTEGER PRIMARY KEY DEFAULT nextval('nr_zasobu'),
+	nazwa			VARCHAR(50),
+	w_ksiegowa		INTEGER, --na poczatku moze byc puste, docelowo to realna wycena spolki sciagnieta z internetu
+	zysk			INTEGER,
+	dlug			INTEGER,
 	liczba_akcji	INTEGER --na poczatku to moze byc wartosc wyliczana
 );
 	
@@ -62,11 +63,11 @@ CREATE TABLE subskrypcje (
 	id_zasobu	INTEGER REFERENCES zasob(id_zasobu) NOT NULL
 );
 
-CREATE FUNCTION nowy_uzytkownik(new_login varchar(15), new_password varchar(15)) RETURNS integer AS $$
+CREATE FUNCTION nowy_uzytkownik(nowe_haslo varchar(15)) RETURNS integer AS $$
 DECLARE
-	new_id integer := nextval('nr_uz');
+	nowy_id integer := nextval('nr_uz');
 BEGIN
-	INSERT INTO uzytkownik(id_uz, login, password) VALUES(new_id, new_login, new_password);
-	RETURN new_id;
+	INSERT INTO uzytkownik(id_uz, haslo) VALUES(nowy_id, nowe_haslo);
+	RETURN nowy_id;
 END;
 $$ LANGUAGE plpgsql;
