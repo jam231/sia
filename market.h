@@ -31,7 +31,7 @@ public:
     Market(const ConfigManager<>& config, QObject* parent = 0);
     ~Market();
 public slots:
-    void registerNewUser(qint32 tmpUserId, QString password);
+    void registerNewUser(Connection*, QString password);
     void subscribeStock(qint32 userId, qint32 stockId);
     void unsubscribeStock(qint32 userId, qint32 stockId);
     void sellStock(qint32 userId, Offer offer);
