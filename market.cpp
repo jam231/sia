@@ -51,8 +51,9 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
     qDebug() << "[Market] Uruchamianie serwera...";
     m_server = new Server(this, serverPort);
 
-    connect(m_server, SIGNAL(registerUserReq(qint32, QString)),
-            this, SLOT(registerNewUser(qint32, QString)) );
+    connect(m_server, SIGNAL(registerUserRequestFromServer(Connection*, QString)),
+            this, SLOT(registerNewUser(Connection*, QString)) );
+
     connect(m_server, SIGNAL(subscribeStock(qint32, qint32)),
             this, SLOT(subscribeStock(qint32, qint32)) );
     connect(m_server, SIGNAL(unsubscribeStock(qint32, qint32)),
@@ -71,17 +72,17 @@ Market::~Market()
 {
     qDebug() << "[Marker] Zamykanie połączenia z bazą danych...";
     m_database.close();
-    qDebug() << "[Market] Połączenie z bazą danych jest zamknięte.\n"
-             << "[Market] Zamykanie serwera.";
+    qDebug() << "[Market] Połączenie z bazą danych jest zamknięte.";
+    qDebug() << "[Market] Zamykanie serwera.";
     delete m_server;
     qDebug() << "[Market] Serwer został zamknięty.";
 }
 
-void Market::registerNewUser(qint32 tmpUserId, QString password)
+void Market::registerNewUser(Connection* connection, QString password)
 {
     //zapytanie rejestrujące użytkownika powinno zwracać dokłądnie 1 rekord z nowym id
     //QString queryString;
-
+    qDebug() << "[Market] Rejestrowane nowego uzytkownika w toku...";
     QSqlQuery query(m_database);
     //
     query.prepare("SELECT nowy_uzytkownik(:password);");
@@ -100,8 +101,9 @@ void Market::registerNewUser(qint32 tmpUserId, QString password)
      */
     if(query.first())
     {
-        RegisterUserRespMsg Msg(query.value(0).toInt());
-        m_server->send(Msg, tmpUserId);
+        RegisterUserRespMsg responseMsg(query.value(0).toInt());
+        qDebug() << "[Market] Wysyłanie identyfikatora nowemu użytkownikowi.";
+        m_server->send(responseMsg, connection);
     }
     else
     {
