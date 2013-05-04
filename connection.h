@@ -14,8 +14,9 @@ class Connection : public QObject
     QByteArray buffer;
 
     QTcpSocket* m_socket;
-    qint32 m_userId;   //-1 = not assigned
-    qint32 m_tmpUserId; //for user pending to register, for others -1
+    qint32 m_userId;   //-1 oznacza "nie przypisany"
+    qint32 m_tmpUserId; //Dla użytowników oczekujących na rejestracje
+                        // dla pozostałych -1
 public:
     Connection(QTcpSocket* socket, QObject *parent = 0);
 

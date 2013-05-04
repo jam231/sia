@@ -8,8 +8,9 @@ RegisterUserReqMsg::RegisterUserReqMsg(QIODevice* msg) : IMessage()
 {
     /*
      *  tmpStream >> m_Password
-     *  Won't work if QString hasn't been put with QDataStream
-     *
+     *  Czytanie QStringa nie zadziała, jeżeli do jego wysyłania
+     *  nie został użyty QDataStream - tak wyczytałem na stackoverflow,
+     *  i rzeczywiscie nie chciał mi się wczytać --jam231
      */
     QDataStream out(msg);
     out.setByteOrder(QDataStream::BigEndian);
@@ -22,7 +23,7 @@ RegisterUserReqMsg::RegisterUserReqMsg(QIODevice* msg) : IMessage()
     if(m_password.length() > 15 || m_password.contains(QRegExp("\\s"))
             || m_password.length() < 1)
     {
-        qDebug() << "[RegisterUserReqMsg] Invalid password:"
+        qDebug() << "[RegisterUserReqMsg] Błędne hasło:"
                  << m_password;
         throw InvalidPasswordError();
     }

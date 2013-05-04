@@ -11,12 +11,6 @@
 #include <QHash>
 
 
-/*
- * I know about fstream exceptions, but I do not use
- * fstream for file manipulation in the code below.
- *
- *  --jam231
- */
 class FileError : public std::exception
 {
     virtual const char* what() const throw()
@@ -29,7 +23,7 @@ class KeyNotFound : public std::exception
 {
     virtual const char* what() const throw()
     {
-        return "Key not found";
+        return "Key not found error";
     }
 };
 
@@ -37,7 +31,7 @@ class InvalidValue : public std::exception
 {
     virtual const char* what() const throw()
     {
-        return "Invalid value";
+        return "Invalid value error";
     }
 };
 
@@ -85,7 +79,7 @@ class IniParser
                                      keyValue[1].trimmed()));
            }
            else
-               qDebug() << "[parseINI] Not a statement: " << statement;
+               qDebug() << "[parseINI] Niepoprawne wyrażenie" << statement;
        }
        return keyValuePairs;
 
@@ -100,8 +94,9 @@ class IniParser
        {
            if(container.contains(keyValue.first))
            {
-               qDebug() << "[INIParser] Key " << keyValue.first
-                        << " duplicate found. Replacing with new value.";
+               qDebug() << "[INIParser] Znaleziono duplikat klucza"
+                        << keyValue.first
+                        << ". Przypisanie nowej wartość.";
            }
            container[keyValue.first] = keyValue.second;
        }
@@ -120,19 +115,19 @@ public:
         *  3. Parse it.
         *  4. Produce a Container containing configuration setup.
         */
-       qDebug() << "[IniParser] Opening file " << pathToIni << "...";
+       qDebug() << "[IniParser] Otwieranie pliku " << pathToIni << "...";
        QFile iniFile(pathToIni);
 
        if(!iniFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-           qDebug() << "[IniParser] Error " << iniFile.errorString()
-                    << "occured while opening " << pathToIni << ".";
+           qDebug() << "[IniParser] Wykryto błąd" << iniFile.errorString()
+                    << "podczas otwierania pliku" << pathToIni << ".";
            throw FileError();
        }
 
        QTextStream iniStream(&iniFile);
        unsigned int linesRead = 0;
        QStringList lines;
-       qDebug() << "[IniParser] Parsing file...";
+       qDebug() << "[IniParser] Parsowanie pliku...";
        while(!iniStream.atEnd())
        {
            lines += iniStream.readLine();
@@ -145,10 +140,10 @@ public:
            }
        }
        IniParser::parseAndBuildFromLines(lines, container);
-       qDebug() << "[IniParser] Parsing is finished."
-                << "[IniParser] Closing file: " << pathToIni << "...";
+       qDebug() << "[IniParser] Parsowanie zakończone."
+                << "[IniParser] Zamykanie pliku: " << pathToIni << "...";
        iniFile.close();
-       qDebug() << "[IniParser] File has been closed.";
+       qDebug() << "[IniParser] Plik został zamknięty.";
    }
 };
 
@@ -180,10 +175,11 @@ class ConfigManager
 public:
     ConfigManager(const QString& pathToConfigFile)
     {
-        qDebug() << "[ConfigManager] Creating a config using"
+        qDebug() << "[ConfigManager] Tworzenie danych konfiguracyjnych" \
+                    "przy pomocy "
                  << pathToConfigFile << "...";
         ConfigFormat::parseFile(pathToConfigFile, m_Container, 100);
-        qDebug() << "[ConfigManager] Config has been created.";
+        qDebug() << "[ConfigManager] Dane konfiguracyjne zostały stworzone.";
     }
 
     QString operator[](const QString& key) const;

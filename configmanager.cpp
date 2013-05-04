@@ -7,7 +7,8 @@ QString ConfigManager<>::operator[](const QString& key) const
     QString keyLower = key.toLower();
     if(!m_Container.contains(keyLower))
     {
-        qDebug() << "[ConfigManager] Key " << key << "has not been found.";
+        qDebug() << "[ConfigManager] Klucz " << key
+                 << "nie został znaleziony.";
         throw KeyNotFound();
     }
     return m_Container[keyLower];
@@ -16,8 +17,6 @@ QString ConfigManager<>::operator[](const QString& key) const
 template<>
 int ConfigManager<>::intAt(const QString& key) const
 {
-    // It's nothing by default.
-
     QString hasKey = (*this)[key.toLower()];
 
     bool ok;
@@ -25,8 +24,8 @@ int ConfigManager<>::intAt(const QString& key) const
 
     if(!ok)
     {
-        qDebug() << "[ConfigManager] Invalid conversion of"
-                 << m_Container[key] << "to int for key"
+        qDebug() << "[ConfigManager] Nieudana próba konwersji"
+                 << m_Container[key] << "do qint32 dla klucza"
                  << key << ".";
         throw InvalidValue();
     }

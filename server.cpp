@@ -5,7 +5,7 @@ const int Server::MAX_USER_PENDING = 500;
 Server::Server(QObject *parent, int portNumber)
     : QObject(parent), m_server(new QTcpServer(this)), m_lastTmpUserId(0)
 {
-    qDebug() << "[Server] Starting new tcp connection on port"
+    qDebug() << "[Server] Tworzenie połączenia na porcie"
              << portNumber << "...";
 
     for(int i = 0; i < MAX_USER_PENDING; ++i)
@@ -18,20 +18,18 @@ Server::Server(QObject *parent, int portNumber)
 
     if(!m_server->listen(QHostAddress::Any, portNumber))
     {
-        qDebug() << "[Server] Error " << m_server->errorString()
-                 << "occured while starting tcp connection.";
+        qDebug() << "[Server] Wykryto błąd " << m_server->errorString()
+                 << "podczas tworzenia połączenia tcp.";
         throw TcpConnectionError();
     }
-
-    qDebug() << "[Server] Tcp connection on port"
-             << portNumber << " has been established.";
-
+    qDebug() << "[Server] Ustanowiono połączenie tcp na porcie"
+             << portNumber << ".";
 }
 
 Server::~Server()
 {
     m_server->close();
-    qDebug() << "[Server] Tcp connection has been closed.";
+    qDebug() << "[Server] Połączenie tcp zostało zamknięte.";
     delete m_server;
 }
 
@@ -57,7 +55,7 @@ bool Server::send(RegisterUserRespMsg& msg, qint32 userTmpId)
 
 void Server::addNewConnection()
 {
-    qDebug() << "[Server] Acquiring new connection.";
+    qDebug() << "[Server] Nawiązywanie nowego połączenia.";
     Connection* newConn = new Connection(m_server->nextPendingConnection(),
                                          this);
 

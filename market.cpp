@@ -20,7 +20,7 @@
 Market::Market(const ConfigManager<>& config, QObject* parent)
     : QObject(parent)
 {
-    qDebug() << "[Market] Loading data from config...";
+    qDebug() << "[Market] Ładowanie danych konfiguracyjnych...";
     int serverPort = config.intAt("SERVER PORT");
     QString dbUserName = config["DATABASE USERNAME"];
     QString dbPassword = config["DATABASE PASSWORD"];
@@ -37,18 +37,18 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
     m_database.setPassword(dbPassword);
     m_database.setPort(dbPort);
 
-    qDebug() << "[Market] Opening new database connection...";
+    qDebug() << "[Market] Otwieranie nowego połączenia z bazą danych...";
     if(!m_database.open())
     {
-        qDebug() << "[Market] Error " << m_database.lastError().text()
-                 << "occured while opening the database.";
+        qDebug() << "[Market] Wykryto błąd" << m_database.lastError().text()
+                 << "podczas otwierania nowego połączenia z bazą daynch.";
         throw DatabaseError();
     }
-    qDebug() << "[Market] Database connection has been established.";
+    qDebug() << "[Market] Ustanowiono połączenie z bazą danych.";
 
-    qDebug() << "Database tables:\n" << m_database.tables();
+    //qDebug() << "Database tables:\n" << m_database.tables();
 
-    qDebug() << "[Market] Starting new server...";
+    qDebug() << "[Market] Uruchamianie serwera...";
     m_server = new Server(this, serverPort);
 
     connect(m_server, SIGNAL(registerUserReq(qint32, QString)),
@@ -64,17 +64,17 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
     connect(m_server, SIGNAL(getStocks(qint32)),
             this, SLOT(getStocks(qint32)) );
 
-    qDebug() << "[Market] Server is running.";
+    qDebug() << "[Market] Serwer jest aktywny.";
 }
 
 Market::~Market()
 {
-    qDebug() << "[Marker] Closing database connection...";
+    qDebug() << "[Marker] Zamykanie połączenia z bazą danych...";
     m_database.close();
-    qDebug() << "[Market] Database connection closed."
-             << "[Market] Closing server...";
+    qDebug() << "[Market] Połączenie z bazą danych jest zamknięte.\n"
+             << "[Market] Zamykanie serwera.";
     delete m_server;
-    qDebug() << "[Market] Server closed.";
+    qDebug() << "[Market] Serwer został zamknięty.";
 }
 
 void Market::registerNewUser(qint32 tmpUserId, QString password)
@@ -96,7 +96,7 @@ void Market::registerNewUser(qint32 tmpUserId, QString password)
     m_database.commit();
     /*
      *  TODO:
-     *      Implement proper behaviours.
+     *      Implementacja odpowiednich zachowania.
      */
     if(query.first())
     {
@@ -105,8 +105,8 @@ void Market::registerNewUser(qint32 tmpUserId, QString password)
     }
     else
     {
-        qDebug() << "[Market] No new_id has been returned from database."
-                 << "[Market] Error:" << query.lastError().text();
+        qDebug() << "[Market] Nowy indentyfikator użytkownika nie został"
+                 << "zwrócony. Błąd: " << query.lastError().text();
     }
 
 }

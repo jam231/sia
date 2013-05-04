@@ -5,14 +5,10 @@
 #include <QPair>
 #include <QStringList>
 
-/*
- *  It ought be lightweight, besides I really see
- *  not point in having additional methods or fields.
- */
+
 template<typename L, typename R>
 struct Either
 {
-    // Left means
     bool isLeft;
     L left;
     R right;

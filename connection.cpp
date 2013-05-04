@@ -38,17 +38,17 @@ void Connection::setTmpUserId(qint32 tmpUserId)
 
 void Connection::start()
 {
-    qDebug() << "[Connection] Starting new connection...";
+    qDebug() << "[Connection] Rozpoczynanie nowego połączenia.";
     connect(m_socket, SIGNAL(disconnected()), this, SLOT(disconect()));
     if(!m_socket->isValid())
     {
-        qDebug() << "[Connection] Error " << m_socket->errorString()
-                 << " occured while establishing new connection.";
+        qDebug() << "[Connection] Wykryto błąd" << m_socket->errorString()
+                 << " podczas rozpoczynania nowego połączenia.";
         disconect(); //jak połączenie sie zerwało zanim połączyliśmy sloty
         return;
     }
     connect(m_socket, SIGNAL(readyRead()), this, SLOT(readData()));
-    qDebug() << "[Connection] Connection has been established.";
+    qDebug() << "[Connection] Ustanowiono nowe połączenie.";
     //tak na wszelki wypadek jakbysmy dostali już jakieś dane zanim zdążyliśmy połączyć sygnały
     readData();
 }
@@ -78,63 +78,56 @@ void Connection::readData()
 {
     //otrzymaliśmy za mało danych, aby przetworzyć wiadomosc w calosci
     if(!IMessage::isEnoughData(m_socket)) {
-        qDebug() << "[Connection] Not enough data for a valid message.";
+        qDebug() << "[Connection] Niedostateczna ilość danych.";
         return;
     }
     IOMessage::MessageType msgType = IMessage::getMsgType(m_socket);
 
-    qDebug() << "[Connection] message id:" << msgType;
+    qDebug() << "[Connection] Id wiadmości:" << msgType;
 
     switch(msgType)
     {
         case IOMessage::REGISTER_USER_REQ:
         {
-            qDebug() << "[Connection] Registration request.";
+            qDebug() << "[Connection] Żądanie rejestracji.";
             try {
                 RegisterUserReqMsg Msg(m_socket);
                 emit registerReq(this, Msg.getPassword());
             }catch(const std::exception& e)
             {
-                qDebug() << "[Connection] Exception" << e.what()
-                         << "has been thrown.";
+                qDebug() << "[Connection] Złapano wyjątek " << e.what();
             }catch(...)
             {
-                qDebug() << "[Connection] Unknown exception occurred"
-                         << "while processing register request.";
+                qDebug() << "[Connection] Złapano nieznany wyjątek " \
+                            "podczas procesu rejestracji.";
             }
             return;
         }
         case IOMessage::LOGIN_USER:
         {
-            qDebug() << "[Connection] Login request.";
+            qDebug() << "[Connection] Żądanie autoryzacji.";
             LoginUserMsg Msg(m_socket);
-            qDebug() << "[Connection] User id: " << m_userId;
+            qDebug() << "[Connection] Id użytkownika " << m_userId;
             m_userId = Msg.userId();
             emit assigned(this, m_userId);
             return;
         }
-        /*
-         *  Added because, when I get undefined messsage I want
-         *  to know that I got undefined message and not
-         *  user not assigned !
-         */
         case IOMessage::UNDEFINED:
         {
-            qDebug() << "[Connection] Received unrecognised message type: "
+            qDebug() << "[Connection] Otrzymano nieznany typ wiadomości: "
                      << msgType << ".";
             return;
         }
         default:
         {
-            qDebug() << "[Connection] Fatal error 1 occured while message handling.";
-            return;
+            break;
         }
     }
 
     //jesli nie mamy przypisanego usera do tego polaczenia wysylamy UNRECOGNIZED
     if(!isUserAssigned())
     {
-        qDebug() << "[Connection] User has not been recognised.";
+        qDebug() << "[Connection] Nierozpoznano użytkownika.";
         unrecognizedUserMsg Msg;
         Msg.send(m_socket);
         return;
@@ -171,7 +164,7 @@ void Connection::readData()
         }
         default:
         {
-            qDebug() << "[Connection] Fatal error 2 occured while message handling.";
+            qDebug() << "[Connection] Zdarzyło się coś nie możliwego.";
             break;
         }
     }
