@@ -4,7 +4,7 @@
 #include <QRegExp>
 #include <QDebug>
 
-RegisterUserReqMsg::RegisterUserReqMsg(QIODevice* msg) : IMessage()
+RegisterUserReqMsg::RegisterUserReqMsg(QIODevice* msg) //: IMessage()
 {
     /*
      *  tmpStream >> m_Password
@@ -12,18 +12,18 @@ RegisterUserReqMsg::RegisterUserReqMsg(QIODevice* msg) : IMessage()
      *  nie został użyty QDataStream - tak wyczytałem na stackoverflow,
      *  i rzeczywiscie nie chciał mi się wczytać --jam231
      */
-    QDataStream out(msg);
-    out.setByteOrder(QDataStream::BigEndian);
+    QDataStream in(msg);
+    in.setByteOrder(QDataStream::BigEndian);
     QByteArray buffer(msg->bytesAvailable(), Qt::Uninitialized);
 
-    out.readRawData(buffer.data(), msg->bytesAvailable());
+    in.readRawData(buffer.data(), msg->bytesAvailable());
     m_password = QString(buffer);
 
-    qDebug() << "[RegisterUserReqMsg]" << m_password;
+    qDebug() << "[RegisterUserReqMsg] Podane hasło:" << m_password;
     if(m_password.length() > 15 || m_password.contains(QRegExp("\\s"))
-            || m_password.length() < 1)
+            || m_password.length() < 5)
     {
-        qDebug() << "[RegisterUserReqMsg] Błędne hasło:"
+        qDebug() << "[RegisterUserReqMsg] Niepoprawne hasło"
                  << m_password;
         throw InvalidPasswordError();
     }

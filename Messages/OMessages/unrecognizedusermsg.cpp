@@ -12,14 +12,14 @@ IOMessage::MessageType unrecognizedUserMsg::type() const
 
 qint32 unrecognizedUserMsg::length() const
 {
-    //8 bajtów na typ i dlugosc
-    return 8;
+
+    return sizeof(MessageType);
 }
 
 
 void unrecognizedUserMsg::send(QIODevice* connection)
 {
-    QDataStream tmpStream(connection);
-    tmpStream<<length();
-    tmpStream<<static_cast<qint32>(type());
+    QDataStream out(connection);
+    out.setByteOrder(QDataStream::BigEndian);
+    out << type();
 }

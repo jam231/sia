@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QDataStream>
 
+
 IMessage::IMessage() : IOMessage()
 {
 }
@@ -10,13 +11,24 @@ IMessage::IMessage() : IOMessage()
 
 IOMessage::MessageType IMessage::getMsgType(QIODevice* data)
 {
-    QDataStream tmpStream(data);
-    qint32 tmpType;
-    tmpStream >> tmpType;
+    if(data->bytesAvailable() > 0)
+    {
+        qint8 msgType;
+        QDataStream out(data);
+        /* To właściwie jest zbędne bo endianess specyfikuje kolejność
+         * bajtów, a tu mamy tylko jeden jednakże, gdyby zaszły jakieś
+         * zmiany warto o tym pamiętać.
+         */
 
-    return toType(tmpType);
+        out.setByteOrder(QDataStream::BigEndian);
+
+        out >> msgType;
+
+        return toType(msgType);
+    }
+    return IOMessage::UNDEFINED;
 }
-
+/*
 bool IMessage::isEnoughData(QIODevice* data)
 {
 
@@ -40,3 +52,4 @@ bool IMessage::isEnoughData(QIODevice* data)
     return true;
 
 }
+*/
