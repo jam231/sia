@@ -1,10 +1,12 @@
 #ifndef IOMESSAGE_H
 #define IOMESSAGE_H
 
+#include <QtGlobal>
+
 class IOMessage
 {  
 public:
-    enum MessageType
+    enum MessageType : qint8
     {
         REGISTER_USER_REQ,
         REGISTER_USER_RESP,
@@ -24,7 +26,7 @@ public:
 
     virtual MessageType type() const = 0;
 protected:
-    static MessageType toType(int n);
+    static MessageType toType(qint8);
     IOMessage();
 };
 

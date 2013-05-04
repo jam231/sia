@@ -1,11 +1,13 @@
+
 #include "iomessage.h"
+
 
 IOMessage::IOMessage()
 {}
 
-IOMessage::MessageType IOMessage::toType(int n)
+IOMessage::MessageType IOMessage::toType(qint8 msgId)
 {
-    switch(n)
+    switch(msgId)
     {
         case REGISTER_USER_REQ : return REGISTER_USER_REQ;
         case REGISTER_USER_RESP : return REGISTER_USER_RESP;
