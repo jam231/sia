@@ -9,5 +9,4 @@ Uwagi dotyczące kodu:
 + Pamiętajcie, że przed wysyłaniem lub odczytywaniem danych przy pomocy gniazd sieciowych zadbać o ustawienie odpowiedniej kolejności bajtów (BigEndian)!  
 + Zwalniajcie po sobie zasoby np. w destruktorze - od tego są. 
 + Sprawdzajcie w dokumentacji czy obiekt który zwrócił wam jakiś zasób poprzez wskaźnik zwalnia go sam i ew. zadbajcie o jego uprzątnięcie.  
-+ Jeżeli stworzona przez Was klasa/metoda/funkcja pobiera jakiś zasób przez wskaźnik to napiszcie w komentarzu (najlepiej wielkimi literami) czy go zwalnia,  
-czy też nie
++ Jeżeli stworzona przez Was klasa/metoda/funkcja pobiera jakiś zasób przez wskaźnik to napiszcie w komentarzu (najlepiej wielkimi literami) czy go zwalnia, czy też nie.
