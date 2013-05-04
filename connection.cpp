@@ -16,9 +16,15 @@
 #include "unrecognizedusermsg.h"
 
 Connection::Connection(QTcpSocket* socket, QObject *parent) :
-    QObject(parent), m_socket(socket), m_userId(-1), m_tmpUserId(-1)
+    QObject(parent), m_socket(socket), m_userId(NOT_ASSIGNED)//, m_tmpUserId(-1)
 {
     m_socket->setParent(this);
+}
+
+Connection::~Connection()
+{
+    delete m_socket;
+    qDebug() << "[Connection] Połączenie zostało zerwane.";
 }
 
 int Connection::userId() const
@@ -28,18 +34,19 @@ int Connection::userId() const
 
 bool Connection::isUserAssigned() const
 {
-    return m_userId != -1;
+    return m_userId != NOT_ASSIGNED;
 }
-
+/*
 void Connection::setTmpUserId(qint32 tmpUserId)
 {
     m_tmpUserId = tmpUserId;
 }
-
+*/
 void Connection::start()
 {
     qDebug() << "[Connection] Rozpoczynanie nowego połączenia.";
     connect(m_socket, SIGNAL(disconnected()), this, SLOT(disconect()));
+    connect(m_socket, SIGNAL(readyRead()), this, SLOT(readData()));
     if(!m_socket->isValid())
     {
         qDebug() << "[Connection] Wykryto błąd" << m_socket->errorString()
@@ -47,7 +54,6 @@ void Connection::start()
         disconect(); //jak połączenie sie zerwało zanim połączyliśmy sloty
         return;
     }
-    connect(m_socket, SIGNAL(readyRead()), this, SLOT(readData()));
     qDebug() << "[Connection] Ustanowiono nowe połączenie.";
     //tak na wszelki wypadek jakbysmy dostali już jakieś dane zanim zdążyliśmy połączyć sygnały
     readData();
@@ -55,32 +61,34 @@ void Connection::start()
 
 bool Connection::send(OMessage& msg)
 {
-    if(!isUserAssigned())
-        return false;
-
+    /* Po co to jest? Jakas proba sprawdzenia, czy ten uzytkownik jest
+     * jeszcze podlaczony i oplaca mu sie wysylac pakiet ?
+     *
+     *
+     * if(!isUserAssigned())
+     *   return false;
+     */
     msg.send(m_socket);
+    // Assign user.
     return true;
+
 }
 
 void Connection::disconect()
 {
-    if(m_userId >= 0)
-        emit disconnected(m_userId, false);
-    if(m_tmpUserId >= 0)
-        emit disconnected(m_tmpUserId, true);
+    qDebug() << "[Connection] Zrywanie połączenia...";
+    if(m_userId != NOT_ASSIGNED)
+        emit disconnected(m_userId);
+   // if(m_tmpUserId >= 0)
+   //     emit disconnected(m_tmpUserId, true);
 
-    // delete object after all signals have been processed.
+    // Usun po tym jak wszystkie sygnaly zostały przetworzone.
     deleteLater();
 }
 
 
 void Connection::readData()
 {
-    //otrzymaliśmy za mało danych, aby przetworzyć wiadomosc w calosci
-    if(!IMessage::isEnoughData(m_socket)) {
-        qDebug() << "[Connection] Niedostateczna ilość danych.";
-        return;
-    }
     IOMessage::MessageType msgType = IMessage::getMsgType(m_socket);
 
     qDebug() << "[Connection] Id wiadmości:" << msgType;
@@ -92,7 +100,7 @@ void Connection::readData()
             qDebug() << "[Connection] Żądanie rejestracji.";
             try {
                 RegisterUserReqMsg Msg(m_socket);
-                emit registerReq(this, Msg.getPassword());
+                emit registerUserRequestFromConnection(this, Msg.getPassword());
             }catch(const std::exception& e)
             {
                 qDebug() << "[Connection] Złapano wyjątek " << e.what();
