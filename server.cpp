@@ -1,4 +1,5 @@
 #include "server.h"
+#include "loginuserrespfail.h"
 
 //const int Server::MAX_USER_PENDING = 500;
 
@@ -33,22 +34,28 @@ Server::~Server()
     delete m_server;
 }
 
-bool Server::send(OMessage& msg, qint32 userId)
+bool Server::send(OMessage& msg, Connection* connection)
 {
+    /*
     map<qint32, Connection*>::iterator it;
     it = m_userConnections.find(userId);
     if(it == m_userConnections.end())
         return false;
     it->second->send(msg);
     return true;
+    */
+    /* Zakładam, że weryfikacja tego, czy użytkownik został sprawdzony
+     * już zaszła.
+     */
+    return connection->send(msg);
 }
 /*
- *  To wymaga jeszcze trocęe pracy.
+ *  To wymaga jeszcze trochę pracy.
  *  Wygląda to teraz tak, że w metodzie send robimy coś co moglibyśmy
  *  zrobić dużo wcześniej.
  *  Argumentem za takim zachowaniem jest seperacja warstwy komunikacji
  *  i warstwy związanej z bazą danych.
- *
+ *                                          --jam231
  */
 bool Server::send(RegisterUserRespMsg& msg, Connection* connection)
 {
@@ -56,10 +63,53 @@ bool Server::send(RegisterUserRespMsg& msg, Connection* connection)
     if(m_usersRegisterPending[userTmpId] == NULL)
         return false;
     m_usersRegisterPending[userTmpId]->setTmpUserId(-1);
-    m_usersRegisterPending[userTmpId]->send(msg);
+    m_usersRegisterPending[userTmpId]->send(msg);o
     m_usersRegisterPending[userTmpId] = NULL;
     */
+
+    /*
+     *  Przez tę metodę przechodzi odpowiedź z już wygenerowanym id.
+     *  To odpowiednia chwila na dodanie do "rejestru" aktywnych
+     *  użytkowników.
+     *  Nawet, gdy połączenie się zerwie podczas dodawnia nowego użytkownika
+     *  to sygnał disconnect() docierajacy do slotu Server::disconnectUser()
+     *  spowoduje oczyszczenie rejestru.
+     *
+     *  Pewien dyskomfort, może budzić sytuacja w której połączenie
+     *  zostanie zerwane przed wywyłaniem connection->send(msg).
+     *  Okazuje się (po moich licznych testach), że w takiej sytuacji
+     *  connection nie jest odrazu usuwane (pewnie dzieki deleteLater())
+     *  wszystko sie poprawnie wywoluje, jedynie dane zapisane
+     *  w zamknietym gniezdzie sa odrzucane. Nie mniej nalezaloby
+     *  upewnić się co do poprawności tego konstruktu.
+     */
+    m_userConnections[msg.getUserId()] = connection;
+    connection->setUserId(msg.getUserId());
+
     return connection->send(msg);
+}
+
+bool Server::send(LoginUserRespOk& msg, Connection* connection,
+                  qint32 userId)
+{
+    /*
+     *  Sprawdź, czy jest już taki użytkownik w systemie.
+     *  Jeżeli jest to wyślij wiadomość świadczącą o niepowodzeniu.
+     */
+    map<qint32, Connection*>::iterator it;
+    it = m_userConnections.find(userId);
+    if(it == m_userConnections.end())
+    {
+        m_userConnections[userId] = connection;
+        connection->setUserId(userId);
+        return connection->send(msg);
+    }
+    else
+    {
+        qDebug() << "[Server] Próba zalogowania na aktywne konto.";
+        LoginUserRespFail respMsg("Użytkownik już zalogowany.");
+        return connection->send(respMsg);
+    }
 }
 
 void Server::addNewConnection()
@@ -70,11 +120,16 @@ void Server::addNewConnection()
 
     connect(newConn, SIGNAL(disconnected(qint32)),
               this, SLOT(disconnectUser(qint32)));
-    connect(newConn, SIGNAL(assigned(Connection*, qint32)),
-              this, SLOT(assignedUser(Connection*, qint32)));
+    //connect(newConn, SIGNAL(assigned(Connection*, qint32)),
+    //          this, SLOT(assignedUser(Connection*, qint32)));
 
-    connect(newConn, SIGNAL(registerUserRequestFromConnection(Connection*, QString)),
+    connect(newConn, SIGNAL(registerUserRequestFromConnection(Connection*,
+                                                              QString)),
               this, SLOT(registerUserRequest(Connection *, QString)));
+
+    connect(newConn, SIGNAL(loginUserRequestFromConnection(Connection*,
+                                                           qint32,QString)),
+              this, SLOT(loginUser(Connection *, qint32, QString)));
 
 /* There is a duplicate name issue here which needs resolving.
  * There are already signals in Server class
@@ -112,16 +167,26 @@ void Server::disconnectUser(qint32 userId)//, bool isTmpUser)
     }
 }
 
-void Server::assignedUser(Connection* connection, qint32 userId)
+void Server::loginUser(Connection* connection, qint32 userId,
+                       QString password)
 {
-    map<qint32, Connection*>::iterator it;
-    it = m_userConnections.find(userId);
-    if(it == m_userConnections.end())
-        it->second->deleteLater();
-
-    m_userConnections[userId] = connection;
+    emit loginUserRequestFromServer(connection, userId, password);
 }
 
+/*
+void Server::assignUser(Connection* connection, qint32 userId,
+                        QString password)
+{
+
+      map<qint32, Connection*>::iterator it;
+
+      it = m_userConnections.find(userId);
+      if(it == m_userConnections.end())
+        it->second->deleteLater();
+      m_userConnections[userId] = connection;
+
+}
+*/
 void Server::registerUserRequest(Connection* connection, QString password)
 {/*
     for(int i = m_lastTmpUserId + 1; i < MAX_USER_PENDING; i = (i + 1) % MAX_USER_PENDING)

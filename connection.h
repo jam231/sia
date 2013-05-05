@@ -22,21 +22,22 @@ public:
     ~Connection();
     int userId() const;
     bool isUserAssigned() const;
-    void setTmpUserId(qint32 tmpUserId);
+    //void setTmpUserId(qint32 tmpUserId);
+    void setUserId(qint32);
     //dopiero od tego momentu zaczynamy odbierać wiadomości
     void start();
 
 public slots:
     bool send(OMessage& msg);
-
 private slots:
     void disconect();
     void readData();
 
 signals:
     void disconnected(qint32 userId);
-    void assigned(Connection* conn, qint32 userId);
-
+    //void assigned(Connection* conn, qint32 userId);
+    void loginUserRequestFromConnection(Connection* connection,
+                                        qint32, QString);
     void registerUserRequestFromConnection(Connection* connection,
                                            QString password);
 

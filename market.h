@@ -32,12 +32,14 @@ public:
     ~Market();
 public slots:
     void registerNewUser(Connection*, QString password);
+    void findUser(Connection*, qint32 userId, QString password);
+   /*
     void subscribeStock(qint32 userId, qint32 stockId);
     void unsubscribeStock(qint32 userId, qint32 stockId);
     void sellStock(qint32 userId, Offer offer);
     void buyStock(qint32 userId, Offer offer);
     void getStocks(qint32 userId);
-
+*/
 };
 
 #endif // MARKET_H

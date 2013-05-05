@@ -4,6 +4,8 @@
 #include "stock.h"
 
 #include "registeruserrespmsg.h"
+#include "loginuserrespfail.h"
+#include "loginuserrespok.h"
 #include "buystockrespmsg.h"
 #include "sellstockrespmsg.h"
 #include "listofstocksmsg.h"
@@ -51,9 +53,14 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
     qDebug() << "[Market] Uruchamianie serwera...";
     m_server = new Server(this, serverPort);
 
-    connect(m_server, SIGNAL(registerUserRequestFromServer(Connection*, QString)),
+    connect(m_server, SIGNAL(registerUserRequestFromServer(Connection*,
+                                                           QString)),
             this, SLOT(registerNewUser(Connection*, QString)) );
 
+    connect(m_server, SIGNAL(loginUserRequestFromServer(Connection*,
+                                                        qint32, QString)),
+            this, SLOT(findUser(Connection*, qint32, QString)));
+/*
     connect(m_server, SIGNAL(subscribeStock(qint32, qint32)),
             this, SLOT(subscribeStock(qint32, qint32)) );
     connect(m_server, SIGNAL(unsubscribeStock(qint32, qint32)),
@@ -64,7 +71,7 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
             this, SLOT(buyStock(qint32, Offer)) );
     connect(m_server, SIGNAL(getStocks(qint32)),
             this, SLOT(getStocks(qint32)) );
-
+*/
     qDebug() << "[Market] Serwer jest aktywny.";
 }
 
@@ -95,13 +102,9 @@ void Market::registerNewUser(Connection* connection, QString password)
     query.exec();
 
     m_database.commit();
-    /*
-     *  TODO:
-     *      Implementacja odpowiednich zachowania.
-     */
     if(query.first())
     {
-        RegisterUserRespMsg responseMsg(query.value(0).toInt());
+        RegisterUserRespMsg responseMsg(static_cast<qint32>(query.value(0).toInt()));
         qDebug() << "[Market] Wysyłanie identyfikatora nowemu użytkownikowi.";
         m_server->send(responseMsg, connection);
     }
@@ -113,6 +116,51 @@ void Market::registerNewUser(Connection* connection, QString password)
 
 }
 
+void Market::findUser(Connection* connection, qint32 userId, QString password)
+{
+    qDebug() << "[Market] Wyszukiwanie użytkownika o id =" << userId
+             << "w bazie...";
+    QSqlQuery query(m_database);
+    //
+    query.prepare("SELECT haslo FROM uzytkownik WHERE id_uz = :id ;");
+    query.bindValue(":id", userId);
+    //
+    query.setForwardOnly(true);
+
+    m_database.transaction();
+
+    query.exec();
+
+    m_database.commit();
+
+    QString failReason;
+    if(query.first())
+    {
+        QString pswd = query.value(0).toString();
+        if(password == pswd)
+        {
+            qDebug() << "[Market] Wysyłanie potwierdzenia udanej "\
+                        "autoryzacji do uzytkownika id =" << userId;
+            LoginUserRespOk responseMsg;
+            m_server->send(responseMsg, connection, userId);
+            return;
+        }
+        else
+        {
+            qDebug() << "[Market] Użytkownik id =" << userId
+                     << "podał błędne hasło.";
+            failReason = "Błędne hasło";
+        }
+    }
+    else
+    {
+        qDebug() << "[Market] Nie znaleziono użytkownika w bazie.";
+        failReason = "Błędne id";
+    }
+    LoginUserRespFail responseMsg(failReason);
+    m_server->send(responseMsg, connection);
+}
+/*
 void Market::subscribeStock(qint32 userId, qint32 stockId)
 {
     //zapytanie nie powinno nic zwracac
@@ -283,3 +331,4 @@ void Market::noticeChangePrice(qint32 stockId)
         m_server->send(Msg, query.value(0).toInt());
     }
 }
+*/

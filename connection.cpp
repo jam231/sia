@@ -7,7 +7,7 @@
 #include "omessage.h"
 
 #include "registeruserreqmsg.h"
-#include "loginusermsg.h"
+#include "loginuserreqmsg.h"
 #include "buystockreqmsg.h"
 #include "sellstockreqmsg.h"
 #include "subscribestockmsg.h"
@@ -42,6 +42,11 @@ void Connection::setTmpUserId(qint32 tmpUserId)
     m_tmpUserId = tmpUserId;
 }
 */
+void Connection::setUserId(qint32 userId)
+{
+    m_userId = userId;
+}
+
 void Connection::start()
 {
     qDebug() << "[Connection] Rozpoczynanie nowego połączenia.";
@@ -68,8 +73,8 @@ bool Connection::send(OMessage& msg)
      * if(!isUserAssigned())
      *   return false;
      */
+    qDebug() << "[Connection] Wiadomośc wysłana.";
     msg.send(m_socket);
-    // Assign user.
     return true;
 
 }
@@ -98,26 +103,55 @@ void Connection::readData()
         case IOMessage::REGISTER_USER_REQ:
         {
             qDebug() << "[Connection] Żądanie rejestracji.";
-            try {
-                RegisterUserReqMsg Msg(m_socket);
-                emit registerUserRequestFromConnection(this, Msg.getPassword());
-            }catch(const std::exception& e)
+            if(!isUserAssigned())
             {
-                qDebug() << "[Connection] Złapano wyjątek " << e.what();
-            }catch(...)
+                try {
+                    RegisterUserReqMsg Msg(m_socket);
+                    emit registerUserRequestFromConnection(this, Msg.getPassword());
+                }catch(const std::exception& e)
+                {
+                    qDebug() << "[Connection] Złapano wyjątek "
+                             << e.what() << ".";
+                }catch(...)
+                {
+                    qDebug() << "[Connection] Złapano nieznany wyjątek " \
+                                "podczas procesu rejestracji.";
+                }
+            }
+            else
             {
-                qDebug() << "[Connection] Złapano nieznany wyjątek " \
-                            "podczas procesu rejestracji.";
+                qDebug() << "[Connection] Próba rejestracji przez "\
+                            "zalogowanego użytkownika.";
             }
             return;
         }
-        case IOMessage::LOGIN_USER:
+        case IOMessage::LOGIN_USER_REQ:
         {
-            qDebug() << "[Connection] Żądanie autoryzacji.";
-            LoginUserMsg Msg(m_socket);
-            qDebug() << "[Connection] Id użytkownika " << m_userId;
-            m_userId = Msg.userId();
-            emit assigned(this, m_userId);
+            if(!isUserAssigned())
+            {
+
+                qDebug() << "[Connection] Żądanie autoryzacji.";
+                try
+                {
+                    LoginUserReqMsg Msg(m_socket);
+                    qDebug() << "[Connection] Id użytkownika " << Msg.getUserId();
+                    emit loginUserRequestFromConnection(this, Msg.getUserId(),
+                                                        Msg.getUserPassword());
+                }
+                catch(const std::exception& e)
+                {
+                    qDebug() << "[Connection] Złapano wyjątek "
+                             << e.what() << ".";
+                }catch(...)
+                {
+                    qDebug() << "[Connection] Złapano nieznany wyjątek " \
+                                "podczas procesu logowania.";
+                }
+            }
+            else
+            {
+                qDebug() << "[Connection] Próba logowania na aktywne konto.";
+            }
             return;
         }
         case IOMessage::UNDEFINED:
