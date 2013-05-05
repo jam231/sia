@@ -14,6 +14,7 @@ public:
     RegisterUserRespMsg(qint32 userId);
 
     MessageType type() const;
+    qint32 getUserId() const;
     void send(QIODevice* connection);
 };
 

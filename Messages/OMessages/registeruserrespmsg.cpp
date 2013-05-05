@@ -22,6 +22,11 @@ void RegisterUserRespMsg::send(QIODevice* connection)
     QDataStream out(connection);
     out.setByteOrder(QDataStream::BigEndian);
 
-    out << type();
+    out << static_cast<qint8>(type());
     out << m_userId;
+}
+
+qint32 RegisterUserRespMsg::getUserId() const
+{
+    return m_userId;
 }
