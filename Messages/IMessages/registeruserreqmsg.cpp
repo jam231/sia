@@ -1,4 +1,6 @@
 #include "registeruserreqmsg.h"
+#include "utilities.h"
+
 
 #include <QDataStream>
 #include <QRegExp>
