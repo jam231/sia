@@ -140,8 +140,8 @@ public:
            }
        }
        IniParser::parseAndBuildFromLines(lines, container);
-       qDebug() << "[IniParser] Parsowanie zakończone."
-                << "[IniParser] Zamykanie pliku: " << pathToIni << "...";
+       qDebug() << "[IniParser] Parsowanie zakończone.";
+       qDebug() << "[IniParser] Zamykanie pliku: " << pathToIni << "...";
        iniFile.close();
        qDebug() << "[IniParser] Plik został zamknięty.";
    }
@@ -183,7 +183,7 @@ public:
     }
 
     QString operator[](const QString& key) const;
-    int intAt(const QString&) const;
+    qint32 intAt(const QString&) const;
     bool contains(const QString&) const;
 };
 

@@ -15,7 +15,7 @@ QString ConfigManager<>::operator[](const QString& key) const
 }
 
 template<>
-int ConfigManager<>::intAt(const QString& key) const
+qint32 ConfigManager<>::intAt(const QString& key) const
 {
     QString hasKey = (*this)[key.toLower()];
 
