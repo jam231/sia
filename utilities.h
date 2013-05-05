@@ -1,9 +1,20 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
+#include <exception>
+
 #include <QVector>
 #include <QPair>
 #include <QStringList>
+
+
+class InvalidPasswordError : public std::exception
+{
+    virtual const char* what() const throw()
+    {
+        return "Invalid password error";
+    }
+};
 
 
 template<typename L, typename R>
