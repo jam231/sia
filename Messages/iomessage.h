@@ -10,7 +10,9 @@ public:
     {
         REGISTER_USER_REQ,
         REGISTER_USER_RESP,
-        LOGIN_USER,
+        LOGIN_USER_REQ,
+        LOGIN_USER_RESP_OK,
+        LOGIN_USER_RESP_FAIL,
         SUBSCRIBE_STOCK,
         UNSUBSCRIBE_STOCK,
         SELL_STOCK_REQ,         //zlecenie sprzedarzy

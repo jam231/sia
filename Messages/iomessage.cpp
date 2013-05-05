@@ -11,7 +11,9 @@ IOMessage::MessageType IOMessage::toType(qint8 msgId)
     {
         case REGISTER_USER_REQ : return REGISTER_USER_REQ;
         case REGISTER_USER_RESP : return REGISTER_USER_RESP;
-        case LOGIN_USER : return LOGIN_USER;
+        case LOGIN_USER_REQ : return LOGIN_USER_REQ;
+        case LOGIN_USER_RESP_OK : return LOGIN_USER_RESP_OK;
+        case LOGIN_USER_RESP_FAIL : return LOGIN_USER_RESP_FAIL;
         case SUBSCRIBE_STOCK : return SUBSCRIBE_STOCK;
         case UNSUBSCRIBE_STOCK : return UNSUBSCRIBE_STOCK;
         case SELL_STOCK_REQ : return SELL_STOCK_REQ;
