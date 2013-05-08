@@ -4,15 +4,14 @@
 #include "omessage.h"
 #include "registeruserrespmsg.h"
 #include "loginuserrespok.h"
-
 #include "offer.h"
 #include "connection.h"
 
+#include <exception>
+
 #include <QObject>
 #include <QTcpServer>
-
-#include <map>
-#include <exception>
+#include <QHash>
 
 class TcpConnectionError : public std::exception
 {
@@ -28,12 +27,8 @@ class Server : public QObject
 {    
     Q_OBJECT
 
-    //static const int MAX_USER_PENDING;
-
+    QHash<qint32, Connection*> m_userConnections;
     QTcpServer* m_server;
-    map<qint32, Connection*> m_userConnections;
-    int m_lastTmpUserId;
-    //Connection* m_usersRegisterPending[500];
 
 public:
     explicit Server(QObject *parent = 0, int portNumber = 6666);
@@ -54,15 +49,13 @@ signals:
     void sellStock(qint32 userId, Offer offer);
     void buyStock(qint32 userId, Offer offer);
     void getStocks(qint32 userId);
-*/
+    */
 
 
 private slots:
     void addNewConnection();
     void disconnectUser(qint32 userId);
     void loginUser(Connection*, qint32, QString);
-    //void assignUser(Connection*, qint32 userId, QString password);
-    //void assignedUser(Connection* connection, qint32 userId);
     void registerUserRequest(Connection* connection, QString password);
 
 };
