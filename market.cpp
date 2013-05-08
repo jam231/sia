@@ -23,6 +23,7 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
     : QObject(parent)
 {
     qDebug() << "[Market] Ładowanie danych konfiguracyjnych...";
+
     int serverPort = config.intAt("SERVER PORT");
     QString dbUserName = config["DATABASE USERNAME"];
     QString dbPassword = config["DATABASE PASSWORD"];
@@ -79,7 +80,7 @@ Market::~Market()
 {
     qDebug() << "[Marker] Zamykanie połączenia z bazą danych...";
     m_database.close();
-    qDebug() << "[Market] Połączenie z bazą danych jest zamknięte.";
+    qDebug() << "[Market] Połączenie z bazą danych zostało zamknięte.";
     qDebug() << "[Market] Zamykanie serwera.";
     delete m_server;
     qDebug() << "[Market] Serwer został zamknięty.";

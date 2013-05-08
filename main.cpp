@@ -2,23 +2,17 @@
 #include <QString>
 
 
-#include "exceptionhierarchy.h"
 #include "market.h"
 #include "configmanager.h"
 
 
 int main(int argv, char **args)
 {
-
-
     QCoreApplication app(argv, args);
 
     try {
 
         QString configFilePath = "Files/config.ini";
-        /* 
-         *      Market market(ConfigManager<>(...))
-         */
         ConfigManager<> config(configFilePath);
 
         Market market(config);

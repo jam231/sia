@@ -1,5 +1,5 @@
 QMAKE_CXXFLAGS += -std=c++11 -Wall -Wextra -Wfloat-equal -Wundef \
-                  -Wpointer-arith -Wstrict-prototypes
+                  -Wpointer-arith
 
 QT += sql \
     network \
