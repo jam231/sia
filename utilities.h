@@ -5,7 +5,6 @@
 
 #include <QVector>
 #include <QPair>
-#include <QStringList>
 
 
 class InvalidPasswordError : public std::exception
