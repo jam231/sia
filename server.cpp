@@ -30,10 +30,10 @@ Server::~Server()
     delete m_server;
 }
 
-bool Server::send(OMessage& msg, Connection* connection)
+void Server::send(OMessage& msg, Connection* connection)
 {
 
-    return connection->send(msg);
+    connection->send(msg);
 }
 /*
  *  To wymaga jeszcze trochę pracy.
@@ -43,7 +43,7 @@ bool Server::send(OMessage& msg, Connection* connection)
  *  i warstwy związanej z bazą danych.
  *                                          --jam231
  */
-bool Server::send(RegisterUserRespMsg& msg, Connection* connection)
+void Server::send(RegisterUserRespOk& msg, Connection* connection)
 {
 
     /*
@@ -65,10 +65,10 @@ bool Server::send(RegisterUserRespMsg& msg, Connection* connection)
     m_userConnections[msg.getUserId()] = connection;
     connection->setUserId(msg.getUserId());
 
-    return connection->send(msg);
+    connection->send(msg);
 }
 
-bool Server::send(LoginUserRespOk& msg, Connection* connection,
+void Server::send(LoginUserRespOk& msg, Connection* connection,
                   qint32 userId)
 {
     /*
@@ -80,14 +80,14 @@ bool Server::send(LoginUserRespOk& msg, Connection* connection,
         m_userConnections[userId] = connection;
         connection->setUserId(userId);
 
-        return connection->send(msg);
+        connection->send(msg);
     }
     else
     {
         qDebug() << "[Server] Próba zalogowania na aktywne konto.";
         LoginUserRespFail respMsg("Użytkownik już zalogowany.");
 
-        return connection->send(respMsg);
+        connection->send(respMsg);
     }
 }
 

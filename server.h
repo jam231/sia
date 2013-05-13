@@ -2,7 +2,7 @@
 #define SERWER_H
 
 #include "omessage.h"
-#include "registeruserrespmsg.h"
+#include "registeruserrespok.h"
 #include "loginuserrespok.h"
 #include "offer.h"
 #include "connection.h"
@@ -34,9 +34,9 @@ public:
     explicit Server(QObject *parent = 0, int portNumber = 6666);
     ~Server();
 public slots:
-    bool send(OMessage& msg, Connection*);
-    bool send(RegisterUserRespMsg& msg, Connection*);
-    bool send(LoginUserRespOk &msg, Connection*connection, qint32 userId);
+    void send(OMessage& msg, Connection*);
+    void send(RegisterUserRespOk& msg, Connection*);
+    void send(LoginUserRespOk& msg, Connection*connection, qint32 userId);
 
 signals:
 
