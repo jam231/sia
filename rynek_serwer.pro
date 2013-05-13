@@ -16,9 +16,7 @@ HEADERS += \
     Messages/IMessages/imessage.h \
     Messages/OMessages/omessage.h \
     connection.h \
-    Messages/OMessages/unrecognizedusermsg.h \
     Messages/IMessages/registeruserreqmsg.h \
-    Messages/OMessages/registeruserrespmsg.h \
     Messages/IMessages/subscribestockmsg.h \
     Messages/IMessages/unsubscribestockmsg.h \
     Messages/IMessages/sellstockreqmsg.h \
@@ -32,7 +30,10 @@ HEADERS += \
     utilities.h \
     Messages/IMessages/loginuserreqmsg.h \
     Messages/OMessages/loginuserrespok.h \
-    Messages/OMessages/loginuserrespfail.h
+    Messages/OMessages/loginuserrespfail.h \
+    Messages/OMessages/registeruserrespfail.h \
+    Messages/OMessages/registeruserrespok.h \
+    Messages/OMessages/unrecognizedusermsg.h
 
 SOURCES += \
     user.cpp \
@@ -45,9 +46,7 @@ SOURCES += \
     Messages/IMessages/imessage.cpp \
     Messages/OMessages/omessage.cpp \
     connection.cpp \
-    Messages/OMessages/unrecognizedusermsg.cpp \
     Messages/IMessages/registeruserreqmsg.cpp \
-    Messages/OMessages/registeruserrespmsg.cpp \
     Messages/IMessages/subscribestockmsg.cpp \
     Messages/IMessages/unsubscribestockmsg.cpp \
     Messages/IMessages/sellstockreqmsg.cpp \
@@ -62,7 +61,10 @@ SOURCES += \
     utilities.cpp \
     Messages/IMessages/loginuserreqmsg.cpp \
     Messages/OMessages/loginuserrespok.cpp \
-    Messages/OMessages/loginuserrespfail.cpp
+    Messages/OMessages/loginuserrespfail.cpp \
+    Messages/OMessages/registeruserrespfail.cpp \
+    Messages/OMessages/registeruserrespok.cpp \
+    Messages/OMessages/unrecognizedusermsg.cpp
 
 INCLUDEPATH += Messages \
     Messages/IMessages \

@@ -3,7 +3,7 @@
 #include "transaction.h"
 #include "stock.h"
 
-#include "registeruserrespmsg.h"
+#include "registeruserrespok.h"
 #include "loginuserrespfail.h"
 #include "loginuserrespok.h"
 #include "buystockrespmsg.h"
@@ -105,7 +105,7 @@ void Market::registerNewUser(Connection* connection, QString password)
     m_database.commit();
     if(query.first())
     {
-        RegisterUserRespMsg responseMsg(static_cast<qint32>(query.value(0).toInt()));
+        RegisterUserRespOk responseMsg(static_cast<qint32>(query.value(0).toInt()));
         qDebug() << "[Market] Wysyłanie identyfikatora nowemu użytkownikowi.";
         m_server->send(responseMsg, connection);
     }
@@ -113,6 +113,7 @@ void Market::registerNewUser(Connection* connection, QString password)
     {
         qDebug() << "[Market] Nowy indentyfikator użytkownika nie został"
                  << "zwrócony. Błąd: " << query.lastError().text();
+
     }
 
 }
