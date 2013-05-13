@@ -11,9 +11,11 @@ IOMessage::MessageType LoginUserRespOk::type() const
 }
 void LoginUserRespOk::send(QIODevice* connection)
 {
+    // Domyślnie BigEndian
     QDataStream out(connection);
-    out.setByteOrder(QDataStream::BigEndian);
-
+    // Nie wiem czemu trzeba tu robić cast'a
+    // IOMessage:MessageType to enum, który ma typ qint8
+    // jednak bez cast'a strumien traktuje type() jako 4 bajty.
     out << static_cast<qint8>(type());
 }
 
