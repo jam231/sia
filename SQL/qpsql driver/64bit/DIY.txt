@@ -1,0 +1,36 @@
+Cały opis jest tutaj: http://www.qtcentre.org/wiki/index.php?title=Building_the_QPSQL_plugin_on_Windows_using_MinGW#How_to_Build_the_Plug-in
+
+Natomiast w skrócie:
+
+QT 64 bit ściągniecie stąd: http://sourceforge.net/projects/qtx64/files/qt-5.0.2-x64/mingw-4.8.0-x64/qt-5.0.2-x64-mingw-rev0.exe/download
+chyba lepiej samemu skompilować, ale ja na to nie miałem zdrowia, więc znalazłem coś takiego.
+
+Postgres 64 bit, wiadomo, we własnym zakresie.
+
+Tu są instrukcje do kompilacji samego sterownika, chyba izomorficzne z tymi, które są dla 32bit: 
+http://www.qtcentre.org/wiki/index.php?title=Building_the_QPSQL_plugin_on_Windows_using_MinGW#How_to_Build_the_Plug-in
+
+Jedno zastrzeżenie: 
+Tam jest krok "Open a Qt Command Prompt". Domyślnie to plik wsadowy qtvars.bat. Niestety w wersji QT+MinGW do której dostarczyłem odnośnik nie ma takiego pliku.
+Jego treść dostarczam poniżej. (wygenerowaną na podstawie starej wersji). 
+
+Należy pamiętać jednak, by PATH/etc zamienić na odpowiednie ścieżki u siebie. 
+Wiersze echo są zbędne (tj. nie mają żadnego realnego wpływu na cokolwiek), więc nie kłopotałem się aktualizacją ich treści.
+
+
+
+@echo off
+rem
+rem This file is generated
+rem
+
+echo Setting up a MinGW/Qt only environment...
+echo -- QTDIR set to Q:\4.7.2
+echo -- PATH set to Q:\4.7.2\bin
+echo -- Adding Q:\mingw440\bin to PATH
+echo -- Adding %SystemRoot%\System32 to PATH
+
+set QTDIR=d:\QT\qt-5.0.2-x64-mingw\qt-5.0.2-x64-mingw\
+set PATH=d:\QT\qt-5.0.2-x64-mingw\qt-5.0.2-x64-mingw\bin\
+set PATH=%PATH%;d:\QT\qt-5.0.2-x64-mingw\mingw64\bin\
+set PATH=%PATH%;%SystemRoot%\System32
