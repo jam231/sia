@@ -187,5 +187,6 @@ public:
     bool contains(const QString&) const;
 };
 
+
 #endif // CONFIGMANAGER_H
 

@@ -14,6 +14,8 @@
 #include "unsubscribestockmsg.h"
 
 #include "unrecognizedusermsg.h"
+#include <loginuserrespfail.h>
+#include <registeruserrespfail.h>
 
 Connection::Connection(QTcpSocket* socket, QObject *parent) :
     QObject(parent), m_socket(socket), m_userId(NOT_ASSIGNED)//, m_tmpUserId(-1)
@@ -106,12 +108,14 @@ void Connection::readData()
             if(!isUserAssigned())
             {
                 try {
-                    RegisterUserReqMsg Msg(m_socket);
-                    emit registerUserRequestFromConnection(this, Msg.getPassword());
+                    RegisterUserReqMsg request(m_socket);
+                    emit registerUserRequestFromConnection(this, request.getPassword());
                 }catch(const std::exception& e)
                 {
                     qDebug() << "[Connection] Złapano wyjątek "
                              << e.what() << ".";
+                    RegisterUserRespFail resp("Błąd.");
+                    send(resp);
                 }catch(...)
                 {
                     qDebug() << "[Connection] Złapano nieznany wyjątek " \
@@ -122,6 +126,8 @@ void Connection::readData()
             {
                 qDebug() << "[Connection] Próba rejestracji przez "\
                             "zalogowanego użytkownika.";
+                RegisterUserRespFail resp("Zalogowany.");
+                send(resp);
             }
             return;
         }
@@ -133,10 +139,10 @@ void Connection::readData()
                 qDebug() << "[Connection] Żądanie autoryzacji.";
                 try
                 {
-                    LoginUserReqMsg Msg(m_socket);
-                    qDebug() << "[Connection] Id użytkownika " << Msg.getUserId();
-                    emit loginUserRequestFromConnection(this, Msg.getUserId(),
-                                                        Msg.getUserPassword());
+                    LoginUserReqMsg request(m_socket);
+                    qDebug() << "[Connection] Id użytkownika " << request.getUserId();
+                    emit loginUserRequestFromConnection(this, request.getUserId(),
+                                                        request.getUserPassword());
                 }
                 catch(const std::exception& e)
                 {
@@ -150,14 +156,17 @@ void Connection::readData()
             }
             else
             {
-                qDebug() << "[Connection] Próba logowania na aktywne konto.";
+                qDebug() << "[Connection] Wykryto próbę wielokrotnego"
+                         << "logowania przez użytkownika" << m_userId;
+                LoginUserRespFail resp("Już zalogowany.");
+                send(resp);
             }
             return;
         }
         case IOMessage::UNDEFINED:
         {
             qDebug() << "[Connection] Otrzymano nieznany typ wiadomości: "
-                     << msgType << ".";
+                     << msgType << ".";;
             return;
         }
         default:
@@ -206,7 +215,9 @@ void Connection::readData()
         }
         default:
         {
-            qDebug() << "[Connection] Zdarzyło się coś nie możliwego.";
+            qDebug() << "[Connection] Nieodpowiedni typ wiadomości -"
+                     << "najpewniej użytkownik wysłał wiadomośc przeznaczoną"
+                     << "do wysyłania przez serwer.";
             break;
         }
     }
