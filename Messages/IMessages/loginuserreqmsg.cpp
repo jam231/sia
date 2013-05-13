@@ -7,13 +7,15 @@
 
 LoginUserReqMsg::LoginUserReqMsg(QIODevice* msg)
 {
+    // Domyślnie BigEndian
     QDataStream in(msg);
-    in.setByteOrder(QDataStream::BigEndian);
+    qint32 passwordLength;
 
     in >> m_userId;
-    QByteArray buffer(msg->bytesAvailable(), Qt::Uninitialized);
+    in >> passwordLength;
 
-    in.readRawData(buffer.data(), msg->bytesAvailable());
+    QByteArray buffer(passwordLength, Qt::Uninitialized);
+    in.readRawData(buffer.data(), passwordLength);
     m_password = QString(buffer);
 
     /*

@@ -14,16 +14,10 @@ IOMessage::MessageType IMessage::getMsgType(QIODevice* data)
     if(data->bytesAvailable() > 0)
     {
         qint8 msgType;
+        // Domyślnie BigEndian
         QDataStream out(data);
-        /* To właściwie jest zbędne bo endianess specyfikuje kolejność
-         * bajtów, a tu mamy tylko jeden jednakże, gdyby zaszły jakieś
-         * zmiany warto o tym pamiętać.
-         */
-
-        out.setByteOrder(QDataStream::BigEndian);
 
         out >> msgType;
-
         return toType(msgType);
     }
     return IOMessage::UNDEFINED;

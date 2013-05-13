@@ -14,11 +14,14 @@ RegisterUserReqMsg::RegisterUserReqMsg(QIODevice* msg) //: IMessage()
      *  nie został użyty QDataStream - tak wyczytałem na stackoverflow,
      *  i rzeczywiscie nie chciał mi się wczytać --jam231
      */
+    // Domyślnie BigEndian
     QDataStream in(msg);
-    in.setByteOrder(QDataStream::BigEndian);
-    QByteArray buffer(msg->bytesAvailable(), Qt::Uninitialized);
 
-    in.readRawData(buffer.data(), msg->bytesAvailable());
+    qint32 passwordLength;
+    in >> passwordLength;
+
+    QByteArray buffer(passwordLength, Qt::Uninitialized);
+    in.readRawData(buffer.data(), passwordLength);
     m_password = QString(buffer);
 
     qDebug() << "[RegisterUserReqMsg] Podane hasło:" << m_password;
