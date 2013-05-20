@@ -3,15 +3,34 @@
 #include <QDebug>
 #include <QDataStream>
 
-
 IMessage::IMessage() : IOMessage()
 {
 }
 
-
-IOMessage::MessageType IMessage::getMsgType(QIODevice* data)
+qint16 IMessage::getMsgLength(QIODevice* data)
 {
-    if(data->bytesAvailable() > 0)
+    if(data->bytesAvailable() < 2)
+        return -1;
+
+    qint16 msgLength;
+
+    QDataStream in(data);
+    in >> msgLength;
+
+    return msgLength;
+}
+
+IOMessage::MessageType IMessage::getMsgType(QDataStream& in)
+{
+    if(in.device()->bytesAvailable() < 1)
+        return IOMessage::UNDEFINED;
+
+    qDebug() << "Wiadomośc jest w porządku.";
+
+    qint8 msgType;
+    in >> msgType;
+    return toType(msgType);
+    /*if(data->bytesAvailable() > 0)
     {
         qint8 msgType;
         // Domyślnie BigEndian
@@ -20,7 +39,7 @@ IOMessage::MessageType IMessage::getMsgType(QIODevice* data)
         out >> msgType;
         return toType(msgType);
     }
-    return IOMessage::UNDEFINED;
+    return IOMessage::UNDEFINED; */
 }
 /*
 bool IMessage::isEnoughData(QIODevice* data)
