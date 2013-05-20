@@ -10,7 +10,7 @@ class LoginUserReqMsg : public IMessage
     qint32 m_userId;
     QString m_password;
 public:
-    LoginUserReqMsg(QIODevice* msg);
+    LoginUserReqMsg(QDataStream& in);
 
     MessageType type() const;
     qint32 getUserId() const;

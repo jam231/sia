@@ -6,7 +6,7 @@
 #include <QRegExp>
 #include <QDebug>
 
-RegisterUserReqMsg::RegisterUserReqMsg(QIODevice* msg) //: IMessage()
+RegisterUserReqMsg::RegisterUserReqMsg(QDataStream& in) //: IMessage()
 {
     /*
      *  tmpStream >> m_Password
@@ -15,23 +15,19 @@ RegisterUserReqMsg::RegisterUserReqMsg(QIODevice* msg) //: IMessage()
      *  i rzeczywiscie nie chciał mi się wczytać --jam231
      */
     // Domyślnie BigEndian
-    QDataStream in(msg);
+    qint16 passwordLength;
 
-    qint32 passwordLength;
+    if(in.device()->bytesAvailable() < sizeof(passwordLength))
+        throw InvalidDataInMsg();
+
     in >> passwordLength;
+
+    if(in.device()->bytesAvailable() != passwordLength)
+        throw InvalidDataInMsg();
 
     QByteArray buffer(passwordLength, Qt::Uninitialized);
     in.readRawData(buffer.data(), passwordLength);
     m_password = QString(buffer);
-
-    qDebug() << "[RegisterUserReqMsg] Podane hasło:" << m_password;
-    if(m_password.length() > 15 || m_password.contains(QRegExp("\\s"))
-            || m_password.length() < 5)
-    {
-        qDebug() << "[RegisterUserReqMsg] Niepoprawne hasło"
-                 << m_password;
-        throw InvalidPasswordError();
-    }
 }
 
 IOMessage::MessageType RegisterUserReqMsg::type() const

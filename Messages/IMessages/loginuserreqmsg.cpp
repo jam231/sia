@@ -5,33 +5,24 @@
 #include <QRegExp>
 #include <QDebug>
 
-LoginUserReqMsg::LoginUserReqMsg(QIODevice* msg)
+LoginUserReqMsg::LoginUserReqMsg(QDataStream &in)
 {
     // Domyślnie BigEndian
-    QDataStream in(msg);
-    qint32 passwordLength;
+    qint16 passwordLength;
+
+    if(in.device()->bytesAvailable() < (sizeof(m_userId) + sizeof(passwordLength)))
+        throw InvalidDataInMsg();
 
     in >> m_userId;
     in >> passwordLength;
 
+    if(in.device()->bytesAvailable() != passwordLength)
+        throw InvalidDataInMsg();
+
     QByteArray buffer(passwordLength, Qt::Uninitialized);
+
     in.readRawData(buffer.data(), passwordLength);
     m_password = QString(buffer);
-
-    /*
-     * Być może nie jest to miejsce na sprawdzenie zgodności
-     * hasła z ustalonymi kryteriami.
-     * Być może nawet jest to zbędne i nic nie daje oprócz zaciemniania
-     * kodu, ale białych znaków w haśle nie chciałbym mieć -> SQL injection.
-     */
-    if(m_password.length() > 15 || m_password.contains(QRegExp("\\s"))
-            || m_password.length() < 5)
-    {
-        qDebug() << "[LoginUserReqMsg] Niepoprawne hasło."
-                 << m_password;
-        throw InvalidPasswordError();
-    }
-
 }
 
 IOMessage::MessageType LoginUserReqMsg::type() const

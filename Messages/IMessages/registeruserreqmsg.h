@@ -11,7 +11,7 @@ class RegisterUserReqMsg : public IMessage
 {
     QString m_password;
 public:
-    RegisterUserReqMsg(QIODevice* msg);
+    RegisterUserReqMsg(QDataStream& msg);
 
     MessageType type() const;
     QString getPassword() const;
