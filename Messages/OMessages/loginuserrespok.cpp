@@ -16,7 +16,8 @@ void LoginUserRespOk::send(QIODevice* connection)
     // Nie wiem czemu trzeba tu robić cast'a
     // IOMessage:MessageType to enum, który ma typ qint8
     // jednak bez cast'a strumien traktuje type() jako 4 bajty.
-    out << static_cast<qint8>(type());
+    out << static_cast<qint16>(sizeof(qint8))
+        << static_cast<qint8>(type());
 }
 
 qint32 LoginUserRespOk::length() const

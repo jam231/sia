@@ -19,9 +19,10 @@ void LoginUserRespFail::send(QIODevice* connection)
     // Nie wiem czemu trzeba tu robić cast'a
     // IOMessage:MessageType to enum, który ma typ qint8
     // jednak bez cast'a strumien traktuje type() jako 4 bajty.
-    out << static_cast<qint8>(type());
     auto reason = m_reason.toUtf8();
-    out << reason.size();
+    out << static_cast<qint16>(sizeof(qint8) + sizeof(qint16) + reason.size())
+        << static_cast<qint8>(type())
+        << static_cast<qint16>(reason.size());
     connection->write(m_reason.toUtf8());
 }
 qint32 LoginUserRespFail::length() const
