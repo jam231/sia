@@ -63,11 +63,27 @@ CREATE TABLE subskrypcje (
 	id_zasobu	INTEGER REFERENCES zasob(id_zasobu) NOT NULL
 );
 
-CREATE FUNCTION nowy_uzytkownik(nowe_haslo varchar(15)) RETURNS integer AS $$
+CREATE OR REPLACE FUNCTION nowy_uzytkownik(nowe_haslo varchar(15)) RETURNS integer AS $$
 DECLARE
 	nowy_id integer := nextval('nr_uz');
 BEGIN
 	INSERT INTO uzytkownik(id_uz, haslo) VALUES(nowy_id, nowe_haslo);
 	RETURN nowy_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION przydziel_zasoby() RETURNS VOID AS $$ --kazdy uzytkownik dostaje JAKAS akcje oraz pewna ustalona kwote pieniedzy
+DECLARE
+	wartosc_pieniedzy	integer := 1000000; --10 000zl * 100 gr
+	l_zasobow			integer;
+	r					integer;
+BEGIN
+	l_zasobow := (SELECT COUNT(*) FROM zasob);
+	FOR r IN
+		SELECT id_uz FROM uzytkownik
+	LOOP
+		INSERT INTO posiadane_dobra(id_uz,id_zasobu,ilosc) VALUES(r,1,10000);
+		INSERT INTO posiadane_dobra(id_uz,id_zasobu,ilosc) VALUES(r,FLOOR(RANDOM()*l_zasobow)+1,100); --kazdy otrzymuje losowy zasob w ilosci 100
+	END LOOP;
 END;
 $$ LANGUAGE plpgsql;
