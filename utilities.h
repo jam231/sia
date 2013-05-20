@@ -9,6 +9,7 @@
 
 class InvalidPasswordError : public std::exception
 {
+public:
     virtual const char* what() const throw()
     {
         return "Invalid password error";

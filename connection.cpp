@@ -1,6 +1,7 @@
 #include <QDebug>
 
 #include "connection.h"
+#include "utilities.h"
 
 #include "iomessage.h"
 #include "imessage.h"
@@ -14,8 +15,8 @@
 #include "unsubscribestockmsg.h"
 
 #include "unrecognizedusermsg.h"
-#include <loginuserrespfail.h>
-#include <registeruserrespfail.h>
+#include "loginuserrespfail.h"
+#include "registeruserrespfail.h"
 
 Connection::Connection(QTcpSocket* socket, QObject *parent) :
     QObject(parent), m_socket(socket), m_userId(NOT_ASSIGNED)//, m_tmpUserId(-1)
@@ -86,9 +87,6 @@ void Connection::disconect()
     qDebug() << "[Connection] Zrywanie połączenia...";
     if(m_userId != NOT_ASSIGNED)
         emit disconnected(m_userId);
-   // if(m_tmpUserId >= 0)
-   //     emit disconnected(m_tmpUserId, true);
-
     // Usun po tym jak wszystkie sygnaly zostały przetworzone.
     deleteLater();
 }
@@ -96,7 +94,22 @@ void Connection::disconect()
 
 void Connection::readData()
 {
-    IOMessage::MessageType msgType = IMessage::getMsgType(m_socket);
+    /*
+     * Przeczytaj pierwsze 2 bajty, które stanowią długość całej wiadomości.
+     * Nastepnie, wczytaj do bufora (?) zadana długość bajtów.
+     *
+     * Jeżeli dł. wiadomości < 2 to wiadomośc jest wadliwa, zignoruj.
+     * Jeżeli wczytano do bufora mniej bajtów niż wynosi wiadomośc
+     * to wiadomość jest niepoprawna (corrupted) i zignoruj ją.
+     */
+    qint16 msgLength = IMessage::getMsgLength(m_socket);
+
+    if(msgLength < 1)
+        return;
+
+    QDataStream message(m_socket->read(msgLength));
+
+    IOMessage::MessageType msgType = IMessage::getMsgType(message);
 
     qDebug() << "[Connection] Id wiadmości:" << msgType;
 
@@ -108,26 +121,20 @@ void Connection::readData()
             if(!isUserAssigned())
             {
                 try {
-                    RegisterUserReqMsg request(m_socket);
+                    RegisterUserReqMsg request(message);
                     emit registerUserRequestFromConnection(this, request.getPassword());
                 }catch(const std::exception& e)
                 {
-                    qDebug() << "[Connection] Złapano wyjątek "
-                             << e.what() << ".";
-                    RegisterUserRespFail resp("Błąd.");
-                    send(resp);
-                }catch(...)
-                {
-                    qDebug() << "[Connection] Złapano nieznany wyjątek " \
-                                "podczas procesu rejestracji.";
+                    qDebug() << "[Connection] Złapano wyjątek" << e.what()
+                             << "podczas procesu rejestracji.";
                 }
             }
             else
             {
                 qDebug() << "[Connection] Próba rejestracji przez "\
                             "zalogowanego użytkownika.";
-                RegisterUserRespFail resp("Zalogowany.");
-                send(resp);
+                RegisterUserRespFail response("Zalogowany.");
+                send(response);
             }
             return;
         }
@@ -139,27 +146,22 @@ void Connection::readData()
                 qDebug() << "[Connection] Żądanie autoryzacji.";
                 try
                 {
-                    LoginUserReqMsg request(m_socket);
+                    LoginUserReqMsg request(message);
                     qDebug() << "[Connection] Id użytkownika " << request.getUserId();
                     emit loginUserRequestFromConnection(this, request.getUserId(),
                                                         request.getUserPassword());
-                }
-                catch(const std::exception& e)
+                }catch(const std::exception& e)
                 {
-                    qDebug() << "[Connection] Złapano wyjątek "
-                             << e.what() << ".";
-                }catch(...)
-                {
-                    qDebug() << "[Connection] Złapano nieznany wyjątek " \
-                                "podczas procesu logowania.";
+                    qDebug() << "[Connection] Złapano wyjątek" << e.what()
+                             << "podczas procesu logowania.";
                 }
             }
             else
             {
                 qDebug() << "[Connection] Wykryto próbę wielokrotnego"
                          << "logowania przez użytkownika" << m_userId;
-                LoginUserRespFail resp("Już zalogowany.");
-                send(resp);
+                LoginUserRespFail response("Już zalogowany.");
+                send(response);
             }
             return;
         }

@@ -16,6 +16,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
+#include <registeruserrespfail.h>
 
 
 
@@ -105,14 +106,16 @@ void Market::registerNewUser(Connection* connection, QString password)
     m_database.commit();
     if(query.first())
     {
-        RegisterUserRespOk responseMsg(static_cast<qint32>(query.value(0).toInt()));
+        RegisterUserRespOk response(static_cast<qint32>(query.value(0).toInt()));
         qDebug() << "[Market] Wysyłanie identyfikatora nowemu użytkownikowi.";
-        m_server->send(responseMsg, connection);
+        m_server->send(response, connection);
     }
     else
     {
         qDebug() << "[Market] Nowy indentyfikator użytkownika nie został"
                  << "zwrócony. Błąd: " << query.lastError().text();
+        RegisterUserRespFail response("Niepoprawne hasło.");
+        m_server->send(response, connection);
 
     }
 
