@@ -1,0 +1,7 @@
+By wyczyscic (zresetowac) baze:
+
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+
+Najpierw odpalamy wszystko z pliku definicje_tabel.sql
+potem z pliku definicje_funkcji.sql
