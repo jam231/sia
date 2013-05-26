@@ -14,11 +14,12 @@ CREATE OR REPLACE FUNCTION przydziel_zasoby(uz integer) RETURNS VOID AS $$ --kaz
 DECLARE
 	wartosc_pieniedzy	integer := 1000000; --10 000zl * 100 gr
 	l_zasobow			integer;
+	zasob				integer;
 BEGIN
 	l_zasobow := (SELECT COUNT(*) FROM zasob);
 	INSERT INTO posiadane_dobro(id_uz,id_zasobu,ilosc) VALUES(uz,1,wartosc_pieniedzy);
-	INSERT INTO posiadane_dobro(id_uz,id_zasobu,ilosc) VALUES(uz,FLOOR(RANDOM()*l_zasobow)+1,100); --kazdy otrzymuje losowy zasob w ilosci 100
-END;
+	INSERT INTO posiadane_dobro(id_uz,id_zasobu,ilosc) VALUES(uz,FLOOR(RANDOM()*(l_zasobow-1))+2,100); --kazdy otrzymuje losowy zasob w ilosci 100
+	END;
 $$ LANGUAGE plpgsql;
 
 
@@ -76,12 +77,12 @@ CREATE TRIGGER zs_on_delete BEFORE DELETE on zlecenie_sprzedazy
 CREATE OR REPLACE FUNCTION zlecenie_kupna_on_update() RETURNS TRIGGER AS $$
 BEGIN	
 	--DODAJ AKCJE:
-	UPDATE posiadane_dobro SET ilosc=ilosc+(new.ilosc-old.ilosc) WHERE id_uz=old.id_uz AND id_zasobu=old.id_zasobu;
+	UPDATE posiadane_dobro SET ilosc=ilosc+(old.ilosc-new.ilosc) WHERE id_uz=old.id_uz AND id_zasobu=old.id_zasobu;
 	--LOG:
-	INSERT INTO zrealizowane_zlecenie(id_uz,id_zasobu,ilosc,cena) VALUES(old.id_uz,old.id_zasobu,(new.ilosc-old.ilosc),old.limit1); --czy mozna w insercie wstawiac takie wyr. arytm.?
+	INSERT INTO zrealizowane_zlecenie(id_uz,id_zasobu,ilosc,cena) VALUES(old.id_uz,old.id_zasobu,(old.ilosc-new.ilosc),old.limit1); --czy mozna w insercie wstawiac takie wyr. arytm.?
 	
 	IF new.ilosc=0 THEN --jesli zlecenie jest zrealizowane to sie usuwa
-		DELETE FROM zlecenie_sprzedazy WHERE id_zlecenia=old.id_zlecenia;
+		DELETE FROM zlecenie_kupna WHERE id_zlecenia=old.id_zlecenia;
 	END IF;
 	
 	
@@ -97,7 +98,7 @@ CREATE TRIGGER zk_on_update AFTER UPDATE ON zlecenie_kupna
 CREATE OR REPLACE FUNCTION zlecenie_sprzedazy_on_update() RETURNS TRIGGER AS $$
 BEGIN	
 	--DODAJ KASE:
-	UPDATE posiadane_dobro SET ilosc=ilosc+(new.ilosc-old.ilosc)*old.limit1 WHERE id_uz=old.id_uz AND id_zasobu=1;
+	UPDATE posiadane_dobro SET ilosc=ilosc+(old.ilosc-new.ilosc)*old.limit1 WHERE id_uz=old.id_uz AND id_zasobu=1;
 	--LOG:
 	INSERT INTO zrealizowane_zlecenie(id_uz,id_zasobu,ilosc,cena) VALUES(old.id_uz,old.id_zasobu,(new.ilosc-old.ilosc),old.limit1); --czy mozna w insercie wstawiac takie wyr. arytm.?
 	
@@ -140,10 +141,10 @@ BEGIN
 		
 		
 		IF zlecenie.ilosc>ile THEN --jesli "zlecenie" jest wieksze niz chcemy zrealizowac, nalezy uaktualnic zlecenie.ilosc w nim
-			UPDATE zlecenie_sprzedazy	SET ilosc=zlecenie.ilosc-ile WHERE id_zlecenia=zlecenie.id;
+			UPDATE zlecenie_sprzedazy	SET ilosc=zlecenie.ilosc-ile WHERE id_zlecenia=zlecenie.id_zlecenia;
 			ile := 0;
 		ELSE
-			UPDATE zlecenie_sprzedazy SET ilosc=0 WHERE id_zlecenia=zlecenie.id;
+			UPDATE zlecenie_sprzedazy SET ilosc=0 WHERE id_zlecenia=zlecenie.id_zlecenia;
 			ile := ile - zlecenie.ilosc;
 		END IF;
 		
@@ -168,7 +169,8 @@ BEGIN
 	ile := rekord.ilosc;
 	
 	LOOP
-		IF ile=0 OR (SELECT COUNT(*) FROM zlecenie_kupna WHERE id_zasobu=rekord.id_zasobu AND limit1>=rekord.limit1)=0 THEN --to jest aktualnie straszne. nalezy zrealizowac to w kursorach. Chyba.
+		RAISE NOTICE 'looping at%',ile;
+		IF ile=0 OR (SELECT COUNT(*) FROM zlecenie_kupna WHERE id_zasobu=rekord.id_zasobu AND limit1>=rekord.limit1 AND ilosc>0)=0 THEN --to jest aktualnie straszne. nalezy zrealizowac to w kursorach. Chyba.
 			EXIT;
 		END IF;
 		
@@ -178,10 +180,10 @@ BEGIN
 		
 		
 		IF zlecenie.ilosc>ile THEN --jesli "zlecenie" jest wieksze niz chcemy zrealizowac, nalezy uaktualnic zlecenie.ilosc w nim
-			UPDATE zlecenie_kupna	SET ilosc=zlecenie.ilosc-ile WHERE id_zlecenia=zlecenie.id;
+			UPDATE zlecenie_kupna	SET ilosc=zlecenie.ilosc-ile WHERE id_zlecenia=zlecenie.id_zlecenia;
 			ile := 0;
 		ELSE
-			UPDATE zlecenie_kupna SET ilosc=0 WHERE id_zlecenia=zlecenie.id;
+			UPDATE zlecenie_kupna	SET ilosc=0 WHERE id_zlecenia=zlecenie.id_zlecenia;
 			ile := ile - zlecenie.ilosc;
 		END IF;
 		
@@ -201,7 +203,7 @@ BEGIN
 	--wstawianie do tabeli posiadanych dobr juz zasobu w ilosci 0. bazuja na tym update'y w przypadku realizacji zlecenia
 	INSERT INTO posiadane_dobro(id_uz,id_zasobu,ilosc) --pewnie nalezaloby to w przyszlosci wywalic
        SELECT new.id_uz,new.id_zasobu,0
-		WHERE NOT EXISTS (SELECT 1 FROM posiadane_dobro WHERE id_ud=new.id_uz AND id_zasobu=new.id_zasobu);
+		WHERE NOT EXISTS (SELECT 1 FROM posiadane_dobro WHERE id_uz=new.id_uz AND id_zasobu=new.id_zasobu);
 	   
 	UPDATE posiadane_dobro SET ilosc=ilosc-new.ilosc*new.limit1 WHERE id_uz=new.id_uz AND id_zasobu=1;
 	

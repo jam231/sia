@@ -16,7 +16,7 @@ CREATE TABLE zasob (
 	zysk			INTEGER,
 	dlug			INTEGER,
 	liczba_akcji	INTEGER, --na poczatku to moze byc wartosc wyliczana
-	mozna_handlowac	BOOLEAN NOT NULL
+	mozna_handlowac	BOOLEAN NOT NULL DEFAULT TRUE
 );
 	
 CREATE TABLE zlecenie_kupna (
