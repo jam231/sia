@@ -190,29 +190,45 @@ void Connection::readData()
     {
         case IOMessage::BUY_STOCK_REQ:
         {
-            BuyStockReqMsg Msg(m_socket);
-            emit buyStock(m_userId, Msg.offer());
+            try
+            {
+                BuyStockReqMsg msg(message);
+                emit buyStock(m_userId, msg.getStockId(),
+                              msg.getAmount(), msg.getPrice());
+            }catch(const std::exception& e)
+            {
+                qDebug() << "[Connection] Złapano wyjątek" << e.what()
+                         << "podczas zlecania kupna.";
+            }
             break;
         }
         case IOMessage::SELL_STOCK_REQ:
         {
-            SellStockReqMsg Msg(m_socket);
-            emit sellStock(m_userId, Msg.offer());
+            try
+            {
+                SellStockReqMsg msg(message);
+                emit sellStock(m_userId, msg.getStockId(),
+                              msg.getAmount(), msg.getPrice());
+            }catch(const std::exception& e)
+            {
+                qDebug() << "[Connection] Złapano wyjątek" << e.what()
+                         << "podczas zlecania kupna.";
+            }
             break;
         }
         case IOMessage::GET_STOCKS:
-            emit getStocks(m_userId);
+            //emit getStocks(m_userId);
             break;
         case IOMessage::SUBSCRIBE_STOCK:
         {
-            SubscribeStockMsg Msg(m_socket);
-            emit subscribeStock(m_userId, Msg.stockId());
+            //SubscribeStockMsg Msg(m_socket);
+            //emit subscribeStock(m_userId, Msg.stockId());
             break;
         }
         case IOMessage::UNSUBSCRIBE_STOCK:
         {
-            UnsubscribeStockMsg Msg(m_socket);
-            emit unsubscribeStock(m_userId, Msg.stockId());
+            //UnsubscribeStockMsg Msg(m_socket);
+            //emit unsubscribeStock(m_userId, Msg.stockId());
             break;
         }
         default:

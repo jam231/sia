@@ -14,6 +14,8 @@ public:
         LOGIN_USER_REQ,
         LOGIN_USER_RESP_OK,
         LOGIN_USER_RESP_FAIL,
+
+// O tych nie wiem co myslec... -jam231
         SUBSCRIBE_STOCK,
         UNSUBSCRIBE_STOCK,
         SELL_STOCK_REQ,         //zlecenie sprzedazy
@@ -23,16 +25,23 @@ public:
         GET_STOCKS,         //poproszenei serwera o wysłąnie listy akcji
         LIST_OF_STOCKS,     //wysyłanie przez serwer listy akcji
         CHANGE_PRICE,        //wysłanie do użytkownika informacji o zmianie cen akcji
-        COMPANY_STATUS_REQ,     // IMessage
+//
+
+        COMPANY_STATUS_REQ,
         COMPANY_ACTIVE_RESP,
         COMPANY_FROZEN_RESP,
-        UNDEFINED,
+//
+// Te sa byc moze tymczasowe
+        BUY_TRANSACTION,
+        SELL_TRANSACTION,
 
+// Te sa w zawieszeniu, czekaja na implementacje lub zmiane -jam231
         SESSION_STARTED,
         SESSION_CLOSED,
         IS_SESSION_ACTIVE,
         SESSION_STATUS,
-
+//
+        UNDEFINED,
         UNRECOGNIZED_USER   // wysyłanie informacji potrzebie zalogowania by korzystać
                             // z pewnej funkcjonalności
     };

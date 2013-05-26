@@ -3,7 +3,6 @@
 
 #include "omessage.h"
 #include "transaction.h"
-
 #include <QIODevice>
 
 class BuyStockRespMsg : public OMessage

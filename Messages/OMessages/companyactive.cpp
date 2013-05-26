@@ -20,3 +20,7 @@ void CompanyActiveResp::send(QIODevice *connection)
         << m_companyId;
 }
 
+qint32 CompanyActiveResp::length() const
+{
+    return -1;
+}

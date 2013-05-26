@@ -30,6 +30,13 @@ Server::~Server()
     delete m_server;
 }
 
+/* TODO:
+ *      Ta metoda jest dość nie fajna, bo własciwie potrzebna
+ *      tylko do wysyłania RegisterUserFail oraz LoginUserFail.
+ *
+ *      Być może warto by było przeładować send dla tych dwóch metod
+ *      i zostawić tylko send(OMessage& msg, qint32 userId)
+ */
 void Server::send(OMessage& msg, Connection* connection)
 {
 
@@ -91,6 +98,31 @@ void Server::send(LoginUserRespOk& msg, Connection* connection,
     }
 }
 
+void Server::send(OMessage& msg)
+{
+    for(auto it = m_userConnections.begin(); it != m_userConnections.end(); it++)
+    {
+        it.value()->send(msg);
+    }
+}
+
+void Server::send(OMessage& msg, qint32 userId)
+{
+    /* TODO:
+     *
+     *      Wydajnie by bylo za jednym zamachem zwrocic wartosc value
+     *      o ile m_userConnections zawiera klucz key
+     */
+    if(m_userConnections.contains(userId))
+        m_userConnections[userId]->send(msg);
+}
+
+
+
+
+
+
+
 void Server::addNewConnection()
 {
     qDebug() << "[Server] Nawiązywanie nowego połączenia.";
@@ -105,7 +137,7 @@ void Server::addNewConnection()
 
     connect(newConnection, SIGNAL(loginUserRequestFromConnection(Connection*,
                                                            qint32,QString)),
-              this, SLOT(loginUser(Connection *, qint32, QString)));
+              this, SLOT(loginUserRequest(Connection *, qint32, QString)));
 
 
 /*
@@ -113,12 +145,14 @@ void Server::addNewConnection()
             this, SLOT(subscribeStock(qint32, qint32)) );
     connect(newConn, SIGNAL(unsubscribeStock(qint32, qint32)),
             this, SLOT(unsubscribeStock(qint32, qint32)) );
-    connect(newConn, SIGNAL(sellStock(qint32, Offer)),
-            this, SLOT(sellStock(qint32, Offer)) );
-    connect(newConn, SIGNAL(buyStock(qint32, Offer)),
-            this, SLOT(buyStock(qint32, Offer)) );
-    connect(newConn, SIGNAL(getStocks(qint32)),this, SLOT(getStocks(qint32)) );
 */
+    connect(newConnection, SIGNAL(buyStock(qint32, qint32, qint32, qint32)),
+            this, SLOT(buyStockRequest(qint32, qint32, qint32, qint32)));
+    connect(newConnection, SIGNAL(sellStock(qint32, qint32, qint32, qint32)),
+            this, SLOT(sellStockRequest(qint32, qint32, qint32, qint32)));
+
+//    connect(newConn, SIGNAL(getStocks(qint32)),this, SLOT(getStocks(qint32)) );
+
     //od teraz dopiero zaczniemy przetwarzac wiadomosci z tego polaczenia
     //abysmy nie robili tego zanim polaczylismy sygnaly i sloty
     //bo moglibysmy stracic wiadomosci
@@ -136,16 +170,25 @@ void Server::disconnectUser(qint32 userId)
     }
 }
 
-void Server::loginUser(Connection* connection, qint32 userId,
+void Server::loginUserRequest(Connection* connection, qint32 userId,
                        QString password)
 {
     emit loginUserRequestFromServer(connection, userId, password);
 }
 
-
 void Server::registerUserRequest(Connection* connection, QString password)
 {
     emit registerUserRequestFromServer(connection, password);
 
+}
+
+void Server::sellStockRequest(qint32 userId, qint32 stockId, qint32 amount, qint32 price)
+{
+    emit sellStock(userId, stockId, amount, price);
+}
+
+void Server::buyStockRequest(qint32 userId, qint32 stockId, qint32 amount, qint32 price)
+{
+    emit buyStock(userId, stockId, amount, price);
 }
 

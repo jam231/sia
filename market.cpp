@@ -17,6 +17,8 @@
 #include <QSqlError>
 #include <QVariant>
 #include <registeruserrespfail.h>
+#include <buytransactionmsg.h>
+#include <selltransactionmsg.h>
 
 
 
@@ -52,6 +54,25 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
                  << "podczas otwierania nowego połączenia z bazą daynch.";
         throw DatabaseError();
     }
+
+    /*
+     * Zostawiam dla potomnosci, zeby ogladali jaki to ladny bug jest
+     * ;-) Wydaje sie, że kompilator przeksztalca ponizsze wyrazenie
+     * zgodnie z prawami de Morgana, a pozniej wiadomo skoro pierwszy parametr
+     * jest prawdziwy to po co sprawdzac drugi...
+     */
+    //if(!m_database.driver()->subscribeToNotification(BUY_TRANSACTIONS_CHANNEL) &&
+    //   !m_database.driver()->subscribeToNotification(SELL_TRANSACTIONS_CHANNEL)
+    //   )
+    // {
+    //    qDebug() << "[Market] Wykryto błąd" << m_database.lastError().text()
+    //             << "podczas otwierania kanału komunikacyjnego.";
+    //    throw DatabaseError();
+    //}
+    m_database.driver()->subscribeToNotification(BUY_TRANSACTIONS_CHANNEL);
+    m_database.driver()->subscribeToNotification(SELL_TRANSACTIONS_CHANNEL);
+    m_database.driver()->subscribeToNotification(CHANGE_CHANNEL);
+
     qDebug() << "[Market] Ustanowiono połączenie z bazą danych.";
 
     //qDebug() << "Database tables:\n" << m_database.tables();
@@ -73,18 +94,26 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
     connect(m_server, SIGNAL(loginUserRequestFromServer(Connection*,
                                                         qint32, QString)),
             this, SLOT(LoginUser(Connection*, qint32, QString)));
+
+    connect(m_database.driver(), SIGNAL(notification(const QString&,
+                                                     QSqlDriver::NotificationSource,
+                                                     const QVariant&)),
+            this, SLOT(notificationHandler(const QString&,
+                                           QSqlDriver::NotificationSource,
+                                           const QVariant&)));
 /*
     connect(m_server, SIGNAL(subscribeStock(qint32, qint32)),
             this, SLOT(subscribeStock(qint32, qint32)) );
     connect(m_server, SIGNAL(unsubscribeStock(qint32, qint32)),
             this, SLOT(unsubscribeStock(qint32, qint32)) );
-    connect(m_server, SIGNAL(sellStock(qint32, Offer)),
-            this, SLOT(sellStock(qint32, Offer)) );
-    connect(m_server, SIGNAL(buyStock(qint32, Offer)),
-            this, SLOT(buyStock(qint32, Offer)) );
-    connect(m_server, SIGNAL(getStocks(qint32)),
-            this, SLOT(getStocks(qint32)) );
 */
+    connect(m_server, SIGNAL(sellStock(qint32, qint32, qint32, qint32)),
+            this, SLOT(sellStock(qint32, qint32, qint32, qint32)));
+    connect(m_server, SIGNAL(buyStock(qint32, qint32, qint32, qint32)),
+            this, SLOT(buyStock(qint32, qint32, qint32, qint32)));
+//    connect(m_server, SIGNAL(getStocks(qint32)),
+//            this, SLOT(getStocks(qint32)) );
+
     connect(m_sessionOnTimer, SIGNAL(timeout()), this, SLOT(stopSession()));
     connect(m_sessionOffTimer, SIGNAL(timeout()), this, SLOT(startSession()));
     qDebug() << "[Market] Serwer jest aktywny.";
@@ -222,6 +251,98 @@ void Market::stopSession()
     m_sessionOffTimer->start();
 
     qDebug() << "[Market] Sesja zamknięta.";
+}
+
+void Market::notificationHandler(const QString& channelName,
+                                 QSqlDriver::NotificationSource source,
+                                 const QVariant& payload)
+{
+
+    if(BUY_TRANSACTIONS_CHANNEL == channelName)
+    {
+        QStringList data = payload.toString().split('|');
+        // TODO: Sprawdzanie poprawnosci !
+        qint32 orderId = data[0].toInt(),
+               amount = data[1].toInt(),
+               userId = data[2].toInt();
+        BuyTransactionMsg msg(orderId, amount);
+        m_server->send(msg, userId);
+
+    }
+    else if(SELL_TRANSACTIONS_CHANNEL == channelName)
+    {
+        QStringList data = payload.toString().split('|');
+        // TODO: Sprawdzanie poprawnosci !
+        qint32 orderId = data[0].toInt(),
+               amount = data[1].toInt(),
+               userId = data[2].toInt();
+        SellTransactionMsg msg(orderId, amount);
+        m_server->send(msg, userId);
+    }
+    else if(CHANGE_CHANNEL == channelName)
+    {
+        QStringList data = payload.toString().split('|');
+        qDebug() << "[Market] Brak implementacji dla CHANGE CHANNEL";
+    }
+    else
+    {
+        qDebug() << "[Market] Nieobsłużony kanał " << channelName
+                 << source << payload;
+    }
+}
+
+void Market::sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price)
+{
+    qDebug() << "[Market] Użytkownik o id =" << userId
+             << "zleca transakcje sprzedaży" << amount
+             << "dobra o id =" << stockId
+             << "za cenę" << price;
+
+    QSqlQuery query(m_database);
+    //
+    query.prepare("SELECT zlec_sprzedaz(:userId, :stockId, :amount, :price);");
+    /* TODO:
+     *  Jeżeli się da to naprawić.
+     */
+    query.bindValue(":userId", userId);
+    query.bindValue(":stockId", stockId);
+    query.bindValue(":amount", amount);
+    query.bindValue(":price", price);
+    //
+    query.setForwardOnly(true);
+
+    m_database.transaction();
+
+    query.exec();
+
+    m_database.commit();
+}
+
+void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price)
+{
+    qDebug() << "[Market] Użytkownik o id =" << userId
+              << "zleca transakcje kupna" << amount
+              << "dobra o id =" << stockId
+              << "za cenę" << price;
+
+     QSqlQuery query(m_database);
+     //
+     query.prepare("SELECT zlec_kupno(:userId, :stockId, :amount, :price);");
+     /* TODO:
+      *  Jeżeli się da to naprawić.
+      */
+     query.bindValue(":userId", userId);
+     query.bindValue(":stockId", stockId);
+     query.bindValue(":amount", amount);
+     query.bindValue(":price", price);
+     //
+     query.setForwardOnly(true);
+
+     m_database.transaction();
+
+     query.exec();
+
+     m_database.commit();
 }
 /*
 void Market::subscribeStock(qint32 userId, qint32 stockId)

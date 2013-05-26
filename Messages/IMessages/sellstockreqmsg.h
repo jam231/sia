@@ -4,16 +4,24 @@
 #include "imessage.h"
 #include "offer.h"
 
-#include <QIODevice>
+#include <QDataStream>
 
 class SellStockReqMsg : public IMessage
 {
-    Offer m_offer;
+    qint32 m_stockId;
+    qint32 m_amount;
+    qint32 m_price;
+    //Offer m_offer;
+
+    qint32 length() const;
 public:
-    SellStockReqMsg(QIODevice* msg);
+    SellStockReqMsg(QDataStream& msg);
 
     MessageType type() const;
-    Offer offer() const;
+    qint32 getStockId() const;
+    qint32 getAmount() const;
+    qint32 getPrice() const;
+    //Offer offer() const;
 };
 
 #endif // SELLSTOCKREQMSG_H

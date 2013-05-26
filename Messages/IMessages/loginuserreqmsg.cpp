@@ -16,6 +16,7 @@ LoginUserReqMsg::LoginUserReqMsg(QDataStream &in)
     in >> m_userId;
     in >> passwordLength;
 
+    qDebug() << in.device()->bytesAvailable() << passwordLength;
     if(in.device()->bytesAvailable() != passwordLength)
         throw InvalidDataInMsg();
 

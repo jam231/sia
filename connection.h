@@ -41,11 +41,11 @@ signals:
     void registerUserRequestFromConnection(Connection* connection,
                                            QString password);
 
-    void subscribeStock(qint32 userId, qint32 stockId);
-    void unsubscribeStock(qint32 userId, qint32 stockId);
-    void sellStock(qint32 userId, Offer offer);
-    void buyStock(qint32 userId, Offer offer);
-    void getStocks(qint32 userId);
+    //void subscribeStock(qint32 userId, qint32 stockId);
+    //void unsubscribeStock(qint32 userId, qint32 stockId);
+    void sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
+    void buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
+    //void getStocks(qint32 userId);
 };
 
 #endif // CONNECTION_H

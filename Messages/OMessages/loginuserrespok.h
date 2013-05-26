@@ -1,7 +1,6 @@
 #ifndef LOGINUSERRESPOK_H
 #define LOGINUSERRESPOK_H
 
-#include <QtGlobal>
 
 #include "omessage.h"
 

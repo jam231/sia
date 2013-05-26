@@ -17,8 +17,6 @@ IOMessage::MessageType RegisterUserRespFail::type() const
 {
     return REGISTER_USER_RESP_FAIL;
 }
-#include <QDebug>
-
 void RegisterUserRespFail::send(QIODevice* connection)
 {
     // Domyślnie BigEndian.

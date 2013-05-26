@@ -2,7 +2,7 @@
 
 #include <QDataStream>
 
-CompanyFrozenResp::CompanyFrozenResp(qint32 companyId)
+CompanyFrozenResp::CompanyFrozenResp(qint32 companyId) : OMessage()
 {
     m_companyId = companyId;
 }
@@ -18,4 +18,9 @@ void CompanyFrozenResp::send(QIODevice *connection)
     out << static_cast<qint16>(sizeof(qint8) + sizeof(qint32))
         << static_cast<qint8>(type())
         << m_companyId;
+}
+
+qint32 CompanyFrozenResp::length() const
+{
+    return -1;
 }
