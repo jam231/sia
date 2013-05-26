@@ -50,6 +50,7 @@ CREATE OR REPLACE FUNCTION zlecenie_kupna_on_delete() RETURNS TRIGGER AS $$
 BEGIN
 	--ZWROT KASY
 	UPDATE posiadane_dobro SET ilosc=ilosc+old.ilosc*old.limit1 WHERE id_uz=old.id_uz AND id_zasobu=1;
+	RETURN new;
 END
 $$ LANGUAGE plpgsql;
 
@@ -63,60 +64,55 @@ CREATE OR REPLACE FUNCTION zlecenie_sprzedazy_on_delete() RETURNS TRIGGER AS $$
 BEGIN
 	--ZWROT AKCJI
 	UPDATE posiadane_dobro SET ilosc=ilosc+old.ilosc WHERE id_uz=old.id_uz AND id_zasobu=old.id_zasobu;
+	RETURN new;
 END
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER zs_on_delete BEFORE DELETE on zlecenie_sprzedazy
 	FOR EACH ROW EXECUTE PROCEDURE zlecenie_sprzedazy_on_delete();
 
+	
+	
 
-
-	
-	
-	
-CREATE OR REPLACE FUNCTION zlecenie_kupna_on_update() RETURNS TRIGGER AS $$
-BEGIN	
-	--DODAJ AKCJE:
-	UPDATE posiadane_dobro SET ilosc=ilosc+(old.ilosc-new.ilosc) WHERE id_uz=old.id_uz AND id_zasobu=old.id_zasobu;
-	--LOG:
-	INSERT INTO zrealizowane_zlecenie(id_uz,id_zasobu,ilosc,cena) VALUES(old.id_uz,old.id_zasobu,(old.ilosc-new.ilosc),old.limit1); --czy mozna w insercie wstawiac takie wyr. arytm.?
-	
-	IF new.ilosc=0 THEN --jesli zlecenie jest zrealizowane to sie usuwa
-		DELETE FROM zlecenie_kupna WHERE id_zlecenia=old.id_zlecenia;
+CREATE OR REPLACE FUNCTION val_min(a integer,b integer) RETURNS INTEGER AS $$
+BEGIN
+	IF (a>=b) THEN
+		RETURN b;
+	ELSE
+		RETURN a;
 	END IF;
-	
-	
-	RETURN new;
 END
 $$ LANGUAGE plpgsql;
-
-CREATE TRIGGER zk_on_update AFTER UPDATE ON zlecenie_kupna
-	FOR EACH ROW EXECUTE PROCEDURE zlecenie_kupna_on_update();
-
 	
 	
-CREATE OR REPLACE FUNCTION zlecenie_sprzedazy_on_update() RETURNS TRIGGER AS $$
-BEGIN	
-	--DODAJ KASE:
-	UPDATE posiadane_dobro SET ilosc=ilosc+(old.ilosc-new.ilosc)*old.limit1 WHERE id_uz=old.id_uz AND id_zasobu=1;
-	--LOG:
-	INSERT INTO zrealizowane_zlecenie(id_uz,id_zasobu,ilosc,cena) VALUES(old.id_uz,old.id_zasobu,(new.ilosc-old.ilosc),old.limit1); --czy mozna w insercie wstawiac takie wyr. arytm.?
 	
-	IF new.ilosc=0 THEN --jesli zlecenie jest zrealizowane to sie usuwa
-		DELETE FROM zlecenie_sprzedazy WHERE id_zlecenia=old.id_zlecenia;
+CREATE OR REPLACE FUNCTION przenies_dobra(zl_kupna zlecenie_kupna, zl_sprzedazy zlecenie_sprzedazy, kupno boolean) RETURNS INTEGER AS $$
+DECLARE 
+	cena integer;
+	ile  integer;
+BEGIN
+	ile := val_min(zl_kupna.ilosc, zl_sprzedazy.ilosc);
+	
+	IF kupno=true THEN --najpierw byla sprzedaz. dopasowalo sie kupno
+		cena := zl_sprzedazy.limit1;
+	ELSE
+		cena := zl_kupna.limit1;
 	END IF;
-		
-	RETURN new;
+	
+	--UWAGA, nie zabieramy nic nikomu, bo to robi sie juz przy momencie wstawienia zlecenia
+	UPDATE posiadane_dobro SET ilosc=ilosc+ile*cena WHERE id_uz=zl_sprzedazy.id_uz AND id_zasobu=1; --DODAJ KASE SPRZEDAJACEMU
+	UPDATE posiadane_dobro SET ilosc=ilosc+ile WHERE id_uz=zl_kupna.id_uz AND id_zasobu=zl_kupna.id_zasobu;        --DODAJ ZASOB KUPUJACEMU
+
+	UPDATE posiadane_dobro SET ilosc=ilosc+ile*(zl_kupna.limit1-cena) WHERE id_uz=zl_kupna.id_uz AND id_zasobu=1; --kupujacemu oddaj ew. pieniadze
+	
+	UPDATE zlecenie_kupna SET ilosc=ilosc-ile WHERE id_zlecenia=zl_kupna.id_zlecenia;
+	UPDATE zlecenie_sprzedazy SET ilosc=ilosc-ile WHERE id_zlecenia=zl_sprzedazy.id_zlecenia;
+	
+	INSERT INTO zrealizowane_zlecenie(uz_kupil,uz_sprzedal,id_zasobu,ilosc,cena) VALUES(zl_kupna.id_uz, zl_sprzedazy.id_uz, zl_kupna.id_zasobu, ile, cena);
+
+	RETURN ile;
 END
 $$ LANGUAGE plpgsql;
-
-CREATE TRIGGER zs_on_update AFTER UPDATE ON zlecenie_sprzedazy
-	FOR EACH ROW EXECUTE PROCEDURE zlecenie_sprzedazy_on_update();
-	
-
-
-	
-
 
 --Aby zrealizowac wszystkie zlecenia z kolejki, tj. uruchomic sesje:
 --PERFORM poslij_zlecenie_kupna(zlecenie_kupna.*) FROM zlecenie_kupna ORDER BY wazne_od ASC;
@@ -131,7 +127,7 @@ BEGIN
 	ile := rekord.ilosc;
 	
 	LOOP
-		IF ile=0 OR (SELECT COUNT(*) FROM zlecenie_sprzedazy WHERE id_zasobu=rekord.id_zasobu AND limit1<=rekord.limit1)=0 THEN --to jest aktualnie straszne. nalezy zrealizowac to w kursorach. Chyba.
+		IF ile=0 OR (SELECT COUNT(*) FROM zlecenie_sprzedazy WHERE id_zasobu=rekord.id_zasobu AND limit1<=rekord.limit1 AND ilosc>0)=0 THEN --to jest aktualnie straszne. nalezy zrealizowac to w kursorach. Chyba.
 			EXIT;
 		END IF;
 		
@@ -139,27 +135,13 @@ BEGIN
 		SELECT * INTO zlecenie FROM zlecenie_sprzedazy 
 			WHERE id_zasobu=rekord.id_zasobu AND limit1<=rekord.limit1 ORDER BY limit1,wazne_od ASC LIMIT 1;
 		
-		
-		IF zlecenie.ilosc>ile THEN --jesli "zlecenie" jest wieksze niz chcemy zrealizowac, nalezy uaktualnic zlecenie.ilosc w nim
-			UPDATE zlecenie_sprzedazy	SET ilosc=zlecenie.ilosc-ile WHERE id_zlecenia=zlecenie.id_zlecenia;
-			ile := 0;
-		ELSE
-			UPDATE zlecenie_sprzedazy SET ilosc=0 WHERE id_zlecenia=zlecenie.id_zlecenia;
-			ile := ile - zlecenie.ilosc;
-		END IF;
+		ile := ile - przenies_dobra(rekord, zlecenie, true);
 		
 	END LOOP;
-	
-	IF (ile<rekord.ilosc) THEN --cos sie sprzedalo
-		UPDATE zlecenie_kupna SET ilosc=ile WHERE id_zlecenia=rekord.id_zlecenia; --zawsze "ile" powinno byc min. 0
-	END IF;
-	
 END
 $$ LANGUAGE plpgsql;
 
 
-
---Skopiowany kod w polowie. Pewnie do refaktoryzacji. Ale pewnie nikt tego i tak nie przeczyta i sie do mnie nie przyczepi
 
 CREATE OR REPLACE FUNCTION wykonaj_zlecenie_sprzedazy(rekord zlecenie_sprzedazy) RETURNS VOID AS $$
 DECLARE
@@ -169,7 +151,7 @@ BEGIN
 	ile := rekord.ilosc;
 	
 	LOOP
-		RAISE NOTICE 'looping at%',ile;
+--		RAISE NOTICE 'looping at%',ile;
 		IF ile=0 OR (SELECT COUNT(*) FROM zlecenie_kupna WHERE id_zasobu=rekord.id_zasobu AND limit1>=rekord.limit1 AND ilosc>0)=0 THEN --to jest aktualnie straszne. nalezy zrealizowac to w kursorach. Chyba.
 			EXIT;
 		END IF;
@@ -178,20 +160,9 @@ BEGIN
 		SELECT * INTO zlecenie FROM zlecenie_kupna 
 			WHERE id_zasobu=rekord.id_zasobu AND limit1>=rekord.limit1 ORDER BY limit1 DESC,wazne_od ASC LIMIT 1;
 		
-		
-		IF zlecenie.ilosc>ile THEN --jesli "zlecenie" jest wieksze niz chcemy zrealizowac, nalezy uaktualnic zlecenie.ilosc w nim
-			UPDATE zlecenie_kupna	SET ilosc=zlecenie.ilosc-ile WHERE id_zlecenia=zlecenie.id_zlecenia;
-			ile := 0;
-		ELSE
-			UPDATE zlecenie_kupna	SET ilosc=0 WHERE id_zlecenia=zlecenie.id_zlecenia;
-			ile := ile - zlecenie.ilosc;
-		END IF;
+		ile := ile - przenies_dobra(zlecenie, rekord, false);
 		
 	END LOOP;
-	
-	IF (ile<rekord.ilosc) THEN --cos sie kupilo
-		UPDATE zlecenie_sprzedazy SET ilosc=ile WHERE id_zlecenia=rekord.id_zlecenia; --zawsze "ile" powinno byc min. 0
-	END IF;
 	
 END
 $$ LANGUAGE plpgsql;
@@ -236,7 +207,17 @@ CREATE TRIGGER zs_on_insert AFTER INSERT on zlecenie_sprzedazy
 	FOR EACH ROW EXECUTE PROCEDURE zlecenie_sprzedazy_on_insert();
 	
 	
+CREATE OR REPLACE FUNCTION zrealizowane_zlecenie_on_insert() RETURNS TRIGGER AS $$
+BEGIN
+	PERFORM pg_notify('ch_zmiana',new.id_zasobu||'|'||new.ilosc||'|'||new.cena||'|'||new.czas);
+	RETURN new;
+END
+$$ LANGUAGE plpgsql;
 
+CREATE TRIGGER zz_on_insert AFTER INSERT on zrealizowane_zlecenie
+	FOR EACH ROW EXECUTE PROCEDURE zrealizowane_zlecenie_on_insert();
+	
+	
 
 --Z tych funkcji sie korzysta przy wstawianiu. Zwraca ID zlecenia wstawionego
 CREATE OR REPLACE FUNCTION zlec_kupno(uz integer,zasob integer,ile integer,cena integer) RETURNS integer AS $$
@@ -273,3 +254,34 @@ BEGIN
 	UPDATE zasob SET mozna_handlowac=false;
 END;
 $$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION zlecenie_kupna_on_update() RETURNS TRIGGER AS $$
+BEGIN
+	PERFORM pg_notify('ch_zlecenia_kupna',new.id_zlecenia||'|'||new.ilosc||'|'||new.id_uz);
+	IF new.ilosc=0 THEN --jesli zlecenie jest zrealizowane to sie usuwa
+		DELETE FROM zlecenie_kupna WHERE id_zlecenia=new.id_zlecenia;
+	END IF;
+	RETURN new;
+END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER zk_on_update AFTER UPDATE ON zlecenie_kupna
+	FOR EACH ROW EXECUTE PROCEDURE zlecenie_kupna_on_update();
+
+	
+	
+CREATE OR REPLACE FUNCTION zlecenie_sprzedazy_on_update() RETURNS TRIGGER AS $$
+BEGIN
+	PERFORM pg_notify('ch_zlecenia_sprzedazy',new.id_zlecenia||'|'||new.ilosc||'|'||new.id_uz);
+	
+	IF new.ilosc=0 THEN --jesli zlecenie jest zrealizowane to sie usuwa
+		DELETE FROM zlecenie_sprzedazy WHERE id_zlecenia=new.id_zlecenia;
+	END IF;
+		
+	RETURN new;
+END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER zs_on_update AFTER UPDATE ON zlecenie_sprzedazy
+	FOR EACH ROW EXECUTE PROCEDURE zlecenie_sprzedazy_on_update();

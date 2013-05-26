@@ -52,13 +52,12 @@ CREATE TABLE posiadane_dobro (
 
 
 CREATE TABLE zrealizowane_zlecenie (
-	id_zasobu	INTEGER REFERENCES zasob(id_zasobu) NOT NULL, --po tym chcemy indeksowac najpierw...chyba
-	id_uz		INTEGER REFERENCES uzytkownik(id_uz) NOT NULL,
---	uz_kupil	INTEGER REFERENCES uzytkownik(id_uz), --NOT NULL usuniete ze wzgledu na problemy z odzyskiwaniem tego
---	uz_sprzedal INTEGER REFERENCES uzytkownik(id_uz), --NOT NULL ... j/w
+	czas		TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	id_zasobu	INTEGER REFERENCES zasob(id_zasobu) NOT NULL,
+	uz_kupil	INTEGER REFERENCES uzytkownik(id_uz) NOT NULL, 
+	uz_sprzedal INTEGER REFERENCES uzytkownik(id_uz) NOT NULL, 
 	ilosc		INTEGER NOT NULL,
-	cena		INTEGER NOT NULL,
-	czas		TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+	cena		INTEGER NOT NULL
 );
 
 CREATE TABLE subskrypcja (
