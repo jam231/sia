@@ -28,7 +28,9 @@ CREATE TABLE zlecenie_kupna (
 	limit1		INTEGER NOT NULL,
 	limit2		INTEGER,
 	wazne_od	TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	wazne_do	TIMESTAMP
+	wazne_do	TIMESTAMP,
+	CONSTRAINT	w_zkilosc	CHECK (ilosc >= 0),
+	CONSTRAINT	w_zklimit1	CHECK (limit1 >= 0)
 );
 
 CREATE TABLE zlecenie_sprzedazy (
@@ -40,13 +42,16 @@ CREATE TABLE zlecenie_sprzedazy (
 	limit1		INTEGER NOT NULL,
 	limit2		INTEGER,
 	wazne_od	TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	wazne_do	TIMESTAMP
+	wazne_do	TIMESTAMP,
+	CONSTRAINT	w_zsilosc	CHECK (ilosc >= 0),
+	CONSTRAINT	w_zslimit1	CHECK (limit1 >= 0)
 );
 
 CREATE TABLE posiadane_dobro (
 	id_uz		INTEGER REFERENCES uzytkownik(id_uz) NOT NULL,
 	id_zasobu	INTEGER REFERENCES zasob(id_zasobu) NOT NULL,
-	ilosc		INTEGER,
+	ilosc		INTEGER NOT NULL,
+	CONSTRAINT	w_pdilosc	CHECK (ilosc >= 0),
 	PRIMARY KEY (id_uz, id_zasobu)
 );
 
@@ -57,7 +62,8 @@ CREATE TABLE zrealizowane_zlecenie (
 	uz_kupil	INTEGER REFERENCES uzytkownik(id_uz) NOT NULL, 
 	uz_sprzedal INTEGER REFERENCES uzytkownik(id_uz) NOT NULL, 
 	ilosc		INTEGER NOT NULL,
-	cena		INTEGER NOT NULL
+	cena		INTEGER NOT NULL,
+	CONSTRAINT	wzz_ilosc	CHECK (ilosc >= 0)
 );
 
 CREATE TABLE subskrypcja (
