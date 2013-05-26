@@ -25,7 +25,11 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
 {
     qDebug() << "[Market] Ładowanie danych konfiguracyjnych...";
 
+    qint32 sessionOnInterval = config.intAt("SESSION ON DURATION");
+    qint32 sessionOffInterval = config.intAt("SESSION OFF DURATION");
+
     int serverPort = config.intAt("SERVER PORT");
+
     QString dbUserName = config["DATABASE USERNAME"];
     QString dbPassword = config["DATABASE PASSWORD"];
     QString dbName = config["DATABASE NAME"];
@@ -55,13 +59,20 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
     qDebug() << "[Market] Uruchamianie serwera...";
     m_server = new Server(this, serverPort);
 
+    m_sessionOffTimer = new QTimer(this);
+    m_sessionOffTimer->setInterval(sessionOffInterval * 1000);
+
+    m_sessionOnTimer = new QTimer(this);
+    m_sessionOnTimer->setInterval(sessionOnInterval * 1000);
+
+
     connect(m_server, SIGNAL(registerUserRequestFromServer(Connection*,
                                                            QString)),
             this, SLOT(registerNewUser(Connection*, QString)) );
 
     connect(m_server, SIGNAL(loginUserRequestFromServer(Connection*,
                                                         qint32, QString)),
-            this, SLOT(findUser(Connection*, qint32, QString)));
+            this, SLOT(LoginUser(Connection*, qint32, QString)));
 /*
     connect(m_server, SIGNAL(subscribeStock(qint32, qint32)),
             this, SLOT(subscribeStock(qint32, qint32)) );
@@ -74,11 +85,19 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
     connect(m_server, SIGNAL(getStocks(qint32)),
             this, SLOT(getStocks(qint32)) );
 */
+    connect(m_sessionOnTimer, SIGNAL(timeout()), this, SLOT(stopSession()));
+    connect(m_sessionOffTimer, SIGNAL(timeout()), this, SLOT(startSession()));
     qDebug() << "[Market] Serwer jest aktywny.";
+    startSession();
 }
 
 Market::~Market()
 {
+    m_sessionOnTimer->stop();
+    m_sessionOffTimer->stop();
+    delete m_sessionOnTimer;
+    delete m_sessionOffTimer;
+
     qDebug() << "[Marker] Zamykanie połączenia z bazą danych...";
     m_database.close();
     qDebug() << "[Market] Połączenie z bazą danych zostało zamknięte.";
@@ -121,7 +140,7 @@ void Market::registerNewUser(Connection* connection, QString password)
 
 }
 
-void Market::findUser(Connection* connection, qint32 userId, QString password)
+void Market::LoginUser(Connection* connection, qint32 userId, QString password)
 {
     qDebug() << "[Market] Wyszukiwanie użytkownika o id =" << userId
              << "w bazie...";
@@ -164,6 +183,45 @@ void Market::findUser(Connection* connection, qint32 userId, QString password)
     }
     LoginUserRespFail responseMsg(failReason);
     m_server->send(responseMsg, connection);
+}
+
+void Market::startSession()
+{
+    m_sessionOffTimer->stop();
+    QSqlQuery query(m_database);
+    query.prepare("SELECT rozpocznij_sesje();");
+
+    query.setForwardOnly(true);
+
+    m_database.transaction();
+
+    query.exec();
+
+    m_database.commit();
+
+
+    m_sessionOnTimer->start();
+
+    qDebug() << "[Market] Sesja rozpoczęta.";
+}
+
+void Market::stopSession()
+{
+    m_sessionOnTimer->stop();
+    QSqlQuery query(m_database);
+    query.prepare("SELECT zakoncz_sesje();");
+
+    query.setForwardOnly(true);
+
+    m_database.transaction();
+
+    query.exec();
+
+    m_database.commit();
+
+    m_sessionOffTimer->start();
+
+    qDebug() << "[Market] Sesja zamknięta.";
 }
 /*
 void Market::subscribeStock(qint32 userId, qint32 stockId)

@@ -7,6 +7,7 @@
 
 #include <exception>
 
+#include <QTimer>
 #include <QObject>
 #include <QString>
 #include <QSqlDatabase>
@@ -23,8 +24,12 @@ class Market : public QObject
 {
     Q_OBJECT
 
+
     Server* m_server;
     QSqlDatabase m_database;
+    QTimer* m_sessionOnTimer;
+    QTimer* m_sessionOffTimer;
+
     void noticeChangePrice(qint32 stockId);
 
 public:
@@ -32,7 +37,10 @@ public:
     ~Market();
 public slots:
     void registerNewUser(Connection*, QString password);
-    void findUser(Connection*, qint32 userId, QString password);
+    void LoginUser(Connection*, qint32 userId, QString password);
+
+    void startSession();
+    void stopSession();
    /*
     void subscribeStock(qint32 userId, qint32 stockId);
     void unsubscribeStock(qint32 userId, qint32 stockId);
