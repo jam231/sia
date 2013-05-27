@@ -23,7 +23,7 @@ void LoginUserRespFail::send(QIODevice* connection)
     out << static_cast<qint16>(sizeof(qint8) + sizeof(qint16) + reason.size())
         << static_cast<qint8>(type())
         << static_cast<qint16>(reason.size());
-    connection->write(m_reason.toUtf8());
+    connection->write(reason);
 }
 qint32 LoginUserRespFail::length() const
 {

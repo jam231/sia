@@ -5,6 +5,8 @@
 
 #include <QIODevice>
 
+
+
 class CompanyActiveResp : public OMessage
 {
     qint32 m_companyId;

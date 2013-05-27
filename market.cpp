@@ -19,6 +19,7 @@
 #include <registeruserrespfail.h>
 #include <buytransactionmsg.h>
 #include <selltransactionmsg.h>
+#include <transactionchange.h>
 
 
 
@@ -261,28 +262,55 @@ void Market::notificationHandler(const QString& channelName,
     if(BUY_TRANSACTIONS_CHANNEL == channelName)
     {
         QStringList data = payload.toString().split('|');
-        // TODO: Sprawdzanie poprawnosci !
-        qint32 orderId = data[0].toInt(),
-               amount = data[1].toInt(),
-               userId = data[2].toInt();
-        BuyTransactionMsg msg(orderId, amount);
-        m_server->send(msg, userId);
-
+        if(data.size() == 3)
+        {
+            // TODO: Sprawdzanie poprawnosci !
+            qint32 orderId = data[0].toInt(),
+                   amount = data[1].toInt(),
+                   userId = data[2].toInt();
+            BuyTransactionMsg msg(orderId, amount);
+            m_server->send(msg, userId);
+        }
+        else
+            qDebug() << "[Market] " << BUY_TRANSACTIONS_CHANNEL
+                     << "powinnien zawierac 3 argumenty, a zawiera"
+                     << data.size();
     }
     else if(SELL_TRANSACTIONS_CHANNEL == channelName)
     {
         QStringList data = payload.toString().split('|');
         // TODO: Sprawdzanie poprawnosci !
-        qint32 orderId = data[0].toInt(),
-               amount = data[1].toInt(),
-               userId = data[2].toInt();
-        SellTransactionMsg msg(orderId, amount);
-        m_server->send(msg, userId);
+        if(data.size() == 3)
+        {
+            qint32 orderId = data[0].toInt(),
+                   amount = data[1].toInt(),
+                   userId = data[2].toInt();
+            SellTransactionMsg msg(orderId, amount);
+            m_server->send(msg, userId);
+        }
+        else
+            qDebug() << "[Market] " << SELL_TRANSACTIONS_CHANNEL
+                     << "powinnien zawierac 3 argumenty, a zawiera"
+                     << data.size();
     }
     else if(CHANGE_CHANNEL == channelName)
     {
         QStringList data = payload.toString().split('|');
-        qDebug() << "[Market] Brak implementacji dla CHANGE CHANNEL";
+        if(data.size() == 4)
+        {
+            qint32 stockId = data[0].toInt(),
+                   amount = data[1].toInt(),
+                   price = data[2].toInt();
+            QString date = data[3];
+
+            qDebug() << stockId << amount << price << date;
+            TransactionChange msg(stockId, amount, price, date);
+            m_server->send(msg);
+        }
+        else
+            qDebug() << "[Market] " << CHANGE_CHANNEL
+                     << "powinnien zawierac 4 argumenty, a zawiera"
+                     << data.size();
     }
     else
     {
