@@ -15,12 +15,12 @@ public:
         LOGIN_USER_RESP_OK,
         LOGIN_USER_RESP_FAIL,
 
+        SELL_STOCK_REQ,     // IMessage zlecenie kupna
+        BUY_STOCK_REQ,      // IMessage zlecenie sprzedazy
 // O tych nie wiem co myslec... -jam231
         SUBSCRIBE_STOCK,
-        UNSUBSCRIBE_STOCK,
-        SELL_STOCK_REQ,         //zlecenie sprzedazy
+        UNSUBSCRIBE_STOCK,        
         SELL_STOCK_RESP,         //wiadomosc o zrealizowanej transakcji
-        BUY_STOCK_REQ,          //zlecenie kupna
         BUY_STOCK_RESP,         //wiadomosc o zrealizowanej transakcji
         GET_STOCKS,         //poproszenei serwera o wysłąnie listy akcji
         LIST_OF_STOCKS,     //wysyłanie przez serwer listy akcji
@@ -32,8 +32,8 @@ public:
         COMPANY_FROZEN_RESP,
 //
 // Te sa byc moze tymczasowe
-        BUY_TRANSACTION,
-        SELL_TRANSACTION,
+        BUY_TRANSACTION,    // OMessage wysylanie informacji o danej transakcji kupna
+        SELL_TRANSACTION,   // OMessage wysylanie informacji o danej transakcji sprzedazy
 
 // Te sa w zawieszeniu, czekaja na implementacje lub zmiane -jam231
         SESSION_STARTED,
