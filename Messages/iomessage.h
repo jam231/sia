@@ -19,6 +19,7 @@ public:
         BUY_STOCK_REQ,      // IMessage zlecenie sprzedazy
         TRANSACTION_CHANGE, // OMessage powiadomienie o zmianie (zrealizowaniu?) danej transakcji wszystki
                             // zasubskrybowanych
+        NEW_TRANSACTION,    // OMessage Informacja o nowej transcakcji
 // O tych nie wiem co myslec... -jam231
         SUBSCRIBE_STOCK,
         UNSUBSCRIBE_STOCK,        

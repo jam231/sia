@@ -10,6 +10,7 @@
 #include "sellstockrespmsg.h"
 #include "listofstocksmsg.h"
 #include "changepricemsg.h"
+#include "newtransaction.h"
 
 #include "configmanager.h"
 
@@ -344,6 +345,18 @@ void Market::sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 pric
     query.exec();
 
     m_database.commit();
+
+    if(!query.lastError().isValid())
+    {
+        // Wyslij wszystkim informacje o nowym zleceniu
+        NewTransaction msg(TransactionType::SELL, stockId, amount, price);
+        m_server->send(msg);
+    }
+    else
+    {
+        qDebug() << "[Market] Błąd przy zleceni sprzedaży"
+                 << query.lastError().text();
+    }
 }
 
 void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price)
@@ -371,6 +384,17 @@ void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price
      query.exec();
 
      m_database.commit();
+     if(!query.lastError().isValid())
+     {
+         // Wyslij wszystkim informacje o nowym zleceniu
+         NewTransaction msg(TransactionType::BUY, stockId, amount, price);
+         m_server->send(msg);
+     }
+     else
+     {
+         qDebug() << "[Market] Błąd przy zleceni kupna"
+                  << query.lastError().text();
+     }
 }
 /*
 void Market::subscribeStock(qint32 userId, qint32 stockId)
