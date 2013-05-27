@@ -5,6 +5,12 @@
 
 #include <QIODevice>
 
+/*
+ *  Nie działa
+ *
+ *
+ */
+
 class SubscribeStockMsg : public IMessage
 {
     qint32 m_stockId;

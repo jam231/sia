@@ -5,6 +5,12 @@
 
 #include <QIODevice>
 
+/*
+ *  Nie działa
+ *
+ *      --jam231
+ */
+
 class UnsubscribeStockMsg : public IMessage
 {
     qint32 m_stockId;

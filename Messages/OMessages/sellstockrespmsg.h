@@ -6,6 +6,14 @@
 
 #include <QIODevice>
 
+
+/*
+ *  Nie działa
+ *
+ *      --jam231
+ */
+
+
 class SellStockRespMsg : public OMessage
 {
     Transaction m_transaction;

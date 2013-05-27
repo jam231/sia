@@ -6,6 +6,13 @@
 
 #include <QIODevice>
 
+
+/*
+ *  Nie działa
+ *
+ *      --jam231
+ */
+
 class ChangePriceMsg : public OMessage
 {
     Stock m_stock;

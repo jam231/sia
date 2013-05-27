@@ -7,6 +7,14 @@
 #include <QIODevice>
 #include <QVector>
 
+
+/*
+ *  Nie działa
+ *
+ *      --jam231
+ */
+
+
 class ListOfStocksMsg : public OMessage
 {
     QVector<Stock> m_stocks;
