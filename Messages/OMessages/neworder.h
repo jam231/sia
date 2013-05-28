@@ -7,22 +7,22 @@
 
 #include <QIODevice>
 
-enum TransactionType : qint8
+enum OrderType : qint8
 {
     BUY = 1,
     SELL = 1
 };
 
-class NewTransaction : public OMessage
+class NewOrder : public OMessage
 {
-    TransactionType m_transactionType;
+    OrderType m_transactionType;
     qint32 m_stockId;
     qint32 m_amount;
     qint32 m_price;
     qint32 length() const;
 public:
-
-    NewTransaction(TransactionType, qint32, qint32, qint32);
+    qint32 getStockId();
+    NewOrder(OrderType, qint32, qint32, qint32);
     void send(QIODevice *connection);
     IOMessage::MessageType type() const;
 };

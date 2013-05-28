@@ -1,11 +1,12 @@
 #include "subscribestockmsg.h"
 
-#include <QDataStream>
 
-SubscribeStockMsg::SubscribeStockMsg(QIODevice* msg) : IMessage()
+SubscribeStockMsg::SubscribeStockMsg(QDataStream& in) //: IMessage()
 {
-    QDataStream tmpStream;
-    tmpStream>>m_stockId;
+    if(in.device()->bytesAvailable() < (sizeof(m_stockId)))
+        throw InvalidDataInMsg();
+
+    in >> m_stockId;
 }
 
 IOMessage::MessageType SubscribeStockMsg::type() const
@@ -13,7 +14,7 @@ IOMessage::MessageType SubscribeStockMsg::type() const
     return SUBSCRIBE_STOCK;
 }
 
-qint32 SubscribeStockMsg::stockId() const
+qint32 SubscribeStockMsg::getStockId() const
 {
     return m_stockId;
 }

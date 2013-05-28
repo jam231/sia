@@ -34,7 +34,11 @@ class Market : public QObject
     QTimer* m_sessionOnTimer;
     QTimer* m_sessionOffTimer;
 
-    void noticeChangePrice(qint32 stockId);
+    // Hmm stockId, NewOrder niezbyt zgrabnie
+    // Bo powinnismy wyslac to wszystko jako jedna wiadomosc
+    // (tutaj jest wysoce pradwopodobne, to o czym marek mowil)
+    // lub najpierw wyslac ile transakcji przeslemy ?
+    QHash<qint32, NewOrder> chachedTransactions;
 
 public:
     Market(const ConfigManager<>& config, QObject* parent = 0);
@@ -42,15 +46,13 @@ public:
 
 public slots:
     void registerNewUser(Connection*, QString password);
-    void LoginUser(Connection*, qint32 userId, QString password);
+    void loginUser(Connection*, qint32 userId, QString password);
 
     void startSession();
     void stopSession();
 
     void notificationHandler(const QString&, QSqlDriver::NotificationSource, const QVariant &);
 
-    //void subscribeStock(qint32 userId, qint32 stockId);
-    //void unsubscribeStock(qint32 userId, qint32 stockId);
     void sellStock(qint32 userId,qint32 stockId, qint32 amount, qint32 price);
     void buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
     //void getStocks(qint32 userId);

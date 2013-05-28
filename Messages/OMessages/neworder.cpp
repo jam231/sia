@@ -1,8 +1,8 @@
-#include "newtransaction.h"
+#include "neworder.h"
 
 #include <QDataStream>
 
-NewTransaction::NewTransaction(TransactionType transactionType,
+NewOrder::NewOrder(OrderType transactionType,
                                qint32 stockId, qint32 amount,
                                qint32 price)
 {
@@ -12,11 +12,11 @@ NewTransaction::NewTransaction(TransactionType transactionType,
     m_price = price;
 }
 
-IOMessage::MessageType NewTransaction::type() const
+IOMessage::MessageType NewOrder::type() const
 {
-    return NEW_TRANSACTION;
+    return NEW_ORDER;
 }
-void NewTransaction::send(QIODevice* connection)
+void NewOrder::send(QIODevice* connection)
 {
     // Domyślnie BigEndian
     QDataStream out(connection);
@@ -27,7 +27,12 @@ void NewTransaction::send(QIODevice* connection)
         << static_cast<qint32>(m_amount)
         << static_cast<qint32>(m_price);
 }
-qint32 NewTransaction::length() const
+qint32 NewOrder::length() const
 {
     return -1;
+}
+
+qint32 NewOrder::getStockId()
+{
+    return m_stockId;
 }

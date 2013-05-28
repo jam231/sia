@@ -17,6 +17,7 @@
 #include "unrecognizedusermsg.h"
 #include "loginuserrespfail.h"
 #include "registeruserrespfail.h"
+#include <neworder.h>
 
 Connection::Connection(QTcpSocket* socket, QObject *parent) :
     QObject(parent), m_socket(socket), m_userId(NOT_ASSIGNED)//, m_tmpUserId(-1)
@@ -67,6 +68,16 @@ void Connection::start()
     readData();
 }
 
+void Connection::addSubscription(qint32 stockId)
+{
+    m_subscribedStocks.insert(stockId);
+}
+
+void Connection::dropSubscription(qint32 stockId)
+{
+    m_subscribedStocks.remove(stockId);
+}
+
 bool Connection::send(OMessage& msg)
 {
     /* Po co to jest? Jakas proba sprawdzenia, czy ten uzytkownik jest
@@ -82,6 +93,13 @@ bool Connection::send(OMessage& msg)
 
 }
 
+bool Connection::send(NewOrder& msg)
+{
+    if(m_subscribedStocks.contains(msg.getStockId()))
+        return send(static_cast<OMessage&>(msg));
+    return false;
+}
+
 void Connection::disconect()
 {
     qDebug() << "[Connection] Zrywanie połączenia...";
@@ -90,7 +108,6 @@ void Connection::disconect()
     // Usun po tym jak wszystkie sygnaly zostały przetworzone.
     deleteLater();
 }
-
 
 void Connection::readData()
 {
@@ -221,14 +238,28 @@ void Connection::readData()
             break;
         case IOMessage::SUBSCRIBE_STOCK:
         {
-            //SubscribeStockMsg Msg(m_socket);
-            //emit subscribeStock(m_userId, Msg.stockId());
+            try
+            {
+                SubscribeStockMsg msg(message);
+                addSubscription(msg.getStockId());
+            }catch(const std::exception& e)
+            {
+                qDebug() << "[Connection] Złapano wyjątek" << e.what()
+                         << "podczas zlecania subskypcji.";
+            }
             break;
         }
         case IOMessage::UNSUBSCRIBE_STOCK:
         {
-            //UnsubscribeStockMsg Msg(m_socket);
-            //emit unsubscribeStock(m_userId, Msg.stockId());
+            try
+            {
+                UnsubscribeStockMsg msg(message);
+                dropSubscription(msg.getStockId());
+            }catch(const std::exception& e)
+            {
+                qDebug() << "[Connection] Złapano wyjątek" << e.what()
+                         << "podczas zlecenia usuniecia subskrypcji.";
+            }
             break;
         }
         default:

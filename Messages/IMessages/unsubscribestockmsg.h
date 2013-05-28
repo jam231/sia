@@ -3,7 +3,7 @@
 
 #include "imessage.h"
 
-#include <QIODevice>
+#include <QDataStream>
 
 /*
  *  Nie działa
@@ -15,10 +15,10 @@ class UnsubscribeStockMsg : public IMessage
 {
     qint32 m_stockId;
 public:
-    UnsubscribeStockMsg(QIODevice* msg);
+    UnsubscribeStockMsg(QDataStream& msg);
 
     MessageType type() const;
-    qint32 stockId() const;
+    qint32 getStockId() const;
 };
 
 #endif // UNSUBSCRIBESTOCKMSG_H

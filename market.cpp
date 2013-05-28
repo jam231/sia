@@ -10,7 +10,7 @@
 #include "sellstockrespmsg.h"
 #include "listofstocksmsg.h"
 #include "changepricemsg.h"
-#include "newtransaction.h"
+#include "neworder.h"
 
 #include "configmanager.h"
 
@@ -95,7 +95,7 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
 
     connect(m_server, SIGNAL(loginUserRequestFromServer(Connection*,
                                                         qint32, QString)),
-            this, SLOT(LoginUser(Connection*, qint32, QString)));
+            this, SLOT(loginUser(Connection*, qint32, QString)));
 
     connect(m_database.driver(), SIGNAL(notification(const QString&,
                                                      QSqlDriver::NotificationSource,
@@ -171,7 +171,7 @@ void Market::registerNewUser(Connection* connection, QString password)
 
 }
 
-void Market::LoginUser(Connection* connection, qint32 userId, QString password)
+void Market::loginUser(Connection* connection, qint32 userId, QString password)
 {
     qDebug() << "[Market] Wyszukiwanie użytkownika o id =" << userId
              << "w bazie...";
@@ -349,7 +349,7 @@ void Market::sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 pric
     if(!query.lastError().isValid())
     {
         // Wyslij wszystkim informacje o nowym zleceniu
-        NewTransaction msg(TransactionType::SELL, stockId, amount, price);
+        NewOrder msg(OrderType::SELL, stockId, amount, price);
         m_server->send(msg);
     }
     else
@@ -367,7 +367,7 @@ void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price
               << "za cenę" << price;
 
      QSqlQuery query(m_database);
-     //
+
      query.prepare("SELECT zlec_kupno(:userId, :stockId, :amount, :price);");
      /* TODO:
       *  Jeżeli się da to naprawić.
@@ -376,7 +376,8 @@ void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price
      query.bindValue(":stockId", stockId);
      query.bindValue(":amount", amount);
      query.bindValue(":price", price);
-     //
+
+
      query.setForwardOnly(true);
 
      m_database.transaction();
@@ -387,7 +388,7 @@ void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price
      if(!query.lastError().isValid())
      {
          // Wyslij wszystkim informacje o nowym zleceniu
-         NewTransaction msg(TransactionType::BUY, stockId, amount, price);
+         NewOrder msg(OrderType::BUY, stockId, amount, price);
          m_server->send(msg);
      }
      else
@@ -396,175 +397,3 @@ void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price
                   << query.lastError().text();
      }
 }
-/*
-void Market::subscribeStock(qint32 userId, qint32 stockId)
-{
-    //zapytanie nie powinno nic zwracac
-
-    QString queryString;
-
-    QSqlQuery query(m_database);
-    query.setForwardOnly(true);
-
-    m_database.transaction();
-
-    query.exec(queryString);
-
-
-    +m_database.commit();
-}
-
-void Market::unsubscribeStock(qint32 userId, qint32 stockId)
-{
-    //zapytanie nie powinno nic zwracac
-    QString queryString;
-
-    QSqlQuery query(m_database);
-    query.setForwardOnly(true);
-
-    m_database.transaction();
-
-    query.exec(queryString);
-
-    m_database.commit();
-}
-
-void Market::sellStock(qint32 userId, Offer offer)
-{
-    //zapytanie powinno zwrócić tyle transakcji do ilu doszło w wyniku do dania tej oferty
-    //każdą w osobnym rekordzie, każdy rekord powinien zawierać
-    //id_transakcji,
-    //id_usera sprzedajacego, id_usera kupujacego, id_akcji, ilosc_akcji, cene za akcje
-    //w dokladnie takiej kolejnosci
-    QString queryString;
-
-    QSqlQuery query(m_database);
-    query.setForwardOnly(true);
-
-    m_database.transaction();
-
-    query.exec(queryString);
-
-    m_database.commit();
-
-    bool anyAction = false;
-    while (query.next())
-    {
-        Transaction tmpTran(query.value(0).toInt(), query.value(1).toInt(), query.value(2).toInt(),
-                    query.value(3).toInt(), query.value(4).toInt(), query.value(5).toDouble());
-
-
-        BuyStockRespMsg Msg1(tmpTran);
-        SellStockRespMsg Msg2(tmpTran);
-
-        m_server->send(Msg1, tmpTran.sellerId());
-        m_server->send(Msg2, tmpTran.buyerId());
-
-        anyAction = true;
-    }
-
-    if(anyAction)
-        noticeChangePrice(offer.stockId());
-
-}
-
-void Market::buyStock(qint32 userId, Offer offer)
-{
-    //zapytanie powinno zwrócić tyle transakcji do ilu doszło w wyniku do dania tej oferty
-    //każdą w osobnym rekordzie, każdy rekord powinien zawierać
-    //id_transakcji(jesli bedziemy je wszystkie przechowywac w bazie),
-    //id_usera sprzedajacego, id_usera kupujacego, id_akcji, ilosc_akcji, cene za akcje
-    //w dokladnie takiej kolejnosci
-    QString queryString;
-
-    QSqlQuery query(m_database);
-    query.setForwardOnly(true);
-
-    m_database.transaction();
-
-    query.exec(queryString);
-
-    m_database.commit();
-
-    bool anyAction = false;
-    while (query.next())
-    {
-        Transaction tmpTran(query.value(0).toInt(), query.value(1).toInt(),
-                            query.value(2).toInt(), query.value(3).toInt(),
-                            query.value(4).toInt(), query.value(5).toDouble());
-
-
-        BuyStockRespMsg Msg1(tmpTran);
-        SellStockRespMsg Msg2(tmpTran);
-
-        m_server->send(Msg1, tmpTran.sellerId());
-        m_server->send(Msg2, tmpTran.buyerId());
-
-        anyAction = true;
-    }
-
-    if(anyAction)
-        noticeChangePrice(offer.stockId());
-
-}
-
-void Market::getStocks(qint32 userId)
-{
-    //zapytanie powinno zwrocic tyle rekordow ile mamy akcji
-    //kazdy rekord powinien zawierac nastepujace dane
-    //id_akcji, najlepsza oferta sprzedazy, najlesza oferta kupna
-    //gdzie oferty skladaja sie z
-    //id_oferty, id_sprzedajacego/kupujacego, id_akcji, ilosci akcji, ceny za akcje
-    //w dokladnie tej kolejnosci
-    QString queryString;
-
-    QSqlQuery query(m_database);
-    query.setForwardOnly(true);
-
-    m_database.transaction();
-
-    query.exec(queryString);
-
-    m_database.commit();
-
-    ListOfStocksMsg Msg;
-    while (query.next())
-    {
-        Stock s(query.value(0).toInt(),
-                Offer(query.value(1).toInt(), query.value(2).toInt(),
-                      query.value(3).toInt(), query.value(4).toInt(),
-                      query.value(5).toDouble()),
-                Offer(query.value(6).toInt(), query.value(7).toInt(),
-                      query.value(8).toInt(), query.value(9).toInt(),
-                      query.value(10).toDouble()));
-
-        Msg.addStock(s);
-    }
-
-    m_server->send(Msg, userId);
-}
-
-void Market::noticeChangePrice(qint32 stockId)
-{
-    //zapytanie powinno zwracać id wszystkich uzytkownikow ktorzy zapisali sie na subskrypcje danej akcji
-    QString queryString;
-
-    QSqlQuery query(m_database);
-    query.setForwardOnly(true);
-
-    m_database.transaction();
-
-    query.exec(queryString);
-
-    m_database.commit();
-
-    Stock s(stockId, m_database);
-
-    while (query.next())
-    {
-        ChangePriceMsg Msg(s);
-
-        m_server->send(Msg, query.value(0).toInt());
-    }
-}
-*/
