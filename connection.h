@@ -8,7 +8,7 @@
 #include <QSet>
 #include <QByteArray>
 #include <QTcpSocket>
-#include <neworder.h>
+#include <order.h>
 
 class Connection : public QObject
 {
@@ -32,10 +32,11 @@ public:
     void dropSubscription(qint32 stockId);
 public slots:
     bool send(OMessage& msg);
-    bool send(NewOrder& msg);
+    bool send(Order& msg);
 private slots:
     void disconect();
-    void readData();
+    void processIncomingMessages();
+    void processMessage();
 
 signals:
     void disconnected(qint32 userId);

@@ -17,7 +17,7 @@
 #include "unrecognizedusermsg.h"
 #include "loginuserrespfail.h"
 #include "registeruserrespfail.h"
-#include <neworder.h>
+#include "order.h"
 
 Connection::Connection(QTcpSocket* socket, QObject *parent) :
     QObject(parent), m_socket(socket), m_userId(NOT_ASSIGNED)//, m_tmpUserId(-1)
@@ -50,12 +50,11 @@ void Connection::setUserId(qint32 userId)
 {
     m_userId = userId;
 }
-
 void Connection::start()
 {
     qDebug() << "[Connection] Rozpoczynanie nowego połączenia.";
     connect(m_socket, SIGNAL(disconnected()), this, SLOT(disconect()));
-    connect(m_socket, SIGNAL(readyRead()), this, SLOT(readData()));
+    connect(m_socket, SIGNAL(readyRead()), this, SLOT(processIncomingMessages()));
     if(!m_socket->isValid())
     {
         qDebug() << "[Connection] Wykryto błąd" << m_socket->errorString()
@@ -65,7 +64,7 @@ void Connection::start()
     }
     qDebug() << "[Connection] Ustanowiono nowe połączenie.";
     //tak na wszelki wypadek jakbysmy dostali już jakieś dane zanim zdążyliśmy połączyć sygnały
-    readData();
+    processIncomingMessages();
 }
 
 void Connection::addSubscription(qint32 stockId)
@@ -93,7 +92,7 @@ bool Connection::send(OMessage& msg)
 
 }
 
-bool Connection::send(NewOrder& msg)
+bool Connection::send(Order& msg)
 {
     if(m_subscribedStocks.contains(msg.getStockId()))
         return send(static_cast<OMessage&>(msg));
@@ -109,7 +108,7 @@ void Connection::disconect()
     deleteLater();
 }
 
-void Connection::readData()
+void Connection::processMessage()
 {
     /*
      * Przeczytaj pierwsze 2 bajty, które stanowią długość całej wiadomości.
@@ -128,7 +127,7 @@ void Connection::readData()
 
     IOMessage::MessageType msgType = IMessage::getMsgType(message);
 
-    qDebug() << "[Connection] Id wiadmości:" << msgType;
+    //qDebug() << "[Connection] Id wiadmości:" << msgType;
 
     switch(msgType)
     {
@@ -269,5 +268,13 @@ void Connection::readData()
                      << "do wysyłania przez serwer.";
             break;
         }
+    }
+}
+
+void Connection::processIncomingMessages()
+{
+    while(m_socket->bytesAvailable() > 0)
+    {
+        processMessage();
     }
 }
