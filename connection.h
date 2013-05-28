@@ -36,7 +36,7 @@ public slots:
 private slots:
     void disconect();
     void processIncomingMessages();
-    void processMessage();
+    bool processMessage();
 
 signals:
     void disconnected(qint32 userId);

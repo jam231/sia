@@ -14,7 +14,7 @@ qint16 IMessage::getMsgLength(QIODevice* data)
 
     qint16 msgLength;
 
-    QDataStream in(data);
+    QDataStream in(data->peek(2));
     in >> msgLength;
 
     return msgLength;

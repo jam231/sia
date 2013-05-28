@@ -108,21 +108,20 @@ void Connection::disconect()
     deleteLater();
 }
 
-void Connection::processMessage()
+
+/*
+ *  true <- jezeli bylo wystarczajaca ilosc bajtow by przeczytac wiadomosc
+ *  false <- jezeli nie ma wystarczajacej liczby bajtow do przeczytania wiadomosci
+ *           (W tym wypadku zawartosc bufora zostaje nienaruszona !)
+ */
+bool Connection::processMessage()
 {
-    /*
-     * Przeczytaj pierwsze 2 bajty, które stanowią długość całej wiadomości.
-     * Nastepnie, wczytaj do bufora (?) zadana długość bajtów.
-     *
-     * Jeżeli dł. wiadomości < 2 to wiadomośc jest wadliwa, zignoruj.
-     * Jeżeli wczytano do bufora mniej bajtów niż wynosi wiadomośc
-     * to wiadomość jest niepoprawna (corrupted) i zignoruj ją.
-     */
     qint16 msgLength = IMessage::getMsgLength(m_socket);
 
-    if(msgLength < 1)
-        return;
-
+    if(0 >= msgLength || msgLength > m_socket->bytesAvailable())
+        return false;
+    // Odrzuc pierwsze dwa bajty
+    m_socket->read(2);
     QDataStream message(m_socket->read(msgLength));
 
     IOMessage::MessageType msgType = IMessage::getMsgType(message);
@@ -152,7 +151,7 @@ void Connection::processMessage()
                 RegisterUserRespFail response("Zalogowany.");
                 send(response);
             }
-            return;
+            return true;
         }
         case IOMessage::LOGIN_USER_REQ:
         {
@@ -179,13 +178,13 @@ void Connection::processMessage()
                 LoginUserRespFail response("Już zalogowany.");
                 send(response);
             }
-            return;
+            return true;
         }
         case IOMessage::UNDEFINED:
         {
             qDebug() << "[Connection] Otrzymano nieznany typ wiadomości: "
                      << msgType << ".";;
-            return;
+            return true;
         }
         default:
         {
@@ -199,7 +198,7 @@ void Connection::processMessage()
         qDebug() << "[Connection] Nierozpoznano użytkownika.";
         unrecognizedUserMsg Msg;
         Msg.send(m_socket);
-        return;
+        return true;
     }
 
     switch(msgType)
@@ -269,12 +268,11 @@ void Connection::processMessage()
             break;
         }
     }
+    return true;
 }
 
 void Connection::processIncomingMessages()
 {
-    while(m_socket->bytesAvailable() > 0)
-    {
-        processMessage();
-    }
+    while(processMessage())
+    {}
 }
