@@ -285,3 +285,14 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER zs_on_update AFTER UPDATE ON zlecenie_sprzedazy
 	FOR EACH ROW EXECUTE PROCEDURE zlecenie_sprzedazy_on_update();
+	
+	
+CREATE FUNCTION najlepsze_kupno(in zasob integer, out integer, out bigint)
+    AS $$ SELECT limit1,SUM(ilosc) FROM zlecenie_kupna WHERE id_zasobu=zasob GROUP BY limit1 ORDER BY 2 DESC LIMIT 1 $$
+LANGUAGE SQL;
+
+
+
+CREATE FUNCTION najlepsza_sprzedaz(in zasob integer, out integer, out bigint)
+    AS $$ SELECT limit1,SUM(ilosc) FROM zlecenie_sprzedazy WHERE id_zasobu=zasob GROUP BY limit1 ORDER BY 2 ASC LIMIT 1 $$
+LANGUAGE SQL;
