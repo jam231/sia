@@ -25,7 +25,7 @@ IOMessage::MessageType IMessage::getMsgType(QDataStream& in)
     if(in.device()->bytesAvailable() < 1)
         return IOMessage::UNDEFINED;
 
-    qDebug() << "Wiadomośc jest w porządku.";
+    //qDebug() << "Wiadomośc jest w porządku.";
 
     qint8 msgType;
     in >> msgType;

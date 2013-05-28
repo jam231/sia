@@ -19,7 +19,8 @@ public:
         BUY_STOCK_REQ,      // IMessage zlecenie sprzedazy
         TRANSACTION_CHANGE, // OMessage powiadomienie o zmianie (zrealizowaniu?) danej transakcji wszystki
                             // zasubskrybowanych
-        NEW_ORDER,          // OMessage Informacja o nowym zleceniu
+        ORDER,          // OMessage informacja o nowym zleceniu
+        BEST_ORDER,     // OMessage informacja o nowym najlepszym zleceniu
         SUBSCRIBE_STOCK,    // IMessage subskrybuj
         UNSUBSCRIBE_STOCK,  // IMessage przestan subskrybowac
 
@@ -54,6 +55,8 @@ public:
 protected:
     static MessageType toType(qint8);
     IOMessage();
+public:
+    virtual ~IOMessage() {}
 };
 
 #endif // MESSAGE_H

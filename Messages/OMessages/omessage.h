@@ -13,6 +13,7 @@ protected:
 
 public:
     virtual void send(QIODevice* connection) = 0;
+    virtual ~OMessage() {}
 };
 
 #endif // OMESSAGE_H

@@ -26,6 +26,8 @@ public:
 protected:
     //Nie potrzeba obiektow tego typu
     IMessage();
+public:
+    virtual ~IMessage() {}
 };
 
 #endif // IMESSAGE_H
