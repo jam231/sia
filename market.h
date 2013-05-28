@@ -38,7 +38,7 @@ class Market : public QObject
     // Bo powinnismy wyslac to wszystko jako jedna wiadomosc
     // (tutaj jest wysoce pradwopodobne, to o czym marek mowil)
     // lub najpierw wyslac ile transakcji przeslemy ?
-    QHash<qint32, NewOrder> chachedTransactions;
+    QHash<qint32, NewOrder> cachedTransactions;
 
 public:
     Market(const ConfigManager<>& config, QObject* parent = 0);
