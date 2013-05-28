@@ -52,25 +52,9 @@ void Server::send(OMessage& msg, Connection* connection)
  */
 void Server::send(RegisterUserRespOk& msg, Connection* connection)
 {
-
-    /*
-     *  Przez tę metodę przechodzi odpowiedź z już wygenerowanym id.
-     *  To odpowiednia chwila na dodanie do "rejestru" aktywnych
-     *  użytkowników.
-     *  Nawet, gdy połączenie się zerwie podczas dodawnia nowego użytkownika
-     *  to sygnał disconnect() docierajacy do slotu Server::disconnectUser()
-     *  spowoduje oczyszczenie rejestru.
-     *
-     *  Pewien dyskomfort, może budzić sytuacja w której połączenie
-     *  zostanie zerwane przed wywyłaniem connection->send(msg).
-     *  Okazuje się (po moich licznych testach), że w takiej sytuacji
-     *  connection nie jest odrazu usuwane (pewnie dzieki deleteLater())
-     *  wszystko sie poprawnie wywoluje, jedynie dane zapisane
-     *  w zamknietym gniezdzie sa odrzucane. Nie mniej nalezaloby
-     *  upewnić się co do poprawności tego konstruktu.
-     */
-    m_userConnections[msg.getUserId()] = connection;
-    connection->setUserId(msg.getUserId());
+    // Jednak trzeba sie zalogowac świadomie ;-)
+    //m_userConnections[msg.getUserId()] = connection;
+    //connection->setUserId(msg.getUserId());
 
     connection->send(msg);
 }
