@@ -13,6 +13,7 @@
 #include <QString>
 #include <QSqlDatabase>
 #include <QSqlDriver>
+#include <bestorder.h>
 
 class DatabaseError : public std::exception
 {
@@ -21,6 +22,8 @@ class DatabaseError : public std::exception
         return "Database error";
     }
 };
+
+Q_DECLARE_METATYPE(Order)
 
 class Market : public QObject
 {
@@ -34,11 +37,16 @@ class Market : public QObject
     QTimer* m_sessionOnTimer;
     QTimer* m_sessionOffTimer;
 
-    // Hmm stockId, NewOrder niezbyt zgrabnie
-    // Bo powinnismy wyslac to wszystko jako jedna wiadomosc
-    // (tutaj jest wysoce pradwopodobne, to o czym marek mowil)
-    // lub najpierw wyslac ile transakcji przeslemy ?
-    QHash<qint32, NewOrder> cachedTransactions;
+    // Domyslnie jest wartosc Invalid
+    // przez ktora bedziemy kodować pusty Order;
+    QVariant m_cachedLastOrder;
+    QHash<qint32, BestOrder> m_cachedBestSellOrders;
+    QHash<qint32, BestOrder> m_cachedBestBuyOrders;
+
+protected:
+
+   void changeCachedBestSellOrders(qint32 stockId);
+   void changeCachedBestBuyOrders(qint32 stockId);
 
 public:
     Market(const ConfigManager<>& config, QObject* parent = 0);

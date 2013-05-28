@@ -10,7 +10,7 @@
 #include "sellstockrespmsg.h"
 #include "listofstocksmsg.h"
 #include "changepricemsg.h"
-#include "neworder.h"
+#include "order.h"
 
 #include "configmanager.h"
 
@@ -198,6 +198,19 @@ void Market::loginUser(Connection* connection, qint32 userId, QString password)
                         "autoryzacji do uzytkownika id =" << userId;
             LoginUserRespOk responseMsg;
             m_server->send(responseMsg, connection, userId);
+            /* ENHANCEMENT:
+             *  Sytuacja w której nie ma najnowszego zlecenia jest patologiczna
+             *  i przy naszym uproszczonym modelu "startu" giełdy nie występuje
+             *  dla agentów właściwych, jednakże w tej sytuacji giełda
+             *  po prostu nie wysyła wiadomości
+             */
+            if(m_cachedLastOrder.isValid() &&
+               m_cachedLastOrder.canConvert<Order>()) {
+
+                Order msg = m_cachedLastOrder.value<Order>();
+                m_server->send(static_cast<OMessage&>(msg),
+                               userId);
+            }
             return;
         }
         else
@@ -269,6 +282,9 @@ void Market::notificationHandler(const QString& channelName,
             qint32 orderId = data[0].toInt(),
                    amount = data[1].toInt(),
                    userId = data[2].toInt();
+
+            changeCachedBestBuyOrders(userId);
+
             BuyTransactionMsg msg(orderId, amount);
             m_server->send(msg, userId);
         }
@@ -286,6 +302,9 @@ void Market::notificationHandler(const QString& channelName,
             qint32 orderId = data[0].toInt(),
                    amount = data[1].toInt(),
                    userId = data[2].toInt();
+
+            changeCachedBestSellOrders(userId);
+
             SellTransactionMsg msg(orderId, amount);
             m_server->send(msg, userId);
         }
@@ -305,8 +324,20 @@ void Market::notificationHandler(const QString& channelName,
             QString date = data[3];
 
             qDebug() << stockId << amount << price << date;
+
             TransactionChange msg(stockId, amount, price, date);
             m_server->send(msg);
+            changeCachedBestBuyOrders(stockId);
+            // TODO: Jak już gdzieś wspomniałem być może
+            //       dałoby się to zrobić optymalniej.
+            if(m_cachedBestBuyOrders.contains(stockId))
+                m_server->send(m_cachedBestBuyOrders[stockId]);
+
+            changeCachedBestSellOrders(stockId);
+            // TODO: Jak już gdzieś wspomniałem być może
+            //       dałoby się to zrobić optymalniej.
+            if(m_cachedBestSellOrders.contains(stockId))
+                m_server->send(m_cachedBestSellOrders[stockId]);
         }
         else
             qDebug() << "[Market] " << CHANGE_CHANNEL
@@ -348,13 +379,16 @@ void Market::sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 pric
 
     if(!query.lastError().isValid())
     {
-        // Wyslij wszystkim informacje o nowym zleceniu
-        NewOrder msg(OrderType::SELL, stockId, amount, price);
+        // Wyslij wszystkim zasubskybowanym informacje o nowym zleceniu
+        Order msg(OrderType::SELL, stockId, amount, price);
+        // Zachowaj jako ostatnia wiadomosc
+        m_cachedLastOrder.fromValue(msg);
+
         m_server->send(msg);
     }
     else
     {
-        qDebug() << "[Market] Błąd przy zleceni sprzedaży"
+        qDebug() << "[Market] Błąd przy zleceniu sprzedaży"
                  << query.lastError().text();
     }
 }
@@ -387,13 +421,86 @@ void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price
      m_database.commit();
      if(!query.lastError().isValid())
      {
-         // Wyslij wszystkim informacje o nowym zleceniu
-         NewOrder msg(OrderType::BUY, stockId, amount, price);
+         // Wyslij wszystkim zasubskrybowanym informacje o nowym zleceniu
+         Order msg(OrderType::BUY, stockId, amount, price);
+
+         // Zachowaj jako ostatnia wiadomosc
+         m_cachedLastOrder.fromValue(msg);
+
          m_server->send(msg);
      }
      else
      {
-         qDebug() << "[Market] Błąd przy zleceni kupna"
+         qDebug() << "[Market] Błąd przy zleceniu kupna"
                   << query.lastError().text();
      }
+}
+
+
+void Market::changeCachedBestSellOrders(qint32 stockId)
+{
+    QSqlQuery query(m_database);
+
+    query.prepare("SELECT najlepsze_kupno(:stockId);");
+    query.bindValue(":stockId", stockId);
+
+    query.setForwardOnly(true);
+
+    m_database.transaction();
+
+    query.exec();
+
+    m_database.commit();
+    if(query.first())
+    {
+        if(query.value(0).isValid() && query.value(1).isValid())
+        {
+            m_cachedBestSellOrders.insert(stockId,
+                                      BestOrder(OrderType::BUY, stockId,
+                                                query.value(0).toInt(),
+                                               query.value(1).toInt()));
+        }
+        else
+            qDebug() << "[Market] W changeCachedBestBuyOrders"
+                     << "zwrócony rekord nie ma dwóch pol.";
+    }
+    // To znaczy, ze dla danej transakcji nie ma w ogole oferty...
+    else
+    {
+        m_cachedBestSellOrders.remove(stockId);
+    }
+}
+
+void Market::changeCachedBestBuyOrders(qint32 stockId)
+{
+    QSqlQuery query(m_database);
+
+    query.prepare("SELECT najlepsza_sprzedaz(:stockId);");
+    query.bindValue(":stockId", stockId);
+
+    query.setForwardOnly(true);
+
+    m_database.transaction();
+
+    query.exec();
+
+    m_database.commit();
+    if(query.first())
+    {
+        if(query.value(0).isValid() && query.value(1).isValid())
+        {
+            m_cachedBestSellOrders.insert(stockId,
+                                      BestOrder(OrderType::SELL, stockId,
+                                                query.value(0).toInt(),
+                                                query.value(1).toInt()));
+        }
+        else
+            qDebug() << "[Market] W changeCachedBestBuyOrders"
+                     << "zwrócony rekord nie ma dwóch pol.";
+    }
+    // To znaczy, ze dla danej transakcji nie ma w ogole oferty...
+    else
+    {
+        m_cachedBestBuyOrders.remove(stockId);
+    }
 }
