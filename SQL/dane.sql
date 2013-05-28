@@ -1,5 +1,29 @@
 DELETE FROM zasob;
 SELECT setval('nr_zasobu',1,false);
-INSERT INTO zasob(nazwa) VALUES
-('PLN'),
-('ACP'),('BHW'),('PEO'),('BRS'),('BRE'),('GTC'),('LTS'),('JSW'),('KER'),('KGH'),('LWP'),('PKN'),('PKO'),('PGE'),('PGN'),('PZU'),('SNS'),('TPE'),('TPS'),('EUR');
+INSERT INTO zasob(nazwa,w_ksiegowa,zysk,liczba_akcji) VALUES
+('PLN',1,0,0),
+('ACP',7482,358,8300030),
+('LWP',2366,260,3401359),
+('BRS',1196,19,225671569),
+('BRE',9978,1195,4214198),
+('EUR',11240,772,44144257),
+('GTC',2997,35,31937299),
+('BHW',7562,1079,13065960),
+('JSW',8719,633,11741159),
+('KER',8719,633,11741159),
+('KGH',23460,4556,20000000),
+('LTS',8750,179,12987336),
+('PEO',24032,2914,26247003),
+('PGE',42351,2788,186976082),
+('PGN',28411,3022,590000000),
+('PKN',28564,1233,42770906),
+('PKO',25422,3532,125000000),
+('PZU',14952,3278,8635230),
+('SNS',3064,485,132325000),
+('TPE',17316,1626,175254939),
+('TPS',13045,693,133564902);
+SELECT setval('nr_uz',1,false);
+SELECT nowy_uzytkownik('abcdef'); --szef wszystkich szefow
+INSERT INTO posiadane_dobro(id_uz,id_zasobu,ilosc)
+	SELECT 1,id_zasobu,1000000000 FROM zasob;
+	
