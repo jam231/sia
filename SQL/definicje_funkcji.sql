@@ -1,15 +1,3 @@
-CREATE OR REPLACE FUNCTION nowy_uzytkownik(nowe_haslo varchar(15)) RETURNS integer AS $$
-DECLARE
-	nowy_id integer := nextval('nr_uz');
-BEGIN
-	INSERT INTO uzytkownik(id_uz, haslo) VALUES(nowy_id, nowe_haslo);
-	RETURN nowy_id;
-END;
-$$ LANGUAGE plpgsql;
-
-
-
-
 CREATE OR REPLACE FUNCTION przydziel_zasoby(uz integer) RETURNS VOID AS $$ --kazdy uzytkownik dostaje JAKAS akcje oraz pewna ustalona kwote pieniedzy
 DECLARE
 	wartosc_pieniedzy	integer := 1000000; --10 000zl * 100 gr
@@ -37,12 +25,16 @@ END;
 $$ LANGUAGE plpgsql;
 
 
---------------------------------------------------------------
-----TODO PONIZEJ: 
---POWIADOMIENIA DLA APLIKACJI
---PRZETESTOWAC TO
---------------------------------------------------------------
 
+CREATE OR REPLACE FUNCTION nowy_uzytkownik(nowe_haslo varchar(15)) RETURNS integer AS $$
+DECLARE
+	nowy_id integer := nextval('nr_uz');
+BEGIN
+	INSERT INTO uzytkownik(id_uz, haslo) VALUES(nowy_id, nowe_haslo);
+	PERFORM przydziel_zasoby(nowy_id);
+	RETURN nowy_id;
+END;
+$$ LANGUAGE plpgsql;
 
 
 
@@ -301,4 +293,19 @@ LANGUAGE SQL;
 
 CREATE OR REPLACE FUNCTION ostatnia_transakcja(in zasob integer, out integer, out integer, out timestamp with time zone)
     AS $$ SELECT cena,ilosc,czas FROM (SELECT cena,ilosc,czas,id_zasobu FROM zrealizowane_zlecenie UNION SELECT 0,0,CURRENT_TIMESTAMP,zasob) t WHERE id_zasobu=zasob ORDER BY czas ASC LIMIT 1 $$
+LANGUAGE SQL;
+
+
+
+CREATE OR REPLACE FUNCTION dobra_uz(uz integer) RETURNS TABLE(id_zasobu integer,ilosc integer)
+	AS $$ SELECT id_zasobu, ilosc FROM posiadane_dobro WHERE id_uz=uz $$
+LANGUAGE SQL;
+
+
+CREATE OR REPLACE FUNCTION zlecenia_uz(uz integer) RETURNS TABLE(typ integer, id_zlecenia integer, id_zasobu integer,ilosc integer, limit1 integer)
+	AS $$ 
+	SELECT 1, id_zlecenia, id_zasobu, ilosc, limit1 FROM zlecenie_kupna WHERE id_uz=uz
+	UNION
+	SELECT 2, id_zlecenia, id_zasobu, ilosc, limit1 FROM zlecenie_sprzedazy WHERE id_uz=uz;
+	$$
 LANGUAGE SQL;
