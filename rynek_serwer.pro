@@ -33,7 +33,15 @@ HEADERS += \
     Messages/OMessages/loginuserrespfail.h \
     Messages/OMessages/registeruserrespfail.h \
     Messages/OMessages/registeruserrespok.h \
-    Messages/OMessages/unrecognizedusermsg.h
+    Messages/OMessages/unrecognizedusermsg.h \
+    Messages/IMessages/companystatus.h \
+    Messages/OMessages/companyfrozen.h \
+    Messages/OMessages/companyactive.h \
+    Messages/OMessages/buytransactionmsg.h \
+    Messages/OMessages/selltransactionmsg.h \
+    Messages/OMessages/transactionchange.h \
+    Messages/OMessages/bestorder.h \
+    Messages/OMessages/order.h
 
 SOURCES += \
     user.cpp \
@@ -64,7 +72,15 @@ SOURCES += \
     Messages/OMessages/loginuserrespfail.cpp \
     Messages/OMessages/registeruserrespfail.cpp \
     Messages/OMessages/registeruserrespok.cpp \
-    Messages/OMessages/unrecognizedusermsg.cpp
+    Messages/OMessages/unrecognizedusermsg.cpp \
+    Messages/IMessages/companystatus.cpp \
+    Messages/OMessages/companyfrozen.cpp \
+    Messages/OMessages/companyactive.cpp \
+    Messages/OMessages/buytransactionmsg.cpp \
+    Messages/OMessages/selltransactionmsg.cpp \
+    Messages/OMessages/transactionchange.cpp \
+    Messages/OMessages/bestorder.cpp \
+    Messages/OMessages/order.cpp
 
 INCLUDEPATH += Messages \
     Messages/IMessages \
