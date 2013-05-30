@@ -1,10 +1,11 @@
 <Kiedyś przetłumaczę>
 
-Register user
-    Jeżeli dopuszczamy wiele połączeń na użytkownika musimy zmienić
-    strukturę danych na multimapę.
-    Użytkownik już zalogowany nie może się zarejestrować !.
+
 TODO LIST:
+
+    -- Musimy jakos przekazywac informacje zwrotną o id transakcji
+       uzytkownikowi, gdyz bez tego on nie bedzie mial mozliwosci ich
+       anulowania.
 
 Warning !:
 
