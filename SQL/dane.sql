@@ -24,7 +24,7 @@ INSERT INTO zasob(nazwa,w_ksiegowa,zysk,liczba_akcji) VALUES
 ('TPS',13045,693,133564902);
 SELECT setval('nr_uz',1,false);
 SELECT nowy_uzytkownik('abcdef'); --szef wszystkich szefow
-UPDATE posiadane_dobro SET ilosc=100000000 WHERE id_uz=1;
+UPDATE posiadane_dobro SET ilosc=2000000000 WHERE id_uz=1;
 INSERT INTO posiadane_dobro(id_uz,id_zasobu,ilosc)
 	SELECT 1,id_zasobu,1000000000 FROM zasob WHERE id_zasobu NOT IN (SELECT id_zasobu FROM posiadane_dobro WHERE id_uz=1);
 	
