@@ -41,9 +41,12 @@ HEADERS += \
     Messages/OMessages/selltransactionmsg.h \
     Messages/OMessages/transactionchange.h \
     Messages/OMessages/bestorder.h \
-    Messages/OMessages/order.h \
     Messages/IMessages/getmystocksmsg.h \
-    Messages/OMessages/getmystocksrespmsg.h
+    Messages/OMessages/getmystocksrespmsg.h \
+    order.h \
+    Messages/OMessages/getmyordersrespmsg.h \
+    Messages/OMessages/ordermsg.h \
+    Messages/IMessages/getmyordermsg.h
 
 SOURCES += \
     user.cpp \
@@ -82,9 +85,12 @@ SOURCES += \
     Messages/OMessages/selltransactionmsg.cpp \
     Messages/OMessages/transactionchange.cpp \
     Messages/OMessages/bestorder.cpp \
-    Messages/OMessages/order.cpp \
     Messages/IMessages/getmystocksmsg.cpp \
-    Messages/OMessages/getmystocksrespmsg.cpp
+    Messages/OMessages/getmystocksrespmsg.cpp \
+    order.cpp \
+    Messages/OMessages/getmyordersrespmsg.cpp \
+    Messages/OMessages/ordermsg.cpp \
+    Messages/IMessages/getmyordermsg.cpp
 
 INCLUDEPATH += Messages \
     Messages/IMessages \
