@@ -24,6 +24,8 @@ IOMessage::MessageType IOMessage::toType(qint8 msgId)
         case GET_STOCKS : return GET_STOCKS;
         case LIST_OF_STOCKS : return LIST_OF_STOCKS;
         case CHANGE_PRICE : return CHANGE_PRICE;
+        case GET_MY_STOCKS : return GET_MY_STOCKS;
+        case GET_MY_STOCKS_RESP : return GET_MY_STOCKS_RESP;
         default : return UNDEFINED;
     };
 }

@@ -9,6 +9,7 @@
 #include "buystockrespmsg.h"
 #include "sellstockrespmsg.h"
 #include "listofstocksmsg.h"
+#include "getmystocksrespmsg.h"
 #include "changepricemsg.h"
 #include "order.h"
 
@@ -113,8 +114,7 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
             this, SLOT(sellStock(qint32, qint32, qint32, qint32)));
     connect(m_server, SIGNAL(buyStock(qint32, qint32, qint32, qint32)),
             this, SLOT(buyStock(qint32, qint32, qint32, qint32)));
-//    connect(m_server, SIGNAL(getStocks(qint32)),
-//            this, SLOT(getStocks(qint32)) );
+    connect(m_server, SIGNAL(getMyStocks(qint32)), this, SLOT(getMyStocks(qint32)) );
 
     connect(m_sessionOnTimer, SIGNAL(timeout()), this, SLOT(stopSession()));
     connect(m_sessionOffTimer, SIGNAL(timeout()), this, SLOT(startSession()));
@@ -503,4 +503,35 @@ void Market::changeCachedBestBuyOrders(qint32 stockId)
     {
         m_cachedBestBuyOrders.remove(stockId);
     }
+}
+
+void Market::getMyStocks(qint32 userId)
+{
+    qDebug() << "[Market] Użytkownik o id =" << userId
+              << "prosi o listę zasobów";
+
+     QSqlQuery query(m_database);
+
+     query.prepare("SELECT dobra_uz(:userId);");
+
+     query.bindValue(":userId", userId);
+
+
+     query.setForwardOnly(true);
+
+     m_database.transaction();
+
+     query.exec();
+
+     m_database.commit();
+
+     GetMyStocksRespMsg msg;
+     while (query.next())
+         if(query.value(0).isValid() && query.value(1).isValid())
+            msg.addStock(query.value(0).toInt(), query.value(1).toInt());
+     else
+         qDebug() << "[Market] W getMyStocks"
+                  << "zwrócony rekord nie ma dwóch pol.";
+
+     m_server->send(msg, userId);
 }

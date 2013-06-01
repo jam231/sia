@@ -131,11 +131,11 @@ void Server::addNewConnection()
             this, SLOT(unsubscribeStock(qint32, qint32)) );
 */
     connect(newConnection, SIGNAL(buyStock(qint32, qint32, qint32, qint32)),
-            this, SLOT(buyStockRequest(qint32, qint32, qint32, qint32)));
+            this, SIGNAL(buyStock(qint32, qint32, qint32, qint32)));
     connect(newConnection, SIGNAL(sellStock(qint32, qint32, qint32, qint32)),
-            this, SLOT(sellStockRequest(qint32, qint32, qint32, qint32)));
+            this, SIGNAL(sellStock(qint32, qint32, qint32, qint32)));
 
-//    connect(newConn, SIGNAL(getStocks(qint32)),this, SLOT(getStocks(qint32)) );
+    connect(newConnection, SIGNAL(getMyStocks(qint32)),this, SIGNAL(getMyStocks(qint32)) );
 
     //od teraz dopiero zaczniemy przetwarzac wiadomosci z tego polaczenia
     //abysmy nie robili tego zanim polaczylismy sygnaly i sloty
@@ -165,14 +165,3 @@ void Server::registerUserRequest(Connection* connection, QString password)
     emit registerUserRequestFromServer(connection, password);
 
 }
-
-void Server::sellStockRequest(qint32 userId, qint32 stockId, qint32 amount, qint32 price)
-{
-    emit sellStock(userId, stockId, amount, price);
-}
-
-void Server::buyStockRequest(qint32 userId, qint32 stockId, qint32 amount, qint32 price)
-{
-    emit buyStock(userId, stockId, amount, price);
-}
-

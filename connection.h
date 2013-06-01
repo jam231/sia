@@ -50,7 +50,7 @@ signals:
     //void unsubscribeStock(qint32 userId, qint32 stockId);
     void sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
     void buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
-    //void getStocks(qint32 userId);
+    void getMyStocks(qint32 userId);
 };
 
 #endif // CONNECTION_H

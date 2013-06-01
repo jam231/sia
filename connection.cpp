@@ -231,8 +231,8 @@ bool Connection::processMessage()
             }
             break;
         }
-        case IOMessage::GET_STOCKS:
-            //emit getStocks(m_userId);
+        case IOMessage::GET_MY_STOCKS:
+            emit getMyStocks(m_userId);
             break;
         case IOMessage::SUBSCRIBE_STOCK:
         {

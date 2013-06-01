@@ -24,6 +24,9 @@ public:
         SUBSCRIBE_STOCK,    // IMessage subskrybuj
         UNSUBSCRIBE_STOCK,  // IMessage przestan subskrybowac
 
+        GET_MY_STOCKS,      // IMessage prosba o liste wlasnych zasobów
+        GET_MY_STOCKS_RESP,  // OMessage Odeslanie listy zasobow
+
 // O tych nie wiem co myslec... -jam231
         SELL_STOCK_RESP,         //wiadomosc o zrealizowanej transakcji
         BUY_STOCK_RESP,         //wiadomosc o zrealizowanej transakcji

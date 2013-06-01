@@ -31,5 +31,5 @@ qint32 LoginUserRespFail::length() const
      * Bardzo to naiwne, ale niech narazie zostanie.
      *      --jam231
      */
-    return m_reason.size() + sizeof(type());
+    return m_reason.size() + sizeof(type()) + sizeof(qint16);
 }

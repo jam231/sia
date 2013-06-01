@@ -50,16 +50,13 @@ signals:
 
     void sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
     void buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
-    //void getStocks(qint32 userId);
+    void getMyStocks(qint32 userId);
 
 private slots:
     void addNewConnection();
     void disconnectUser(qint32 userId);
     void loginUserRequest(Connection*, qint32, QString);
     void registerUserRequest(Connection* connection, QString password);
-
-    void sellStockRequest(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
-    void buyStockRequest(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
 
 };
 
