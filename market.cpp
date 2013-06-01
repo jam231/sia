@@ -11,7 +11,8 @@
 #include "listofstocksmsg.h"
 #include "getmystocksrespmsg.h"
 #include "changepricemsg.h"
-#include "order.h"
+#include "ordermsg.h"
+#include "getmyordersrespmsg.h"
 
 #include "configmanager.h"
 
@@ -114,7 +115,9 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
             this, SLOT(sellStock(qint32, qint32, qint32, qint32)));
     connect(m_server, SIGNAL(buyStock(qint32, qint32, qint32, qint32)),
             this, SLOT(buyStock(qint32, qint32, qint32, qint32)));
+
     connect(m_server, SIGNAL(getMyStocks(qint32)), this, SLOT(getMyStocks(qint32)) );
+    connect(m_server, SIGNAL(getMyOrders(qint32)), this, SLOT(getMyOrders(qint32)) );
 
     connect(m_sessionOnTimer, SIGNAL(timeout()), this, SLOT(stopSession()));
     connect(m_sessionOffTimer, SIGNAL(timeout()), this, SLOT(startSession()));
@@ -205,9 +208,9 @@ void Market::loginUser(Connection* connection, qint32 userId, QString password)
              *  po prostu nie wysyła wiadomości
              */
             if(m_cachedLastOrder.isValid() &&
-               m_cachedLastOrder.canConvert<Order>()) {
+               m_cachedLastOrder.canConvert<OrderMsg>()) {
 
-                Order msg = m_cachedLastOrder.value<Order>();
+                OrderMsg msg = m_cachedLastOrder.value<OrderMsg>();
                 m_server->send(static_cast<OMessage&>(msg),
                                userId);
             }
@@ -380,7 +383,7 @@ void Market::sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 pric
     if(!query.lastError().isValid())
     {
         // Wyslij wszystkim zasubskybowanym informacje o nowym zleceniu
-        Order msg(OrderType::SELL, stockId, amount, price);
+        OrderMsg msg(OrderType::SELL, stockId, amount, price);
         // Zachowaj jako ostatnia wiadomosc
         m_cachedLastOrder.fromValue(msg);
 
@@ -422,7 +425,7 @@ void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price
      if(!query.lastError().isValid())
      {
          // Wyslij wszystkim zasubskrybowanym informacje o nowym zleceniu
-         Order msg(OrderType::BUY, stockId, amount, price);
+         OrderMsg msg(OrderType::BUY, stockId, amount, price);
 
          // Zachowaj jako ostatnia wiadomosc
          m_cachedLastOrder.fromValue(msg);
@@ -532,6 +535,37 @@ void Market::getMyStocks(qint32 userId)
      else
          qDebug() << "[Market] W getMyStocks"
                   << "zwrócony rekord nie ma dwóch pol.";
+
+     m_server->send(msg, userId);
+}
+
+void Market::getMyOrders(qint32 userId)
+{
+    qDebug() << "[Market] Użytkownik o id =" << userId
+              << "prosi o listę zasobów";
+
+     QSqlQuery query(m_database);
+
+     query.prepare("SELECT zlecenia_uz(:userId);");
+
+     query.bindValue(":userId", userId);
+
+
+     query.setForwardOnly(true);
+
+     m_database.transaction();
+
+     query.exec();
+
+     m_database.commit();
+
+     GetMyOrdersRespMsg msg;
+     while (query.next())
+         if(query.value(0).isValid() && query.value(1).isValid() && query.value(2).isValid() && query.value(3).isValid())
+            msg.addOrder(Order::toOrderType(query.value(0).toInt()), query.value(1).toInt(), query.value(2).toInt(), query.value(3).toInt());
+     else
+         qDebug() << "[Market] W getMyOrders"
+                  << "zwrócony rekord nie ma czterech pol.";
 
      m_server->send(msg, userId);
 }

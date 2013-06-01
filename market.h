@@ -23,7 +23,7 @@ class DatabaseError : public std::exception
     }
 };
 
-Q_DECLARE_METATYPE(Order)
+Q_DECLARE_METATYPE(OrderMsg)
 
 class Market : public QObject
 {
@@ -64,6 +64,7 @@ public slots:
     void sellStock(qint32 userId,qint32 stockId, qint32 amount, qint32 price);
     void buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
     void getMyStocks(qint32 userId);
+    void getMyOrders(qint32 userId);
 
 };
 

@@ -2,7 +2,7 @@
 
 BestOrder::BestOrder(OrderType type, qint32 stockId,
                      qint32 amount, qint32 price) :
-    Order(type, stockId, amount, price)
+    OrderMsg(type, stockId, amount, price)
 {}
 
 IOMessage::MessageType BestOrder::type() const

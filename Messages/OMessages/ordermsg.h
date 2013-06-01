@@ -14,7 +14,7 @@ enum OrderType : qint8
     SELL = 2
 };
 
-class Order : public OMessage
+class OrderMsg : public OMessage
 {
     OrderType m_transactionType;
     qint32 m_stockId;
@@ -23,11 +23,11 @@ class Order : public OMessage
     qint32 length() const;
 public:
     qint32 getStockId();
-    Order(OrderType, qint32, qint32, qint32);
+    OrderMsg(OrderType, qint32, qint32, qint32);
     // TODO:
     // Brzydze sie siebie, nalezy to usunac ! --jam231
-    Order();
-    virtual ~Order() {}
+    OrderMsg();
+    virtual ~OrderMsg() {}
     void send(QIODevice *connection);
     IOMessage::MessageType type() const;
 

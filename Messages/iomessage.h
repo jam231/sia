@@ -26,6 +26,8 @@ public:
 
         GET_MY_STOCKS,      // IMessage prosba o liste wlasnych zasobów
         GET_MY_STOCKS_RESP,  // OMessage Odeslanie listy zasobow
+        GET_MY_ORDERS,      // IMessage prosba o liste wlasnych zasobów
+        GET_MY_ORDERS_RESP,  // OMessage Odeslanie listy zasobow
 
 // O tych nie wiem co myslec... -jam231
         SELL_STOCK_RESP,         //wiadomosc o zrealizowanej transakcji

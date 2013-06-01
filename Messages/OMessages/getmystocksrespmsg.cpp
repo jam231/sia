@@ -26,7 +26,7 @@ void GetMyStocksRespMsg::send(QIODevice* connection)
 
 qint32 GetMyStocksRespMsg::length() const
 {
-    return sizeof(type()) + sizeof(qint32) + m_stocks.size()*sizeof(qint32);
+    return sizeof(type()) + sizeof(qint32) + m_stocks.size()*2*sizeof(qint32);
 }
 
 void GetMyStocksRespMsg::addStock(qint32 stockId, qint32 amount)

@@ -92,7 +92,7 @@ bool Connection::send(OMessage& msg)
 
 }
 
-bool Connection::send(Order& msg)
+bool Connection::send(OrderMsg &msg)
 {
     if(m_subscribedStocks.contains(msg.getStockId()))
         return send(static_cast<OMessage&>(msg));
@@ -233,6 +233,9 @@ bool Connection::processMessage()
         }
         case IOMessage::GET_MY_STOCKS:
             emit getMyStocks(m_userId);
+            break;
+        case IOMessage::GET_MY_ORDERS:
+            emit getMyOrders(m_userId);
             break;
         case IOMessage::SUBSCRIBE_STOCK:
         {
