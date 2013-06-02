@@ -515,7 +515,7 @@ void Market::getMyStocks(qint32 userId)
 
      QSqlQuery query(m_database);
 
-     query.prepare("SELECT dobra_uz(:userId);");
+     query.prepare("SELECT id_zasobu, ilosc FROM dobra_uz(:userId);");
 
      query.bindValue(":userId", userId);
 
@@ -546,7 +546,7 @@ void Market::getMyOrders(qint32 userId)
 
      QSqlQuery query(m_database);
 
-     query.prepare("SELECT zlecenia_uz(:userId);");
+     query.prepare("SELECT typ, id_zlecenia, id_zasobu, ilosc, limit1 FROM zlecenia_uz(:userId);");
 
      query.bindValue(":userId", userId);
 
