@@ -5,7 +5,7 @@
 Server::Server(QObject *parent, int portNumber)
     : QObject(parent), m_server(new QTcpServer(this))
 {
-    qDebug() << "[Server] Tworzenie połączenia na porcie"
+    qDebug() << "\t[Server] Tworzenie połączenia na porcie"
              << portNumber << "...";
 
     m_server = new QTcpServer(this);
@@ -15,18 +15,18 @@ Server::Server(QObject *parent, int portNumber)
 
     if(!m_server->listen(QHostAddress::Any, portNumber))
     {
-        qDebug() << "[Server] Wykryto błąd " << m_server->errorString()
+        qDebug() << "\t[Server] Wykryto błąd " << m_server->errorString()
                  << "podczas tworzenia połączenia tcp.";
         throw TcpConnectionError();
     }
-    qDebug() << "[Server] Ustanowiono połączenie tcp na porcie"
+    qDebug() << "\t[Server] Ustanowiono połączenie tcp na porcie"
              << portNumber << ".";
 }
 
 Server::~Server()
 {
     m_server->close();
-    qDebug() << "[Server] Połączenie tcp zostało zamknięte.";
+    qDebug() << "\t[Server] Połączenie tcp zostało zamknięte.";
     delete m_server;
 }
 
@@ -39,7 +39,8 @@ Server::~Server()
  */
 void Server::send(OMessage& msg, Connection* connection)
 {
-
+    qDebug() << "\t[Server] Wysylanie wiadomsci: " << msg.type()
+             << " do uzytkownika bez id";
     connection->send(msg);
 }
 /*
@@ -55,6 +56,8 @@ void Server::send(RegisterUserRespOk& msg, Connection* connection)
     // Jednak trzeba sie zalogowac świadomie ;-)
     //m_userConnections[msg.getUserId()] = connection;
     //connection->setUserId(msg.getUserId());
+    qDebug() << "\t[Server] Wysylanie wiadomsci: RegisterUserRespOk"
+             << " z nwym id=" << msg.getUserId();
 
     connection->send(msg);
 }
@@ -62,6 +65,8 @@ void Server::send(RegisterUserRespOk& msg, Connection* connection)
 void Server::send(LoginUserRespOk& msg, Connection* connection,
                   qint32 userId)
 {
+    qDebug() << "\t[Server] Wysylanie wiadomsci: LoginUserRespOk"
+             << " do uzytkownika z id=" << userId;
     /*
      *  Sprawdź, czy jest już taki użytkownik w systemie.
      *  Jeżeli jest to wyślij wiadomość świadczącą o niepowodzeniu.
@@ -75,7 +80,7 @@ void Server::send(LoginUserRespOk& msg, Connection* connection,
     }
     else
     {
-        qDebug() << "[Server] Próba zalogowania na aktywne konto.";
+        qDebug() << "\t[Server] Próba zalogowania na aktywne konto.";
         LoginUserRespFail respMsg("Użytkownik już zalogowany.");
 
         connection->send(respMsg);
@@ -84,6 +89,9 @@ void Server::send(LoginUserRespOk& msg, Connection* connection,
 
 void Server::send(OMessage& msg)
 {
+    qDebug() << "\t[Server] Wysylanie wiadomsci: " << msg.type()
+             << " do wszystkich.";
+
     for(auto it = m_userConnections.begin(); it != m_userConnections.end(); it++)
     {
         it.value()->send(msg);
@@ -97,6 +105,10 @@ void Server::send(OMessage& msg, qint32 userId)
      *      Wydajnie by bylo za jednym zamachem zwrocic wartosc value
      *      o ile m_userConnections zawiera klucz key
      */
+
+    qDebug() << "\t[Server] Wysylanie wiadomsci: " << msg.type()
+             << " do uzytkownika z id=" << userId;
+
     if(m_userConnections.contains(userId))
         m_userConnections[userId]->send(msg);
 }

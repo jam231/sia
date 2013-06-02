@@ -28,7 +28,7 @@ Connection::Connection(QTcpSocket* socket, QObject *parent) :
 Connection::~Connection()
 {
     delete m_socket;
-    qDebug() << "[Connection] Połączenie zostało zerwane.";
+    qDebug() << "\t\t[Connection] Połączenie zostało zerwane.";
 }
 
 int Connection::userId() const
@@ -52,17 +52,17 @@ void Connection::setUserId(qint32 userId)
 }
 void Connection::start()
 {
-    qDebug() << "[Connection] Rozpoczynanie nowego połączenia.";
+    qDebug() << "\t\t[Connection] Rozpoczynanie nowego połączenia.";
     connect(m_socket, SIGNAL(disconnected()), this, SLOT(disconect()));
     connect(m_socket, SIGNAL(readyRead()), this, SLOT(processIncomingMessages()));
     if(!m_socket->isValid())
     {
-        qDebug() << "[Connection] Wykryto błąd" << m_socket->errorString()
+        qDebug() << "\t\t[Connection] Wykryto błąd" << m_socket->errorString()
                  << " podczas rozpoczynania nowego połączenia.";
         disconect(); //jak połączenie sie zerwało zanim połączyliśmy sloty
         return;
     }
-    qDebug() << "[Connection] Ustanowiono nowe połączenie.";
+    qDebug() << "\t\t[Connection] Ustanowiono nowe połączenie.";
     //tak na wszelki wypadek jakbysmy dostali już jakieś dane zanim zdążyliśmy połączyć sygnały
     processIncomingMessages();
 }
@@ -86,7 +86,7 @@ bool Connection::send(OMessage& msg)
      * if(!isUserAssigned())
      *   return false;
      */
-    qDebug() << "[Connection] Wiadomośc wysłana.";
+    qDebug() << "\t\t[Connection] Wiadomośc: " << msg.type() << " wysłana.";
     msg.send(m_socket);
     return true;
 
@@ -101,7 +101,7 @@ bool Connection::send(OrderMsg &msg)
 
 void Connection::disconect()
 {
-    qDebug() << "[Connection] Zrywanie połączenia...";
+    qDebug() << "\t\t[Connection] Zrywanie połączenia...";
     if(m_userId != NOT_ASSIGNED)
         emit disconnected(m_userId);
     // Usun po tym jak wszystkie sygnaly zostały przetworzone.
@@ -126,13 +126,13 @@ bool Connection::processMessage()
 
     IOMessage::MessageType msgType = IMessage::getMsgType(message);
 
-    //qDebug() << "[Connection] Id wiadmości:" << msgType;
+    //qDebug() << "\t\t[Connection] Id wiadmości:" << msgType;
 
     switch(msgType)
     {
         case IOMessage::REGISTER_USER_REQ:
         {
-            qDebug() << "[Connection] Żądanie rejestracji.";
+            qDebug() << "\t\t[Connection] Żądanie rejestracji.";
             if(!isUserAssigned())
             {
                 try {
@@ -140,13 +140,13 @@ bool Connection::processMessage()
                     emit registerUserRequestFromConnection(this, request.getPassword());
                 }catch(const std::exception& e)
                 {
-                    qDebug() << "[Connection] Złapano wyjątek" << e.what()
+                    qDebug() << "\t\t[Connection] Złapano wyjątek" << e.what()
                              << "podczas procesu rejestracji.";
                 }
             }
             else
             {
-                qDebug() << "[Connection] Próba rejestracji przez "\
+                qDebug() << "\t\t[Connection] Próba rejestracji przez "\
                             "zalogowanego użytkownika.";
                 RegisterUserRespFail response("Zalogowany.");
                 send(response);
@@ -158,22 +158,22 @@ bool Connection::processMessage()
             if(!isUserAssigned())
             {
 
-                qDebug() << "[Connection] Żądanie autoryzacji.";
+                qDebug() << "\t\t[Connection] Żądanie autoryzacji.";
                 try
                 {
                     LoginUserReqMsg request(message);
-                    qDebug() << "[Connection] Id użytkownika " << request.getUserId();
+                    qDebug() << "\t\t[Connection] Id użytkownika " << request.getUserId();
                     emit loginUserRequestFromConnection(this, request.getUserId(),
                                                         request.getUserPassword());
                 }catch(const std::exception& e)
                 {
-                    qDebug() << "[Connection] Złapano wyjątek" << e.what()
+                    qDebug() << "\t\t[Connection] Złapano wyjątek" << e.what()
                              << "podczas procesu logowania.";
                 }
             }
             else
             {
-                qDebug() << "[Connection] Wykryto próbę wielokrotnego"
+                qDebug() << "\t\t[Connection] Wykryto próbę wielokrotnego"
                          << "logowania przez użytkownika" << m_userId;
                 LoginUserRespFail response("Już zalogowany.");
                 send(response);
@@ -182,7 +182,7 @@ bool Connection::processMessage()
         }
         case IOMessage::UNDEFINED:
         {
-            qDebug() << "[Connection] Otrzymano nieznany typ wiadomości: "
+            qDebug() << "\t\t[Connection] Otrzymano nieznany typ wiadomości: "
                      << msgType << ".";;
             return true;
         }
@@ -195,7 +195,7 @@ bool Connection::processMessage()
     //jesli nie mamy przypisanego usera do tego polaczenia wysylamy UNRECOGNIZED
     if(!isUserAssigned())
     {
-        qDebug() << "[Connection] Nierozpoznano użytkownika.";
+        qDebug() << "\t\t[Connection] Nierozpoznano użytkownika.";
         unrecognizedUserMsg Msg;
         Msg.send(m_socket);
         return true;
@@ -212,7 +212,7 @@ bool Connection::processMessage()
                               msg.getAmount(), msg.getPrice());
             }catch(const std::exception& e)
             {
-                qDebug() << "[Connection] Złapano wyjątek" << e.what()
+                qDebug() << "\t\t[Connection] Złapano wyjątek" << e.what()
                          << "podczas zlecania kupna.";
             }
             break;
@@ -226,7 +226,7 @@ bool Connection::processMessage()
                               msg.getAmount(), msg.getPrice());
             }catch(const std::exception& e)
             {
-                qDebug() << "[Connection] Złapano wyjątek" << e.what()
+                qDebug() << "\t\t[Connection] Złapano wyjątek" << e.what()
                          << "podczas zlecania kupna.";
             }
             break;
@@ -245,7 +245,7 @@ bool Connection::processMessage()
                 addSubscription(msg.getStockId());
             }catch(const std::exception& e)
             {
-                qDebug() << "[Connection] Złapano wyjątek" << e.what()
+                qDebug() << "\t\t[Connection] Złapano wyjątek" << e.what()
                          << "podczas zlecania subskypcji.";
             }
             break;
@@ -258,14 +258,14 @@ bool Connection::processMessage()
                 dropSubscription(msg.getStockId());
             }catch(const std::exception& e)
             {
-                qDebug() << "[Connection] Złapano wyjątek" << e.what()
+                qDebug() << "\t\t[Connection] Złapano wyjątek" << e.what()
                          << "podczas zlecenia usuniecia subskrypcji.";
             }
             break;
         }
         default:
         {
-            qDebug() << "[Connection] Nieodpowiedni typ wiadomości -"
+            qDebug() << "\t\t[Connection] Nieodpowiedni typ wiadomości -"
                      << "najpewniej użytkownik wysłał wiadomośc przeznaczoną"
                      << "do wysyłania przez serwer.";
             break;
