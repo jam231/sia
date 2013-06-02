@@ -13,6 +13,7 @@
 #include "sellstockreqmsg.h"
 #include "subscribestockmsg.h"
 #include "unsubscribestockmsg.h"
+#include "getstockinfomsg.h"
 
 #include "unrecognizedusermsg.h"
 #include "loginuserrespfail.h"
@@ -240,6 +241,13 @@ bool Connection::processMessage()
         case IOMessage::GET_MY_ORDERS:
             emit getMyOrders(m_userId);
             break;
+        case IOMessage::GET_STOCK_INFO:
+        {
+            GetStockInfoMsg msg(message);
+
+            emit getStockInfo(m_userId, msg.getStockId());
+            break;
+        }
         case IOMessage::SUBSCRIBE_STOCK:
         {
             try

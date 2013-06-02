@@ -6,7 +6,7 @@ GetMyOrdersRespMsg::GetMyOrdersRespMsg()
 
 qint16 GetMyOrdersRespMsg::length() const
 {
-    return sizeof(MessageType) + sizeof(qint32) + m_orders.size()*sizeof(Order);
+    return sizeof(MessageType) + sizeof(qint32) + m_orders.size()*(sizeof(qint8) + 3*sizeof(qint32));
 }
 
 IOMessage::MessageType GetMyOrdersRespMsg::type() const

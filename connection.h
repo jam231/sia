@@ -51,6 +51,7 @@ signals:
     void buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
     void getMyStocks(qint32 userId);
     void getMyOrders(qint32 userId);
+    void getStockInfo(qint32 userId, qint32 stockId);
 };
 
 #endif // CONNECTION_H

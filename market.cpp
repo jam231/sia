@@ -13,6 +13,7 @@
 #include "changepricemsg.h"
 #include "ordermsg.h"
 #include "getmyordersrespmsg.h"
+#include "getstockinforespmsg.h"
 
 #include "configmanager.h"
 
@@ -99,6 +100,7 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
 
     connect(m_server, SIGNAL(getMyStocks(qint32)), this, SLOT(getMyStocks(qint32)) );
     connect(m_server, SIGNAL(getMyOrders(qint32)), this, SLOT(getMyOrders(qint32)) );
+    connect(m_server, SIGNAL(getStockInfo(qint32, qint32)), this, SLOT(getStockInfo(qint32, qint32)) );
 
     connect(m_sessionOnTimer, SIGNAL(timeout()), this, SLOT(stopSession()));
     connect(m_sessionOffTimer, SIGNAL(timeout()), this, SLOT(startSession()));
@@ -189,11 +191,10 @@ void Market::loginUser(Connection* connection, qint32 userId, QString password)
              *  po prostu nie wysyła wiadomości
              */
             if(m_cachedLastOrder.isValid() &&
-               m_cachedLastOrder.canConvert<OrderMsg>()) {
+               m_cachedLastOrder.canConvert<Order>()) {
 
-                OrderMsg msg = m_cachedLastOrder.value<OrderMsg>();
-                m_server->send(static_cast<OMessage&>(msg),
-                               userId);
+                OrderMsg msg(m_cachedLastOrder.value<Order>());
+                m_server->send(msg, userId);
             }
             return;
         }
@@ -314,13 +315,19 @@ void Market::notificationHandler(const QString& channelName,
             // TODO: Jak już gdzieś wspomniałem być może
             //       dałoby się to zrobić optymalniej.
             if(m_cachedBestBuyOrders.contains(stockId))
-                m_server->send(m_cachedBestBuyOrders[stockId]);
+            {
+                BestOrderMsg msg(m_cachedBestBuyOrders[stockId]);
+                m_server->send(msg);
+            }
 
             changeCachedBestSellOrders(stockId);
             // TODO: Jak już gdzieś wspomniałem być może
             //       dałoby się to zrobić optymalniej.
             if(m_cachedBestSellOrders.contains(stockId))
-                m_server->send(m_cachedBestSellOrders[stockId]);
+            {
+                BestOrderMsg msg(m_cachedBestSellOrders[stockId]);
+                m_server->send(msg);
+            }
         }
         else
             qDebug() << "[Market] " << CHANGE_CHANNEL
@@ -362,11 +369,12 @@ void Market::sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 pric
 
     if(!query.lastError().isValid())
     {
-        // Wyslij wszystkim zasubskybowanym informacje o nowym zleceniu
-        OrderMsg msg(OrderType::SELL, stockId, amount, price);
-        // Zachowaj jako ostatnia wiadomosc
-        m_cachedLastOrder.fromValue(msg);
+        Order order(Order::SELL, stockId, amount, price);
+        // Zachowaj jako ostatnie zlecenie
+        m_cachedLastOrder.fromValue(order);
 
+        //wyślij wszytkim subskrybentom
+        OrderMsg msg(order);
         m_server->send(msg);
     }
     else
@@ -404,12 +412,12 @@ void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price
      m_database.commit();
      if(!query.lastError().isValid())
      {
-         // Wyslij wszystkim zasubskrybowanym informacje o nowym zleceniu
-         OrderMsg msg(OrderType::BUY, stockId, amount, price);
+         Order order(Order::SELL, stockId, amount, price);
+         // Zachowaj jako ostatnie zlecenie
+         m_cachedLastOrder.fromValue(order);
 
-         // Zachowaj jako ostatnia wiadomosc
-         m_cachedLastOrder.fromValue(msg);
-
+         //wyślij wszytkim subskrybentom
+         OrderMsg msg(order);
          m_server->send(msg);
      }
      else
@@ -439,7 +447,7 @@ void Market::changeCachedBestSellOrders(qint32 stockId)
         if(query.value(0).isValid() && query.value(1).isValid())
         {
             m_cachedBestSellOrders.insert(stockId,
-                                      BestOrder(OrderType::SELL, stockId,
+                                      Order(Order::SELL, stockId,
                                                 query.value(0).toInt(),
                                                 query.value(1).toInt()));
         }
@@ -473,7 +481,7 @@ void Market::changeCachedBestBuyOrders(qint32 stockId)
         if(query.value(0).isValid() && query.value(1).isValid())
         {
             m_cachedBestBuyOrders.insert(stockId,
-                                      BestOrder(OrderType::BUY, stockId,
+                                      Order(Order::BUY, stockId,
                                                 query.value(0).toInt(),
                                                 query.value(1).toInt()));
         }
@@ -548,4 +556,25 @@ void Market::getMyOrders(qint32 userId)
                   << "zwrócony rekord nie ma czterech pol.";
 
      m_server->send(msg, userId);
+}
+
+void Market::getStockInfo(qint32 userId, qint32 stockId)
+{
+    qDebug() << "[Market] Użytkownik o id =" << userId
+              << "prosi o szczegoly zasobu o id=" << stockId;
+
+
+    Order bestBuyOrder;
+    Order bestSellOrder;
+    Order lastOrder;
+
+    if(m_cachedBestBuyOrders.contains(stockId))
+        bestBuyOrder = m_cachedBestBuyOrders[stockId];
+    if(m_cachedBestSellOrders.contains(stockId))
+        bestSellOrder = m_cachedBestSellOrders[stockId];
+    if(m_cachedLastOrder.isValid() && m_cachedLastOrder.canConvert<Order>())
+        lastOrder = m_cachedLastOrder.value<Order>();
+
+    GetStockInfoRespMsg msg(bestBuyOrder, bestSellOrder, lastOrder);
+    m_server->send(msg, userId);
 }

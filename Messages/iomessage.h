@@ -8,6 +8,7 @@ class IOMessage
 public:
     enum MessageType : qint8
     {
+        //rejestracja, logowanie
         REGISTER_USER_REQ,
         REGISTER_USER_RESP_OK,
         REGISTER_USER_RESP_FAIL,
@@ -28,6 +29,8 @@ public:
         GET_MY_STOCKS_RESP,  // OMessage Odeslanie listy zasobow
         GET_MY_ORDERS,      // IMessage prosba o liste wlasnych zasobów
         GET_MY_ORDERS_RESP,  // OMessage Odeslanie listy zasobow
+        GET_STOCK_INFO,         // IMessage prosba o info o danym zasobie
+        GET_STOCK_INFO_RESP,    // OMessage odpowiedz na prosbe o info
 
 // O tych nie wiem co myslec... -jam231
 

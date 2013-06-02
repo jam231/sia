@@ -23,7 +23,7 @@ class DatabaseError : public std::exception
     }
 };
 
-Q_DECLARE_METATYPE(OrderMsg)
+Q_DECLARE_METATYPE(Order)
 
 class Market : public QObject
 {
@@ -40,8 +40,8 @@ class Market : public QObject
     // Domyslnie jest wartosc Invalid
     // przez ktora bedziemy kodować pusty Order;
     QVariant m_cachedLastOrder;
-    QHash<qint32, BestOrder> m_cachedBestSellOrders;
-    QHash<qint32, BestOrder> m_cachedBestBuyOrders;
+    QHash<qint32, Order> m_cachedBestSellOrders;
+    QHash<qint32, Order> m_cachedBestBuyOrders;
 
 protected:
 
@@ -65,6 +65,7 @@ public slots:
     void buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
     void getMyStocks(qint32 userId);
     void getMyOrders(qint32 userId);
+    void getStockInfo(qint32 userId, qint32 stockId);
 
 };
 

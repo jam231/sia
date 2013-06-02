@@ -53,6 +53,7 @@ signals:
 
     void getMyStocks(qint32 userId);
     void getMyOrders(qint32 userId);
+    void getStockInfo(qint32 userId, qint32 stockId);
 
 private slots:
     void addNewConnection();

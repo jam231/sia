@@ -147,6 +147,7 @@ void Server::addNewConnection()
 
     connect(newConnection, SIGNAL(getMyStocks(qint32)),this, SIGNAL(getMyStocks(qint32)) );
     connect(newConnection, SIGNAL(getMyOrders(qint32)),this, SIGNAL(getMyOrders(qint32)) );
+    connect(newConnection, SIGNAL(getStockInfo(qint32, qint32)),this, SIGNAL(getStockInfo(qint32, qint32)) );
 
     //od teraz dopiero zaczniemy przetwarzac wiadomosci z tego polaczenia
     //abysmy nie robili tego zanim polaczylismy sygnaly i sloty

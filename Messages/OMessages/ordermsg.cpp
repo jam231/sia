@@ -2,23 +2,15 @@
 
 #include <QDataStream>
 
-OrderMsg::OrderMsg(OrderType transactionType,
-                               qint32 stockId, qint32 amount,
-                               qint32 price)
-{
-    m_transactionType = transactionType;
-    m_stockId = stockId;
-    m_amount = amount;
-    m_price = price;
-}
+OrderMsg::OrderMsg(Order::OrderType transactionType, qint32 stockId, qint32 amount, qint32 price)
+    : m_order(transactionType, stockId, amount, price)
+{   }
 
-OrderMsg::OrderMsg()
-{
-    m_transactionType = OrderType::UNDEFINED;
-    m_stockId = 0;
-    m_amount = 0;
-    m_price = 0;
-}
+OrderMsg::OrderMsg(Order order) : m_order(order)
+{   }
+
+OrderMsg::OrderMsg() : m_order()
+{   }
 
 IOMessage::MessageType OrderMsg::type() const
 {
@@ -30,10 +22,7 @@ void OrderMsg::send(QIODevice* connection)
     QDataStream out(connection);
 
     sendHeader(out);
-    out << static_cast<qint8>(m_transactionType)
-        << static_cast<qint32>(m_stockId)
-        << static_cast<qint32>(m_amount)
-        << static_cast<qint32>(m_price);
+    out << m_order;
 }
 qint16 OrderMsg::length() const
 {
@@ -42,5 +31,5 @@ qint16 OrderMsg::length() const
 
 qint32 OrderMsg::getStockId()
 {
-    return m_stockId;
+    return m_order.getStockId();
 }

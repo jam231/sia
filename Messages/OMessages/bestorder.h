@@ -3,13 +3,14 @@
 
 #include "ordermsg.h"
 
-class BestOrder : public OrderMsg
+class BestOrderMsg : public OrderMsg
 {
 public:
-    BestOrder(OrderType, qint32, qint32, qint32);
+    BestOrderMsg(Order::OrderType, qint32, qint32, qint32);
+    BestOrderMsg(Order order);
     // TODO:
     // Brzydze sie siebie, nalezy to usunac ! --jam231
-    BestOrder() : OrderMsg() {}
+    BestOrderMsg() : OrderMsg() {}
     IOMessage::MessageType type() const;
 };
 
