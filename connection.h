@@ -5,7 +5,6 @@
 #include "omessage.h"
 
 #include <QObject>
-#include <QSet>
 #include <QByteArray>
 #include <QTcpSocket>
 #include <ordermsg.h>

@@ -53,8 +53,10 @@ void Connection::setUserId(qint32 userId)
 void Connection::start()
 {
     qDebug() << "[Connection] Rozpoczynanie nowego połączenia.";
+
     connect(m_socket, SIGNAL(disconnected()), this, SLOT(disconect()));
     connect(m_socket, SIGNAL(readyRead()), this, SLOT(processIncomingMessages()));
+
     if(!m_socket->isValid())
     {
         qDebug() << "[Connection] Wykryto błąd" << m_socket->errorString()

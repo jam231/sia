@@ -459,9 +459,9 @@ void Market::changeCachedBestSellOrders(qint32 stockId)
         if(query.value(0).isValid() && query.value(1).isValid())
         {
             m_cachedBestSellOrders.insert(stockId,
-                                      BestOrder(OrderType::BUY, stockId,
+                                      BestOrder(OrderType::SELL, stockId,
                                                 query.value(0).toInt(),
-                                               query.value(1).toInt()));
+                                                query.value(1).toInt()));
         }
         else
             qDebug() << "[Market] W changeCachedBestBuyOrders"
@@ -492,8 +492,8 @@ void Market::changeCachedBestBuyOrders(qint32 stockId)
     {
         if(query.value(0).isValid() && query.value(1).isValid())
         {
-            m_cachedBestSellOrders.insert(stockId,
-                                      BestOrder(OrderType::SELL, stockId,
+            m_cachedBestBuyOrders.insert(stockId,
+                                      BestOrder(OrderType::BUY, stockId,
                                                 query.value(0).toInt(),
                                                 query.value(1).toInt()));
         }
