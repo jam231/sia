@@ -20,7 +20,8 @@ class OrderMsg : public OMessage
     qint32 m_stockId;
     qint32 m_amount;
     qint32 m_price;
-    qint32 length() const;
+
+    qint16 length() const;
 public:
     qint32 getStockId();
     OrderMsg(OrderType, qint32, qint32, qint32);

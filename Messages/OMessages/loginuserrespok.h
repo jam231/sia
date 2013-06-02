@@ -7,7 +7,7 @@
 class LoginUserRespOk : public OMessage
 {
 
-    qint32 length() const;
+    qint16 length() const;
 public:
     LoginUserRespOk();
     MessageType type() const;

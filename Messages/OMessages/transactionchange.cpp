@@ -10,9 +10,9 @@ TransactionChange::TransactionChange(qint32 stockId, qint32 amount,
     m_date = date;
 }
 
-qint32 TransactionChange::length() const
+qint16 TransactionChange::length() const
 {
-    return -1;
+    return sizeof(MessageType) + 3*sizeof(qint32) + m_date.size();
 }
 
 void TransactionChange::send(QIODevice *connection)
@@ -21,9 +21,9 @@ void TransactionChange::send(QIODevice *connection)
     QDataStream out(connection);
 
     auto date = m_date.toUtf8();
-    out << static_cast<qint16>(sizeof(qint8) + 3*sizeof(qint32) + date.size())
-        << static_cast<qint8>(type())
-        << static_cast<qint32>(m_stockId)
+
+    sendHeader(out);
+    out << static_cast<qint32>(m_stockId)
         << static_cast<qint32>(m_amount)
         << static_cast<qint32>(m_price)
         << static_cast<qint16>(date.size());

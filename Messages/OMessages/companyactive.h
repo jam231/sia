@@ -11,7 +11,7 @@ class CompanyActiveResp : public OMessage
 {
     qint32 m_companyId;
 
-    qint32 length() const;
+    qint16 length() const;
 public:
     CompanyActiveResp(qint32 companyId);
     void send(QIODevice *connection);
