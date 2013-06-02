@@ -115,13 +115,11 @@ void Server::addNewConnection()
 
     connect(newConnection, SIGNAL(disconnected(qint32)),
               this, SLOT(disconnectUser(qint32)));
-    connect(newConnection, SIGNAL(registerUserRequestFromConnection(Connection*,
-                                                              QString)),
-              this, SLOT(registerUserRequest(Connection *, QString)));
 
-    connect(newConnection, SIGNAL(loginUserRequestFromConnection(Connection*,
-                                                           qint32,QString)),
-              this, SLOT(loginUserRequest(Connection *, qint32, QString)));
+    connect(newConnection, SIGNAL(registerUserRequestFromConnection(Connection*, QString)),
+              this, SIGNAL(registerUserRequestFromServer(Connection *, QString)));
+    connect(newConnection, SIGNAL(loginUserRequestFromConnection(Connection*, qint32,QString)),
+              this, SIGNAL(loginUserRequestFromServer(Connection *, qint32, QString)));
 
 
 /*
@@ -153,16 +151,4 @@ void Server::disconnectUser(qint32 userId)
     {
         qDebug() << "[Server] Próba usunięcia niepołączonego użytkownika.";
     }
-}
-
-void Server::loginUserRequest(Connection* connection, qint32 userId,
-                       QString password)
-{
-    emit loginUserRequestFromServer(connection, userId, password);
-}
-
-void Server::registerUserRequest(Connection* connection, QString password)
-{
-    emit registerUserRequestFromServer(connection, password);
-
 }

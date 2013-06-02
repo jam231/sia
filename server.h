@@ -43,21 +43,21 @@ public slots:
 signals:
 
     void registerUserRequestFromServer(Connection*, QString password);
-    void loginUserRequestFromServer(Connection *connection,
-                                    qint32 userId, QString password);
+    void loginUserRequestFromServer(Connection *connection, qint32 userId, QString password);
+
     //void subscribeStock(qint32 userId, qint32 stockId);
     //void unsubscribeStock(qint32 userId, qint32 stockId);
 
     void sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
     void buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
+
     void getMyStocks(qint32 userId);
     void getMyOrders(qint32 userId);
 
 private slots:
     void addNewConnection();
     void disconnectUser(qint32 userId);
-    void loginUserRequest(Connection*, qint32, QString);
-    void registerUserRequest(Connection* connection, QString password);
+
 
 };
 
