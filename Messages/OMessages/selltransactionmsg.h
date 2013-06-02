@@ -10,7 +10,7 @@ class SellTransactionMsg : public OMessage
     qint32 m_amount;
     qint32 m_orderId;
 
-    qint32 length() const;
+    qint16 length() const;
 public:
     SellTransactionMsg(qint32 m_orderId, qint32 m_amount);
     void send(QIODevice *connection);

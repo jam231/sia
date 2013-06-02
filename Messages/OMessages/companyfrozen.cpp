@@ -20,7 +20,7 @@ void CompanyFrozenResp::send(QIODevice *connection)
         << m_companyId;
 }
 
-qint32 CompanyFrozenResp::length() const
+qint16 CompanyFrozenResp::length() const
 {
     return -1;
 }

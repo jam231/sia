@@ -10,7 +10,7 @@ IOMessage::MessageType UnrecognizedUserMsg::type() const
     return UNRECOGNIZED_USER;
 }
 
-qint32 UnrecognizedUserMsg::length() const
+qint16 UnrecognizedUserMsg::length() const
 {
 
     return sizeof(MessageType);

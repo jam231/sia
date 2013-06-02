@@ -35,7 +35,7 @@ void OrderMsg::send(QIODevice* connection)
         << static_cast<qint32>(m_amount)
         << static_cast<qint32>(m_price);
 }
-qint32 OrderMsg::length() const
+qint16 OrderMsg::length() const
 {
     return -1;
 }

@@ -8,7 +8,7 @@ RegisterUserRespFail::RegisterUserRespFail(QString reason) : m_reason(reason)
     m_reason = reason;
 }
 
-qint32 RegisterUserRespFail::length() const
+qint16 RegisterUserRespFail::length() const
 {
     return m_reason.length() + sizeof(type());
 }

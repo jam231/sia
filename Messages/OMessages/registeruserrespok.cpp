@@ -7,7 +7,7 @@ RegisterUserRespOk::RegisterUserRespOk(qint32 userId) : OMessage(),
 {
 }
 
-qint32 RegisterUserRespOk::length() const
+qint16 RegisterUserRespOk::length() const
 { 
     return sizeof(m_userId) + sizeof(type());
 }

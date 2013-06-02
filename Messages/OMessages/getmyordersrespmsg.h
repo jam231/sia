@@ -10,7 +10,7 @@ class GetMyOrdersRespMsg : public OMessage
 {
     QVector<Order> m_orders;
 
-    qint32 length() const;
+    qint16 length() const;
 public:
     GetMyOrdersRespMsg();
 

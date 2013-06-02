@@ -9,7 +9,8 @@
 class UnsubscribeStockMsg : public IMessage
 {
     qint32 m_stockId;
-    qint32 length() const;
+
+    qint16 length() const;
 public:
     UnsubscribeStockMsg(QDataStream& msg);
 

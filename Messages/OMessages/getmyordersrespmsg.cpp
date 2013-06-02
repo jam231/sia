@@ -4,7 +4,7 @@ GetMyOrdersRespMsg::GetMyOrdersRespMsg()
 {
 }
 
-qint32 GetMyOrdersRespMsg::length() const
+qint16 GetMyOrdersRespMsg::length() const
 {
     return sizeof(type()) + sizeof(qint32) + m_orders.size()*sizeof(Order);
 }

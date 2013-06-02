@@ -12,7 +12,7 @@ class SellStockReqMsg : public IMessage
     qint32 m_amount;
     qint32 m_price;
 
-    qint32 length() const;
+    qint16 length() const;
 public:
     SellStockReqMsg(QDataStream& msg);
 

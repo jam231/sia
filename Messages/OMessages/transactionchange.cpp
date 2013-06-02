@@ -10,7 +10,7 @@ TransactionChange::TransactionChange(qint32 stockId, qint32 amount,
     m_date = date;
 }
 
-qint32 TransactionChange::length() const
+qint16 TransactionChange::length() const
 {
     return -1;
 }

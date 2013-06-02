@@ -23,7 +23,7 @@ IOMessage::MessageType SellTransactionMsg::type() const
     return SELL_TRANSACTION;
 }
 
-qint32 SellTransactionMsg::length() const
+qint16 SellTransactionMsg::length() const
 {
     return -1;
 }

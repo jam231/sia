@@ -11,7 +11,7 @@ ListOfStocksMsg::ListOfStocksMsg(const QVector<Stock>& stocks) : OMessage(), m_s
 {
 }
 
-qint32 ListOfStocksMsg::length() const
+qint16 ListOfStocksMsg::length() const
 {
     //8 bajtow na typ + dlugosc + 4 bajty na ilosc akcji
     return 8 + 4 + m_stocks.size() * sizeof(Stock);

@@ -20,7 +20,7 @@ void LoginUserRespOk::send(QIODevice* connection)
         << static_cast<qint8>(type());
 }
 
-qint32 LoginUserRespOk::length() const
+qint16 LoginUserRespOk::length() const
 {
     return  sizeof(type());
 }

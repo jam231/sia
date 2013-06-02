@@ -17,7 +17,7 @@ class ChangePriceMsg : public OMessage
 {
     Stock m_stock;
 
-    qint32 length() const;
+    qint16 length() const;
 public:
     ChangePriceMsg(const Stock& stock);
 

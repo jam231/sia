@@ -8,7 +8,7 @@ class RegisterUserRespFail : public OMessage
 {
     QString m_reason;
 
-    qint32 length() const;
+    qint16 length() const;
 public:
     RegisterUserRespFail(QString reason);
 

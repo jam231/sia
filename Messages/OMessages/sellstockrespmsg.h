@@ -18,7 +18,7 @@ class SellStockRespMsg : public OMessage
 {
     Transaction m_transaction;
 
-    qint32 length() const;
+    qint16 length() const;
 public:
     SellStockRespMsg(const Transaction& transaction);
 

@@ -8,7 +8,7 @@
 class OMessage : public IOMessage
 {
 protected:
-    virtual qint32 length() const = 0;
+    virtual qint16 length() const = 0;
     OMessage();
 
 public:

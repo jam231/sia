@@ -9,7 +9,7 @@ class RegisterUserRespOk : public OMessage
 {
     qint32 m_userId;
 
-    qint32 length() const;
+    qint16 length() const;
 public:
     RegisterUserRespOk(qint32 userId);
 

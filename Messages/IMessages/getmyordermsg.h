@@ -5,6 +5,7 @@
 
 class GetMyOrderMsg : public IMessage
 {
+    qint16 length() const;
 public:
     GetMyOrderMsg();
 

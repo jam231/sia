@@ -24,7 +24,7 @@ void GetMyStocksRespMsg::send(QIODevice* connection)
     }
 }
 
-qint32 GetMyStocksRespMsg::length() const
+qint16 GetMyStocksRespMsg::length() const
 {
     return sizeof(type()) + sizeof(qint32) + m_stocks.size()*2*sizeof(qint32);
 }

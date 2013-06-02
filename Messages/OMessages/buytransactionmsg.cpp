@@ -21,7 +21,7 @@ IOMessage::MessageType BuyTransactionMsg::type() const
 {
     return BUY_TRANSACTION;
 }
-qint32 BuyTransactionMsg::length() const
+qint16 BuyTransactionMsg::length() const
 {
     return -1;
 }

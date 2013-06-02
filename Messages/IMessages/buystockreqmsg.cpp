@@ -34,7 +34,7 @@ qint32 BuyStockReqMsg::getStockId() const
     return m_stockId;
 }
 
-qint32 BuyStockReqMsg::length() const
+qint16 BuyStockReqMsg::length() const
 {
     return -1;
 }

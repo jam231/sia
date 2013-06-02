@@ -10,7 +10,7 @@ class LoginUserRespFail : public OMessage
 {
     QString m_reason;
 
-    qint32 length() const;
+    qint16 length() const;
 public:
     LoginUserRespFail(QString);
 

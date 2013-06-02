@@ -8,7 +8,7 @@
 class UnrecognizedUserMsg : public OMessage
 {
 
-    qint32 length() const;
+    qint16 length() const;
 public:
     UnrecognizedUserMsg();
 
