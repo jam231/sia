@@ -5,15 +5,11 @@
 
 #include <QDataStream>
 
-/*
- *  Nie działa
- *
- *      --jam231
- */
 
 class UnsubscribeStockMsg : public IMessage
 {
     qint32 m_stockId;
+    qint32 length() const;
 public:
     UnsubscribeStockMsg(QDataStream& msg);
 

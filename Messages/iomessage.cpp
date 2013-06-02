@@ -18,12 +18,7 @@ IOMessage::MessageType IOMessage::toType(qint8 msgId)
         case SUBSCRIBE_STOCK : return SUBSCRIBE_STOCK;
         case UNSUBSCRIBE_STOCK : return UNSUBSCRIBE_STOCK;
         case SELL_STOCK_REQ : return SELL_STOCK_REQ;
-        case SELL_STOCK_RESP : return SELL_STOCK_RESP;
         case BUY_STOCK_REQ : return BUY_STOCK_REQ;
-        case BUY_STOCK_RESP : return BUY_STOCK_RESP;
-        case GET_STOCKS : return GET_STOCKS;
-        case LIST_OF_STOCKS : return LIST_OF_STOCKS;
-        case CHANGE_PRICE : return CHANGE_PRICE;
         case GET_MY_STOCKS : return GET_MY_STOCKS;
         case GET_MY_STOCKS_RESP : return GET_MY_STOCKS_RESP;
         case GET_MY_ORDERS : return GET_MY_ORDERS;

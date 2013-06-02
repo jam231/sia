@@ -2,22 +2,22 @@
 
 #include <QDataStream>
 
-unrecognizedUserMsg::unrecognizedUserMsg()
+UnrecognizedUserMsg::UnrecognizedUserMsg()
 {}
 
-IOMessage::MessageType unrecognizedUserMsg::type() const
+IOMessage::MessageType UnrecognizedUserMsg::type() const
 {
     return UNRECOGNIZED_USER;
 }
 
-qint32 unrecognizedUserMsg::length() const
+qint32 UnrecognizedUserMsg::length() const
 {
 
     return sizeof(MessageType);
 }
 
 
-void unrecognizedUserMsg::send(QIODevice* connection)
+void UnrecognizedUserMsg::send(QIODevice* connection)
 {
     // Domyślnie BigEndian
     QDataStream out(connection);

@@ -17,7 +17,8 @@ public:
     MessageType type() const;
     void send(QIODevice* connection);
 
-    void addOrder(Order::OrderType m_transactionType, qint32 m_stockId, qint32 m_amount, qint32 m_price);
+    void addOrder(Order::OrderType m_transactionType, qint32 m_stockId, qint32 m_amount,
+                  qint32 m_price);
     void addOrder(Order order);
 };
 

@@ -59,20 +59,6 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
         throw DatabaseError();
     }
 
-    /*
-     * Zostawiam dla potomnosci, zeby ogladali jaki to ladny bug jest
-     * ;-) Wydaje sie, że kompilator przeksztalca ponizsze wyrazenie
-     * zgodnie z prawami de Morgana, a pozniej wiadomo skoro pierwszy parametr
-     * jest prawdziwy to po co sprawdzac drugi...
-     */
-    //if(!m_database.driver()->subscribeToNotification(BUY_TRANSACTIONS_CHANNEL) &&
-    //   !m_database.driver()->subscribeToNotification(SELL_TRANSACTIONS_CHANNEL)
-    //   )
-    // {
-    //    qDebug() << "[Market] Wykryto błąd" << m_database.lastError().text()
-    //             << "podczas otwierania kanału komunikacyjnego.";
-    //    throw DatabaseError();
-    //}
     m_database.driver()->subscribeToNotification(BUY_TRANSACTIONS_CHANNEL);
     m_database.driver()->subscribeToNotification(SELL_TRANSACTIONS_CHANNEL);
     m_database.driver()->subscribeToNotification(CHANGE_CHANNEL);
@@ -105,12 +91,7 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
             this, SLOT(notificationHandler(const QString&,
                                            QSqlDriver::NotificationSource,
                                            const QVariant&)));
-/*
-    connect(m_server, SIGNAL(subscribeStock(qint32, qint32)),
-            this, SLOT(subscribeStock(qint32, qint32)) );
-    connect(m_server, SIGNAL(unsubscribeStock(qint32, qint32)),
-            this, SLOT(unsubscribeStock(qint32, qint32)) );
-*/
+
     connect(m_server, SIGNAL(sellStock(qint32, qint32, qint32, qint32)),
             this, SLOT(sellStock(qint32, qint32, qint32, qint32)));
     connect(m_server, SIGNAL(buyStock(qint32, qint32, qint32, qint32)),
@@ -121,6 +102,7 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
 
     connect(m_sessionOnTimer, SIGNAL(timeout()), this, SLOT(stopSession()));
     connect(m_sessionOffTimer, SIGNAL(timeout()), this, SLOT(startSession()));
+
     qDebug() << "[Market] Serwer jest aktywny.";
     startSession();
 }
@@ -142,8 +124,7 @@ Market::~Market()
 
 void Market::registerNewUser(Connection* connection, QString password)
 {
-    //zapytanie rejestrujące użytkownika powinno zwracać dokłądnie 1 rekord z nowym id
-    //QString queryString;
+
     qDebug() << "[Market] Rejestrowane nowego uzytkownika w toku...";
     QSqlQuery query(m_database);
     //
@@ -179,10 +160,10 @@ void Market::loginUser(Connection* connection, qint32 userId, QString password)
     qDebug() << "[Market] Wyszukiwanie użytkownika o id =" << userId
              << "w bazie...";
     QSqlQuery query(m_database);
-    //
+
     query.prepare("SELECT haslo FROM uzytkownik WHERE id_uz = :id ;");
     query.bindValue(":id", userId);
-    //
+
     query.setForwardOnly(true);
 
     m_database.transaction();
@@ -237,7 +218,7 @@ void Market::startSession()
     m_sessionOffTimer->stop();
     QSqlQuery query(m_database);
     query.prepare("SELECT rozpocznij_sesje();");
-
+    GetMyStocksRespMsg msg;
     query.setForwardOnly(true);
 
     m_database.transaction();
@@ -245,7 +226,6 @@ void Market::startSession()
     query.exec();
 
     m_database.commit();
-
 
     m_sessionOnTimer->start();
 

@@ -198,7 +198,7 @@ bool Connection::processMessage()
     if(!isUserAssigned())
     {
         qDebug() << "[Connection] Nierozpoznano użytkownika.";
-        unrecognizedUserMsg Msg;
+        UnrecognizedUserMsg Msg;
         Msg.send(m_socket);
         return true;
     }

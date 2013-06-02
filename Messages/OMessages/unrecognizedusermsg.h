@@ -5,12 +5,12 @@
 
 #include <QIODevice>
 
-class unrecognizedUserMsg : public OMessage
+class UnrecognizedUserMsg : public OMessage
 {
 
     qint32 length() const;
 public:
-    unrecognizedUserMsg();
+    UnrecognizedUserMsg();
 
     MessageType type() const;
     void send(QIODevice* connection);

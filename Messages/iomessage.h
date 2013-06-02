@@ -30,12 +30,6 @@ public:
         GET_MY_ORDERS_RESP,  // OMessage Odeslanie listy zasobow
 
 // O tych nie wiem co myslec... -jam231
-        SELL_STOCK_RESP,         //wiadomosc o zrealizowanej transakcji
-        BUY_STOCK_RESP,         //wiadomosc o zrealizowanej transakcji
-        GET_STOCKS,         //poproszenei serwera o wysłąnie listy akcji
-        LIST_OF_STOCKS,     //wysyłanie przez serwer listy akcji
-        CHANGE_PRICE,        //wysłanie do użytkownika informacji o zmianie cen akcji
-//
 
         COMPANY_STATUS_REQ,
         COMPANY_ACTIVE_RESP,
