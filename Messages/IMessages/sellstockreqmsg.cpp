@@ -33,10 +33,3 @@ qint32 SellStockReqMsg::getStockId() const
 {
     return m_stockId;
 }
-
-/*
-Offer SellStockReqMsg::offer() const
-{
-    return m_offer;
-}
-*/

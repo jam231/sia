@@ -9,7 +9,7 @@ class GetMyStocksRespMsg : public OMessage
 {
     QVector<QPair<qint32, qint32> > m_stocks;
 
-    qint32 length() const;
+    qint16 length() const;
 public:
     GetMyStocksRespMsg();
 

@@ -1,7 +1,6 @@
 #include "subscribestockmsg.h"
 
-
-SubscribeStockMsg::SubscribeStockMsg(QDataStream& in) //: IMessage()
+SubscribeStockMsg::SubscribeStockMsg(QDataStream& in)
 {
     if(in.device()->bytesAvailable() < (sizeof(m_stockId)))
         throw InvalidDataInMsg();

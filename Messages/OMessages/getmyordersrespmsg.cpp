@@ -4,9 +4,9 @@ GetMyOrdersRespMsg::GetMyOrdersRespMsg()
 {
 }
 
-qint32 GetMyOrdersRespMsg::length() const
+qint16 GetMyOrdersRespMsg::length() const
 {
-    return sizeof(type()) + sizeof(qint32) + m_orders.size()*sizeof(Order);
+    return sizeof(MessageType) + sizeof(qint32) + m_orders.size()*sizeof(Order);
 }
 
 IOMessage::MessageType GetMyOrdersRespMsg::type() const
@@ -19,8 +19,8 @@ void GetMyOrdersRespMsg::send(QIODevice* connection)
     // Domyślnie BigEndian
     QDataStream out(connection);
 
-    out << length() << static_cast<qint8>(type())
-        << static_cast<qint32>(m_orders.size());
+    sendHeader(out);
+    out << static_cast<qint32>(m_orders.size());
     for(int i = 0; i < m_orders.size(); ++i)
         out << m_orders[i];
 }

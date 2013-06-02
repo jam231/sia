@@ -15,12 +15,12 @@ IOMessage::MessageType CompanyFrozenResp::type() const
 void CompanyFrozenResp::send(QIODevice *connection)
 {
     QDataStream out(connection);
-    out << static_cast<qint16>(sizeof(qint8) + sizeof(qint32))
-        << static_cast<qint8>(type())
-        << m_companyId;
+
+    sendHeader(out);
+    out << m_companyId;
 }
 
-qint32 CompanyFrozenResp::length() const
+qint16 CompanyFrozenResp::length() const
 {
-    return -1;
+    return sizeof(MessageType) + sizeof(qint32);
 }

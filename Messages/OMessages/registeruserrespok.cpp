@@ -7,9 +7,9 @@ RegisterUserRespOk::RegisterUserRespOk(qint32 userId) : OMessage(),
 {
 }
 
-qint32 RegisterUserRespOk::length() const
+qint16 RegisterUserRespOk::length() const
 { 
-    return sizeof(m_userId) + sizeof(type());
+    return sizeof(m_userId) + sizeof(MessageType);
 }
 
 IOMessage::MessageType RegisterUserRespOk::type() const
@@ -22,12 +22,8 @@ void RegisterUserRespOk::send(QIODevice* connection)
     // Domyślnie BigEndian
     QDataStream out(connection);
 
-    // Nie wiem czemu trzeba tu robić cast'a
-    // IOMessage:MessageType to enum, który ma typ qint8
-    // jednak bez cast'a strumien traktuje type() jako 4 bajty.
-    out << static_cast<qint16>(sizeof(qint8) + sizeof(m_userId))
-        << static_cast<qint8>(type())
-        << m_userId;
+    sendHeader(out);
+    out << m_userId;
 }
 
 qint32 RegisterUserRespOk::getUserId() const

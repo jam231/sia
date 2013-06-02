@@ -28,16 +28,16 @@ void OrderMsg::send(QIODevice* connection)
 {
     // Domyślnie BigEndian
     QDataStream out(connection);
-    out << static_cast<qint16>(2*sizeof(qint8) + 3*sizeof(qint32))
-        << static_cast<qint8>(type())
-        << static_cast<qint8>(m_transactionType)
+
+    sendHeader(out);
+    out << static_cast<qint8>(m_transactionType)
         << static_cast<qint32>(m_stockId)
         << static_cast<qint32>(m_amount)
         << static_cast<qint32>(m_price);
 }
-qint32 OrderMsg::length() const
+qint16 OrderMsg::length() const
 {
-    return -1;
+    return sizeof(MessageType) + sizeof(qint8) + 3*sizeof(qint32);
 }
 
 qint32 OrderMsg::getStockId()

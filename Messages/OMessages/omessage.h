@@ -4,11 +4,13 @@
 #include "iomessage.h"
 
 #include <QIODevice>
+#include <QDataStream>
 
 class OMessage : public IOMessage
 {
 protected:
-    virtual qint32 length() const = 0;
+    virtual qint16 length() const = 0;
+    void sendHeader(QDataStream& out);
     OMessage();
 
 public:

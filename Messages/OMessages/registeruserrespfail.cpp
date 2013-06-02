@@ -8,9 +8,9 @@ RegisterUserRespFail::RegisterUserRespFail(QString reason) : m_reason(reason)
     m_reason = reason;
 }
 
-qint32 RegisterUserRespFail::length() const
+qint16 RegisterUserRespFail::length() const
 {
-    return m_reason.length() + sizeof(type());
+    return sizeof(MessageType) + sizeof(qint16) + m_reason.size();
 }
 
 IOMessage::MessageType RegisterUserRespFail::type() const
@@ -22,13 +22,9 @@ void RegisterUserRespFail::send(QIODevice* connection)
     // Domyślnie BigEndian.
     QDataStream out(connection);
 
-    // Nie wiem czemu trzeba tu robić cast'a
-    // IOMessage:MessageType to enum, który ma typ qint8
-    // jednak bez cast'a strumien traktuje type() jako 4 bajty.
-
     auto reason = m_reason.toUtf8();
-    out << static_cast<qint16>(sizeof(qint8) + sizeof(qint16) + reason.size())
-        << static_cast<qint8>(type())
-        << static_cast<qint16>(reason.size());
+
+    sendHeader(out);
+    out << static_cast<qint16>(reason.size());
     connection->write(reason);
 }

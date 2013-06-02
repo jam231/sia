@@ -21,10 +21,6 @@ HEADERS += \
     Messages/IMessages/unsubscribestockmsg.h \
     Messages/IMessages/sellstockreqmsg.h \
     Messages/IMessages/buystockreqmsg.h \
-    Messages/OMessages/sellstockrespmsg.h \
-    Messages/OMessages/buystockrespmsg.h \
-    Messages/IMessages/getstocksmsg.h \
-    Messages/OMessages/listofstocksmsg.h \
     Messages/OMessages/changepricemsg.h \
     configmanager.h \
     utilities.h \
@@ -37,7 +33,6 @@ HEADERS += \
     Messages/IMessages/companystatus.h \
     Messages/OMessages/companyfrozen.h \
     Messages/OMessages/companyactive.h \
-    Messages/OMessages/buytransactionmsg.h \
     Messages/OMessages/selltransactionmsg.h \
     Messages/OMessages/transactionchange.h \
     Messages/OMessages/bestorder.h \
@@ -64,11 +59,6 @@ SOURCES += \
     Messages/IMessages/unsubscribestockmsg.cpp \
     Messages/IMessages/sellstockreqmsg.cpp \
     Messages/IMessages/buystockreqmsg.cpp \
-    Messages/OMessages/sellstockrespmsg.cpp \
-    Messages/OMessages/buystockrespmsg.cpp \
-    Messages/IMessages/getstocksmsg.cpp \
-    Messages/OMessages/listofstocksmsg.cpp \
-    Messages/OMessages/changepricemsg.cpp \
     main.cpp \
     configmanager.cpp \
     utilities.cpp \
@@ -85,12 +75,12 @@ SOURCES += \
     Messages/OMessages/selltransactionmsg.cpp \
     Messages/OMessages/transactionchange.cpp \
     Messages/OMessages/bestorder.cpp \
-    Messages/IMessages/getmystocksmsg.cpp \
     Messages/OMessages/getmystocksrespmsg.cpp \
     order.cpp \
     Messages/OMessages/getmyordersrespmsg.cpp \
     Messages/OMessages/ordermsg.cpp \
-    Messages/IMessages/getmyordermsg.cpp
+    Messages/IMessages/getmyordermsg.cpp \
+    Messages/IMessages/getmystocksmsg.cpp
 
 INCLUDEPATH += Messages \
     Messages/IMessages \

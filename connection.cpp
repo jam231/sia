@@ -53,8 +53,10 @@ void Connection::setUserId(qint32 userId)
 void Connection::start()
 {
     qDebug() << "\t\t[Connection] Rozpoczynanie nowego połączenia.";
+
     connect(m_socket, SIGNAL(disconnected()), this, SLOT(disconect()));
     connect(m_socket, SIGNAL(readyRead()), this, SLOT(processIncomingMessages()));
+
     if(!m_socket->isValid())
     {
         qDebug() << "\t\t[Connection] Wykryto błąd" << m_socket->errorString()
@@ -196,7 +198,8 @@ bool Connection::processMessage()
     if(!isUserAssigned())
     {
         qDebug() << "\t\t[Connection] Nierozpoznano użytkownika.";
-        unrecognizedUserMsg Msg;
+        UnrecognizedUserMsg Msg;
+
         Msg.send(m_socket);
         return true;
     }

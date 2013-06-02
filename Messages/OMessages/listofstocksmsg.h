@@ -19,7 +19,7 @@ class ListOfStocksMsg : public OMessage
 {
     QVector<Stock> m_stocks;
 
-    qint32 length() const;
+    qint16 length() const;
 public:
     ListOfStocksMsg();
     ListOfStocksMsg(const QVector<Stock>& stocks);
