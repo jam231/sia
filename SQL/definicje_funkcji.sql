@@ -280,19 +280,19 @@ CREATE TRIGGER zs_on_update AFTER UPDATE ON zlecenie_sprzedazy
 	
 	
 CREATE OR REPLACE FUNCTION najlepsze_kupno(in zasob integer, out integer, out bigint)
-    AS $$ SELECT limit1,SUM(ilosc) FROM (SELECT limit1,ilosc,id_zasobu from zlecenie_kupna UNION SELECT 0,0,zasob) t WHERE id_zasobu=zasob GROUP BY limit1 ORDER BY 2 DESC LIMIT 1 $$
+    AS $$ SELECT limit1,SUM(ilosc) FROM zlecenie_kupna t WHERE id_zasobu=zasob GROUP BY limit1 ORDER BY 2 DESC LIMIT 1 $$
 LANGUAGE SQL;
 
 
 
 CREATE OR REPLACE FUNCTION najlepsza_sprzedaz(in zasob integer, out integer, out bigint)
-    AS $$ SELECT limit1,SUM(ilosc) FROM (SELECT limit1,ilosc,id_zasobu FROM zlecenie_sprzedazy UNION SELECT 0,0,zasob) t WHERE id_zasobu=zasob GROUP BY limit1 ORDER BY 2 ASC LIMIT 1 $$
+    AS $$ SELECT limit1,SUM(ilosc) FROM zlecenie_sprzedazy t WHERE id_zasobu=zasob GROUP BY limit1 ORDER BY 2 ASC LIMIT 1 $$
 LANGUAGE SQL;
 
 
 
 CREATE OR REPLACE FUNCTION ostatnia_transakcja(in zasob integer, out integer, out integer, out timestamp with time zone)
-    AS $$ SELECT cena,ilosc,czas FROM (SELECT cena,ilosc,czas,id_zasobu FROM zrealizowane_zlecenie UNION SELECT 0,0,CURRENT_TIMESTAMP,zasob) t WHERE id_zasobu=zasob ORDER BY czas ASC LIMIT 1 $$
+    AS $$ SELECT cena,ilosc,czas FROM zrealizowane_zlecenie t WHERE id_zasobu=zasob ORDER BY czas ASC LIMIT 1 $$
 LANGUAGE SQL;
 
 
