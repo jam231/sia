@@ -315,12 +315,24 @@ void Market::notificationHandler(const QString& channelName,
             //       dałoby się to zrobić optymalniej.
             if(m_cachedBestBuyOrders.contains(stockId))
                 m_server->send(m_cachedBestBuyOrders[stockId]);
+            else
+            {
+                BestOrder msg(OrderType::BUY, stockId, 0, 0);
+                m_server->send(msg);
+            }
+
 
             changeCachedBestSellOrders(stockId);
             // TODO: Jak już gdzieś wspomniałem być może
             //       dałoby się to zrobić optymalniej.
             if(m_cachedBestSellOrders.contains(stockId))
                 m_server->send(m_cachedBestSellOrders[stockId]);
+            else
+            {
+                BestOrder msg(OrderType::SELL, stockId, 0, 0);
+                m_server->send(msg);
+            }
+
         }
         else
             qDebug() << "[Market] " << CHANGE_CHANNEL
