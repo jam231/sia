@@ -542,7 +542,7 @@ void Market::getMyStocks(qint32 userId)
 void Market::getMyOrders(qint32 userId)
 {
     qDebug() << "[Market] Użytkownik o id =" << userId
-              << "prosi o listę zasobów";
+              << "prosi o listę zlecen.";
 
      QSqlQuery query(m_database);
 
