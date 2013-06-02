@@ -73,7 +73,6 @@ SOURCES += \
     Messages/IMessages/getmyordermsg.cpp \
     Messages/IMessages/getmystocksmsg.cpp \
     order.cpp \
-    database.cpp
 
 INCLUDEPATH += Messages \
     Messages/IMessages \
