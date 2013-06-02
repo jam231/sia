@@ -6,12 +6,8 @@ QT += sql \
     widgets
 
 HEADERS += \
-    user.h \
     server.h \
-    stock.h \
     market.h \
-    offer.h \
-    transaction.h \
     Messages/iomessage.h \
     Messages/IMessages/imessage.h \
     Messages/OMessages/omessage.h \
@@ -38,20 +34,16 @@ HEADERS += \
     Messages/OMessages/bestorder.h \
     Messages/IMessages/getmystocksmsg.h \
     Messages/OMessages/getmystocksrespmsg.h \
-    order.h \
     Messages/OMessages/getmyordersrespmsg.h \
     Messages/OMessages/ordermsg.h \
     Messages/IMessages/getmyordermsg.h \
     Messages/IMessages/getstockinfomsg.h \
-    Messages/OMessages/getstockinforespmsg.h
+    Messages/OMessages/getstockinforespmsg.h \
+    order.h
 
 SOURCES += \
-    user.cpp \
     server.cpp \
-    stock.cpp \
     market.cpp \
-    offer.cpp \
-    transaction.cpp \
     Messages/iomessage.cpp \
     Messages/IMessages/imessage.cpp \
     Messages/OMessages/omessage.cpp \
@@ -78,13 +70,13 @@ SOURCES += \
     Messages/OMessages/transactionchange.cpp \
     Messages/OMessages/bestorder.cpp \
     Messages/OMessages/getmystocksrespmsg.cpp \
-    order.cpp \
     Messages/OMessages/getmyordersrespmsg.cpp \
     Messages/OMessages/ordermsg.cpp \
     Messages/IMessages/getmyordermsg.cpp \
     Messages/IMessages/getmystocksmsg.cpp \
     Messages/IMessages/getstockinfomsg.cpp \
-    Messages/OMessages/getstockinforespmsg.cpp
+    Messages/OMessages/getstockinforespmsg.cpp \
+    order.cpp
 
 INCLUDEPATH += Messages \
     Messages/IMessages \

@@ -10,7 +10,7 @@ class SubscribeStockMsg : public IMessage
 {
     qint32 m_stockId;
 
-    qint32 length() const;
+    qint16 length() const;
 public:
     SubscribeStockMsg(QDataStream& msg);
 

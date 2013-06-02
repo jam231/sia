@@ -6,7 +6,7 @@
 #include <QRegExp>
 #include <QDebug>
 
-RegisterUserReqMsg::RegisterUserReqMsg(QDataStream& in) //: IMessage()
+RegisterUserReqMsg::RegisterUserReqMsg(QDataStream& in)
 {
     /*
      *  tmpStream >> m_Password

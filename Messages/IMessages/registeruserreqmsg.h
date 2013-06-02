@@ -10,6 +10,7 @@
 class RegisterUserReqMsg : public IMessage
 {
     QString m_password;
+    qint16 length() const;
 public:
     RegisterUserReqMsg(QDataStream& msg);
 

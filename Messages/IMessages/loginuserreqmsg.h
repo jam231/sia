@@ -9,6 +9,8 @@ class LoginUserReqMsg : public IMessage
 {
     qint32 m_userId;
     QString m_password;
+
+    qint16 length() const;
 public:
     LoginUserReqMsg(QDataStream& in);
 

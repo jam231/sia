@@ -7,7 +7,7 @@ class CompanyStatusMsg : public IMessage
 {
     qint32 m_companyId;
 
-    qint32 length() const;
+    qint16 length() const;
 public:
     CompanyStatusMsg(QDataStream& in);
     MessageType type() const;

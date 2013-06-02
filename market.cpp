@@ -319,6 +319,11 @@ void Market::notificationHandler(const QString& channelName,
                 BestOrderMsg msg(m_cachedBestBuyOrders[stockId]);
                 m_server->send(msg);
             }
+            else
+            {
+                BestOrderMsg msg(Order::BUY, stockId, 0, 0);
+                m_server->send(msg);
+            }
 
             changeCachedBestSellOrders(stockId);
             // TODO: Jak już gdzieś wspomniałem być może
@@ -326,6 +331,11 @@ void Market::notificationHandler(const QString& channelName,
             if(m_cachedBestSellOrders.contains(stockId))
             {
                 BestOrderMsg msg(m_cachedBestSellOrders[stockId]);
+                m_server->send(msg);
+            }
+            else
+            {
+                BestOrderMsg msg(Order::SELL, stockId, 0, 0);
                 m_server->send(msg);
             }
         }

@@ -5,6 +5,7 @@
 
 class GetMyStocksMsg : public IMessage
 {
+    qint16 length() const;
 public:
     GetMyStocksMsg();
 
