@@ -102,14 +102,15 @@ BEGIN
 	
 	INSERT INTO zrealizowane_zlecenie(uz_kupil,uz_sprzedal,id_zasobu,ilosc,cena) VALUES(zl_kupna.id_uz, zl_sprzedazy.id_uz, zl_kupna.id_zasobu, ile, cena);
 
+	--RAISE NOTICE 'sold %', ile;
 	RETURN ile;
 END
 $$ LANGUAGE plpgsql;
 
 --Aby zrealizowac wszystkie zlecenia z kolejki, tj. uruchomic sesje:
---PERFORM poslij_zlecenie_kupna(zlecenie_kupna.*) FROM zlecenie_kupna ORDER BY wazne_od ASC;
+--PERFORM wykonaj_zlecenie_kupna(zlecenie_kupna.*) FROM zlecenie_kupna ORDER BY wazne_od ASC;
 --na danym zasobie:
---PERFORM poslij_zlecenie_kupna(zlecenie_kupna.*) FROM zlecenie_kupna WHERE id_zasobu=[X] ORDER BY wazne_od ASC;
+--PERFORM wykonaj_zlecenie_kupna(zlecenie_kupna.*) FROM zlecenie_kupna WHERE id_zasobu=[X] ORDER BY wazne_od ASC;
 
 CREATE OR REPLACE FUNCTION wykonaj_zlecenie_kupna(rekord zlecenie_kupna) RETURNS VOID AS $$
 DECLARE
@@ -119,13 +120,14 @@ BEGIN
 	ile := rekord.ilosc;
 	
 	LOOP
+		--RAISE NOTICE 'k looping at % stock is % (%)',ile, rekord.id_zasobu, (SELECT COUNT(*) FROM zlecenie_sprzedazy WHERE id_zasobu=rekord.id_zasobu AND limit1<=rekord.limit1 AND ilosc>0);
 		IF ile=0 OR (SELECT COUNT(*) FROM zlecenie_sprzedazy WHERE id_zasobu=rekord.id_zasobu AND limit1<=rekord.limit1 AND ilosc>0)=0 THEN --to jest aktualnie straszne. nalezy zrealizowac to w kursorach. Chyba.
 			EXIT;
 		END IF;
 		
 		--Wypelnij zawartosc zmiennej "zlecenie"
 		SELECT * INTO zlecenie FROM zlecenie_sprzedazy 
-			WHERE id_zasobu=rekord.id_zasobu AND limit1<=rekord.limit1 ORDER BY limit1,wazne_od ASC LIMIT 1;
+			WHERE id_zasobu=rekord.id_zasobu AND limit1<=rekord.limit1 AND ilosc>0 ORDER BY limit1,wazne_od ASC LIMIT 1;
 		
 		ile := ile - przenies_dobra(rekord, zlecenie, true);
 		
@@ -143,14 +145,14 @@ BEGIN
 	ile := rekord.ilosc;
 	
 	LOOP
---		RAISE NOTICE 'looping at%',ile;
+		--RAISE NOTICE 's looping at%',ile;
 		IF ile=0 OR (SELECT COUNT(*) FROM zlecenie_kupna WHERE id_zasobu=rekord.id_zasobu AND limit1>=rekord.limit1 AND ilosc>0)=0 THEN --to jest aktualnie straszne. nalezy zrealizowac to w kursorach. Chyba.
 			EXIT;
 		END IF;
 		
 		--Wypelnij zawartosc zmiennej "zlecenie"
 		SELECT * INTO zlecenie FROM zlecenie_kupna 
-			WHERE id_zasobu=rekord.id_zasobu AND limit1>=rekord.limit1 ORDER BY limit1 DESC,wazne_od ASC LIMIT 1;
+			WHERE id_zasobu=rekord.id_zasobu AND limit1>=rekord.limit1 AND ilosc>0 ORDER BY limit1 DESC,wazne_od ASC LIMIT 1;
 		
 		ile := ile - przenies_dobra(zlecenie, rekord, false);
 		
@@ -236,7 +238,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION rozpocznij_sesje() RETURNS VOID AS $$
 BEGIN
 	UPDATE zasob SET mozna_handlowac=true;
-	PERFORM poslij_zlecenie_kupna(zlecenie_kupna.*) FROM zlecenie_kupna ORDER BY wazne_od ASC;
+	PERFORM wykonaj_zlecenie_kupna(zlecenie_kupna.*) FROM zlecenie_kupna ORDER BY wazne_od ASC;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -291,7 +293,7 @@ LANGUAGE SQL;
 
 
 
-CREATE OR REPLACE FUNCTION ostatnia_transakcja(in zasob integer, out integer, out integer, out timestamp with time zone)
+CREATE OR REPLACE FUNCTION ostatnia_transakcja(in zasob integer, out integer, out integer, out timestamp without time zone)
     AS $$ SELECT cena,ilosc,czas FROM zrealizowane_zlecenie t WHERE id_zasobu=zasob ORDER BY czas ASC LIMIT 1 $$
 LANGUAGE SQL;
 

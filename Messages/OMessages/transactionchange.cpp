@@ -12,7 +12,7 @@ TransactionChange::TransactionChange(qint32 stockId, qint32 amount,
 
 qint16 TransactionChange::length() const
 {
-    return sizeof(MessageType) + 3*sizeof(qint32) + m_date.size();
+    return sizeof(MessageType) + 3*sizeof(qint32) + sizeof(qint16) + m_date.size();
 }
 
 void TransactionChange::send(QIODevice *connection)

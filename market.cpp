@@ -236,7 +236,10 @@ void Market::startSession()
 
     m_database.transaction();
 
-    query.exec();
+    if (query.exec() == false)
+        qDebug() << "[Market] Błąd przy rozpoczynaniu sesji " << (query.lastError().text());
+
+
 
     m_database.commit();
 
@@ -505,8 +508,8 @@ void Market::changeCachedBestBuyOrders(qint32 stockId)
     {
         if(query.value(0).isValid() && query.value(1).isValid())
         {
-            qDebug() << "[Market] changeCachedBestBuyOrders: "
-                     << query.value(0).toInt() << " " << query.value(1).toInt();
+//            qDebug() << "[Market] changeCachedBestBuyOrders: "
+//                     << query.value(0).toInt() << " " << query.value(1).toInt();
             m_cachedBestBuyOrders.insert(stockId,
                                       qMakePair(query.value(0).toInt(),
                                                 query.value(1).toInt()));
