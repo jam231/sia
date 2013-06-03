@@ -2,18 +2,23 @@
 #define GETSTOCKINFORESPMSG_H
 
 #include <QIODevice>
+#include <QPair>
 #include <omessage.h>
-#include "order.h"
+//#include "order.h"
 
 class GetStockInfoRespMsg : public OMessage
 {
-    Order m_bestBuyOrder;
-    Order m_bestSellOrder;
-    Order m_lastOrder;
+    QPair<qint32, qint32> m_bestBuyOrder;
+    QPair<qint32, qint32> m_bestSellOrder;
+    QPair<qint32, qint32> m_lastTransaction;
+    qint32 m_stockId;
 
     qint16 length() const;
 public:
-    GetStockInfoRespMsg(Order bestBuyOrder = Order(), Order bestSellOrder = Order(), Order lastOrder = Order());
+    GetStockInfoRespMsg(qint32 stockId,
+                        QPair<qint32, qint32> bestBuyOrder    = qMakePair(0,0),\
+                        QPair<qint32, qint32> bestSellOrder   = qMakePair(0,0),\
+                        QPair<qint32, qint32> lastTransaction = qMakePair(0,0));
 
     MessageType type() const;
     void send(QIODevice* connection);

@@ -1,8 +1,10 @@
 #include "getstockinforespmsg.h"
 
-GetStockInfoRespMsg::GetStockInfoRespMsg(Order bestBuyOrder, Order bestSellOrder, Order lastOrder)
-    : m_bestBuyOrder(bestBuyOrder), m_bestSellOrder(bestSellOrder), m_lastOrder(lastOrder)
-{   }
+GetStockInfoRespMsg::GetStockInfoRespMsg(qint32 stockId, QPair<qint32, qint32> bestBuyOrder, QPair<qint32, qint32> bestSellOrder, QPair<qint32, qint32> lastTransaction)
+    : m_bestBuyOrder(bestBuyOrder), m_bestSellOrder(bestSellOrder), m_lastTransaction(lastTransaction)
+{
+    m_stockId = stockId;
+}
 
 IOMessage::MessageType GetStockInfoRespMsg::type() const
 {
@@ -14,11 +16,11 @@ void GetStockInfoRespMsg::send(QIODevice* connection)
     QDataStream out(connection);
 
     sendHeader(out);
-    out << m_bestBuyOrder << m_bestSellOrder << m_lastOrder;
+    out << m_stockId <<  m_bestBuyOrder << m_bestSellOrder << m_lastTransaction;
 }
 
 qint16 GetStockInfoRespMsg::length() const
 {
-    return sizeof(MessageType) + 3 * (sizeof(qint8) + 3*sizeof(qint32));
+    return sizeof(MessageType) + sizeof(qint32) + 3 * (2*sizeof(qint32));
 }
 

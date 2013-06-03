@@ -13,6 +13,7 @@
 #include <QString>
 #include <QSqlDatabase>
 #include <QSqlDriver>
+#include <QPair>
 #include <bestorder.h>
 
 class DatabaseError : public std::exception
@@ -39,9 +40,10 @@ class Market : public QObject
 
     // Domyslnie jest wartosc Invalid
     // przez ktora bedziemy kodować pusty Order;
-    QVariant m_cachedLastOrder;
-    QHash<qint32, Order> m_cachedBestSellOrders;
-    QHash<qint32, Order> m_cachedBestBuyOrders;
+    //QVariant m_cachedLastOrder;
+    QHash<qint32, QPair<qint32, qint32> > m_cachedLastTransaction;
+    QHash<qint32, QPair<qint32, qint32> > m_cachedBestSellOrders;
+    QHash<qint32, QPair<qint32, qint32> > m_cachedBestBuyOrders;
 
 protected:
 
