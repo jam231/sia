@@ -185,22 +185,6 @@ void Market::loginUser(Connection* connection, qint32 userId, QString password)
                         "autoryzacji do uzytkownika id =" << userId;
             LoginUserRespOk responseMsg;
             m_server->send(responseMsg, connection, userId);
-            /* ENHANCEMENT:
-             *  Sytuacja w której nie ma najnowszego zlecenia jest patologiczna
-             *  i przy naszym uproszczonym modelu "startu" giełdy nie występuje
-             *  dla agentów właściwych, jednakże w tej sytuacji giełda
-             *  po prostu nie wysyła wiadomości
-             *
-             * Nie rozumiem. Na razie komentuje - Karol
-             */
-
-            /* if(m_cachedLastTransaction.isValid() &&
-               m_cachedLastTransaction.canConvert<Order>()) {
-
-                OrderMsg msg(m_cachedLastTransaction.value<Order>());
-                m_server->send(msg, userId);
-            }
-            */
             return;
         }
         else
@@ -334,7 +318,8 @@ void Market::notificationHandler(const QString& channelName,
             //       dałoby się to zrobić optymalniej.
             if(m_cachedBestBuyOrders.contains(stockId))
             {
-                BestOrderMsg msg(Order::BUY, stockId,m_cachedBestBuyOrders[stockId].first, m_cachedBestBuyOrders[stockId].second);
+                BestOrderMsg msg(Order::BUY, stockId,m_cachedBestBuyOrders[stockId].first,
+                                 m_cachedBestBuyOrders[stockId].second);
                 m_server->send(msg);
             }
             else
@@ -348,7 +333,8 @@ void Market::notificationHandler(const QString& channelName,
             //       dałoby się to zrobić optymalniej.
             if(m_cachedBestSellOrders.contains(stockId))
             {
-                BestOrderMsg msg(Order::SELL, stockId,m_cachedBestSellOrders[stockId].first, m_cachedBestSellOrders[stockId].second);
+                BestOrderMsg msg(Order::SELL, stockId,m_cachedBestSellOrders[stockId].first,
+                                 m_cachedBestSellOrders[stockId].second);
                 //BestOrderMsg msg(m_cachedBestSellOrders[stockId]);
                 m_server->send(msg);
             }
@@ -476,8 +462,8 @@ void Market::changeCachedBestSellOrders(qint32 stockId)
         if(query.value(0).isValid() && query.value(1).isValid())
         {
             m_cachedBestSellOrders.insert(stockId,
-                                      qMakePair(query.value(0).toInt(),
-                                                query.value(1).toInt()));
+                                          qMakePair(query.value(0).toInt(),
+                                                    query.value(1).toInt()));
         }
         else
             qDebug() << "[Market] W changeCachedBestBuyOrders"
@@ -578,12 +564,20 @@ void Market::getMyOrders(qint32 userId)
 
      GetMyOrdersRespMsg msg;
      while (query.next())
-         if(query.value(0).isValid() && query.value(1).isValid() && query.value(2).isValid() && query.value(3).isValid())
-            msg.addOrder(Order::toOrderType(query.value(0).toInt()), query.value(1).toInt(), query.value(2).toInt(), query.value(3).toInt());
-     else
-         qDebug() << "[Market] W getMyOrders"
-                  << "zwrócony rekord nie ma czterech pol.";
+     {
+         if(query.value(0).isValid() && query.value(1).isValid() &&
+            query.value(2).isValid() && query.value(3).isValid())
+         {
+             // RETURNS TABLE(typ integer, id_zlecenia integer, id_zasobu integer,ilosc integer, limit1 integer)
+             msg.addOrder(query.value(1).toInt(),
+                          Order::toOrderType(query.value(0).toInt()), query.value(2).toInt(),
+                          query.value(3).toInt(), query.value(4).toInt());
+         }
 
+        else
+            qDebug() << "[Market] W getMyOrders"
+                     << "zwrócony rekord nie ma czterech pol.";
+     }
      m_server->send(msg, userId);
 }
 

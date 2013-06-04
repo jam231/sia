@@ -4,11 +4,11 @@
 #include <order.h>
 #include <omessage.h>
 #include <QVector>
-
+#include <QPair>
 
 class GetMyOrdersRespMsg : public OMessage
 {
-    QVector<Order> m_orders;
+    QVector<QPair<qint32,Order> > m_orders;
 
     qint16 length() const;
 public:
@@ -17,9 +17,9 @@ public:
     MessageType type() const;
     void send(QIODevice* connection);
 
-    void addOrder(Order::OrderType m_transactionType, qint32 m_stockId, qint32 m_amount,
+    void addOrder(qint32 orderId, Order::OrderType m_transactionType, qint32 m_stockId, qint32 m_amount,
                   qint32 m_price);
-    void addOrder(Order order);
+    void addOrder(qint32 orderId, Order order);
 };
 
 #endif // GETMYORDERSRESPMSG_H
