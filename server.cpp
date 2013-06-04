@@ -11,7 +11,7 @@ Server::Server(QObject *parent, int portNumber)
     m_server = new QTcpServer(this);
 
     connect(m_server, SIGNAL(newConnection()),
-            this, SLOT(addNewConnection()));
+            this,     SLOT(addNewConnection()));
 
     if(!m_server->listen(QHostAddress::Any, portNumber))
     {
@@ -53,11 +53,9 @@ void Server::send(OMessage& msg, Connection* connection)
  */
 void Server::send(RegisterUserRespOk& msg, Connection* connection)
 {
-    // Jednak trzeba sie zalogowac świadomie ;-)
-    //m_userConnections[msg.getUserId()] = connection;
-    //connection->setUserId(msg.getUserId());
+
     qDebug() << "\t[Server] Wysylanie wiadomsci: RegisterUserRespOk"
-             << " z nwym id=" << msg.getUserId();
+             << " z nowym id=" << msg.getUserId();
 
     connection->send(msg);
 }
@@ -102,7 +100,7 @@ void Server::send(OMessage& msg, qint32 userId)
 {
     /* TODO:
      *
-     *      Wydajnie by bylo za jednym zamachem zwrocic wartosc value
+     *      Wydajniej by bylo za jednym zamachem zwrocic wartosc value
      *      o ile m_userConnections zawiera klucz key
      */
 
@@ -113,12 +111,6 @@ void Server::send(OMessage& msg, qint32 userId)
         m_userConnections[userId]->send(msg);
 }
 
-
-
-
-
-
-
 void Server::addNewConnection()
 {
     qDebug() << "[Server] Nawiązywanie nowego połączenia.";
@@ -126,29 +118,31 @@ void Server::addNewConnection()
                                          this);
 
     connect(newConnection, SIGNAL(disconnected(qint32)),
-              this, SLOT(disconnectUser(qint32)));
+              this,        SLOT(disconnectUser(qint32)));
 
     connect(newConnection, SIGNAL(registerUserRequestFromConnection(Connection*, QString)),
-              this, SIGNAL(registerUserRequestFromServer(Connection *, QString)));
+              this,        SIGNAL(registerUserRequestFromServer(Connection *, QString)));
+
     connect(newConnection, SIGNAL(loginUserRequestFromConnection(Connection*, qint32,QString)),
-              this, SIGNAL(loginUserRequestFromServer(Connection *, qint32, QString)));
+            this,          SIGNAL(loginUserRequestFromServer(Connection *, qint32, QString)));
 
-
-/*
-    connect(newConn, SIGNAL(subscribeStock(qint32, qint32)),
-            this, SLOT(subscribeStock(qint32, qint32)) );
-    connect(newConn, SIGNAL(unsubscribeStock(qint32, qint32)),
-            this, SLOT(unsubscribeStock(qint32, qint32)) );
-*/
     connect(newConnection, SIGNAL(buyStock(qint32, qint32, qint32, qint32)),
-            this, SIGNAL(buyStock(qint32, qint32, qint32, qint32)));
+            this,          SIGNAL(buyStock(qint32, qint32, qint32, qint32)));
+
     connect(newConnection, SIGNAL(sellStock(qint32, qint32, qint32, qint32)),
-            this, SIGNAL(sellStock(qint32, qint32, qint32, qint32)));
+            this,          SIGNAL(sellStock(qint32, qint32, qint32, qint32)));
 
-    connect(newConnection, SIGNAL(getMyStocks(qint32)),this, SIGNAL(getMyStocks(qint32)) );
-    connect(newConnection, SIGNAL(getMyOrders(qint32)),this, SIGNAL(getMyOrders(qint32)) );
-    connect(newConnection, SIGNAL(getStockInfo(qint32, qint32)),this, SIGNAL(getStockInfo(qint32, qint32)) );
+    connect(newConnection, SIGNAL(getMyStocks(qint32)),
+            this,          SIGNAL(getMyStocks(qint32)));
 
+    connect(newConnection, SIGNAL(getMyOrders(qint32)),
+            this,          SIGNAL(getMyOrders(qint32)));
+
+    connect(newConnection, SIGNAL(getStockInfo(qint32, qint32)),
+            this,          SIGNAL(getStockInfo(qint32, qint32)));
+
+    connect(newConnection, SIGNAL(cancelOrder(qint32, qint32)),
+            this,          SIGNAL(cancelOrder(qint32, qint32)));
     //od teraz dopiero zaczniemy przetwarzac wiadomosci z tego polaczenia
     //abysmy nie robili tego zanim polaczylismy sygnaly i sloty
     //bo moglibysmy stracic wiadomosci

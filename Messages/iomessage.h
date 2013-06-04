@@ -26,30 +26,31 @@ public:
 
         /*20-39: akcje i zlecenia*/
 
-        SELL_STOCK_REQ = 0x14,     // IMessage zlecenie kupna
-        BUY_STOCK_REQ,      // IMessage zlecenie sprzedazy
+        SELL_STOCK_REQ = 0x14,  // IMessage zlecenie kupna
+        BUY_STOCK_REQ,          // IMessage zlecenie sprzedazy
         // Te sa byc moze tymczasowe
-        BUY_TRANSACTION,    // OMessage wysylanie informacji o danej transakcji kupna
-        SELL_TRANSACTION,   // OMessage wysylanie informacji o danej transakcji sprzedazy
+        BUY_TRANSACTION,        // OMessage wysylanie informacji o danej transakcji kupna
+        SELL_TRANSACTION,       // OMessage wysylanie informacji o danej transakcji sprzedazy
 
 
-        TRANSACTION_CHANGE, // OMessage powiadomienie o zmianie (zrealizowaniu?) danej transakcji wszystki
-                            // zasubskrybowanych
+        TRANSACTION_CHANGE,     // OMessage powiadomienie o zmianie (zrealizowaniu?) danej transakcji
+                                // wszystkich zasubskrybowanych
 
-        ORDER,          // OMessage informacja o nowym zleceniu
-        BEST_ORDER,     // OMessage informacja o nowym najlepszym zleceniu
+        ORDER,                  // OMessage informacja o nowym zleceniu
+        BEST_ORDER,             // OMessage informacja o nowym najlepszym zleceniu
 
-        SUBSCRIBE_STOCK,    // IMessage subskrybuj
-        UNSUBSCRIBE_STOCK,  // IMessage przestan subskrybowac
+        SUBSCRIBE_STOCK,        // IMessage subskrybuj
+        UNSUBSCRIBE_STOCK,      // IMessage przestan subskrybowac
 
 
-        GET_MY_STOCKS,      // IMessage prosba o liste wlasnych zasobów
-        GET_MY_STOCKS_RESP,  // OMessage Odeslanie listy zasobow
-        GET_MY_ORDERS,      // IMessage prosba o liste wlasnych zasobów
-        GET_MY_ORDERS_RESP,  // OMessage Odeslanie listy zasobow
+        GET_MY_STOCKS,          // IMessage prosba o liste wlasnych zasobów
+        GET_MY_STOCKS_RESP,     // OMessage Odeslanie listy zasobow
+        GET_MY_ORDERS,          // IMessage prosba o liste wlasnych zasobów
+        GET_MY_ORDERS_RESP,     // OMessage Odeslanie listy zasobow
         GET_STOCK_INFO,         // IMessage prosba o info o danym zasobie
         GET_STOCK_INFO_RESP,    // OMessage odpowiedz na prosbe o info
 
+        CANCEL_ORDER_REQ,       // IMessage żadanie anulowania zlecenia o podanym id.
 
 
         /*40-49: sesja, stan akcji */

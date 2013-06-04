@@ -78,32 +78,40 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
     m_sessionOnTimer->setInterval(sessionOnInterval * 1000);
 
 
-    connect(m_server, SIGNAL(registerUserRequestFromServer(Connection*,
-                                                           QString)),
-            this, SLOT(registerNewUser(Connection*, QString)) );
+    connect(m_server, SIGNAL(registerUserRequestFromServer(Connection*, QString)),
+            this,     SLOT(registerNewUser(Connection*, QString)) );
 
-    connect(m_server, SIGNAL(loginUserRequestFromServer(Connection*,
-                                                        qint32, QString)),
-            this, SLOT(loginUser(Connection*, qint32, QString)));
+    connect(m_server, SIGNAL(loginUserRequestFromServer(Connection*, qint32, QString)),
+            this,     SLOT(loginUser(Connection*, qint32, QString)));
 
-    connect(m_database.driver(), SIGNAL(notification(const QString&,
-                                                     QSqlDriver::NotificationSource,
+    connect(m_database.driver(), SIGNAL(notification(const QString&, QSqlDriver::NotificationSource,
                                                      const QVariant&)),
-            this, SLOT(notificationHandler(const QString&,
-                                           QSqlDriver::NotificationSource,
-                                           const QVariant&)));
+            this,               SLOT(notificationHandler(const QString&, QSqlDriver::NotificationSource,
+                                                         const QVariant&)));
 
     connect(m_server, SIGNAL(sellStock(qint32, qint32, qint32, qint32)),
-            this, SLOT(sellStock(qint32, qint32, qint32, qint32)));
+            this,     SLOT(sellStock(qint32, qint32, qint32, qint32)));
+
     connect(m_server, SIGNAL(buyStock(qint32, qint32, qint32, qint32)),
-            this, SLOT(buyStock(qint32, qint32, qint32, qint32)));
+            this,     SLOT(buyStock(qint32, qint32, qint32, qint32)));
 
-    connect(m_server, SIGNAL(getMyStocks(qint32)), this, SLOT(getMyStocks(qint32)) );
-    connect(m_server, SIGNAL(getMyOrders(qint32)), this, SLOT(getMyOrders(qint32)) );
-    connect(m_server, SIGNAL(getStockInfo(qint32, qint32)), this, SLOT(getStockInfo(qint32, qint32)) );
+    connect(m_server, SIGNAL(getMyStocks(qint32)),
+            this,     SLOT(getMyStocks(qint32)));
 
-    connect(m_sessionOnTimer, SIGNAL(timeout()), this, SLOT(stopSession()));
-    connect(m_sessionOffTimer, SIGNAL(timeout()), this, SLOT(startSession()));
+    connect(m_server, SIGNAL(getMyOrders(qint32)),
+            this, SLOT(getMyOrders(qint32)));
+
+    connect(m_server, SIGNAL(getStockInfo(qint32, qint32)),
+            this,     SLOT(getStockInfo(qint32, qint32)));
+
+    connect(m_server, SIGNAL(cancelOrder(qint32,qint32)),
+            this,     SLOT(cancelOrder(qint32,qint32)));
+
+    connect(m_sessionOnTimer, SIGNAL(timeout()),
+            this,             SLOT(stopSession()));
+
+    connect(m_sessionOffTimer, SIGNAL(timeout()),
+            this,              SLOT(startSession()));
 
     qDebug() << "[Market] Serwer jest aktywny.";
     startSession();
@@ -388,7 +396,7 @@ void Market::sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 pric
 
         changeCachedBestSellOrders(stockId);
 
-        //wyślij wszytkim subskrybentom
+         // Wyślij wszytkim subskrybentom.
         OrderMsg msg(order);
         m_server->send(msg);
     }
@@ -431,7 +439,7 @@ void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price
 
          changeCachedBestBuyOrders(stockId);
 
-         //wyślij wszytkim subskrybentom
+         // Wyślij wszytkim subskrybentom.
          OrderMsg msg(order);
          m_server->send(msg);
      }
@@ -602,4 +610,46 @@ void Market::getStockInfo(qint32 userId, qint32 stockId)
 
     GetStockInfoRespMsg msg(stockId, bestBuyOrder, bestSellOrder, lastTransaction);
     m_server->send(msg, userId);
+}
+
+/*
+ *  To jest bardzo naiwne i niezbyt ladne, dodatkowo tu wychodzi brzydota
+ *  zwiazana z podzialem zlecen na oddzielne tabele i fakt, ze id_zlecenia
+ *  powinno byc jednoznacznie wyznaczone dla kazdego ze zlecen, niezaleznie od typu
+ *                                              -jam231
+ */
+void Market::cancelOrder(qint32 userId, qint32 orderId)
+{
+    QSqlQuery query1(m_database),
+              query2(m_database);
+
+    query1.prepare("DELET FROM zlecenie_kupna AS zk WHERE zk.id_zlecenia = :orderId AND zk.id_uz = :userId;");
+    query1.bindValue(":orderId", orderId);
+    query1.bindValue(":userId", userId);
+
+    query2.prepare("DELET FROM zlecenie_sprzedazy AS zs WHERE zs.id_zlecenia = :orderId AND zs.id_uz = :userId;");
+    query2.bindValue(":orderId", orderId);
+    query2.bindValue(":userId", userId);
+
+
+    query1.setForwardOnly(true);
+    query2.setForwardOnly(true);
+
+    m_database.transaction();
+
+    query1.exec();
+    query2.exec();
+
+    m_database.commit();
+
+    if(query1.lastError().isValid())
+    {
+        qDebug() << "[Market] Błąd przy anulowaniu zlecenia kupna"
+                 << query1.lastError().text();
+    }
+    if(query2.lastError().isValid())
+    {
+        qDebug() << "[Market] Błąd przy anulowaniu zlecenia sprzedaży"
+                 << query2.lastError().text();
+    }
 }

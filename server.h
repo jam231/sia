@@ -45,15 +45,14 @@ signals:
     void registerUserRequestFromServer(Connection*, QString password);
     void loginUserRequestFromServer(Connection *connection, qint32 userId, QString password);
 
-    //void subscribeStock(qint32 userId, qint32 stockId);
-    //void unsubscribeStock(qint32 userId, qint32 stockId);
-
     void sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
     void buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
 
     void getMyStocks(qint32 userId);
     void getMyOrders(qint32 userId);
     void getStockInfo(qint32 userId, qint32 stockId);
+
+    void cancelOrder(qint32 userId, qint32 orderId);
 
 private slots:
     void addNewConnection();

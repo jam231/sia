@@ -39,7 +39,8 @@ HEADERS += \
     Messages/IMessages/getmyordermsg.h \
     Messages/IMessages/getstockinfomsg.h \
     Messages/OMessages/getstockinforespmsg.h \
-    order.h
+    order.h \
+    Messages/IMessages/cancelordermsg.h
 
 SOURCES += \
     server.cpp \
@@ -76,7 +77,8 @@ SOURCES += \
     Messages/IMessages/getmystocksmsg.cpp \
     Messages/IMessages/getstockinfomsg.cpp \
     Messages/OMessages/getstockinforespmsg.cpp \
-    order.cpp
+    order.cpp \
+    Messages/IMessages/cancelordermsg.cpp
 
 INCLUDEPATH += Messages \
     Messages/IMessages \

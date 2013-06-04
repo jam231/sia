@@ -19,9 +19,10 @@
 #include "loginuserrespfail.h"
 #include "registeruserrespfail.h"
 #include "order.h"
+#include "cancelordermsg.h"
 
 Connection::Connection(QTcpSocket* socket, QObject *parent) :
-    QObject(parent), m_socket(socket), m_userId(NOT_ASSIGNED)//, m_tmpUserId(-1)
+    QObject(parent), m_socket(socket), m_userId(NOT_ASSIGNED)
 {
     m_socket->setParent(this);
 }
@@ -41,12 +42,7 @@ bool Connection::isUserAssigned() const
 {
     return m_userId != NOT_ASSIGNED;
 }
-/*
-void Connection::setTmpUserId(qint32 tmpUserId)
-{
-    m_tmpUserId = tmpUserId;
-}
-*/
+
 void Connection::setUserId(qint32 userId)
 {
     m_userId = userId;
@@ -55,8 +51,11 @@ void Connection::start()
 {
     qDebug() << "\t\t[Connection] Rozpoczynanie nowego połączenia.";
 
-    connect(m_socket, SIGNAL(disconnected()), this, SLOT(disconect()));
-    connect(m_socket, SIGNAL(readyRead()), this, SLOT(processIncomingMessages()));
+    connect(m_socket, SIGNAL(disconnected()),
+            this,     SLOT(disconect()));
+
+    connect(m_socket, SIGNAL(readyRead()),
+            this,     SLOT(processIncomingMessages()));
 
     if(!m_socket->isValid())
     {
@@ -228,6 +227,19 @@ bool Connection::processMessage()
                 SellStockReqMsg msg(message);
                 emit sellStock(m_userId, msg.getStockId(),
                               msg.getAmount(), msg.getPrice());
+            }catch(const std::exception& e)
+            {
+                qDebug() << "\t\t[Connection] Złapano wyjątek" << e.what()
+                         << "podczas zlecania kupna.";
+            }
+            break;
+        }
+        case IOMessage::CANCEL_ORDER_REQ:
+        {
+            try
+            {
+                CancelOrderMsg msg(message);
+                emit cancelOrder(m_userId, msg.getOrderId());
             }catch(const std::exception& e)
             {
                 qDebug() << "\t\t[Connection] Złapano wyjątek" << e.what()

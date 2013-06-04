@@ -38,9 +38,6 @@ class Market : public QObject
     QTimer* m_sessionOnTimer;
     QTimer* m_sessionOffTimer;
 
-    // Domyslnie jest wartosc Invalid
-    // przez ktora bedziemy kodować pusty Order;
-    //QVariant m_cachedLastOrder;
     QHash<qint32, QPair<qint32, qint32> > m_cachedLastTransaction;
     QHash<qint32, QPair<qint32, qint32> > m_cachedBestSellOrders;
     QHash<qint32, QPair<qint32, qint32> > m_cachedBestBuyOrders;
@@ -65,10 +62,12 @@ public slots:
 
     void sellStock(qint32 userId,qint32 stockId, qint32 amount, qint32 price);
     void buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
+
     void getMyStocks(qint32 userId);
     void getMyOrders(qint32 userId);
     void getStockInfo(qint32 userId, qint32 stockId);
 
+    void cancelOrder(qint32 userId, qint32 orderId);
 };
 
 #endif // MARKET_H
