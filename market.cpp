@@ -435,7 +435,7 @@ void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price
      m_database.commit();
      if(!query.lastError().isValid())
      {
-         Order order(Order::SELL, stockId, amount, price);
+         Order order(Order::BUY, stockId, amount, price);
 
          changeCachedBestBuyOrders(stockId);
 

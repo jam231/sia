@@ -97,6 +97,7 @@ BEGIN
 
 	UPDATE posiadane_dobro SET ilosc=ilosc+ile*(zl_kupna.limit1-cena) WHERE id_uz=zl_kupna.id_uz AND id_zasobu=1; --kupujacemu oddaj ew. pieniadze
 	
+	RAISE NOTICE 'ile = % old_cached_ilosc = % old_ilosc = %',ile,zl_kupna.ilosc,(SELECT ilosc FROM zlecenie_kupna WHERE id_zlecenia=zl_kupna.id_zlecenia);
 	UPDATE zlecenie_kupna SET ilosc=ilosc-ile WHERE id_zlecenia=zl_kupna.id_zlecenia;
 	UPDATE zlecenie_sprzedazy SET ilosc=ilosc-ile WHERE id_zlecenia=zl_sprzedazy.id_zlecenia;
 	
@@ -128,7 +129,10 @@ BEGIN
 		--Wypelnij zawartosc zmiennej "zlecenie"
 		SELECT * INTO zlecenie FROM zlecenie_sprzedazy 
 			WHERE id_zasobu=rekord.id_zasobu AND limit1<=rekord.limit1 AND ilosc>0 ORDER BY limit1,wazne_od ASC LIMIT 1;
-		
+			
+		--Quick and dirty fix
+		SELECT * INTO rekord FROM zlecenie_kupna 
+			WHERE id_zlecenia=rekord.id_zlecenia;			
 		ile := ile - przenies_dobra(rekord, zlecenie, true);
 		
 	END LOOP;
@@ -153,7 +157,10 @@ BEGIN
 		--Wypelnij zawartosc zmiennej "zlecenie"
 		SELECT * INTO zlecenie FROM zlecenie_kupna 
 			WHERE id_zasobu=rekord.id_zasobu AND limit1>=rekord.limit1 AND ilosc>0 ORDER BY limit1 DESC,wazne_od ASC LIMIT 1;
-		
+
+		--Quick and dirty fix
+		SELECT * INTO rekord FROM zlecenie_sprzedazy 
+			WHERE id_zlecenia=rekord.id_zlecenia;				
 		ile := ile - przenies_dobra(zlecenie, rekord, false);
 		
 	END LOOP;
@@ -218,6 +225,7 @@ CREATE OR REPLACE FUNCTION zlec_kupno(uz integer,zasob integer,ile integer,cena 
 DECLARE
 	nowy_id integer := nextval('nr_zlecenia');
 BEGIN
+    RAISE NOTICE 'zlec_kupno u: % z: % i: % c: %',uz,zasob,ile,cena;
 	INSERT INTO zlecenie_kupna(id_zlecenia,id_uz, id_zasobu, ilosc, limit1) VALUES(nowy_id, uz, zasob, ile,cena);
 	RETURN nowy_id;
 END;
@@ -300,7 +308,7 @@ LANGUAGE SQL;
 
 
 CREATE OR REPLACE FUNCTION dobra_uz(uz integer) RETURNS TABLE(id_zasobu integer,ilosc integer)
-	AS $$ SELECT id_zasobu, ilosc FROM posiadane_dobro WHERE id_uz=uz $$
+	AS $$ SELECT id_zasobu, ilosc FROM posiadane_dobro WHERE id_uz=uz AND (ilosc>0 OR id_zasobu=1) $$
 LANGUAGE SQL;
 
 
