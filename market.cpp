@@ -623,11 +623,11 @@ void Market::cancelOrder(qint32 userId, qint32 orderId)
     QSqlQuery query1(m_database),
               query2(m_database);
 
-    query1.prepare("DELET FROM zlecenie_kupna AS zk WHERE zk.id_zlecenia = :orderId AND zk.id_uz = :userId;");
+    query1.prepare("DELETE FROM zlecenie_kupna AS zk WHERE zk.id_zlecenia = :orderId AND zk.id_uz = :userId;");
     query1.bindValue(":orderId", orderId);
     query1.bindValue(":userId", userId);
 
-    query2.prepare("DELET FROM zlecenie_sprzedazy AS zs WHERE zs.id_zlecenia = :orderId AND zs.id_uz = :userId;");
+    query2.prepare("DELETE FROM zlecenie_sprzedazy AS zs WHERE zs.id_zlecenia = :orderId AND zs.id_uz = :userId;");
     query2.bindValue(":orderId", orderId);
     query2.bindValue(":userId", userId);
 
