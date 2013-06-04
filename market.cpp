@@ -620,6 +620,7 @@ void Market::getStockInfo(qint32 userId, qint32 stockId)
  */
 void Market::cancelOrder(qint32 userId, qint32 orderId)
 {
+    qDebug() << "[Market] Użytkownik " << userId << " prosi o anulowanie zlecenia " << orderId;
     QSqlQuery query1(m_database),
               query2(m_database);
 
