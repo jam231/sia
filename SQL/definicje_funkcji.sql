@@ -42,7 +42,7 @@ CREATE OR REPLACE FUNCTION zlecenie_kupna_on_delete() RETURNS TRIGGER AS $$
 BEGIN
 	--ZWROT KASY
 	UPDATE posiadane_dobro SET ilosc=ilosc+old.ilosc*old.limit1 WHERE id_uz=old.id_uz AND id_zasobu=1;
-	RETURN new;
+	RETURN old;
 END
 $$ LANGUAGE plpgsql;
 
@@ -56,7 +56,7 @@ CREATE OR REPLACE FUNCTION zlecenie_sprzedazy_on_delete() RETURNS TRIGGER AS $$
 BEGIN
 	--ZWROT AKCJI
 	UPDATE posiadane_dobro SET ilosc=ilosc+old.ilosc WHERE id_uz=old.id_uz AND id_zasobu=old.id_zasobu;
-	RETURN new;
+	RETURN old;
 END
 $$ LANGUAGE plpgsql;
 
@@ -290,13 +290,13 @@ CREATE TRIGGER zs_on_update AFTER UPDATE ON zlecenie_sprzedazy
 	
 	
 CREATE OR REPLACE FUNCTION najlepsze_kupno(in zasob integer, out integer, out bigint)
-    AS $$ SELECT limit1,SUM(ilosc) FROM zlecenie_kupna t WHERE id_zasobu=zasob GROUP BY limit1 ORDER BY 2 DESC LIMIT 1 $$
+    AS $$ SELECT limit1,SUM(ilosc) FROM zlecenie_kupna t WHERE id_zasobu=zasob AND ilosc>0 GROUP BY limit1 ORDER BY 2 DESC LIMIT 1 $$
 LANGUAGE SQL;
 
 
 
 CREATE OR REPLACE FUNCTION najlepsza_sprzedaz(in zasob integer, out integer, out bigint)
-    AS $$ SELECT limit1,SUM(ilosc) FROM zlecenie_sprzedazy t WHERE id_zasobu=zasob GROUP BY limit1 ORDER BY 2 ASC LIMIT 1 $$
+    AS $$ SELECT limit1,SUM(ilosc) FROM zlecenie_sprzedazy t WHERE id_zasobu=zasob AND ilosc>0 GROUP BY limit1 ORDER BY 2 ASC LIMIT 1 $$
 LANGUAGE SQL;
 
 
