@@ -60,12 +60,12 @@ BEGIN
 	
 	COPY(SELECT * FROM wykres_uz(
 	    (SELECT id_uz FROM uzytkownik WHERE (stan_konta(0, id_uz) - stan_konta(100000000, id_uz)) =  
-		(SELECT MAX(stan_konta(0, id_uz) - stan_konta(100000000, id_uz)) FROM uzytkownik) )
+		(SELECT MAX(stan_konta(0, id_uz) - stan_konta(100000000, id_uz)) FROM uzytkownik LIMIT 1) )
 		) ) TO 'D://wykbu.txt';
 		
 	COPY(SELECT * FROM wykres_uz(
 		(SELECT id_uz FROM uzytkownik WHERE (stan_konta(0, id_uz) - stan_konta(100000000, id_uz)) =  
-		(SELECT MIN(stan_konta(0, id_uz) - stan_konta(100000000, id_uz)) FROM uzytkownik) )
+		(SELECT MIN(stan_konta(0, id_uz) - stan_konta(100000000, id_uz)) FROM uzytkownik LIMIT 1) )
 		) ) TO 'D://wykwu.txt';
 	
 END;
