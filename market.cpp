@@ -392,13 +392,21 @@ void Market::sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 pric
 
     if(!query.lastError().isValid())
     {
-        Order order(Order::SELL, stockId, amount, price);
 
+        auto lastBestOrder = m_cachedBestSellOrders[stockId];
         changeCachedBestSellOrders(stockId);
 
-         // Wyślij wszytkim subskrybentom.
-        OrderMsg msg(order);
-        m_server->send(msg);
+        //Order order(Order::SELL, stockId, amount, price);
+        // Wyślij wszystkim subskrybentom.
+        //OrderMsg msg(order);
+        //m_server->send(msg);
+
+        // if changed then send!
+        if(m_cachedBestSellOrders[stockId] == lastBestOrder)
+        {
+            BestOrderMsg msg(Order::SELL, stockId,m_cachedBestSellOrders[stockId].first,
+                             m_cachedBestSellOrders[stockId].second);
+        }
     }
     else
     {
@@ -435,13 +443,26 @@ void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price
      m_database.commit();
      if(!query.lastError().isValid())
      {
-         Order order(Order::BUY, stockId, amount, price);
 
+
+         auto lastBestOrder = m_cachedBestBuyOrders[stockId];
          changeCachedBestBuyOrders(stockId);
 
+         // Order order(Order::BUY, stockId, amount, price);
          // Wyślij wszytkim subskrybentom.
-         OrderMsg msg(order);
-         m_server->send(msg);
+         //OrderMsg msg(order);
+         //m_server->send(msg);
+
+         // if changed then send!]
+         if(m_cachedBestBuyOrders[stockId] == lastBestOrder)
+         {
+             // FIX
+             // Meh, wczesniej byla wiadomosc bestOrder, ktora sie po prostu wysylalo, a teraz to jakis chuj
+             // za kazdym razem trzeba sie jebac z czyms takim:
+             BestOrderMsg msg(Order::BUY, stockId, m_cachedBestBuyOrders[stockId].first,
+                              m_cachedBestBuyOrders[stockId].second);
+             m_server->send(msg);
+         }
      }
      else
      {

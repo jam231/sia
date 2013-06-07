@@ -203,7 +203,8 @@ bool Connection::processMessage()
         Msg.send(m_socket);
         return true;
     }
-
+    try
+    {
     switch(msgType)
     {
         case IOMessage::BUY_STOCK_REQ:
@@ -294,6 +295,11 @@ bool Connection::processMessage()
             break;
         }
     }
+    }catch(const std::exception& e)
+    {
+        qDebug() << "\t\t[Connection] STALO SIE COS NIESPODZIEWANEGO !:" << e.what();
+    }
+
     return true;
 }
 
