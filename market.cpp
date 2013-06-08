@@ -315,8 +315,6 @@ void Market::notificationHandler(const QString& channelName,
                    price = data[2].toInt();
             QString date = data[3];
 
-            qDebug() << stockId << amount << price << date;
-
             TransactionChange msg(stockId, amount, price, date);
             m_server->send(msg);
 

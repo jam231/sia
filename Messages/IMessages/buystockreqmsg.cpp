@@ -16,7 +16,7 @@ BuyStockReqMsg::BuyStockReqMsg(QDataStream& in) //: IMessage()
 
 IOMessage::MessageType BuyStockReqMsg::type() const
 {
-    return SELL_STOCK_REQ;
+    return BUY_STOCK_REQ;
 }
 
 qint32 BuyStockReqMsg::getAmount() const
