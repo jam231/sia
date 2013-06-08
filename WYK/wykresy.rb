@@ -15,7 +15,9 @@ plot '#{input}.txt' using 1:($2/100) with lines notitle
 set size 1,0.2
 set origin 0,0.0
 #set ytics 10
-plot '#{input}.txt' using 1:3 with lines notitle
+set boxwidth 0.5
+set style fill solid
+plot '#{input}.txt' using 1:3 with boxes notitle
 
 "
 	
