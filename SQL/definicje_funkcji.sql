@@ -312,6 +312,11 @@ CREATE OR REPLACE FUNCTION dobra_uz(uz integer) RETURNS TABLE(id_zasobu integer,
 LANGUAGE SQL;
 
 
+CREATE OR REPLACE FUNCTION transakcje_uz(uz integer,ile integer) RETURNS SETOF zrealizowane_zlecenie AS
+$$
+	SELECT * FROM zrealizowane_zlecenie WHERE uz_kupil=uz OR uz_sprzedal=uz ORDER BY czas DESC LIMIT ile;
+$$ LANGUAGE SQL;
+
 CREATE OR REPLACE FUNCTION zlecenia_uz(uz integer) RETURNS TABLE(typ integer, id_zlecenia integer, id_zasobu integer,ilosc integer, limit1 integer)
 	AS $$ 
 	SELECT 1, id_zlecenia, id_zasobu, ilosc, limit1 FROM zlecenie_kupna WHERE id_uz=uz
