@@ -402,7 +402,7 @@ void Market::sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 pric
         //m_server->send(msg);
 
         // if changed then send!
-        if(m_cachedBestSellOrders[stockId] == lastBestOrder)
+        if(m_cachedBestSellOrders[stockId] != lastBestOrder)
         {
             BestOrderMsg msg(Order::SELL, stockId,m_cachedBestSellOrders[stockId].first,
                              m_cachedBestSellOrders[stockId].second);
@@ -454,7 +454,7 @@ void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price
          //m_server->send(msg);
 
          // if changed then send!]
-         if(m_cachedBestBuyOrders[stockId] == lastBestOrder)
+         if(m_cachedBestBuyOrders[stockId] != lastBestOrder)
          {
              // FIX
              // Meh, wczesniej byla wiadomosc bestOrder, ktora sie po prostu wysylalo, a teraz to jakis chuj
