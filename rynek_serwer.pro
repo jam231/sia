@@ -40,7 +40,8 @@ HEADERS += \
     Messages/IMessages/getstockinfomsg.h \
     Messages/OMessages/getstockinforespmsg.h \
     order.h \
-    Messages/IMessages/cancelordermsg.h
+    Messages/IMessages/cancelordermsg.h \
+    Messages/OMessages/orderidresp.h
 
 SOURCES += \
     server.cpp \
@@ -78,7 +79,8 @@ SOURCES += \
     Messages/IMessages/getstockinfomsg.cpp \
     Messages/OMessages/getstockinforespmsg.cpp \
     order.cpp \
-    Messages/IMessages/cancelordermsg.cpp
+    Messages/IMessages/cancelordermsg.cpp \
+    Messages/OMessages/orderidresp.cpp
 
 INCLUDEPATH += Messages \
     Messages/IMessages \

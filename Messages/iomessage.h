@@ -51,6 +51,7 @@ public:
         GET_STOCK_INFO_RESP,    // OMessage odpowiedz na prosbe o info
 
         CANCEL_ORDER_REQ,       // IMessage żadanie anulowania zlecenia o podanym id.
+        ORDER_ID_RESP,
 
 
         /*40-49: sesja, stan akcji */

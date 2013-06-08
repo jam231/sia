@@ -16,6 +16,7 @@ IOMessage::MessageType OrderMsg::type() const
 {
     return ORDER;
 }
+
 void OrderMsg::send(QIODevice* connection)
 {
     // Domyślnie BigEndian
@@ -24,6 +25,7 @@ void OrderMsg::send(QIODevice* connection)
     sendHeader(out);
     out << m_order;
 }
+
 qint16 OrderMsg::length() const
 {
     return sizeof(MessageType) + sizeof(qint8) + 3*sizeof(qint32);

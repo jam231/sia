@@ -26,6 +26,7 @@ IOMessage::MessageType IOMessage::toType(qint8 msgId)
         case GET_STOCK_INFO : return GET_STOCK_INFO;
         case CANCEL_ORDER_REQ : return CANCEL_ORDER_REQ;
         case GET_STOCK_INFO_RESP : return GET_STOCK_INFO_RESP;
+        case ORDER_ID_RESP : return ORDER_ID_RESP;
         default : return UNDEFINED;
     };
 }

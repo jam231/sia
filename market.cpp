@@ -14,6 +14,7 @@
 #include "ordermsg.h"
 #include "getmyordersrespmsg.h"
 #include "getstockinforespmsg.h"
+#include "orderidresp.h"
 
 #include "configmanager.h"
 
@@ -373,7 +374,7 @@ void Market::sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 pric
 
     QSqlQuery query(m_database);
     //
-    query.prepare("SELECT zlec_sprzedaz(:userId, :stockId, :amount, :price);");
+    query.prepare("SELECT * FROM zlec_sprzedaz(:userId, :stockId, :amount, :price);");
     /* TODO:
      *  Jeżeli się da to naprawić.
      */
@@ -392,6 +393,17 @@ void Market::sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 pric
 
     if(!query.lastError().isValid())
     {
+        if(query.first())
+        {
+            OrderIdResp msg(query.value(0).toInt());
+            m_server->send(msg, userId);
+        }
+        else
+        {
+            qDebug() << "[Market] Błąd nadania id dla zlecenia sprzedaży";
+            OrderIdResp msg(-1);
+            m_server->send(msg, userId);
+        }
 
         auto lastBestOrder = m_cachedBestSellOrders[stockId];
         changeCachedBestSellOrders(stockId);
@@ -412,6 +424,8 @@ void Market::sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 pric
     {
         qDebug() << "[Market] Błąd przy zleceniu sprzedaży"
                  << query.lastError().text();
+        OrderIdResp msg(-1);
+        m_server->send(msg, userId);
     }
 }
 
@@ -424,7 +438,7 @@ void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price
 
      QSqlQuery query(m_database);
 
-     query.prepare("SELECT zlec_kupno(:userId, :stockId, :amount, :price);");
+     query.prepare("SELECT * FROM zlec_kupno(:userId, :stockId, :amount, :price);");
      /* TODO:
       *  Jeżeli się da to naprawić.
       */
@@ -443,7 +457,17 @@ void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price
      m_database.commit();
      if(!query.lastError().isValid())
      {
-
+         if(query.first())
+         {
+             OrderIdResp msg(query.value(0).toInt());
+             m_server->send(msg, userId);
+         }
+         else
+         {
+             qDebug() << "[Market] Błąd nadania id dla zlecenia kupna";
+             OrderIdResp msg(-1);
+             m_server->send(msg, userId);
+         }
 
          auto lastBestOrder = m_cachedBestBuyOrders[stockId];
          changeCachedBestBuyOrders(stockId);
@@ -468,6 +492,8 @@ void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price
      {
          qDebug() << "[Market] Błąd przy zleceniu kupna"
                   << query.lastError().text();
+         OrderIdResp msg(-1);
+         m_server->send(msg, userId);
      }
 }
 
