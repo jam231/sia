@@ -28,6 +28,6 @@ void GetStockInfoRespMsg::send(QIODevice* connection)
 
 qint16 GetStockInfoRespMsg::length() const
 {
-    return sizeof(MessageType) + sizeof(qint32) + 3 * (2*sizeof(qint32));
+    return sizeof(MessageType) + sizeof(qint32) + 3 * (2*sizeof(qint32)) + sizeof(qint16) + m_lastTransaction.first.size();
 }
 
