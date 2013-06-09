@@ -587,10 +587,7 @@ void Market::getMyStocks(qint32 userId)
      GetMyStocksRespMsg msg;
      while (query.next())
          if(query.value(0).isValid() && query.value(1).isValid())
-         {
-             if(query.value(1).toInt()) //jesli ilosc nie jest zerem, bo tak sie moze zdarzyc w bazie danych
                 msg.addStock(query.value(0).toInt(), query.value(1).toInt());
-         }
          else
              qDebug() << "[Market] W getMyStocks"
                       << "zwrócony rekord nie ma dwóch pol.";
