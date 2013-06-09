@@ -11,6 +11,11 @@ SellStockReqMsg::SellStockReqMsg(QDataStream& in) //: IMessage()
     in >> m_stockId;
     in >> m_amount;
     in >> m_price;
+
+    // Mam wielka nadzieje, ze w bazie te rzeczy sa sprawdane,
+    // a juz na pewno m_stockId
+    if(m_amount <= 0 || m_price <= 0)
+        throw InvalidDataInMsg();
 }
 
 IOMessage::MessageType SellStockReqMsg::type() const
