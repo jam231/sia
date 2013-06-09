@@ -96,6 +96,7 @@ bool Connection::send(OMessage& msg)
 
 bool Connection::send(OrderMsg &msg)
 {
+
     if(m_subscribedStocks.contains(msg.getStockId()))
         return send(static_cast<OMessage&>(msg));
     return false;
@@ -231,7 +232,7 @@ bool Connection::processMessage()
             }catch(const std::exception& e)
             {
                 qDebug() << "\t\t[Connection] Złapano wyjątek" << e.what()
-                         << "podczas zlecania kupna.";
+                         << "podczas zlecania sprzedazy.";
             }
             break;
         }
@@ -244,7 +245,7 @@ bool Connection::processMessage()
             }catch(const std::exception& e)
             {
                 qDebug() << "\t\t[Connection] Złapano wyjątek" << e.what()
-                         << "podczas zlecania kupna.";
+                         << "podczas anulowania transakcji.";
             }
             break;
         }

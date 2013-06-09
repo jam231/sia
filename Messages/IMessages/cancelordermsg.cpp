@@ -1,10 +1,10 @@
 #include "cancelordermsg.h"
 
-
+#include <QDebug>
 CancelOrderMsg::CancelOrderMsg(QDataStream &in)
 {
     // Domyślnie BigEndian
-    if(in.device()->bytesAvailable() == sizeof(m_orderId))
+    if(in.device()->bytesAvailable() != sizeof(m_orderId))
         throw InvalidDataInMsg();
 
     in >> m_orderId;
