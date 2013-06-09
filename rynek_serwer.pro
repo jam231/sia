@@ -90,7 +90,7 @@ OTHER_FILES += \
     TODO.txt \
     Files/config.ini
 
-
+#DEFINES += QT_NO_DEBUG_OUTPUT
 
 
 

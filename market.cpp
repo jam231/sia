@@ -500,7 +500,7 @@ void Market::changeCachedBestSellOrders(qint32 stockId)
 {
     QSqlQuery query(m_database);
 
-    query.prepare("SELECT * FROM najlepsze_kupno(:stockId);");
+    query.prepare("SELECT * FROM najlepsze_sprzedaz(:stockId);");
     query.bindValue(":stockId", stockId);
 
     query.setForwardOnly(true);
@@ -533,7 +533,7 @@ void Market::changeCachedBestBuyOrders(qint32 stockId)
 {
     QSqlQuery query(m_database);
 
-    query.prepare("SELECT * FROM najlepsza_sprzedaz(:stockId);");
+    query.prepare("SELECT * FROM najlepsze_kupno(:stockId);");
     query.bindValue(":stockId", stockId);
 
     query.setForwardOnly(true);
