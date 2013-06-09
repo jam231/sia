@@ -318,7 +318,7 @@ void Market::notificationHandler(const QString& channelName,
             TransactionChange msg(stockId, amount, price, date);
             m_server->send(msg);
 
-            m_cachedLastTransaction[stockId] = qMakePair(price, amount);
+            m_cachedLastTransaction[stockId] = qMakePair(date, qMakePair(price, amount));
 
             changeCachedBestBuyOrders(stockId);
             // TODO: Jak już gdzieś wspomniałem być może
@@ -642,7 +642,7 @@ void Market::getStockInfo(qint32 userId, qint32 stockId)
 
     QPair<qint32, qint32> bestBuyOrder;
     QPair<qint32, qint32> bestSellOrder;
-    QPair<qint32, qint32> lastTransaction;
+    QPair<QString, QPair<qint32, qint32> > lastTransaction;
 
 
 
