@@ -41,7 +41,8 @@ HEADERS += \
     Messages/OMessages/getstockinforespmsg.h \
     order.h \
     Messages/IMessages/cancelordermsg.h \
-    Messages/OMessages/orderidresp.h
+    Messages/OMessages/orderidresp.h \
+    Messages/OMessages/buytransactionmsg.h
 
 SOURCES += \
     server.cpp \

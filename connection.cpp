@@ -94,11 +94,13 @@ bool Connection::send(OMessage& msg)
 
 }
 
-bool Connection::send(OrderMsg &msg)
+bool Connection::send(OrderMsg& msg)
 {
-
     if(m_subscribedStocks.contains(msg.getStockId()))
+    {
         return send(static_cast<OMessage&>(msg));
+
+    }
     return false;
 }
 

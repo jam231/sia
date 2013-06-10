@@ -416,6 +416,7 @@ void Market::sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 pric
         {
             BestOrderMsg msg(Order::SELL, stockId,m_cachedBestSellOrders[stockId].first,
                              m_cachedBestSellOrders[stockId].second);
+            m_server->send(msg);
         }
     }
     else
@@ -514,6 +515,8 @@ void Market::changeCachedBestSellOrders(qint32 stockId)
     {
         if(query.value(0).isValid() && query.value(1).isValid())
         {
+            //qDebug() << "[Market] changeCachedSellBuyOrders: "
+            //          << query.value(0).toInt() << " " << query.value(1).toInt();
             m_cachedBestSellOrders.insert(stockId,
                                           qMakePair(query.value(0).toInt(),
                                                     query.value(1).toInt()));
@@ -547,8 +550,8 @@ void Market::changeCachedBestBuyOrders(qint32 stockId)
     {
         if(query.value(0).isValid() && query.value(1).isValid())
         {
-//            qDebug() << "[Market] changeCachedBestBuyOrders: "
-//                     << query.value(0).toInt() << " " << query.value(1).toInt();
+           //qDebug() << "[Market] changeCachedBestBuyOrders: "
+           //          << query.value(0).toInt() << " " << query.value(1).toInt();
             m_cachedBestBuyOrders.insert(stockId,
                                       qMakePair(query.value(0).toInt(),
                                                 query.value(1).toInt()));
@@ -622,6 +625,7 @@ void Market::getMyOrders(qint32 userId)
             query.value(2).isValid() && query.value(3).isValid())
          {
              // RETURNS TABLE(typ integer, id_zlecenia integer, id_zasobu integer,ilosc integer, limit1 integer)
+
              msg.addOrder(query.value(1).toInt(),
                           Order::toOrderType(query.value(0).toInt()), query.value(2).toInt(),
                           query.value(3).toInt(), query.value(4).toInt());
