@@ -11,7 +11,7 @@ DECLARE
 	val					NUMERIC;
 BEGIN
 	l_zasobow := (SELECT COUNT(*) FROM zasob);
-	l_zasobow_dla_uz := (random()::numeric+5)::integer;
+	l_zasobow_dla_uz := (random()::numeric*5)::integer+1;
 	kasa_w_akcjach := (random()*10000000)::integer; -- poki co po prostu liczba akcji :(
 	
 	INSERT INTO posiadane_dobro(id_uz,id_zasobu,ilosc) VALUES(uz,1,wartosc_pieniedzy);
