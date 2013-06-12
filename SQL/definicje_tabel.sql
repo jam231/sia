@@ -70,3 +70,10 @@ CREATE TABLE subskrypcja (
 	id_uz		INTEGER REFERENCES uzytkownik(id_uz) NOT NULL,
 	id_zasobu	INTEGER REFERENCES zasob(id_zasobu) NOT NULL
 );
+
+CREATE VIEW cena_rynkowa AS
+	SELECT id_zasobu,(w_ksiegowa::bigint*10000000)/liczba_akcji AS cena FROM zasob WHERE id_zasobu > 1;
+	
+CREATE INDEX zs_idx ON zlecenie_sprzedazy(id_uz);
+CREATE INDEX zk_idx ON zlecenie_kupna(id_uz);
+CREATE INDEX pd_idx ON posiadane_dobro(id_uz);

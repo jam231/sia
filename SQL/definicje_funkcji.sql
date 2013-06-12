@@ -2,12 +2,59 @@ CREATE OR REPLACE FUNCTION przydziel_zasoby(uz integer) RETURNS VOID AS $$ --kaz
 DECLARE
 	wartosc_pieniedzy	integer := 1000000; --10 000zl * 100 gr
 	l_zasobow			integer;
+	l_zasobow_dla_uz	integer;
 	zasob				integer;
+	kasa_w_akcjach		integer;
+	wartosc_zasobu		integer;
+	id_zas				integer;
+	przydzielone_id 	INTEGER ARRAY := array[1::integer];
+	val					NUMERIC;
 BEGIN
 	l_zasobow := (SELECT COUNT(*) FROM zasob);
+	l_zasobow_dla_uz := (random()::numeric+5)::integer;
+	kasa_w_akcjach := (random()*10000000)::integer; -- poki co po prostu liczba akcji :(
+	
 	INSERT INTO posiadane_dobro(id_uz,id_zasobu,ilosc) VALUES(uz,1,wartosc_pieniedzy);
-	INSERT INTO posiadane_dobro(id_uz,id_zasobu,ilosc) VALUES(uz,FLOOR(RANDOM()*(l_zasobow-1))+2,100); --kazdy otrzymuje losowy zasob w ilosci 100
-	END;
+	
+	FOREACH val IN ARRAY podziel_odcinek(l_zasobow_dla_uz) LOOP
+		LOOP
+			id_zas := FLOOR(RANDOM()*(l_zasobow-1))+2;
+			IF NOT(przydzielone_id @> array[id_zas]) THEN
+				przydzielone_id := przydzielone_id || id_zas;
+				EXIT;
+			END IF;
+		END LOOP;
+		wartosc_zasobu := (SELECT cena FROM cena_rynkowa WHERE id_zasobu = id_zas);
+		--RAISE NOTICE  'WZ=% VAL=% KWA=% IA=%', wartosc_zasobu, val, kasa_w_akcjach, (val*kasa_w_akcjach/wartosc_zasobu)::int;
+		INSERT INTO posiadane_dobro(id_uz,id_zasobu,ilosc) VALUES(uz,id_zas,(val*kasa_w_akcjach/wartosc_zasobu)::int ); --kazdy otrzymuje losowy zasob
+	END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION numeric_min(a numeric, b numeric) RETURNS NUMERIC AS $$
+BEGIN
+	IF a>b THEN RETURN b; END IF;
+	RETURN a;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION podziel_odcinek(na_ile_czesci integer) RETURNS NUMERIC ARRAY AS $$
+DECLARE
+	retval NUMERIC ARRAY;
+	single_value NUMERIC;
+	max_val NUMERIC := 0.5;
+	total NUMERIC := 1.0;
+BEGIN
+	FOR i IN 2..na_ile_czesci LOOP
+		max_val := numeric_min(max_val, total);
+		single_value := (random()::NUMERIC) % max_val;
+		retval := retval||(single_value);
+		total := total - single_value;
+	END LOOP;
+	retval := retval||total;
+	RETURN retval;
+END;
 $$ LANGUAGE plpgsql;
 
 
@@ -97,7 +144,7 @@ BEGIN
 
 	UPDATE posiadane_dobro SET ilosc=ilosc+ile*(zl_kupna.limit1-cena) WHERE id_uz=zl_kupna.id_uz AND id_zasobu=1; --kupujacemu oddaj ew. pieniadze
 	
-	RAISE NOTICE 'ile = % old_cached_ilosc = % old_ilosc = %',ile,zl_kupna.ilosc,(SELECT ilosc FROM zlecenie_kupna WHERE id_zlecenia=zl_kupna.id_zlecenia);
+	--RAISE NOTICE 'ile = % old_cached_ilosc = % old_ilosc = %',ile,zl_kupna.ilosc,(SELECT ilosc FROM zlecenie_kupna WHERE id_zlecenia=zl_kupna.id_zlecenia);
 	UPDATE zlecenie_kupna SET ilosc=ilosc-ile WHERE id_zlecenia=zl_kupna.id_zlecenia;
 	UPDATE zlecenie_sprzedazy SET ilosc=ilosc-ile WHERE id_zlecenia=zl_sprzedazy.id_zlecenia;
 	
@@ -225,7 +272,7 @@ CREATE OR REPLACE FUNCTION zlec_kupno(uz integer,zasob integer,ile integer,cena 
 DECLARE
 	nowy_id integer := nextval('nr_zlecenia');
 BEGIN
-    RAISE NOTICE 'zlec_kupno u: % z: % i: % c: %',uz,zasob,ile,cena;
+    --RAISE NOTICE 'zlec_kupno u: % z: % i: % c: %',uz,zasob,ile,cena;
 	INSERT INTO zlecenie_kupna(id_zlecenia,id_uz, id_zasobu, ilosc, limit1) VALUES(nowy_id, uz, zasob, ile,cena);
 	RETURN nowy_id;
 END;
