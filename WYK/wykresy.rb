@@ -1,4 +1,14 @@
-def wykres_file(input)
+def file_get_max_amount(file)
+	max = 0
+	File.open(file,'r') { |f|
+		f.each_line { |l|
+			max = [l.split[2].to_i,max].max
+		}
+	}
+	return max
+end
+
+def wykres_file(input,maxtick)
 	wyk = "
 set xdata time
 set timefmt \"%s\"
@@ -16,7 +26,7 @@ set origin 0,0.2
 plot '#{input}.txt' using 1:($2/100) with lines ls 1 notitle
 set size 1,0.2
 set origin 0,0.0
-set ytics 50
+set ytics #{maxtick/3}
 set boxwidth 0.5
 set style fill solid
 plot '#{input}.txt' using 1:3 with boxes notitle
@@ -27,6 +37,7 @@ plot '#{input}.txt' using 1:3 with boxes notitle
 	`gnuplot #{input}.gnuplot"`
 end
 
-(1..21).each { |num|
-	wykres_file('wyk'+num.to_s)
+(2..21).each { |num|
+	maxtick = file_get_max_amount('wyk'+num.to_s+'.txt')
+	wykres_file('wyk'+num.to_s,maxtick)
 }
