@@ -44,27 +44,9 @@ CREATE VIEW szacowana_wartosc AS
 
 CREATE OR REPLACE FUNCTION utworz_wykresy() RETURNS VOID AS $$
 BEGIN
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 1 ORDER BY czas) TO 'D://wyk1.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 2 ORDER BY czas) TO 'D://wyk2.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 3 ORDER BY czas) TO 'D://wyk3.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 4 ORDER BY czas) TO 'D://wyk4.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 5 ORDER BY czas) TO 'D://wyk5.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 6 ORDER BY czas) TO 'D://wyk6.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 7 ORDER BY czas) TO 'D://wyk7.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 8 ORDER BY czas) TO 'D://wyk8.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 9 ORDER BY czas) TO 'D://wyk9.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 10 ORDER BY czas) TO 'D://wyk10.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 11 ORDER BY czas) TO 'D://wyk11.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 12 ORDER BY czas) TO 'D://wyk12.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 13 ORDER BY czas) TO 'D://wyk13.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 14 ORDER BY czas) TO 'D://wyk14.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 15 ORDER BY czas) TO 'D://wyk15.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 16 ORDER BY czas) TO 'D://wyk16.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 17 ORDER BY czas) TO 'D://wyk17.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 18 ORDER BY czas) TO 'D://wyk18.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 19 ORDER BY czas) TO 'D://wyk19.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 20 ORDER BY czas) TO 'D://wyk20.txt';
-	COPY(SELECT EXTRACT(EPOCH FROM czas), cena, ilosc FROM zrealizowane_zlecenie WHERE id_zasobu = 21 ORDER BY czas) TO 'D://wyk21.txt';
+	FOR i IN 2..21 LOOP
+		EXECUTE 'COPY(SELECT EXTRACT(EPOCH FROM czas), cena, SUM(ilosc) FROM zrealizowane_zlecenie WHERE id_zasobu = '||i||' GROUP BY czas,cena ORDER BY czas) TO ''D://wyk'||i||'.txt''';
+	END LOOP;
 	COPY(SELECT * FROM szacowana_wartosc ORDER BY 2 DESC) TO 'D://dane.txt';
 		
 	--COPY(SELECT * FROM wykres_uz(
