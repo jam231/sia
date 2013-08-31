@@ -1,4 +1,4 @@
-QMAKE_CXXFLAGS += -std=c++11 -Wall -Wextra -Wfloat-equal -Wundef \
+QMAKE_CXXFLAGS += -std=c++0x -Wall -Wextra -Wfloat-equal -Wundef \
                   -Wpointer-arith
 
 QT += sql \
@@ -92,63 +92,3 @@ OTHER_FILES += \
     Files/config.ini
 
 #DEFINES += QT_NO_DEBUG_OUTPUT
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

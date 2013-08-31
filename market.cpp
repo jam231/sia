@@ -27,6 +27,10 @@
 #include <transactionchange.h>
 
 
+const QString Market::BUY_TRANSACTIONS_CHANNEL = "ch_zlecenia_kupna";
+const QString Market::SELL_TRANSACTIONS_CHANNEL = "ch_zlecenia_sprzedazy";
+const QString Market::CHANGE_CHANNEL = "ch_zmiana";
+
 
 Market::Market(const ConfigManager<>& config, QObject* parent)
     : QObject(parent)

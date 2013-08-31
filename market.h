@@ -29,9 +29,10 @@ Q_DECLARE_METATYPE(Order)
 class Market : public QObject
 {
     Q_OBJECT
-    const QString BUY_TRANSACTIONS_CHANNEL = "ch_zlecenia_kupna";
-    const QString SELL_TRANSACTIONS_CHANNEL = "ch_zlecenia_sprzedazy";
-    const QString CHANGE_CHANNEL = "ch_zmiana";
+
+    static const QString BUY_TRANSACTIONS_CHANNEL;// = "ch_zlecenia_kupna";
+    static const QString SELL_TRANSACTIONS_CHANNEL;// = "ch_zlecenia_sprzedazy";
+    static const QString CHANGE_CHANNEL;// = "ch_zmiana";
 
     Server* m_server;
     QSqlDatabase m_database;
