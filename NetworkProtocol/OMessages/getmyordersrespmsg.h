@@ -11,9 +11,9 @@
 
 namespace NetworkProtocol {
 
-class   GetMyOrdersRespMsg : public OMessage
+class NETWORKPROTOCOLSHARED_EXPORT  GetMyOrdersRespMsg : public OMessage
 {
-    QVector<QPair<qint32,Order> > m_orders;
+    QVector<QPair<qint32,DTO::Order> > m_orders;
 
     qint16 length() const;
 public:
@@ -22,9 +22,9 @@ public:
     MessageType type() const;
     void send(QIODevice* connection);
 
-    void addOrder(qint32 orderId, Order::OrderType m_transactionType, qint32 m_stockId, qint32 m_amount,
+    void addOrder(qint32 orderId, DTO::Order::OrderType m_transactionType, qint32 m_stockId, qint32 m_amount,
                   qint32 m_price);
-    void addOrder(qint32 orderId, Order order);
+    void addOrder(qint32 orderId, DTO::Order order);
 };
 
 }

@@ -5,7 +5,7 @@
 
 namespace NetworkProtocol {
 
-class  CompanyStatusMsg : public IMessage
+class NETWORKPROTOCOLSHARED_EXPORT CompanyStatusMsg : public IMessage
 {
     qint32 m_companyId;
 

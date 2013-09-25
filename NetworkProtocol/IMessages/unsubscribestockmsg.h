@@ -5,7 +5,7 @@
 
 namespace NetworkProtocol {
 
-class  UnsubscribeStockMsg : public IMessage
+class NETWORKPROTOCOLSHARED_EXPORT UnsubscribeStockMsg : public IMessage
 {
     qint32 m_stockId;
 

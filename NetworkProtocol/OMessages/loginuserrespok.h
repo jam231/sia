@@ -6,7 +6,7 @@
 
 namespace NetworkProtocol {
 
-class  LoginUserRespOk : public OMessage
+class NETWORKPROTOCOLSHARED_EXPORT LoginUserRespOk : public OMessage
 {
 
     qint16 length() const;

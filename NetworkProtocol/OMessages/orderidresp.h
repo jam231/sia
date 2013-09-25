@@ -5,7 +5,7 @@
 
 namespace NetworkProtocol {
 
-class  OrderIdResp : public OMessage
+class NETWORKPROTOCOLSHARED_EXPORT OrderIdResp : public OMessage
 {
     qint32 m_orderId;
 

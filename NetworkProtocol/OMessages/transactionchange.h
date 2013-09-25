@@ -5,7 +5,7 @@
 
 namespace NetworkProtocol {
 
-class  TransactionChange : public OMessage
+class NETWORKPROTOCOLSHARED_EXPORT TransactionChange : public OMessage
 {
     qint32 m_stockId;
     qint32 m_amount;

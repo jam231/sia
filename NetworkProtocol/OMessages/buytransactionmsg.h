@@ -5,7 +5,7 @@
 
 namespace NetworkProtocol {
 
-class  BuyTransactionMsg : public OMessage
+class NETWORKPROTOCOLSHARED_EXPORT BuyTransactionMsg : public OMessage
 {
     qint32 m_amount;
     qint32 m_orderId;

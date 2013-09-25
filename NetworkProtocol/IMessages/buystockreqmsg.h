@@ -5,7 +5,7 @@
 
 namespace NetworkProtocol {
 
-class  BuyStockReqMsg : public IMessage
+class NETWORKPROTOCOLSHARED_EXPORT BuyStockReqMsg : public IMessage
 {
     qint32 m_stockId;
     qint32 m_amount;

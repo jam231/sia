@@ -5,7 +5,7 @@
 
 namespace NetworkProtocol {
 
-class  UnrecognizedUserMsg : public OMessage
+class NETWORKPROTOCOLSHARED_EXPORT UnrecognizedUserMsg : public OMessage
 {
 
     qint16 length() const;

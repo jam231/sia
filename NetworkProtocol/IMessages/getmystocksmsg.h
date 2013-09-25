@@ -5,7 +5,7 @@
 
 namespace NetworkProtocol {
 
-class  GetMyStocksMsg : public IMessage
+class NETWORKPROTOCOLSHARED_EXPORT GetMyStocksMsg : public IMessage
 {
     qint16 length() const;
 public:

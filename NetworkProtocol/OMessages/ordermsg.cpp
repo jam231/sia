@@ -2,12 +2,12 @@
 
 namespace NetworkProtocol {
 
-OrderMsg::OrderMsg(Order::OrderType transactionType, qint32 stockId, qint32 amount, qint32 price)
+OrderMsg::OrderMsg(DTO::Order::OrderType transactionType, qint32 stockId, qint32 amount, qint32 price)
     : m_order(transactionType, stockId, amount, price)
 {
 }
 
-OrderMsg::OrderMsg(Order order) : m_order(order)
+OrderMsg::OrderMsg(DTO::Order order) : m_order(order)
 {
 }
 

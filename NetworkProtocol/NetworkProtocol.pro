@@ -1,10 +1,5 @@
 QMAKE_CXXFLAGS += -std=gnu++11 -Wall -Wextra -Wfloat-equal -Wundef \
                   -Wpointer-arith
-#-------------------------------------------------
-#
-# Project created by QtCreator 2013-09-25T23:40:44
-#
-#-------------------------------------------------
 
 QT       += network
 
@@ -12,7 +7,8 @@ QT       -= gui
 
 TARGET = NetworkProtocol
 TEMPLATE = lib
-CONFIG += staticlib
+
+DEFINES += NETWORKPROTOCOL_LIBRARY
 
 SOURCES += \
     DataTransferObjects/order.cpp \
@@ -47,7 +43,8 @@ SOURCES += \
     OMessages/bestorder.cpp \
     iomessage.cpp
 
-HEADERS += \
+HEADERS +=\
+        networkprotocol_global.h \
     DataTransferObjects/order.h \
     IMessages/unsubscribestockmsg.h \
     IMessages/subscribestockmsg.h \

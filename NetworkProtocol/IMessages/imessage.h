@@ -10,7 +10,7 @@
 
 namespace NetworkProtocol {
 
-class  InvalidDataInMsg : public std::exception
+class NETWORKPROTOCOLSHARED_EXPORT InvalidDataInMsg : public std::exception
 {
 public:
     virtual const char* what() const throw()
@@ -20,7 +20,7 @@ public:
 };
 
 
-class  IMessage : public IOMessage
+class NETWORKPROTOCOLSHARED_EXPORT IMessage : public IOMessage
 {
 public:
     static MessageType getMsgType(QDataStream &in);

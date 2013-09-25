@@ -5,7 +5,7 @@
 
 namespace NetworkProtocol {
 
-class  GetMyOrderMsg : public IMessage
+class NETWORKPROTOCOLSHARED_EXPORT GetMyOrderMsg : public IMessage
 {
     qint16 length() const;
 public:

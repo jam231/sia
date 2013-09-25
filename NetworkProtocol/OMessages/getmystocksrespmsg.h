@@ -8,7 +8,7 @@
 
 namespace NetworkProtocol {
 
-class  GetMyStocksRespMsg : public OMessage
+class NETWORKPROTOCOLSHARED_EXPORT GetMyStocksRespMsg : public OMessage
 {
     QVector<QPair<qint32, qint32> > m_stocks;
 

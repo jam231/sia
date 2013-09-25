@@ -5,7 +5,7 @@
 
 namespace NetworkProtocol {
 
-class   LoginUserReqMsg : public IMessage
+class NETWORKPROTOCOLSHARED_EXPORT  LoginUserReqMsg : public IMessage
 {
     qint32 m_userId;
     QString m_password;

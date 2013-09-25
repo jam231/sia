@@ -5,7 +5,7 @@
 
 namespace NetworkProtocol {
 
-class  RegisterUserRespOk : public OMessage
+class NETWORKPROTOCOLSHARED_EXPORT RegisterUserRespOk : public OMessage
 {
     qint32 m_userId;
 

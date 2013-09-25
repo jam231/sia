@@ -5,11 +5,11 @@
 
 namespace NetworkProtocol {
 
-class   BestOrderMsg : public OrderMsg
+class NETWORKPROTOCOLSHARED_EXPORT  BestOrderMsg : public OrderMsg
 {
 public:
-    BestOrderMsg(Order::OrderType, qint32, qint32, qint32);
-    BestOrderMsg(Order order);
+    BestOrderMsg(DTO::Order::OrderType, qint32, qint32, qint32);
+    BestOrderMsg(DTO::Order order);
     // TODO:
     // Brzydze sie siebie, nalezy to usunac ! --jam231
     BestOrderMsg() : OrderMsg() {}

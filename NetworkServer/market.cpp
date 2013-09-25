@@ -3,34 +3,35 @@
 #include "transaction.h"
 #include "stock.h"
 
-#include "registeruserrespok.h"
-#include "loginuserrespfail.h"
-#include "loginuserrespok.h"
-#include "buystockrespmsg.h"
-#include "sellstockrespmsg.h"
-#include "listofstocksmsg.h"
-#include "getmystocksrespmsg.h"
-#include "changepricemsg.h"
-#include "ordermsg.h"
-#include "getmyordersrespmsg.h"
-#include "getstockinforespmsg.h"
-#include "orderidresp.h"
+#include "OMessages/registeruserrespok.h"
+#include "OMessages/loginuserrespfail.h"
+#include "OMessages/loginuserrespok.h"
+//#include "OMessages/buystockrespmsg.h"
+//#include "OMessages/sellstockrespmsg.h"
+#include "OMessages/getmystocksrespmsg.h"
+#include "OMessages/ordermsg.h"
+#include "OMessages/getmyordersrespmsg.h"
+#include "OMessages/getstockinforespmsg.h"
+#include "OMessages/orderidresp.h"
 
 #include "configmanager.h"
 
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <registeruserrespfail.h>
-#include <buytransactionmsg.h>
-#include <selltransactionmsg.h>
-#include <transactionchange.h>
+#include <OMessages/registeruserrespfail.h>
+
+#include <OMessages/buytransactionmsg.h>
+#include <OMessages/selltransactionmsg.h>
+#include <OMessages/transactionchange.h>
 
 
 const QString Market::BUY_TRANSACTIONS_CHANNEL = "ch_zlecenia_kupna";
 const QString Market::SELL_TRANSACTIONS_CHANNEL = "ch_zlecenia_sprzedazy";
 const QString Market::CHANGE_CHANNEL = "ch_zmiana";
 
+using namespace NetworkProtocol;
+using namespace NetworkProtocol::DTO;
 
 Market::Market(const ConfigManager<>& config, QObject* parent)
     : QObject(parent)

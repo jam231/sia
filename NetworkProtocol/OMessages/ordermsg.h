@@ -7,15 +7,15 @@
 
 namespace NetworkProtocol {
 
-class  OrderMsg : public OMessage
+class NETWORKPROTOCOLSHARED_EXPORT OrderMsg : public OMessage
 {
-    Order m_order;
+    DTO::Order m_order;
 
     qint16 length() const;
 public:
     qint32 getStockId();
-    OrderMsg(Order::OrderType, qint32, qint32, qint32);
-    OrderMsg(Order order);
+    OrderMsg(DTO::Order::OrderType, qint32, qint32, qint32);
+    OrderMsg(DTO::Order order);
     // TODO:
     // Brzydze sie siebie, nalezy to usunac ! --jam231
     OrderMsg();

@@ -1,5 +1,5 @@
 #include "server.h"
-#include "loginuserrespfail.h"
+#include "OMessages/loginuserrespfail.h"
 
 
 Server::Server(QObject *parent, int portNumber)
@@ -37,7 +37,7 @@ Server::~Server()
  *      Być może warto by było przeładować send dla tych dwóch metod
  *      i zostawić tylko send(OMessage& msg, qint32 userId)
  */
-void Server::send(OMessage& msg, Connection* connection)
+void Server::send(NetworkProtocol::OMessage& msg, Connection* connection)
 {
     qDebug() << "\t[Server] Wysylanie wiadomsci: " << msg.type()
              << " do uzytkownika bez id";
@@ -51,7 +51,7 @@ void Server::send(OMessage& msg, Connection* connection)
  *  i warstwy związanej z bazą danych.
  *                                          --jam231
  */
-void Server::send(RegisterUserRespOk& msg, Connection* connection)
+void Server::send(NetworkProtocol::RegisterUserRespOk& msg, Connection* connection)
 {
 
     qDebug() << "\t[Server] Wysylanie wiadomsci: RegisterUserRespOk"
@@ -60,7 +60,7 @@ void Server::send(RegisterUserRespOk& msg, Connection* connection)
     connection->send(msg);
 }
 
-void Server::send(LoginUserRespOk& msg, Connection* connection,
+void Server::send(NetworkProtocol::LoginUserRespOk& msg, Connection* connection,
                   qint32 userId)
 {
     qDebug() << "\t[Server] Wysylanie wiadomsci: LoginUserRespOk"
@@ -79,13 +79,13 @@ void Server::send(LoginUserRespOk& msg, Connection* connection,
     else
     {
         qDebug() << "\t[Server] Próba zalogowania na aktywne konto.";
-        LoginUserRespFail respMsg("Użytkownik już zalogowany.");
+        NetworkProtocol::LoginUserRespFail respMsg("Użytkownik już zalogowany.");
 
         connection->send(respMsg);
     }
 }
 
-void Server::send(OMessage& msg)
+void Server::send(NetworkProtocol::OMessage& msg)
 {
     qDebug() << "\t[Server] Wysylanie wiadomsci: " << msg.type()
              << " do wszystkich.";
@@ -96,7 +96,7 @@ void Server::send(OMessage& msg)
     }
 }
 
-void Server::send(OMessage& msg, qint32 userId)
+void Server::send(NetworkProtocol::OMessage& msg, qint32 userId)
 {
     /* TODO:
      *

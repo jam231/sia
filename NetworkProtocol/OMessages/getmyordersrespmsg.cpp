@@ -32,13 +32,13 @@ void GetMyOrdersRespMsg::send(QIODevice* connection)
 
 }
 
-void GetMyOrdersRespMsg::addOrder(qint32 orderId, Order::OrderType m_transactionType, qint32 m_stockId,
+void GetMyOrdersRespMsg::addOrder(qint32 orderId, DTO::Order::OrderType m_transactionType, qint32 m_stockId,
                                   qint32 m_amount, qint32 m_price)
 {
-    m_orders.push_back(qMakePair(orderId, Order(m_transactionType, m_stockId, m_amount, m_price)));
+    m_orders.push_back(qMakePair(orderId, DTO::Order(m_transactionType, m_stockId, m_amount, m_price)));
 }
 
-void GetMyOrdersRespMsg::addOrder(qint32 orderId, Order order)
+void GetMyOrdersRespMsg::addOrder(qint32 orderId, DTO::Order order)
 {
     m_orders.push_back(qMakePair(orderId, order));
 }

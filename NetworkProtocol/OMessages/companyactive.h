@@ -5,7 +5,7 @@
 
 namespace NetworkProtocol {
 
-class  CompanyActiveResp : public OMessage
+class NETWORKPROTOCOLSHARED_EXPORT CompanyActiveResp : public OMessage
 {
     qint32 m_companyId;
 

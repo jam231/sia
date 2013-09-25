@@ -4,22 +4,27 @@
 #include "utilities.h"
 
 #include "iomessage.h"
-#include "imessage.h"
-#include "omessage.h"
+#include "IMessages/imessage.h"
+#include "OMessages/omessage.h"
 
-#include "registeruserreqmsg.h"
-#include "loginuserreqmsg.h"
-#include "buystockreqmsg.h"
-#include "sellstockreqmsg.h"
-#include "subscribestockmsg.h"
-#include "unsubscribestockmsg.h"
-#include "getstockinfomsg.h"
+#include "IMessages/registeruserreqmsg.h"
+#include "IMessages/loginuserreqmsg.h"
+#include "IMessages/buystockreqmsg.h"
+#include "IMessages/sellstockreqmsg.h"
+#include "IMessages/subscribestockmsg.h"
+#include "IMessages/unsubscribestockmsg.h"
+#include "IMessages/getstockinfomsg.h"
+#include "IMessages/cancelordermsg.h"
 
-#include "unrecognizedusermsg.h"
-#include "loginuserrespfail.h"
-#include "registeruserrespfail.h"
-#include "order.h"
-#include "cancelordermsg.h"
+#include "OMessages/unrecognizedusermsg.h"
+#include "OMessages/loginuserrespfail.h"
+#include "OMessages/registeruserrespfail.h"
+
+
+#include "DataTransferObjects/order.h"
+
+
+using namespace NetworkProtocol;
 
 Connection::Connection(QTcpSocket* socket, QObject *parent) :
     QObject(parent), m_socket(socket), m_userId(NOT_ASSIGNED)

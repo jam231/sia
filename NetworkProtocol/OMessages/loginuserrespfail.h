@@ -8,7 +8,7 @@
 
 namespace NetworkProtocol {
 
-class  LoginUserRespFail : public OMessage
+class NETWORKPROTOCOLSHARED_EXPORT LoginUserRespFail : public OMessage
 {
     QString m_reason;
 

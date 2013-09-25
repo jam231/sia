@@ -8,7 +8,7 @@
 
 namespace NetworkProtocol {
 
-class  OMessage : public IOMessage
+class NETWORKPROTOCOLSHARED_EXPORT OMessage : public IOMessage
 {
 protected:
     virtual qint16 length() const = 0;

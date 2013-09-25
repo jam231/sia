@@ -2,12 +2,12 @@
 #define CONNECTION_H
 
 #include "offer.h"
-#include "omessage.h"
+#include "OMessages/omessage.h"
 
 #include <QObject>
 #include <QByteArray>
 #include <QTcpSocket>
-#include <ordermsg.h>
+#include <OMessages/ordermsg.h>
 
 class Connection : public QObject
 {
@@ -32,8 +32,8 @@ public:
     void addSubscription(qint32 stockId);
     void dropSubscription(qint32 stockId);
 public slots:
-    bool send(OMessage& msg);
-    bool send(OrderMsg& msg);
+    bool send(NetworkProtocol::OMessage& msg);
+    bool send(NetworkProtocol::OrderMsg& msg);
 private slots:
     void disconect();
     void processIncomingMessages();

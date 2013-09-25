@@ -5,7 +5,7 @@
 
 namespace NetworkProtocol {
 
-class  CancelOrderMsg : public IMessage
+class NETWORKPROTOCOLSHARED_EXPORT CancelOrderMsg : public IMessage
 {
     qint32 m_orderId;
 

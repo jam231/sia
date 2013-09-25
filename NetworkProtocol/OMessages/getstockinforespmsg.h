@@ -7,7 +7,7 @@
 
 namespace NetworkProtocol {
 
-class  GetStockInfoRespMsg : public OMessage
+class NETWORKPROTOCOLSHARED_EXPORT GetStockInfoRespMsg : public OMessage
 {
     QPair<qint32, qint32> m_bestBuyOrder;
     QPair<qint32, qint32> m_bestSellOrder;

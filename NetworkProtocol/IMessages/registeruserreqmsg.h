@@ -7,7 +7,7 @@
 
 namespace NetworkProtocol {
 
-class  RegisterUserReqMsg : public IMessage
+class NETWORKPROTOCOLSHARED_EXPORT RegisterUserReqMsg : public IMessage
 {
     QString m_password;
     qint16 length() const;

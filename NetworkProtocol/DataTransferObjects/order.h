@@ -3,9 +3,11 @@
 
 #include <QDataStream>
 
-namespace NetworkProtocol {
+#include "networkprotocol_global.h"
 
-class  Order
+namespace NetworkProtocol {
+namespace DTO {
+class NETWORKPROTOCOLSHARED_EXPORT Order
 {
 public:
     enum OrderType : qint8
@@ -36,7 +38,7 @@ public:
     friend QDataStream &operator<<(QDataStream& stream, const Order& order);
     friend QDataStream &operator>>(QDataStream& stream, Order& order);
 };
-
+}
 }
 
 #endif // ORDER_H

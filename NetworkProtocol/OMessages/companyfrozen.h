@@ -6,7 +6,7 @@
 
 namespace NetworkProtocol {
 
-class  CompanyFrozenResp : public OMessage
+class NETWORKPROTOCOLSHARED_EXPORT CompanyFrozenResp : public OMessage
 {
     qint32 m_companyId;
 

@@ -1,10 +1,11 @@
 #ifndef IOMESSAGE_H
 #define IOMESSAGE_H
 
-#include <QtGlobal>
+#include "networkprotocol_global.h"
 
 namespace NetworkProtocol {
-class  IOMessage
+
+class NETWORKPROTOCOLSHARED_EXPORT IOMessage
 {  
 public:
     enum MessageType : qint8

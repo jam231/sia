@@ -1,6 +1,9 @@
 #ifndef MARKET_H
 #define MARKET_H
 
+#include "OMessages/bestorder.h"
+#include "DataTransferObjects/order.h"
+
 #include "server.h"
 #include "offer.h"
 #include "configmanager.h"
@@ -14,7 +17,7 @@
 #include <QSqlDatabase>
 #include <QSqlDriver>
 #include <QPair>
-#include <bestorder.h>
+
 
 class DatabaseError : public std::exception
 {
@@ -24,7 +27,7 @@ class DatabaseError : public std::exception
     }
 };
 
-Q_DECLARE_METATYPE(Order)
+Q_DECLARE_METATYPE(NetworkProtocol::DTO::Order)
 
 class Market : public QObject
 {

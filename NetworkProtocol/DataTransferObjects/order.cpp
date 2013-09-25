@@ -1,7 +1,7 @@
 #include "order.h"
 
 namespace NetworkProtocol {
-
+namespace DTO {
 Order::Order(Order::OrderType transactionType, qint32 stockId, qint32 amount, qint32 price)
     : m_transactionType(transactionType), m_stockId(stockId), m_amount(amount), m_price(price)
 {
@@ -60,4 +60,5 @@ QDataStream &operator>>(QDataStream& stream, Order& order)
     return stream;
 }
 
+}
 }
