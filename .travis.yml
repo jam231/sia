@@ -3,5 +3,8 @@ compiler:
   - gcc
 before_install:
   - sudo apt-get update
-  - sudo apt-get install -y libqt5-dev libqt5sql5-psql 
+  - sudo apt-get install -y qt5-base qt5-default
 script: qmake CONFIG+=debug && make
+
+services:
+	- postgresql
