@@ -1,7 +1,7 @@
 ﻿				Systemy inteligetnych agentów, 2013
 =======
 
-Build status:	"!https://travis-ci.org/jam231/sia2013.png!":https://travis-ci.org/jam231/sia2013
+[![Build Status](https://travis-ci.org/jam231/sia2013.png)](https://travis-ci.org/jam231/sia2013)
 
 
 Co zawiera wiki:
