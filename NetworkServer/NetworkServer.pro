@@ -1,4 +1,4 @@
-QMAKE_CXXFLAGS += -std=gnu++11 -Wall -Wextra -Wfloat-equal -Wundef \
+QMAKE_CXXFLAGS += -std=c++0x -Wall -Wextra -Wfloat-equal -Wundef \
                   -Wpointer-arith
 
 QT += sql \
