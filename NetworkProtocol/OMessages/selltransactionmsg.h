@@ -1,0 +1,21 @@
+#ifndef SELLTRANSACTIONMSG_H
+#define SELLTRANSACTIONMSG_H
+
+#include "omessage.h"
+
+namespace NetworkProtocol {
+
+class NETWORKPROTOCOLSHARED_EXPORT SellTransactionMsg : public OMessage
+{
+    qint32 m_amount;
+    qint32 m_orderId;
+
+    qint16 length() const;
+public:
+    SellTransactionMsg(qint32 m_orderId, qint32 m_amount);
+    void send(QIODevice *connection);
+    IOMessage::MessageType type() const;
+};
+
+}
+#endif // SELLTRANSACTIONMSG_H
