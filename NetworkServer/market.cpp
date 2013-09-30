@@ -2,28 +2,27 @@
 
 #include "transaction.h"
 #include "stock.h"
-
-#include "OMessages/registeruserrespok.h"
-#include "OMessages/loginuserrespfail.h"
-#include "OMessages/loginuserrespok.h"
-//#include "OMessages/buystockrespmsg.h"
-//#include "OMessages/sellstockrespmsg.h"
-#include "OMessages/getmystocksrespmsg.h"
-#include "OMessages/ordermsg.h"
-#include "OMessages/getmyordersrespmsg.h"
-#include "OMessages/getstockinforespmsg.h"
-#include "OMessages/orderidresp.h"
-
 #include "configmanager.h"
+
+
+#include <Responses/registeruserrespok.h>
+#include <Responses/loginuserrespfail.h>
+#include <Responses/loginuserrespok.h>
+#include <Responses/getmystocksrespmsg.h>
+#include <Responses/ordermsg.h>
+#include <Responses/getmyordersrespmsg.h>
+#include <Responses/getstockinforespmsg.h>
+#include <Responses/orderidresp.h>
+#include <Responses/registeruserrespfail.h>
+
+#include <Responses/buytransactionmsg.h>
+#include <Responses/selltransactionmsg.h>
+#include <Responses/transactionchange.h>
 
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <OMessages/registeruserrespfail.h>
 
-#include <OMessages/buytransactionmsg.h>
-#include <OMessages/selltransactionmsg.h>
-#include <OMessages/transactionchange.h>
 
 
 const QString Market::BUY_TRANSACTIONS_CHANNEL = "ch_zlecenia_kupna";
@@ -31,6 +30,7 @@ const QString Market::SELL_TRANSACTIONS_CHANNEL = "ch_zlecenia_sprzedazy";
 const QString Market::CHANGE_CHANNEL = "ch_zmiana";
 
 using namespace NetworkProtocol;
+using namespace NetworkProtocol::Responses;
 using namespace NetworkProtocol::DTO;
 
 Market::Market(const ConfigManager<>& config, QObject* parent)
@@ -323,20 +323,20 @@ void Market::notificationHandler(const QString& channelName,
             TransactionChange msg(stockId, amount, price, date);
             m_server->send(msg);
 
-            m_cachedLastTransaction[stockId] = qMakePair(date, qMakePair(amount, price));
+            m_cachedLastTransaction[stockId] = LastTransaction(date, amount, price);
 
             changeCachedBestBuyOrders(stockId);
             // TODO: Jak już gdzieś wspomniałem być może
             //       dałoby się to zrobić optymalniej.
             if(m_cachedBestBuyOrders.contains(stockId))
             {
-                BestOrderMsg msg(Order::BUY, stockId,m_cachedBestBuyOrders[stockId].first,
+                BestOrderMsg msg(Types::OrderType::BUY, stockId, m_cachedBestBuyOrders[stockId].first,
                                  m_cachedBestBuyOrders[stockId].second);
                 m_server->send(msg);
             }
             else
             {
-                BestOrderMsg msg(Order::BUY, stockId, 0, 0);
+                BestOrderMsg msg(Types::OrderType::BUY, stockId, 0, 0);
                 m_server->send(msg);
             }
 
@@ -345,14 +345,14 @@ void Market::notificationHandler(const QString& channelName,
             //       dałoby się to zrobić optymalniej.
             if(m_cachedBestSellOrders.contains(stockId))
             {
-                BestOrderMsg msg(Order::SELL, stockId,m_cachedBestSellOrders[stockId].first,
+                BestOrderMsg msg(Types::OrderType::SELL, stockId,m_cachedBestSellOrders[stockId].first,
                                  m_cachedBestSellOrders[stockId].second);
                 //BestOrderMsg msg(m_cachedBestSellOrders[stockId]);
                 m_server->send(msg);
             }
             else
             {
-                BestOrderMsg msg(Order::SELL, stockId, 0, 0);
+                BestOrderMsg msg(Types::OrderType::SELL, stockId, 0, 0);
                 m_server->send(msg);
             }
         }
@@ -419,7 +419,7 @@ void Market::sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 pric
         // if changed then send!
         if(m_cachedBestSellOrders[stockId] != lastBestOrder)
         {
-            BestOrderMsg msg(Order::SELL, stockId,m_cachedBestSellOrders[stockId].first,
+            BestOrderMsg msg(Types::OrderType::SELL, stockId,m_cachedBestSellOrders[stockId].first,
                              m_cachedBestSellOrders[stockId].second);
             m_server->send(msg);
         }
@@ -487,7 +487,7 @@ void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price
              // FIX
              // Meh, wczesniej byla wiadomosc bestOrder, ktora sie po prostu wysylalo, a teraz to jakis chuj
              // za kazdym razem trzeba sie jebac z czyms takim:
-             BestOrderMsg msg(Order::BUY, stockId, m_cachedBestBuyOrders[stockId].first,
+             BestOrderMsg msg(Types::OrderType::BUY, stockId, m_cachedBestBuyOrders[stockId].first,
                               m_cachedBestBuyOrders[stockId].second);
              m_server->send(msg);
          }
@@ -632,7 +632,7 @@ void Market::getMyOrders(qint32 userId)
              // RETURNS TABLE(typ integer, id_zlecenia integer, id_zasobu integer,ilosc integer, limit1 integer)
 
              msg.addOrder(query.value(1).toInt(),
-                          Order::toOrderType(query.value(0).toInt()), query.value(2).toInt(),
+                          Types::toOrderType(query.value(0).toInt()), query.value(2).toInt(),
                           query.value(3).toInt(), query.value(4).toInt());
          }
 
@@ -651,7 +651,7 @@ void Market::getStockInfo(qint32 userId, qint32 stockId)
 
     QPair<qint32, qint32> bestBuyOrder;
     QPair<qint32, qint32> bestSellOrder;
-    QPair<QString, QPair<qint32, qint32> > lastTransaction;
+    LastTransaction lastTransaction;
 
 
 

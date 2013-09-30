@@ -12,70 +12,76 @@ DEFINES += NETWORKPROTOCOL_LIBRARY
 
 SOURCES += \
     ../NetworkProtocol/DataTransferObjects/order.cpp \
-    ../NetworkProtocol/IMessages/unsubscribestockmsg.cpp \
-    ../NetworkProtocol/IMessages/subscribestockmsg.cpp \
-    ../NetworkProtocol/IMessages/sellstockreqmsg.cpp \
-    ../NetworkProtocol/IMessages/registeruserreqmsg.cpp \
-    ../NetworkProtocol/IMessages/loginuserreqmsg.cpp \
-    ../NetworkProtocol/IMessages/imessage.cpp \
-    ../NetworkProtocol/IMessages/getstockinfomsg.cpp \
-    ../NetworkProtocol/IMessages/getmystocksmsg.cpp \
-    ../NetworkProtocol/IMessages/getmyordermsg.cpp \
-    ../NetworkProtocol/IMessages/companystatus.cpp \
-    ../NetworkProtocol/IMessages/cancelordermsg.cpp \
-    ../NetworkProtocol/IMessages/buystockreqmsg.cpp \
-    ../NetworkProtocol/OMessages/unrecognizedusermsg.cpp \
-    ../NetworkProtocol/OMessages/transactionchange.cpp \
-    ../NetworkProtocol/OMessages/selltransactionmsg.cpp \
-    ../NetworkProtocol/OMessages/registeruserrespok.cpp \
-    ../NetworkProtocol/OMessages/registeruserrespfail.cpp \
-    ../NetworkProtocol/OMessages/ordermsg.cpp \
-    ../NetworkProtocol/OMessages/orderidresp.cpp \
-    ../NetworkProtocol/OMessages/omessage.cpp \
-    ../NetworkProtocol/OMessages/loginuserrespok.cpp \
-    ../NetworkProtocol/OMessages/loginuserrespfail.cpp \
-    ../NetworkProtocol/OMessages/getstockinforespmsg.cpp \
-    ../NetworkProtocol/OMessages/getmystocksrespmsg.cpp \
-    ../NetworkProtocol/OMessages/getmyordersrespmsg.cpp \
-    ../NetworkProtocol/OMessages/companyfrozen.cpp \
-    ../NetworkProtocol/OMessages/companyactive.cpp \
-    ../NetworkProtocol/OMessages/buytransactionmsg.cpp \
-    ../NetworkProtocol/OMessages/bestorder.cpp \
-    ../NetworkProtocol/iomessage.cpp
+    ../NetworkProtocol/Requests/unsubscribestockmsg.cpp \
+    ../NetworkProtocol/Requests/subscribestockmsg.cpp \
+    ../NetworkProtocol/Requests/sellstockreqmsg.cpp \
+    ../NetworkProtocol/Requests/registeruserreqmsg.cpp \
+    ../NetworkProtocol/Requests/loginuserreqmsg.cpp \
+    ../NetworkProtocol/Requests/getstockinfomsg.cpp \
+    ../NetworkProtocol/Requests/getmystocksmsg.cpp \
+    ../NetworkProtocol/Requests/getmyordermsg.cpp \
+    ../NetworkProtocol/Requests/companystatus.cpp \
+    ../NetworkProtocol/Requests/cancelordermsg.cpp \
+    ../NetworkProtocol/Requests/buystockreqmsg.cpp \
+    ../NetworkProtocol/Responses/unrecognizedusermsg.cpp \
+    ../NetworkProtocol/Responses/transactionchange.cpp \
+    ../NetworkProtocol/Responses/selltransactionmsg.cpp \
+    ../NetworkProtocol/Responses/registeruserrespok.cpp \
+    ../NetworkProtocol/Responses/registeruserrespfail.cpp \
+    ../NetworkProtocol/Responses/ordermsg.cpp \
+    ../NetworkProtocol/Responses/orderidresp.cpp \
+    ../NetworkProtocol/Responses/loginuserrespok.cpp \
+    ../NetworkProtocol/Responses/loginuserrespfail.cpp \
+    ../NetworkProtocol/Responses/getstockinforespmsg.cpp \
+    ../NetworkProtocol/Responses/getmystocksrespmsg.cpp \
+    ../NetworkProtocol/Responses/getmyordersrespmsg.cpp \
+    ../NetworkProtocol/Responses/companyfrozen.cpp \
+    ../NetworkProtocol/Responses/companyactive.cpp \
+    ../NetworkProtocol/Responses/buytransactionmsg.cpp \
+    ../NetworkProtocol/Responses/bestordermsg.cpp \
+    ../NetworkProtocol/Requests/request.cpp \
+    ../NetworkProtocol/Responses/response.cpp \
+    ../NetworkProtocol/message.cpp \
+    DataTransferObjects/bestorder.cpp \
+    DataTransferObjects/types.cpp \
+    DataTransferObjects/lasttransaction.cpp
 
 HEADERS += \
     ../NetworkProtocol/networkprotocol_global.h \
     ../NetworkProtocol/DataTransferObjects/order.h \
-    ../NetworkProtocol/IMessages/unsubscribestockmsg.h \
-    ../NetworkProtocol/IMessages/subscribestockmsg.h \
-    ../NetworkProtocol/IMessages/sellstockreqmsg.h \
-    ../NetworkProtocol/IMessages/registeruserreqmsg.h \
-    ../NetworkProtocol/IMessages/loginuserreqmsg.h \
-    ../NetworkProtocol/IMessages/imessage.h \
-    ../NetworkProtocol/IMessages/getstockinfomsg.h \
-    ../NetworkProtocol/IMessages/getmystocksmsg.h \
-    ../NetworkProtocol/IMessages/getmyordermsg.h \
-    ../NetworkProtocol/IMessages/companystatus.h \
-    ../NetworkProtocol/IMessages/cancelordermsg.h \
-    ../NetworkProtocol/IMessages/buystockreqmsg.h \
-    ../NetworkProtocol/OMessages/unrecognizedusermsg.h \
-    ../NetworkProtocol/OMessages/transactionchange.h \
-    ../NetworkProtocol/OMessages/selltransactionmsg.h \
-    ../NetworkProtocol/OMessages/registeruserrespok.h \
-    ../NetworkProtocol/OMessages/registeruserrespfail.h \
-    ../NetworkProtocol/OMessages/ordermsg.h \
-    ../NetworkProtocol/OMessages/orderidresp.h \
-    ../NetworkProtocol/OMessages/omessage.h \
-    ../NetworkProtocol/OMessages/loginuserrespok.h \
-    ../NetworkProtocol/OMessages/loginuserrespfail.h \
-    ../NetworkProtocol/OMessages/getstockinforespmsg.h \
-    ../NetworkProtocol/OMessages/getmystocksrespmsg.h \
-    ../NetworkProtocol/OMessages/getmyordersrespmsg.h \
-    ../NetworkProtocol/OMessages/companyfrozen.h \
-    ../NetworkProtocol/OMessages/companyactive.h \
-    ../NetworkProtocol/OMessages/buytransactionmsg.h \
-    ../NetworkProtocol/OMessages/bestorder.h \
-    ../NetworkProtocol/iomessage.h
+    ../NetworkProtocol/Requests/unsubscribestockmsg.h \
+    ../NetworkProtocol/Requests/subscribestockmsg.h \
+    ../NetworkProtocol/Requests/sellstockreqmsg.h \
+    ../NetworkProtocol/Requests/registeruserreqmsg.h \
+    ../NetworkProtocol/Requests/loginuserreqmsg.h \
+    ../NetworkProtocol/Requests/getstockinfomsg.h \
+    ../NetworkProtocol/Requests/getmystocksmsg.h \
+    ../NetworkProtocol/Requests/getmyordermsg.h \
+    ../NetworkProtocol/Requests/companystatus.h \
+    ../NetworkProtocol/Requests/cancelordermsg.h \
+    ../NetworkProtocol/Requests/buystockreqmsg.h \
+    ../NetworkProtocol/Responses/unrecognizedusermsg.h \
+    ../NetworkProtocol/Responses/transactionchange.h \
+    ../NetworkProtocol/Responses/selltransactionmsg.h \
+    ../NetworkProtocol/Responses/registeruserrespok.h \
+    ../NetworkProtocol/Responses/registeruserrespfail.h \
+    ../NetworkProtocol/Responses/ordermsg.h \
+    ../NetworkProtocol/Responses/orderidresp.h \
+    ../NetworkProtocol/Responses/loginuserrespok.h \
+    ../NetworkProtocol/Responses/loginuserrespfail.h \
+    ../NetworkProtocol/Responses/getstockinforespmsg.h \
+    ../NetworkProtocol/Responses/getmystocksrespmsg.h \
+    ../NetworkProtocol/Responses/getmyordersrespmsg.h \
+    ../NetworkProtocol/Responses/companyfrozen.h \
+    ../NetworkProtocol/Responses/companyactive.h \
+    ../NetworkProtocol/Responses/buytransactionmsg.h \
+    ../NetworkProtocol/Responses/bestordermsg.h \
+    ../NetworkProtocol/Requests/request.h \
+    ../NetworkProtocol/Responses/response.h \
+    ../NetworkProtocol/message.h \
+    DataTransferObjects/bestorder.h \
+    DataTransferObjects/types.h \
+    DataTransferObjects/lasttransaction.h
 
 
 

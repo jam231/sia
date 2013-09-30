@@ -5,35 +5,36 @@
 
 #include "networkprotocol_global.h"
 
-namespace NetworkProtocol {
-namespace DTO {
+#include "types.h"
+
+namespace NetworkProtocol
+{
+namespace DTO
+{
+
 class NETWORKPROTOCOLSHARED_EXPORT Order
 {
-public:
-    enum OrderType : qint8
-    {
-        UNDEFINED = 0,
-        BUY = 1,
-        SELL = 2
-    };
 
 private:
-    OrderType m_transactionType;
-    qint32 m_stockId;
-    qint32 m_amount;
-    qint32 m_price;
+    Types::OrderIdType m_orderId;
+    Types::OrderType m_orderType;
+    Types::StockIdType m_stockId;
+    Types::AmountType m_amount;
+    Types::PriceType m_price;
 public:
 
+    static const qint16 lengthInBytes = sizeof(m_orderId) + sizeof(m_orderType) +
+                                        sizeof(m_stockId) + sizeof(m_amount) + sizeof(m_price);
 
-    Order(OrderType, qint32, qint32, qint32);
-    Order();
+    Order(Types::OrderIdType, Types::OrderType, Types::StockIdType, Types::AmountType, Types::PriceType);
+    //Order(Types::OrderType, Types::StockIdType, Types::AmountType, Types::PriceType);
+    //Order();
 
-    OrderType getTransactionType() const;
-    qint32 getStockId() const;
-    qint32 getAmount() const;
-    qint32 getPrice() const;
-
-    static OrderType toOrderType(int type);
+    Types::OrderIdType getOrderId() const;
+    Types::OrderType getOrderType() const;
+    Types::StockIdType getStockId() const;
+    Types::AmountType getAmount() const;
+    Types::PriceType getPrice() const;
 
     friend QDataStream &operator<<(QDataStream& stream, const Order& order);
     friend QDataStream &operator>>(QDataStream& stream, Order& order);

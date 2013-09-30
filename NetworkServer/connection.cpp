@@ -3,28 +3,25 @@
 #include "connection.h"
 #include "utilities.h"
 
-#include "iomessage.h"
-#include "IMessages/imessage.h"
-#include "OMessages/omessage.h"
+#include <Requests/registeruserreqmsg.h>
+#include <Requests/loginuserreqmsg.h>
+#include <Requests/buystockreqmsg.h>
+#include <Requests/sellstockreqmsg.h>
+#include <Requests/subscribestockmsg.h>
+#include <Requests/unsubscribestockmsg.h>
+#include <Requests/getstockinfomsg.h>
+#include <Requests/cancelordermsg.h>
 
-#include "IMessages/registeruserreqmsg.h"
-#include "IMessages/loginuserreqmsg.h"
-#include "IMessages/buystockreqmsg.h"
-#include "IMessages/sellstockreqmsg.h"
-#include "IMessages/subscribestockmsg.h"
-#include "IMessages/unsubscribestockmsg.h"
-#include "IMessages/getstockinfomsg.h"
-#include "IMessages/cancelordermsg.h"
+#include <Responses/unrecognizedusermsg.h>
+#include <Responses/loginuserrespfail.h>
+#include <Responses/registeruserrespfail.h>
 
-#include "OMessages/unrecognizedusermsg.h"
-#include "OMessages/loginuserrespfail.h"
-#include "OMessages/registeruserrespfail.h"
-
-
-#include "DataTransferObjects/order.h"
+#include <DataTransferObjects/order.h>
 
 
 using namespace NetworkProtocol;
+using namespace NetworkProtocol::Requests;
+using namespace NetworkProtocol::Responses;
 
 Connection::Connection(QTcpSocket* socket, QObject *parent) :
     QObject(parent), m_socket(socket), m_userId(NOT_ASSIGNED)
@@ -84,7 +81,7 @@ void Connection::dropSubscription(qint32 stockId)
     m_subscribedStocks.remove(stockId);
 }
 
-bool Connection::send(OMessage& msg)
+bool Connection::send(Response& msg)
 {
     /* Po co to jest? Jakas proba sprawdzenia, czy ten uzytkownik jest
      * jeszcze podlaczony i oplaca mu sie wysylac pakiet ?
@@ -101,9 +98,9 @@ bool Connection::send(OMessage& msg)
 
 bool Connection::send(OrderMsg& msg)
 {
-    if(m_subscribedStocks.contains(msg.getStockId()))
+    if(m_subscribedStocks.contains(msg.getOrder().getStockId()))
     {
-        return send(static_cast<OMessage&>(msg));
+        return send(static_cast<Response&>(msg));
 
     }
     return false;
@@ -126,21 +123,22 @@ void Connection::disconect()
  */
 bool Connection::processMessage()
 {
-    qint16 msgLength = IMessage::getMsgLength(m_socket);
+    qint16 msgLength = Request::getMessageLength(m_socket);
 
     if(0 >= msgLength || msgLength > m_socket->bytesAvailable())
         return false;
-    // Odrzuc pierwsze dwa bajty
-    m_socket->read(2);
+
     QDataStream message(m_socket->read(msgLength));
 
-    IOMessage::MessageType msgType = IMessage::getMsgType(message);
+    m_socket->read(sizeof(qint16));
+
+    Message::MessageType msgType = Request::getType(message);
 
     //qDebug() << "\t\t[Connection] Id wiadmości:" << msgType;
 
     switch(msgType)
     {
-        case IOMessage::REGISTER_USER_REQ:
+        case Message::REGISTER_USER_REQ:
         {
             qDebug() << "\t\t[Connection] Żądanie rejestracji.";
             if(!isUserAssigned())
@@ -163,7 +161,7 @@ bool Connection::processMessage()
             }
             return true;
         }
-        case IOMessage::LOGIN_USER_REQ:
+        case Message::LOGIN_USER_REQ:
         {
             if(!isUserAssigned())
             {
@@ -190,7 +188,7 @@ bool Connection::processMessage()
             }
             return true;
         }
-        case IOMessage::UNDEFINED:
+        case Message::UNDEFINED:
         {
             qDebug() << "\t\t[Connection] Otrzymano nieznany typ wiadomości: "
                      << msgType << ".";;
@@ -215,7 +213,7 @@ bool Connection::processMessage()
     {
     switch(msgType)
     {
-        case IOMessage::BUY_STOCK_REQ:
+        case Message::BUY_STOCK_REQ:
         {
             try
             {
@@ -229,7 +227,7 @@ bool Connection::processMessage()
             }
             break;
         }
-        case IOMessage::SELL_STOCK_REQ:
+        case Message::SELL_STOCK_REQ:
         {
             try
             {
@@ -243,7 +241,7 @@ bool Connection::processMessage()
             }
             break;
         }
-        case IOMessage::CANCEL_ORDER_REQ:
+        case Message::CANCEL_ORDER_REQ:
         {
             try
             {
@@ -256,20 +254,20 @@ bool Connection::processMessage()
             }
             break;
         }
-        case IOMessage::GET_MY_STOCKS:
+        case Message::GET_MY_STOCKS:
             emit getMyStocks(m_userId);
             break;
-        case IOMessage::GET_MY_ORDERS:
+        case Message::GET_MY_ORDERS:
             emit getMyOrders(m_userId);
             break;
-        case IOMessage::GET_STOCK_INFO:
+        case Message::GET_STOCK_INFO:
         {
             GetStockInfoMsg msg(message);
 
             emit getStockInfo(m_userId, msg.getStockId());
             break;
         }
-        case IOMessage::SUBSCRIBE_STOCK:
+        case Message::SUBSCRIBE_STOCK:
         {
             try
             {
@@ -282,7 +280,7 @@ bool Connection::processMessage()
             }
             break;
         }
-        case IOMessage::UNSUBSCRIBE_STOCK:
+        case Message::UNSUBSCRIBE_STOCK:
         {
             try
             {

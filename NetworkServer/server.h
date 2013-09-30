@@ -1,11 +1,11 @@
 #ifndef SERWER_H
 #define SERWER_H
 
-#include "OMessages/omessage.h"
-#include "OMessages/registeruserrespok.h"
-#include "OMessages/loginuserrespok.h"
 #include "offer.h"
 #include "connection.h"
+
+#include "Responses/registeruserrespok.h"
+#include "Responses/loginuserrespok.h"
 
 #include <exception>
 
@@ -34,11 +34,11 @@ public:
     explicit Server(QObject *parent = 0, int portNumber = 6666);
     ~Server();
 public slots:
-    void send(NetworkProtocol::OMessage& msg, Connection*);
-    void send(NetworkProtocol::RegisterUserRespOk& msg, Connection*);
-    void send(NetworkProtocol::LoginUserRespOk& msg, Connection*connection, qint32 userId);
-    void send(NetworkProtocol::OMessage& msg);
-    void send(NetworkProtocol::OMessage& msg, qint32 userId);
+    void send(NetworkProtocol::Responses::Response& msg, Connection*);
+    void send(NetworkProtocol::Responses::RegisterUserRespOk& msg, Connection*);
+    void send(NetworkProtocol::Responses::LoginUserRespOk& msg, Connection*connection, qint32 userId);
+    void send(NetworkProtocol::Responses::Response& msg);
+    void send(NetworkProtocol::Responses::Response& msg, qint32 userId);
 
 signals:
 

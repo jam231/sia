@@ -1,6 +1,9 @@
 #include "server.h"
-#include "OMessages/loginuserrespfail.h"
 
+#include <Responses/loginuserrespfail.h>
+
+using namespace NetworkProtocol;
+using namespace NetworkProtocol::Responses;
 
 Server::Server(QObject *parent, int portNumber)
     : QObject(parent), m_server(new QTcpServer(this))
@@ -35,9 +38,9 @@ Server::~Server()
  *      tylko do wysyłania RegisterUserFail oraz LoginUserFail.
  *
  *      Być może warto by było przeładować send dla tych dwóch metod
- *      i zostawić tylko send(OMessage& msg, qint32 userId)
+ *      i zostawić tylko send(Response& msg, qint32 userId)
  */
-void Server::send(NetworkProtocol::OMessage& msg, Connection* connection)
+void Server::send(Response& msg, Connection* connection)
 {
     qDebug() << "\t[Server] Wysylanie wiadomsci: " << msg.type()
              << " do uzytkownika bez id";
@@ -51,7 +54,7 @@ void Server::send(NetworkProtocol::OMessage& msg, Connection* connection)
  *  i warstwy związanej z bazą danych.
  *                                          --jam231
  */
-void Server::send(NetworkProtocol::RegisterUserRespOk& msg, Connection* connection)
+void Server::send(Responses::RegisterUserRespOk& msg, Connection* connection)
 {
 
     qDebug() << "\t[Server] Wysylanie wiadomsci: RegisterUserRespOk"
@@ -60,7 +63,7 @@ void Server::send(NetworkProtocol::RegisterUserRespOk& msg, Connection* connecti
     connection->send(msg);
 }
 
-void Server::send(NetworkProtocol::LoginUserRespOk& msg, Connection* connection,
+void Server::send(Responses::LoginUserRespOk& msg, Connection* connection,
                   qint32 userId)
 {
     qDebug() << "\t[Server] Wysylanie wiadomsci: LoginUserRespOk"
@@ -79,13 +82,13 @@ void Server::send(NetworkProtocol::LoginUserRespOk& msg, Connection* connection,
     else
     {
         qDebug() << "\t[Server] Próba zalogowania na aktywne konto.";
-        NetworkProtocol::LoginUserRespFail respMsg("Użytkownik już zalogowany.");
+        Responses::LoginUserRespFail respMsg("Użytkownik już zalogowany.");
 
         connection->send(respMsg);
     }
 }
 
-void Server::send(NetworkProtocol::OMessage& msg)
+void Server::send(Response& msg)
 {
     qDebug() << "\t[Server] Wysylanie wiadomsci: " << msg.type()
              << " do wszystkich.";
@@ -96,7 +99,7 @@ void Server::send(NetworkProtocol::OMessage& msg)
     }
 }
 
-void Server::send(NetworkProtocol::OMessage& msg, qint32 userId)
+void Server::send(Response& msg, qint32 userId)
 {
     /* TODO:
      *

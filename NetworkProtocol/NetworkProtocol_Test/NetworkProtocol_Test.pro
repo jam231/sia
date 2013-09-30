@@ -15,13 +15,13 @@ DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 SOURCES += \
     main.cpp \
-    iomessagetest.cpp
+    messagetest.cpp
 
 HEADERS += \
-    iomessagetest.h
+    messagetest.h
 
 INCLUDEPATH += \
- ../NetworkProtocol.pri
+ ../NetworkProtocol/
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../NetworkProtocol/release/ -lNetworkProtocol
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../NetworkProtocol/debug/ -lNetworkProtocol

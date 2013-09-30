@@ -1,0 +1,27 @@
+#ifndef REGISTERUSERRESPFAIL_H
+#define REGISTERUSERRESPFAIL_H
+
+#include "response.h"
+
+#include <QString>
+
+namespace NetworkProtocol
+{
+namespace Responses
+{
+
+class NETWORKPROTOCOLSHARED_EXPORT RegisterUserRespFail : public Response
+{
+    QString m_reason;
+
+public:
+    RegisterUserRespFail(QString reason);
+
+    qint16 length() const;
+    MessageType type() const;
+    void send(QIODevice* connection);
+};
+
+}
+}
+#endif // REGISTERUSERRESPFAIL_H

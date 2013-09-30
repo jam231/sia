@@ -1,14 +1,16 @@
 #ifndef MARKET_H
 #define MARKET_H
 
-#include "OMessages/bestorder.h"
-#include "DataTransferObjects/order.h"
 
 #include "server.h"
 #include "offer.h"
 #include "configmanager.h"
 
 #include <exception>
+
+#include <Responses/bestordermsg.h>
+#include <DataTransferObjects/order.h>
+#include <DataTransferObjects/lasttransaction.h>
 
 
 #include <QTimer>
@@ -27,7 +29,7 @@ class DatabaseError : public std::exception
     }
 };
 
-Q_DECLARE_METATYPE(NetworkProtocol::DTO::Order)
+//Q_DECLARE_METATYPE(NetworkProtocol::DTO::Order)
 
 class Market : public QObject
 {
@@ -42,7 +44,7 @@ class Market : public QObject
     QTimer* m_sessionOnTimer;
     QTimer* m_sessionOffTimer;
 
-    QHash<qint32, QPair<QString, QPair<qint32, qint32> > > m_cachedLastTransaction;
+    QHash<qint32, NetworkProtocol::DTO::LastTransaction > m_cachedLastTransaction;
     QHash<qint32, QPair<qint32, qint32> > m_cachedBestSellOrders;
     QHash<qint32, QPair<qint32, qint32> > m_cachedBestBuyOrders;
 
