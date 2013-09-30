@@ -9,10 +9,12 @@ namespace NetworkProtocol
 namespace Requests
 {
 
+using namespace DTO;
+
 LoginUserReqMsg::LoginUserReqMsg(QDataStream &in) : Request()
 {
     // Domyślnie BigEndian
-    qint16 passwordLength;
+    Types::MessageLengthType passwordLength;
 
     if(in.device()->bytesAvailable() < (sizeof(m_userId) + sizeof(passwordLength)))
     {
@@ -37,12 +39,12 @@ LoginUserReqMsg::LoginUserReqMsg(QDataStream &in) : Request()
     m_password = QString(buffer);
 }
 
-Message::MessageType LoginUserReqMsg::type() const
+Types::MessageType LoginUserReqMsg::type() const
 {
-    return LOGIN_USER_REQ;
+    return Types::MessageType::LOGIN_USER_REQ;
 }
 
-qint32 LoginUserReqMsg::getUserId() const
+Types::UserIdType LoginUserReqMsg::getUserId() const
 {
     return m_userId;
 }
@@ -52,10 +54,10 @@ QString LoginUserReqMsg::getUserPassword() const
     return m_password;
 }
 
-qint16 LoginUserReqMsg::length() const
+Types::MessageLengthType LoginUserReqMsg::length() const
 {
-    return sizeof(MessageType) + sizeof(m_userId) +
-           sizeof(qint16) + m_password.toUtf8().size();
+    return sizeof(Types::MessageType) +
+           sizeof(m_userId) + sizeof(Types::MessageLengthType) + m_password.toUtf8().size();
 }
 
 }

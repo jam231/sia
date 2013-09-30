@@ -6,25 +6,28 @@ namespace NetworkProtocol
 namespace Requests
 {
 
+using namespace DTO;
+
 CompanyStatusMsg::CompanyStatusMsg(QDataStream& in) : Request(in)
 {
     in >> m_companyId;
 }
 
 
-Message::MessageType CompanyStatusMsg::type() const
+Types::MessageType CompanyStatusMsg::type() const
 {
-    return COMPANY_STATUS_REQ;
+    return Types::MessageType::COMPANY_STATUS_REQ;
 }
 
-qint32 CompanyStatusMsg::getCompanyId() const
+Types::CompanyIdType CompanyStatusMsg::getCompanyId() const
 {
     return m_companyId;
 }
 
-qint16 CompanyStatusMsg::length() const
+Types::MessageLengthType CompanyStatusMsg::length() const
 {
-    return sizeof(MessageType) + sizeof(m_companyId);
+    return sizeof(Types::MessageType) +
+           sizeof(m_companyId);
 }
 
 }

@@ -5,7 +5,10 @@ namespace NetworkProtocol
 namespace Responses
 {
 
-SellTransactionMsg::SellTransactionMsg(qint32 orderId, qint32 amount)
+using namespace DTO;
+
+SellTransactionMsg::SellTransactionMsg(Types::OrderIdType orderId,
+                                       Types::AmountType amount)
 {
     m_orderId = orderId;
     m_amount = amount;
@@ -17,17 +20,19 @@ void SellTransactionMsg::send(QIODevice *connection)
     QDataStream out(connection);
 
     sendHeader(out);
-    out << static_cast<qint32>(m_orderId)
-        << static_cast<qint32>(m_amount);
-}
-Message::MessageType SellTransactionMsg::type() const
-{
-    return SELL_TRANSACTION;
+    out << m_orderId
+        << m_amount;
 }
 
-qint16 SellTransactionMsg::length() const
+Types::MessageType SellTransactionMsg::type() const
 {
-    return sizeof(MessageType) + 2 * sizeof(qint32);
+    return Types::MessageType::SELL_TRANSACTION;
+}
+
+Types::MessageLengthType SellTransactionMsg::length() const
+{
+    return sizeof(Types::MessageType) +
+            sizeof(m_orderId) + sizeof(m_amount);
 }
 
 }

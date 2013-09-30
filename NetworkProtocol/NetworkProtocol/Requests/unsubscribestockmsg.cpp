@@ -1,29 +1,31 @@
 #include "unsubscribestockmsg.h"
 
-
 namespace NetworkProtocol
 {
 namespace Requests
 {
+using namespace DTO;
 
 UnsubscribeStockMsg::UnsubscribeStockMsg(QDataStream& in) : Request(in)
 {
     in >> m_stockId;
 }
 
-Message::MessageType UnsubscribeStockMsg::type() const
+
+Types::MessageType UnsubscribeStockMsg::type() const
 {
-    return UNSUBSCRIBE_STOCK;
+    return Types::MessageType::UNSUBSCRIBE_STOCK;
 }
 
-qint32 UnsubscribeStockMsg::getStockId() const
+Types::StockIdType UnsubscribeStockMsg::getStockId() const
 {
     return m_stockId;
 }
 
-qint16 UnsubscribeStockMsg::length() const
+Types::MessageLengthType UnsubscribeStockMsg::length() const
 {
-    return sizeof(MessageType) + sizeof(m_stockId);
+    return sizeof(Types::MessageType) +
+           sizeof(m_stockId);
 }
 
 }

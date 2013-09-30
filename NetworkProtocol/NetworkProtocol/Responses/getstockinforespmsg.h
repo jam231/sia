@@ -26,7 +26,7 @@ public:
                         DTO::LastTransaction lastTransaction  = DTO::LastTransaction());
 
     DTO::Types::MessageLengthType length() const;
-    MessageType type() const;
+    DTO::Types::MessageType type() const;
     void send(QIODevice* connection);
 };
 

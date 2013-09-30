@@ -16,8 +16,9 @@ public:
     BuyTransactionMsg(DTO::Types::OrderIdType orderId, DTO::Types::AmountType amount);
 
     DTO::Types::MessageLengthType length() const;
+    DTO::Types::MessageType type() const;
+
     void send(QIODevice *connection);
-    Message::MessageType type() const;
 };
 
 }

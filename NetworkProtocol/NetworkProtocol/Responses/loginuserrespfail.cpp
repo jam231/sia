@@ -5,33 +5,33 @@ namespace NetworkProtocol
 namespace Responses
 {
 
+using namespace DTO;
+
 LoginUserRespFail::LoginUserRespFail(QString reason)
 {
     m_reason = reason;
 }
 
-Message::MessageType LoginUserRespFail::type() const
+Types::MessageType LoginUserRespFail::type() const
 {
-    return LOGIN_USER_RESP_FAIL;
+    return Types::MessageType::LOGIN_USER_RESP_FAIL;
 }
+
 void LoginUserRespFail::send(QIODevice* connection)
 {
     // Domyślnie BigEndian
     QDataStream out(connection);
 
-    auto reason = m_reason.toUtf8();
+    QByteArray reason_bytes = m_reason.toUtf8();
 
     sendHeader(out);
-    out << static_cast<qint16>(reason.size());
-    connection->write(reason);
+    out << static_cast<Types::MessageLengthType>(reason_bytes.size());
+    connection->write(reason_bytes);
 }
-qint16 LoginUserRespFail::length() const
+Types::MessageLengthType LoginUserRespFail::length() const
 {
-    /*
-     * Bardzo to naiwne, ale niech narazie zostanie.
-     *      --jam231
-     */
-    return m_reason.size() + sizeof(MessageType) + sizeof(qint16);
+    return sizeof(Types::MessageType) +
+           m_reason.toUtf8().size()  + sizeof(Types::MessageLengthType);
 }
 
 }

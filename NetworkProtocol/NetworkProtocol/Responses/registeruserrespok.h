@@ -10,14 +10,15 @@ namespace Responses
 
 class NETWORKPROTOCOLSHARED_EXPORT RegisterUserRespOk : public Response
 {
-    qint32 m_userId;
+    DTO::Types::UserIdType m_userId;
 
 public:
-    RegisterUserRespOk(qint32 userId);
+    RegisterUserRespOk(DTO::Types::UserIdType userId);
 
-    qint16 length() const;
-    MessageType type() const;
-    qint32 getUserId() const;
+    DTO::Types::MessageLengthType length() const;
+    DTO::Types::MessageType type() const;
+    DTO::Types::UserIdType getUserId() const;
+
     void send(QIODevice* connection);
 };
 

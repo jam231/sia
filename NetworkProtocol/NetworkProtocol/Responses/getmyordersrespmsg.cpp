@@ -11,15 +11,15 @@ GetMyOrdersRespMsg::GetMyOrdersRespMsg()
 {
 }
 
-qint16 GetMyOrdersRespMsg::length() const
+Types::MessageLengthType GetMyOrdersRespMsg::length() const
 {
-    return sizeof(Types::MessageTypeType) + sizeof(Types::MessageLengthType) +
-            m_orders.size() * Order::lengthInBytes;
+    return sizeof(Types::MessageTypeType) +
+           sizeof(Types::MessageLengthType) + m_orders.size() * Order::lengthInBytes;
 }
 
-Message::MessageType GetMyOrdersRespMsg::type() const
+Types::MessageType GetMyOrdersRespMsg::type() const
 {
-    return GET_MY_ORDERS_RESP;
+    return Types::MessageType::GET_MY_ORDERS_RESP;
 }
 
 void GetMyOrdersRespMsg::send(QIODevice* connection)

@@ -8,21 +8,21 @@ namespace Requests
 {
 class NETWORKPROTOCOLSHARED_EXPORT SellStockReqMsg : public Request
 {
-    qint32 m_stockId;
-    qint32 m_amount;
-    qint32 m_price;
+    DTO::Types::StockIdType m_stockId;
+    DTO::Types::AmountType m_amount;
+    DTO::Types::PriceType m_price;
 
 
 public:
     SellStockReqMsg(QDataStream& msg);
 
-    MessageType type() const;
+    DTO::Types::MessageType type() const;
 
-    qint16 length() const;
+    DTO::Types::MessageLengthType length() const;
 
-    qint32 getStockId() const;
-    qint32 getAmount() const;
-    qint32 getPrice() const;
+    DTO::Types::StockIdType getStockId() const;
+    DTO::Types::AmountType getAmount() const;
+    DTO::Types::PriceType getPrice() const;
 };
 }
 }

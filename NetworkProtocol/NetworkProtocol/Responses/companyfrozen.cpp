@@ -12,9 +12,9 @@ CompanyFrozenResp::CompanyFrozenResp(Types::CompanyIdType companyId)
     m_companyId = companyId;
 }
 
-Message::MessageType CompanyFrozenResp::type() const
+Types::MessageType CompanyFrozenResp::type() const
 {
-    return COMPANY_FROZEN_RESP;
+    return Types::MessageType::COMPANY_FROZEN_RESP;
 }
 
 void CompanyFrozenResp::send(QIODevice *connection)
@@ -27,7 +27,8 @@ void CompanyFrozenResp::send(QIODevice *connection)
 
 Types::MessageLengthType CompanyFrozenResp::length() const
 {
-    return sizeof(MessageType) + sizeof(m_companyId);
+    return sizeof(Types::MessageType) +
+           sizeof(m_companyId);
 }
 
 }

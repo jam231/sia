@@ -18,18 +18,14 @@ public:
     OrderMsg(DTO::Types::OrderIdType, DTO::Types::OrderType, DTO::Types::StockIdType,
              DTO::Types::AmountType, DTO::Types::PriceType);
     OrderMsg(DTO::Order order);
-    // TODO:
-    // Brzydze sie siebie, nalezy to usunac ! --jam231
-    //OrderMsg();
 
     DTO::Types::MessageLengthType length() const;
+    DTO::Types::MessageType type() const;
+
 
     const DTO::Order& getOrder() const;
 
     void send(QIODevice *connection);
-    Message::MessageType type() const;
-
-    virtual ~OrderMsg() {}
 
 };
 

@@ -7,6 +7,8 @@ namespace NetworkProtocol
 namespace Requests
 {
 
+using namespace DTO;
+
 SellStockReqMsg::SellStockReqMsg(QDataStream& in) : Request(in)
 {
     in >> m_stockId;
@@ -22,30 +24,30 @@ SellStockReqMsg::SellStockReqMsg(QDataStream& in) : Request(in)
     }
 }
 
-Message::MessageType SellStockReqMsg::type() const
+Types::MessageType SellStockReqMsg::type() const
 {
-    return SELL_STOCK_REQ;
+    return Types::MessageType::SELL_STOCK_REQ;
 }
 
 
-qint32 SellStockReqMsg::getAmount() const
+DTO::Types::AmountType SellStockReqMsg::getAmount() const
 {
     return m_amount;
 }
 
-qint32 SellStockReqMsg::getPrice() const
+DTO::Types::PriceType SellStockReqMsg::getPrice() const
 {
     return m_price;
 }
 
-qint32 SellStockReqMsg::getStockId() const
+DTO::Types::StockIdType SellStockReqMsg::getStockId() const
 {
     return m_stockId;
 }
 
-qint16 SellStockReqMsg::length() const
+DTO::Types::MessageLengthType SellStockReqMsg::length() const
 {
-    return sizeof(MessageType) + sizeof(m_stockId) +
+    return sizeof(Types::MessageType) + sizeof(m_stockId) +
             sizeof(m_price) + sizeof(m_amount);
 }
 

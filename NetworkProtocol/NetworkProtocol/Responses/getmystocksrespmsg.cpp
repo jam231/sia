@@ -11,9 +11,9 @@ GetMyStocksRespMsg::GetMyStocksRespMsg()
 {
 }
 
-Message::MessageType GetMyStocksRespMsg::type() const
+Types::MessageType GetMyStocksRespMsg::type() const
 {
-    return GET_MY_STOCKS_RESP;
+    return Types::MessageType::GET_MY_STOCKS_RESP;
 }
 
 void GetMyStocksRespMsg::send(QIODevice* connection)
@@ -32,11 +32,12 @@ void GetMyStocksRespMsg::send(QIODevice* connection)
 
 Types::MessageLengthType GetMyStocksRespMsg::length() const
 {
-    return sizeof(MessageType) + sizeof(Types::MessageLengthType) +
-            m_stocks.size() * (sizeof(Types::StockIdType) + sizeof(Types::AmountType));
+    return sizeof(Types::MessageType) +
+                sizeof(Types::MessageLengthType) +
+                m_stocks.size() * (sizeof(Types::StockIdType) + sizeof(Types::AmountType));
 }
 
-void GetMyStocksRespMsg::addStock(qint32 stockId, qint32 amount)
+void GetMyStocksRespMsg::addStock(Types::StockIdType stockId, Types::AmountType amount)
 {
     m_stocks.push_back(qMakePair(stockId, amount));
 }

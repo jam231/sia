@@ -7,16 +7,19 @@ namespace NetworkProtocol
 namespace Requests
 {
 
+using namespace DTO;
+
 RegisterUserReqMsg::RegisterUserReqMsg(QDataStream& in) : Request()
 {
     /*
-     *  tmpStream >> m_Password
+     *  in >> m_Password
      *  Czytanie QStringa nie zadziała, jeżeli do jego wysyłania
      *  nie został użyty QDataStream - tak wyczytałem na stackoverflow,
-     *  i rzeczywiscie nie chciał mi się wczytać --jam231
+     *  i rzeczywiscie nie chciał mi się wczytać
+     *                                          --jam231
      */
-    // Domyślnie BigEndian
-    qint16 passwordLength;
+
+    Types::MessageLengthType passwordLength;
 
     if(in.device()->bytesAvailable() < sizeof(passwordLength))
     {
@@ -39,9 +42,9 @@ RegisterUserReqMsg::RegisterUserReqMsg(QDataStream& in) : Request()
     m_password = QString(buffer);
 }
 
-Message::MessageType RegisterUserReqMsg::type() const
+Types::MessageType RegisterUserReqMsg::type() const
 {
-    return REGISTER_USER_REQ;
+    return Types::MessageType::REQUEST_REGISTER_USER;
 }
 
 QString RegisterUserReqMsg::getPassword() const
@@ -50,9 +53,10 @@ QString RegisterUserReqMsg::getPassword() const
 }
 
 
-qint16 RegisterUserReqMsg::length() const
+DTO::Types::MessageLengthType RegisterUserReqMsg::length() const
 {
-    return sizeof(MessageType) + sizeof(qint16) + m_password.toUtf8().size();
+    return sizeof(Types::MessageType) +
+           sizeof(Types::MessageLengthType) + m_password.toUtf8().size();
 }
 
 }

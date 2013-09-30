@@ -11,13 +11,13 @@ namespace Responses
 
 class NETWORKPROTOCOLSHARED_EXPORT CompanyFrozenResp : public Response
 {
-    qint32 m_companyId;
+    DTO::Types::CompanyIdType m_companyId;
 
 public:
-    CompanyFrozenResp(qint32 companyId);
+    CompanyFrozenResp(DTO::Types::CompanyIdType companyId);
 
-    qint16 length() const;
-    Message::MessageType type() const;
+    DTO::Types::MessageLengthType length() const;
+    DTO::Types::MessageType type() const;
     void send(QIODevice *connection);
 };
 

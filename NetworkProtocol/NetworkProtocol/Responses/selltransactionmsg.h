@@ -10,15 +10,16 @@ namespace Responses
 
 class NETWORKPROTOCOLSHARED_EXPORT SellTransactionMsg : public Response
 {
-    qint32 m_amount;
-    qint32 m_orderId;
+    DTO::Types::AmountType m_amount;
+    DTO::Types::OrderIdType m_orderId;
 
 public:
-    SellTransactionMsg(qint32 m_orderId, qint32 m_amount);
+    SellTransactionMsg(DTO::Types::OrderIdType m_orderId, DTO::Types::AmountType m_amount);
 
-    qint16 length() const;
+    DTO::Types::MessageLengthType length() const;
+    DTO::Types::MessageType type() const;
+
     void send(QIODevice *connection);
-    Message::MessageType type() const;
 };
 
 }

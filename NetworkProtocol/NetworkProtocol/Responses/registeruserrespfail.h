@@ -17,8 +17,8 @@ class NETWORKPROTOCOLSHARED_EXPORT RegisterUserRespFail : public Response
 public:
     RegisterUserRespFail(QString reason);
 
-    qint16 length() const;
-    MessageType type() const;
+    DTO::Types::MessageLengthType length() const;
+    DTO::Types::MessageType type() const;
     void send(QIODevice* connection);
 };
 

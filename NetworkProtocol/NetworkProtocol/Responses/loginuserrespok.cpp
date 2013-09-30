@@ -5,13 +5,15 @@ namespace NetworkProtocol
 namespace Responses
 {
 
+using namespace DTO;
+
 LoginUserRespOk::LoginUserRespOk()
 {
 }
 
-Message::MessageType LoginUserRespOk::type() const
+Types::MessageType LoginUserRespOk::type() const
 {
-    return LOGIN_USER_RESP_OK;
+    return Types::MessageType::LOGIN_USER_RESP_OK;
 }
 void LoginUserRespOk::send(QIODevice* connection)
 {
@@ -21,9 +23,9 @@ void LoginUserRespOk::send(QIODevice* connection)
     sendHeader(out);
 }
 
-qint16 LoginUserRespOk::length() const
+Types::MessageLengthType LoginUserRespOk::length() const
 {
-    return  sizeof(MessageType);
+    return sizeof(Types::MessageType);
 }
 
 }

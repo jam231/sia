@@ -8,14 +8,14 @@ namespace Requests
 {
 class NETWORKPROTOCOLSHARED_EXPORT CompanyStatusMsg : public Request
 {
-    qint32 m_companyId;
+    DTO::Types::CompanyIdType m_companyId;
 
 public:
     CompanyStatusMsg(QDataStream& in);
 
-    qint16 length() const;
-    MessageType type() const;
-    qint32 getCompanyId() const;
+    DTO::Types::MessageLengthType length() const;
+    DTO::Types::MessageType type() const;
+    DTO::Types::CompanyIdType getCompanyId() const;
 };
 }
 }

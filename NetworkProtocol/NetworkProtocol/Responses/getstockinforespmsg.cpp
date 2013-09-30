@@ -18,9 +18,9 @@ GetStockInfoRespMsg::GetStockInfoRespMsg(Types::StockIdType stockId,
     m_stockId = stockId;
 }
 
-Message::MessageType GetStockInfoRespMsg::type() const
+Types::MessageType GetStockInfoRespMsg::type() const
 {
-    return GET_STOCK_INFO_RESP;
+    return Types::MessageType::GET_STOCK_INFO_RESP;
 }
 void GetStockInfoRespMsg::send(QIODevice* connection)
 {
@@ -38,10 +38,11 @@ void GetStockInfoRespMsg::send(QIODevice* connection)
     connection->write(dateTime);
 }
 
-DTO::Types::MessageLengthType GetStockInfoRespMsg::length() const
+Types::MessageLengthType GetStockInfoRespMsg::length() const
 {
-    return sizeof(MessageType) + sizeof(m_stockId) +
-            2 * (2 * sizeof(qint32)) +
+    return  sizeof(Types::MessageType) + sizeof(m_stockId) +
+            sizeof(Types::AmountType) + sizeof(Types::PriceType) + // bestBuyOrder
+            sizeof(Types::AmountType) + sizeof(Types::PriceType) + // bestSellOrder
             sizeof(Types::MessageLengthType) + m_lastTransaction.lengthInBytes();
 }
 

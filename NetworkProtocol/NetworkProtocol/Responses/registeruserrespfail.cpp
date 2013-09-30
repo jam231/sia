@@ -5,30 +5,36 @@ namespace NetworkProtocol
 namespace Responses
 {
 
-RegisterUserRespFail::RegisterUserRespFail(QString reason) : m_reason(reason)
+using namespace DTO;
+
+RegisterUserRespFail::RegisterUserRespFail(QString reason)
+    : m_reason(reason)
 {
     m_reason = reason;
 }
 
-qint16 RegisterUserRespFail::length() const
+Types::MessageLengthType RegisterUserRespFail::length() const
 {
-    return sizeof(MessageType) + sizeof(qint16) + m_reason.size();
+    return sizeof(Types::MessageType) +
+           sizeof(Types::MessageLengthType) + m_reason.toUtf8().size();
 }
 
-Message::MessageType RegisterUserRespFail::type() const
+Types::MessageType RegisterUserRespFail::type() const
 {
-    return REGISTER_USER_RESP_FAIL;
+    return Types::MessageType::RESPONSE_REGISTER_USER_FAIL;
 }
+
 void RegisterUserRespFail::send(QIODevice* connection)
 {
     // Domyślnie BigEndian.
     QDataStream out(connection);
 
-    QByteArray reason = m_reason.toUtf8();
+    QByteArray reason_bytes = m_reason.toUtf8();
 
     sendHeader(out);
-    out << static_cast<qint16>(reason.size());
-    connection->write(reason);
+
+    out << static_cast<Types::MessageLengthType>(reason_bytes.size());
+    connection->write(reason_bytes);
 }
 
 }

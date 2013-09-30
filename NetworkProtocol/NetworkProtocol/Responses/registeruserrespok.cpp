@@ -5,19 +5,22 @@ namespace NetworkProtocol
 namespace Responses
 {
 
-RegisterUserRespOk::RegisterUserRespOk(qint32 userId) : Response(),
-    m_userId(userId)
+using namespace DTO;
+
+RegisterUserRespOk::RegisterUserRespOk(Types::UserIdType userId)
+    : m_userId(userId)
 {
 }
 
-qint16 RegisterUserRespOk::length() const
+Types::MessageLengthType RegisterUserRespOk::length() const
 { 
-    return sizeof(m_userId) + sizeof(MessageType);
+    return sizeof(Types::MessageType) +
+           sizeof(m_userId);
 }
 
-Message::MessageType RegisterUserRespOk::type() const
+Types::MessageType RegisterUserRespOk::type() const
 {
-    return REGISTER_USER_RESP_OK;
+    return Types::MessageType::RESPONSE_REGISTER_USER_OK;
 }
 
 void RegisterUserRespOk::send(QIODevice* connection)
@@ -29,7 +32,7 @@ void RegisterUserRespOk::send(QIODevice* connection)
     out << m_userId;
 }
 
-qint32 RegisterUserRespOk::getUserId() const
+Types::UserIdType RegisterUserRespOk::getUserId() const
 {
     return m_userId;
 }

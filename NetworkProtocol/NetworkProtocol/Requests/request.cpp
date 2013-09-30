@@ -22,18 +22,18 @@ Types::MessageLengthType Request::getMessageLength(QIODevice* data)
     return msgLength;
 }
 
-Message::MessageType Request::getType(QDataStream& in)
+Types::MessageType Request::getType(QDataStream& in)
 {
     if(in.device()->bytesAvailable() < 1)
     {
-        qDebug() <<"[" << getMessageName() << "] getType -> Pusty strumień.";
+        qDebug() <<"[" << getMessageName() << "] getType : Pusty strumień.";
 
-        return Message::UNDEFINED;
+        return Types::MessageType::MESSAGE_UNDEFINED;
     }
     Types::MessageTypeType type;
     in >> type;
 
-    return toMessageType(type);
+    return Types::toMessageType(type);
 }
 
 Request::Request(QDataStream &in)
@@ -53,14 +53,21 @@ QString Request::getMessageName()
 void Request::validateRequest(QDataStream &in)
 {
     if(in.device()->bytesAvailable() != length())
+    {
+        qDebug() <<"[" << getMessageName() << "] Niepoprawny długość wiadomości. Oczekiwano długości ="
+                << length() << '\n'
+               << "Otrzymana wiadomość ma długość = "
+               << in.device()->bytesAvailable();
+
         throw InvalidRequest();
+    }
 
     Types::MessageTypeType requestType;
     in >> requestType;
 
-    if(Message::toMessageType(requestType) != type())
+    if(Types::toMessageType(requestType) != type())
     {
-        qDebug() <<"[" << getMessageName() << "] Niepoprawny typ wiadomości oczekiwano"
+        qDebug() <<"[" << getMessageName() << "] Niepoprawny typ wiadomości. Oczekiwano"
                << type() << '\n'
                << "Otrzymano"
                << requestType;

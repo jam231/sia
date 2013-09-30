@@ -7,24 +7,27 @@ namespace NetworkProtocol
 namespace Requests
 {
 
+using namespace DTO;
+
 CancelOrderMsg::CancelOrderMsg(QDataStream &in)
 {
     in >> m_orderId;
 }
 
-Message::MessageType CancelOrderMsg::type() const
+Types::MessageType CancelOrderMsg::type() const
 {
-    return CANCEL_ORDER_REQ;
+    return Types::MessageType::CANCEL_ORDER_REQ;
 }
 
-qint32 CancelOrderMsg::getOrderId() const
+Types::OrderIdType CancelOrderMsg::getOrderId() const
 {
     return m_orderId;
 }
 
-qint16 CancelOrderMsg::length() const
+Types::MessageLengthType CancelOrderMsg::length() const
 {
-    return sizeof(MessageType) + sizeof(m_orderId);
+    return sizeof(Types::MessageType) +
+           sizeof(m_orderId);
 }
 
 }

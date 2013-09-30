@@ -18,8 +18,9 @@ class NETWORKPROTOCOLSHARED_EXPORT LoginUserRespFail : public Response
 public:
     LoginUserRespFail(QString);
 
-    qint16 length() const;
-    MessageType type() const;
+    DTO::Types::MessageLengthType length() const;
+    DTO::Types::MessageType type() const;
+
     void send(QIODevice* connection);
 };
 

@@ -14,8 +14,8 @@ public:
 
     UnrecognizedUserMsg();
 
-    qint16 length() const;
-    MessageType type() const;
+    DTO::Types::MessageLengthType length() const;
+    DTO::Types::MessageType type() const;
     void send(QIODevice* connection);
 };
 

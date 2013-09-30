@@ -21,7 +21,7 @@ class NETWORKPROTOCOLSHARED_EXPORT  GetMyOrdersRespMsg : public Response
 public:
     GetMyOrdersRespMsg();
 
-    MessageType type() const;
+    DTO::Types::MessageType type() const;
 
     DTO::Types::MessageLengthType length() const;
 
@@ -30,6 +30,7 @@ public:
     void addOrder(DTO::Types::OrderIdType orderId, DTO::Types::OrderType m_transactionType,
                   DTO::Types::StockIdType m_stockId, DTO::Types::AmountType m_amount,
                   DTO::Types::PriceType m_price);
+
     void addOrder(DTO::Order* order);
 
     virtual ~GetMyOrdersRespMsg();

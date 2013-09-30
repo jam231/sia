@@ -15,8 +15,9 @@ public:
     CompanyActiveResp(DTO::Types::CompanyIdType companyId);
 
     DTO::Types::MessageLengthType length() const;
+    DTO::Types::MessageType type() const;
+
     void send(QIODevice *connection);
-    Message::MessageType type() const;
 };
 
 }

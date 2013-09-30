@@ -16,12 +16,11 @@ public:
     BestOrderMsg(DTO::Types::OrderType, DTO::Types::StockIdType,
                  DTO::Types::AmountType, DTO::Types::PriceType);
     BestOrderMsg(DTO::BestOrder);
-    // TODO:
-    // Brzydze sie siebie, nalezy to usunac ! --jam231
-    //BestOrderMsg() {}
-    void send(QIODevice *connection);
+
     DTO::Types::MessageLengthType length() const;
-    Message::MessageType type() const;
+    DTO::Types::MessageType type() const;
+
+    void send(QIODevice *connection);
 };
 
 }

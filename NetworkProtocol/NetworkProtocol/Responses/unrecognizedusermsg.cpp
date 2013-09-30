@@ -5,19 +5,21 @@ namespace NetworkProtocol
 namespace Responses
 {
 
+using namespace DTO;
+
 UnrecognizedUserMsg::UnrecognizedUserMsg()
 {
 }
 
-Message::MessageType UnrecognizedUserMsg::type() const
+Types::MessageType UnrecognizedUserMsg::type() const
 {
-    return UNRECOGNIZED_USER;
+    return Types::MessageType::UNRECOGNIZED_USER;
 }
 
-qint16 UnrecognizedUserMsg::length() const
+Types::MessageLengthType UnrecognizedUserMsg::length() const
 {
 
-    return sizeof(MessageType);
+    return sizeof(Types::MessageType);
 }
 
 void UnrecognizedUserMsg::send(QIODevice* connection)

@@ -10,14 +10,14 @@ namespace Responses
 
 class NETWORKPROTOCOLSHARED_EXPORT OrderIdResp : public Response
 {
-    qint32 m_orderId;
+    DTO::Types::OrderIdType m_orderId;
 
 public:
-    OrderIdResp(qint32 orderId);
+    OrderIdResp(DTO::Types::OrderIdType orderId);
 
-    qint16 length() const;
+    DTO::Types::MessageLengthType length() const;
     void send(QIODevice *connection);
-    Message::MessageType type() const;
+    DTO::Types::MessageType type() const;
 };
 
 }

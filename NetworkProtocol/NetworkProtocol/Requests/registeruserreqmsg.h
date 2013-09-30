@@ -14,8 +14,8 @@ class NETWORKPROTOCOLSHARED_EXPORT RegisterUserReqMsg : public Request
 public:
     RegisterUserReqMsg(QDataStream& msg);
 
-    qint16 length() const;
-    MessageType type() const;
+    DTO::Types::MessageLengthType length() const;
+    DTO::Types::MessageType type() const;
     QString getPassword() const;
 };
 }

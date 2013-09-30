@@ -5,24 +5,27 @@ namespace NetworkProtocol
 namespace Requests
 {
 
+using namespace DTO;
+
 SubscribeStockMsg::SubscribeStockMsg(QDataStream& in) : Request(in)
 {
     in >> m_stockId;
 }
 
-Message::MessageType SubscribeStockMsg::type() const
+Types::MessageType SubscribeStockMsg::type() const
 {
-    return SUBSCRIBE_STOCK;
+    return Types::MessageType::SUBSCRIBE_STOCK;
 }
 
-qint32 SubscribeStockMsg::getStockId() const
+DTO::Types::StockIdType SubscribeStockMsg::getStockId() const
 {
     return m_stockId;
 }
 
-qint16 SubscribeStockMsg::length() const
+DTO::Types::MessageLengthType SubscribeStockMsg::length() const
 {
-    return sizeof(MessageType) + sizeof(m_stockId);
+    return sizeof(Types::MessageType) +
+           sizeof(m_stockId);
 }
 
 }

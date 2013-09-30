@@ -18,14 +18,15 @@ BestOrderMsg::BestOrderMsg(BestOrder bestOrder)
 {
 }
 
-Message::MessageType BestOrderMsg::type() const
+Types::MessageType BestOrderMsg::type() const
 {
-    return BEST_ORDER;
+    return Types::MessageType::BEST_ORDER;
 }
 
 Types::MessageLengthType BestOrderMsg::length() const
 {
-    return sizeof(MessageType) + BestOrder::lengthInBytes;
+    return sizeof(Types::MessageType) +
+            BestOrder::lengthInBytes;
 }
 
 void BestOrderMsg::send(QIODevice *connection)

@@ -8,16 +8,16 @@ namespace Requests
 {
 class NETWORKPROTOCOLSHARED_EXPORT  LoginUserReqMsg : public Request
 {
-    qint32 m_userId;
+    DTO::Types::UserIdType m_userId;
     QString m_password;
 
 public:
     LoginUserReqMsg(QDataStream& in);
 
-    qint16 length() const;
+    DTO::Types::MessageLengthType length() const;
 
-    MessageType type() const;
-    qint32 getUserId() const;
+    DTO::Types::MessageType type() const;
+    DTO::Types::UserIdType getUserId() const;
     QString getUserPassword() const;
 };
 }

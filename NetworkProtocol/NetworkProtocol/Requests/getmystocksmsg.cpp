@@ -6,18 +6,20 @@ namespace NetworkProtocol
 namespace Requests
 {
 
+using namespace DTO;
+
 GetMyStocksMsg::GetMyStocksMsg(QDataStream& in) : Request(in)
 {
 }
 
-Message::MessageType GetMyStocksMsg::type() const
+Types::MessageType GetMyStocksMsg::type() const
 {
-    return GET_MY_STOCKS;
+    return Types::MessageType::GET_MY_STOCKS;
 }
 
-qint16 GetMyStocksMsg::length() const
+DTO::Types::MessageLengthType GetMyStocksMsg::length() const
 {
-    return sizeof(MessageType);
+    return sizeof(Types::MessageType);
 }
 
 }

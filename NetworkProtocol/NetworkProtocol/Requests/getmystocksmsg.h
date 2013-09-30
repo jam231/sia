@@ -11,8 +11,8 @@ class NETWORKPROTOCOLSHARED_EXPORT GetMyStocksMsg : public Request
 public:
     GetMyStocksMsg(QDataStream& in);
 
-    qint16 length() const;
-    MessageType type() const;
+    DTO::Types::MessageLengthType length() const;
+    DTO::Types::MessageType type() const;
 };
 }
 }

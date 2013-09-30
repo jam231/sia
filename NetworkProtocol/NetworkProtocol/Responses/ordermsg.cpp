@@ -17,13 +17,9 @@ OrderMsg::OrderMsg(DTO::Order order) : m_order(order)
 {
 }
 
-//OrderMsg::OrderMsg() : m_order()
-//{
-//}
-
-Message::MessageType OrderMsg::type() const
+Types::MessageType OrderMsg::type() const
 {
-    return ORDER;
+    return Types::MessageType::ORDER;
 }
 
 void OrderMsg::send(QIODevice* connection)
@@ -35,9 +31,9 @@ void OrderMsg::send(QIODevice* connection)
     out << m_order;
 }
 
-qint16 OrderMsg::length() const
+Types::MessageLengthType OrderMsg::length() const
 {
-    return sizeof(MessageType) + DTO::Order::lengthInBytes;
+    return sizeof(Types::MessageType) + DTO::Order::lengthInBytes;
 }
 
 const Order& OrderMsg::getOrder() const

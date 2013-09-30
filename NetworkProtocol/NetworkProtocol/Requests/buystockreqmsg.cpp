@@ -7,14 +7,13 @@ namespace NetworkProtocol
 namespace Requests
 {
 
+using namespace DTO;
+
 BuyStockReqMsg::BuyStockReqMsg(QDataStream& in) : Request(in)
 {   
     in >> m_stockId;
     in >> m_amount;
     in >> m_price;
-
-    // Mam wielka nadzieje, ze w bazie te rzeczy sa sprawdane,
-    // a juz na pewno m_stockId
 
     if(m_amount <= 0 || m_price <= 0)
     {
@@ -23,30 +22,30 @@ BuyStockReqMsg::BuyStockReqMsg(QDataStream& in) : Request(in)
     }
 }
 
-Message::MessageType BuyStockReqMsg::type() const
+Types::MessageType BuyStockReqMsg::type() const
 {
-    return BUY_STOCK_REQ;
+    return Types::MessageType::BUY_STOCK_REQ;
 }
 
-qint32 BuyStockReqMsg::getAmount() const
+Types::AmountType BuyStockReqMsg::getAmount() const
 {
     return m_amount;
 }
 
-qint32 BuyStockReqMsg::getPrice() const
+Types::PriceType BuyStockReqMsg::getPrice() const
 {
     return m_price;
 }
 
-qint32 BuyStockReqMsg::getStockId() const
+Types::StockIdType BuyStockReqMsg::getStockId() const
 {
     return m_stockId;
 }
 
-qint16 BuyStockReqMsg::length() const
+Types::MessageLengthType BuyStockReqMsg::length() const
 {
-    return sizeof(MessageType) + sizeof(m_stockId) +
-           sizeof(m_price)  + sizeof(m_amount);
+    return sizeof(Types::MessageType) +
+           sizeof(m_stockId) + sizeof(m_price)  + sizeof(m_amount);
 }
 
 }

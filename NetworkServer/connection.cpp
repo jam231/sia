@@ -23,6 +23,8 @@ using namespace NetworkProtocol;
 using namespace NetworkProtocol::Requests;
 using namespace NetworkProtocol::Responses;
 
+using namespace DTO;
+
 Connection::Connection(QTcpSocket* socket, QObject *parent) :
     QObject(parent), m_socket(socket), m_userId(NOT_ASSIGNED)
 {
@@ -132,13 +134,13 @@ bool Connection::processMessage()
 
     m_socket->read(sizeof(qint16));
 
-    Message::MessageType msgType = Request::getType(message);
+    Types::MessageType msgType = Request::getType(message);
 
     //qDebug() << "\t\t[Connection] Id wiadmości:" << msgType;
 
     switch(msgType)
     {
-        case Message::REGISTER_USER_REQ:
+        case Types::MessageType::REQUEST_REGISTER_USER:
         {
             qDebug() << "\t\t[Connection] Żądanie rejestracji.";
             if(!isUserAssigned())
@@ -161,7 +163,7 @@ bool Connection::processMessage()
             }
             return true;
         }
-        case Message::LOGIN_USER_REQ:
+        case Types::MessageType::LOGIN_USER_REQ:
         {
             if(!isUserAssigned())
             {
@@ -188,7 +190,7 @@ bool Connection::processMessage()
             }
             return true;
         }
-        case Message::UNDEFINED:
+        case Types::MessageType::MESSAGE_UNDEFINED:
         {
             qDebug() << "\t\t[Connection] Otrzymano nieznany typ wiadomości: "
                      << msgType << ".";;
@@ -213,7 +215,7 @@ bool Connection::processMessage()
     {
     switch(msgType)
     {
-        case Message::BUY_STOCK_REQ:
+        case Types::MessageType::BUY_STOCK_REQ:
         {
             try
             {
@@ -227,7 +229,7 @@ bool Connection::processMessage()
             }
             break;
         }
-        case Message::SELL_STOCK_REQ:
+        case Types::MessageType::SELL_STOCK_REQ:
         {
             try
             {
@@ -241,7 +243,7 @@ bool Connection::processMessage()
             }
             break;
         }
-        case Message::CANCEL_ORDER_REQ:
+        case Types::MessageType::CANCEL_ORDER_REQ:
         {
             try
             {
@@ -254,20 +256,20 @@ bool Connection::processMessage()
             }
             break;
         }
-        case Message::GET_MY_STOCKS:
+        case Types::MessageType::GET_MY_STOCKS:
             emit getMyStocks(m_userId);
             break;
-        case Message::GET_MY_ORDERS:
+        case Types::MessageType::GET_MY_ORDERS:
             emit getMyOrders(m_userId);
             break;
-        case Message::GET_STOCK_INFO:
+        case Types::MessageType::GET_STOCK_INFO:
         {
             GetStockInfoMsg msg(message);
 
             emit getStockInfo(m_userId, msg.getStockId());
             break;
         }
-        case Message::SUBSCRIBE_STOCK:
+        case Types::MessageType::SUBSCRIBE_STOCK:
         {
             try
             {
@@ -280,7 +282,7 @@ bool Connection::processMessage()
             }
             break;
         }
-        case Message::UNSUBSCRIBE_STOCK:
+        case Types::MessageType::UNSUBSCRIBE_STOCK:
         {
             try
             {

@@ -8,14 +8,14 @@ namespace Requests
 {
 class NETWORKPROTOCOLSHARED_EXPORT CancelOrderMsg : public Request
 {
-    qint32 m_orderId;
+    DTO::Types::OrderIdType m_orderId;
 
 public:
     CancelOrderMsg(QDataStream& in);
 
-    qint16 length() const;
-    MessageType type() const;
-    qint32 getOrderId() const;
+    DTO::Types::MessageLengthType length() const;
+    DTO::Types::MessageType type() const;
+    DTO::Types::OrderIdType getOrderId() const;
 };
 }
 }

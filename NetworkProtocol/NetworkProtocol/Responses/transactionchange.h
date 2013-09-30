@@ -10,17 +10,19 @@ namespace Responses
 
 class NETWORKPROTOCOLSHARED_EXPORT TransactionChange : public Response
 {
-    qint32 m_stockId;
-    qint32 m_amount;
-    qint32 m_price;
-    QString m_date;
+    DTO::Types::StockIdType m_stockId;
+    DTO::Types::AmountType m_amount;
+    DTO::Types::PriceType m_price;
+    QString m_dateTime;
 
 public:
-    TransactionChange(qint32, qint32, qint32, QString);
+    TransactionChange(DTO::Types::StockIdType, DTO::Types::AmountType,
+                      DTO::Types::PriceType, QString);
 
-    qint16 length() const;
+    DTO::Types::MessageLengthType length() const;
+    DTO::Types::MessageType type() const;
+
     void send(QIODevice *connection);
-    Message::MessageType type() const;
 };
 
 }

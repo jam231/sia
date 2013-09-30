@@ -19,7 +19,7 @@ public:
     GetMyStocksRespMsg();
 
     DTO::Types::MessageLengthType length() const;
-    MessageType type() const;
+    DTO::Types::MessageType type() const;
     void send(QIODevice* connection);
 
     void addStock(DTO::Types::StockIdType stockId, DTO::Types::AmountType amount);
