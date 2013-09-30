@@ -33,7 +33,7 @@ void OrderMsg::send(QIODevice* connection)
 
 Types::MessageLengthType OrderMsg::length() const
 {
-    return sizeof(Types::MessageType) + DTO::Order::lengthInBytes;
+    return sizeof(Types::MessageType) + m_order.lengthInBytes();
 }
 
 const Order& OrderMsg::getOrder() const

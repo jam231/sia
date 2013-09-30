@@ -13,7 +13,7 @@ void Response::sendHeader(QDataStream& out)
         << type();
 }
 
-QString Response::getMessageName()
+const QString Response::getMessageName()
 {
     return Message::getMessageName() + " :: Response";
 }

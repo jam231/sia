@@ -22,19 +22,15 @@ private:
     Types::AmountType m_amount;
     Types::PriceType m_price;
 public:
-
-    static const qint16 lengthInBytes = sizeof(m_orderId) + sizeof(m_orderType) +
-                                        sizeof(m_stockId) + sizeof(m_amount) + sizeof(m_price);
-
     Order(Types::OrderIdType, Types::OrderType, Types::StockIdType, Types::AmountType, Types::PriceType);
-    //Order(Types::OrderType, Types::StockIdType, Types::AmountType, Types::PriceType);
-    //Order();
 
     Types::OrderIdType getOrderId() const;
     Types::OrderType getOrderType() const;
     Types::StockIdType getStockId() const;
     Types::AmountType getAmount() const;
     Types::PriceType getPrice() const;
+
+    Types::MessageLengthType lengthInBytes() const;
 
     friend QDataStream &operator<<(QDataStream& stream, const Order& order);
     friend QDataStream &operator>>(QDataStream& stream, Order& order);

@@ -45,7 +45,7 @@ Request::Request()
 {
 }
 
-QString Request::getMessageName()
+const QString Request::getMessageName()
 {
     return Message::getMessageName() + " :: Request";
 }

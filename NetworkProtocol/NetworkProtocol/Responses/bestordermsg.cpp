@@ -23,10 +23,14 @@ Types::MessageType BestOrderMsg::type() const
     return Types::MessageType::BEST_ORDER;
 }
 
+const QString BestOrderMsg::getMessageName()
+{
+    return Response::getMessageName() + ":: BestOrderMsg";
+}
+
 Types::MessageLengthType BestOrderMsg::length() const
 {
-    return sizeof(Types::MessageType) +
-            BestOrder::lengthInBytes;
+    return sizeof(Types::MessageType) + m_bestOrder.lengthInBytes();
 }
 
 void BestOrderMsg::send(QIODevice *connection)

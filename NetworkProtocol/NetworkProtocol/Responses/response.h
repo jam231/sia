@@ -16,7 +16,7 @@ class NETWORKPROTOCOLSHARED_EXPORT Response : public Message
 protected:
     void sendHeader(QDataStream& out);
 public:
-    static QString getMessageName();
+    static const QString getMessageName();
     virtual void send(QIODevice* connection) = 0;
     virtual ~Response() {}
 };

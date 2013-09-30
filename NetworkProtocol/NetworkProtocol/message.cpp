@@ -5,7 +5,7 @@
 namespace NetworkProtocol
 {
 
-QString Message::getMessageName()
+const QString Message::getMessageName()
 {
     return "Message";
 }

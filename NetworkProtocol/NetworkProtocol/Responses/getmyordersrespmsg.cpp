@@ -14,7 +14,14 @@ GetMyOrdersRespMsg::GetMyOrdersRespMsg()
 Types::MessageLengthType GetMyOrdersRespMsg::length() const
 {
     return sizeof(Types::MessageTypeType) +
-           sizeof(Types::MessageLengthType) + m_orders.size() * Order::lengthInBytes;
+           sizeof(Types::MessageLengthType) +
+            std::accumulate(m_orders.begin(), m_orders.end(),
+                            static_cast<Types::MessageLengthType>(0),
+                            [](Types::MessageLengthType len, Order* order) -> Types::MessageLengthType
+                                   {
+                                        return len + order->lengthInBytes();
+                                    }
+                            );
 }
 
 Types::MessageType GetMyOrdersRespMsg::type() const
