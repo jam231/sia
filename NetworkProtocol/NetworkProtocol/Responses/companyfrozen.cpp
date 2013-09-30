@@ -31,5 +31,10 @@ Types::MessageLengthType CompanyFrozenResp::length() const
            sizeof(m_companyId);
 }
 
+const QString CompanyFrozenResp::getMessageName()
+{
+    return Response::getMessageName() + " :: CompanyFrozenResp";
+}
+
 }
 }

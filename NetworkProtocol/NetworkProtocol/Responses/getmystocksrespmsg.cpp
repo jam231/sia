@@ -42,5 +42,10 @@ void GetMyStocksRespMsg::addStock(Types::StockIdType stockId, Types::AmountType 
     m_stocks.push_back(qMakePair(stockId, amount));
 }
 
+const QString GetMyStocksRespMsg::getMessageName()
+{
+    return Response::getMessageName() + " :: GetMyStocksRespMsg";
+}
+
 }
 }

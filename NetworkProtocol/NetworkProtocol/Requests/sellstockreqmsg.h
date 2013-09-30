@@ -16,13 +16,14 @@ class NETWORKPROTOCOLSHARED_EXPORT SellStockReqMsg : public Request
 public:
     SellStockReqMsg(QDataStream& msg);
 
-    DTO::Types::MessageType type() const;
-
-    DTO::Types::MessageLengthType length() const;
-
     DTO::Types::StockIdType getStockId() const;
     DTO::Types::AmountType getAmount() const;
     DTO::Types::PriceType getPrice() const;
+
+    DTO::Types::MessageType type() const;
+    DTO::Types::MessageLengthType length() const;
+
+    static const QString getMessageName();
 };
 }
 }

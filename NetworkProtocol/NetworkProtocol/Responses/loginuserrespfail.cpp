@@ -28,10 +28,16 @@ void LoginUserRespFail::send(QIODevice* connection)
     out << static_cast<Types::MessageLengthType>(reason_bytes.size());
     connection->write(reason_bytes);
 }
+
 Types::MessageLengthType LoginUserRespFail::length() const
 {
     return sizeof(Types::MessageType) +
            m_reason.toUtf8().size()  + sizeof(Types::MessageLengthType);
+}
+
+const QString LoginUserRespFail::getMessageName()
+{
+    return Response::getMessageName() + " :: LoginUserRespFail";
 }
 
 }

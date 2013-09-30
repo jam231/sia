@@ -51,5 +51,10 @@ DTO::Types::MessageLengthType SellStockReqMsg::length() const
             sizeof(m_price) + sizeof(m_amount);
 }
 
+const QString SellStockReqMsg::getMessageName()
+{
+    return Request::getMessageName() + " :: SellStockReqMsg";
+}
+
 }
 }

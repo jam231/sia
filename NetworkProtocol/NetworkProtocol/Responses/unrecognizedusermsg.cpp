@@ -29,5 +29,10 @@ void UnrecognizedUserMsg::send(QIODevice* connection)
     sendHeader(out);
 }
 
+const QString UnrecognizedUserMsg::getMessageName()
+{
+    return Response::getMessageName() + " :: UnrecognizedUserMsg";
+}
+
 }
 }

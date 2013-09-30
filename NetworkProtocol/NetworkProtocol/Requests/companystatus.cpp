@@ -30,5 +30,10 @@ Types::MessageLengthType CompanyStatusMsg::length() const
            sizeof(m_companyId);
 }
 
+const QString CompanyStatusMsg::getMessageName()
+{
+    return Request::getMessageName() + " :: CompanyStatusMsg";
+}
+
 }
 }

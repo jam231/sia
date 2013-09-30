@@ -28,5 +28,10 @@ DTO::Types::MessageLengthType SubscribeStockMsg::length() const
            sizeof(m_stockId);
 }
 
+const QString SubscribeStockMsg::getMessageName()
+{
+    return Request::getMessageName() + " :: SubscribeStockMsg";
+}
+
 }
 }

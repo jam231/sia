@@ -65,5 +65,10 @@ GetMyOrdersRespMsg::~GetMyOrdersRespMsg()
     }
 }
 
+const QString GetMyOrdersRespMsg::getMessageName()
+{
+    return Response::getMessageName() + " :: GetMyOrdersRespMsg";
+}
+
 }
 }

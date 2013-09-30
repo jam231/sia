@@ -34,5 +34,10 @@ Types::MessageLengthType BuyTransactionMsg::length() const
            sizeof(m_orderId) + sizeof(m_amount);
 }
 
+const QString BuyTransactionMsg::getMessageName()
+{
+    return Response::getMessageName() + " :: BuyTransactionMsg";
+}
+
 }
 }

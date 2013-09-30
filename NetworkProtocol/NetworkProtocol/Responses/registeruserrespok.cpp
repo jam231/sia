@@ -37,5 +37,10 @@ Types::UserIdType RegisterUserRespOk::getUserId() const
     return m_userId;
 }
 
+const QString RegisterUserRespOk::getMessageName()
+{
+    return Response::getMessageName() + " :: RegisterUserRespOk";
+}
+
 }
 }

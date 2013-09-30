@@ -37,5 +37,10 @@ void RegisterUserRespFail::send(QIODevice* connection)
     connection->write(reason_bytes);
 }
 
+const QString RegisterUserRespFail::getMessageName()
+{
+    return Response::getMessageName() + " :: RegisterUserRespFail";
+}
+
 }
 }

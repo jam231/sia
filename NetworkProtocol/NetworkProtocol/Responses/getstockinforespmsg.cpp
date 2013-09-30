@@ -22,6 +22,7 @@ Types::MessageType GetStockInfoRespMsg::type() const
 {
     return Types::MessageType::GET_STOCK_INFO_RESP;
 }
+
 void GetStockInfoRespMsg::send(QIODevice* connection)
 {
     // Domyślnie BigEndian
@@ -46,5 +47,9 @@ Types::MessageLengthType GetStockInfoRespMsg::length() const
             sizeof(Types::MessageLengthType) + m_lastTransaction.lengthInBytes();
 }
 
+const QString GetStockInfoRespMsg::getMessageName()
+{
+    return Response::getMessageName() + " :: GetStockInfoRespMsg";
+}
 }
 }

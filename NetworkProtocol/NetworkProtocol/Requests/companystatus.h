@@ -16,6 +16,8 @@ public:
     DTO::Types::MessageLengthType length() const;
     DTO::Types::MessageType type() const;
     DTO::Types::CompanyIdType getCompanyId() const;
+
+    static const QString getMessageName();
 };
 }
 }

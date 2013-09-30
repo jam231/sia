@@ -17,6 +17,8 @@ public:
 
     DTO::Types::MessageType type() const;
     DTO::Types::StockIdType getStockId() const;
+
+    static const QString getMessageName();
 };
 }
 }

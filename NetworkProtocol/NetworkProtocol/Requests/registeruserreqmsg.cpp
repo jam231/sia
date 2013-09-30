@@ -59,5 +59,10 @@ DTO::Types::MessageLengthType RegisterUserReqMsg::length() const
            sizeof(Types::MessageLengthType) + m_password.toUtf8().size();
 }
 
+const QString RegisterUserReqMsg::getMessageName()
+{
+    return Request::getMessageName() + " :: RegisterUserReqMsg";
+}
+
 }
 }

@@ -15,6 +15,7 @@ Types::MessageType LoginUserRespOk::type() const
 {
     return Types::MessageType::LOGIN_USER_RESP_OK;
 }
+
 void LoginUserRespOk::send(QIODevice* connection)
 {
     // Domyślnie BigEndian
@@ -26,6 +27,11 @@ void LoginUserRespOk::send(QIODevice* connection)
 Types::MessageLengthType LoginUserRespOk::length() const
 {
     return sizeof(Types::MessageType);
+}
+
+const QString LoginUserRespOk::getMessageName()
+{
+    return Response::getMessageName() + " :: LoginUserRespOk";
 }
 
 }

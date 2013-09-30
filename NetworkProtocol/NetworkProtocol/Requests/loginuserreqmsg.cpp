@@ -60,5 +60,11 @@ Types::MessageLengthType LoginUserReqMsg::length() const
            sizeof(m_userId) + sizeof(Types::MessageLengthType) + m_password.toUtf8().size();
 }
 
+const QString LoginUserReqMsg::getMessageName()
+{
+    return Request::getMessageName() + " :: LoginUserReqMsg";
+}
+
+
 }
 }

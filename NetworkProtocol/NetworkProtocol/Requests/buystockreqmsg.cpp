@@ -37,6 +37,11 @@ Types::PriceType BuyStockReqMsg::getPrice() const
     return m_price;
 }
 
+const QString BuyStockReqMsg::getMessageName()
+{
+    return Request::getMessageName() + " :: BuyStockReqMsg";
+}
+
 Types::StockIdType BuyStockReqMsg::getStockId() const
 {
     return m_stockId;

@@ -16,8 +16,11 @@ public:
     OrderIdResp(DTO::Types::OrderIdType orderId);
 
     DTO::Types::MessageLengthType length() const;
-    void send(QIODevice *connection);
     DTO::Types::MessageType type() const;
+
+    static const QString getMessageName();
+
+    void send(QIODevice *connection);
 };
 
 }

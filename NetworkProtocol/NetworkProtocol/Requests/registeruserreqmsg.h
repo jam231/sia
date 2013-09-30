@@ -17,6 +17,8 @@ public:
     DTO::Types::MessageLengthType length() const;
     DTO::Types::MessageType type() const;
     QString getPassword() const;
+
+    static const QString getMessageName();
 };
 }
 }

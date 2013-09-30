@@ -41,5 +41,10 @@ const Order& OrderMsg::getOrder() const
     return m_order;
 }
 
+const QString OrderMsg::getMessageName()
+{
+    return Response::getMessageName() + " :: OrderMsg";
+}
+
 }
 }

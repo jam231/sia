@@ -31,5 +31,10 @@ Types::MessageLengthType CompanyActiveResp::length() const
            sizeof(m_companyId);
 }
 
+const QString CompanyActiveResp::getMessageName()
+{
+    return Response::getMessageName() + " :: CompanyActiveResp";
+}
+
 }
 }

@@ -32,6 +32,7 @@ protected:
 public:
     static DTO::Types::MessageType getType(QDataStream &in);
     static DTO::Types::MessageLengthType getMessageLength(QIODevice* data);
+
     static const QString getMessageName();
 
     virtual ~Request() {}

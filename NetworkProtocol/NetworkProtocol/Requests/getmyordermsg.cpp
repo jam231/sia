@@ -22,5 +22,10 @@ Types::MessageLengthType GetMyOrderMsg::length() const
     return sizeof(Types::MessageType);
 }
 
+const QString GetMyOrderMsg::getMessageName()
+{
+    return Request::getMessageName() + " :: GetMyOrderMsg";
+}
+
 }
 }

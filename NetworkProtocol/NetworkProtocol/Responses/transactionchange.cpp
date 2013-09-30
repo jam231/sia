@@ -42,5 +42,10 @@ Types::MessageType TransactionChange::type() const
     return Types::MessageType::TRANSACTION_CHANGE;
 }
 
+const QString TransactionChange::getMessageName()
+{
+    return Response::getMessageName() + " :: TransactionChange";
+}
+
 }
 }
