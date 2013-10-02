@@ -3,6 +3,7 @@
 #include <Responses/loginuserrespfail.h>
 
 using namespace NetworkProtocol;
+using namespace NetworkProtocol::DTO;
 using namespace NetworkProtocol::Responses;
 
 Server::Server(QObject *parent, int portNumber)
@@ -64,7 +65,7 @@ void Server::send(Responses::RegisterUserRespOk& msg, Connection* connection)
 }
 
 void Server::send(Responses::LoginUserRespOk& msg, Connection* connection,
-                  qint32 userId)
+                  DTO::Types::UserIdType userId)
 {
     qDebug() << "\t[Server] Wysylanie wiadomsci: LoginUserRespOk"
              << " do uzytkownika z id=" << userId;
@@ -99,7 +100,7 @@ void Server::send(Response& msg)
     }
 }
 
-void Server::send(Response& msg, qint32 userId)
+void Server::send(Response& msg, Types::UserIdType userId)
 {
     /* TODO:
      *
@@ -120,39 +121,39 @@ void Server::addNewConnection()
     Connection* newConnection = new Connection(m_server->nextPendingConnection(),
                                          this);
 
-    connect(newConnection, SIGNAL(disconnected(qint32)),
-              this,        SLOT(disconnectUser(qint32)));
+    connect(newConnection, SIGNAL(disconnected(Types::UserIdType)),
+              this,        SLOT(disconnectUser(Types::UserIdType)));
 
     connect(newConnection, SIGNAL(registerUserRequestFromConnection(Connection*, QString)),
               this,        SIGNAL(registerUserRequestFromServer(Connection *, QString)));
 
-    connect(newConnection, SIGNAL(loginUserRequestFromConnection(Connection*, qint32,QString)),
-            this,          SIGNAL(loginUserRequestFromServer(Connection *, qint32, QString)));
+    connect(newConnection, SIGNAL(loginUserRequestFromConnection(Connection*, Types::UserIdType, QString)),
+            this,          SIGNAL(loginUserRequestFromServer(Connection *, Types::UserIdType2, QString)));
 
-    connect(newConnection, SIGNAL(buyStock(qint32, qint32, qint32, qint32)),
-            this,          SIGNAL(buyStock(qint32, qint32, qint32, qint32)));
+    connect(newConnection, SIGNAL(buyStock(Types::UserIdType, Types::StockIdType, Types::AmountType, Types::PriceType)),
+            this,          SIGNAL(buyStock(Types::UserIdType, Types::StockIdType, Types::AmountType, Types::PriceType)));
 
-    connect(newConnection, SIGNAL(sellStock(qint32, qint32, qint32, qint32)),
-            this,          SIGNAL(sellStock(qint32, qint32, qint32, qint32)));
+    connect(newConnection, SIGNAL(sellStock(Types::UserIdType, Types::StockIdType, Types::AmountType, Types::PriceType)),
+            this,          SIGNAL(sellStock(Types::UserIdType, Types::StockIdType, Types::AmountType, Types::PriceType)));
 
-    connect(newConnection, SIGNAL(getMyStocks(qint32)),
-            this,          SIGNAL(getMyStocks(qint32)));
+    connect(newConnection, SIGNAL(getMyStocks(Types::UserIdType)),
+            this,          SIGNAL(getMyStocks(Types::UserIdType)));
 
-    connect(newConnection, SIGNAL(getMyOrders(qint32)),
-            this,          SIGNAL(getMyOrders(qint32)));
+    connect(newConnection, SIGNAL(getMyOrders(Types::UserIdType)),
+            this,          SIGNAL(getMyOrders(Types::UserIdType)));
 
-    connect(newConnection, SIGNAL(getStockInfo(qint32, qint32)),
-            this,          SIGNAL(getStockInfo(qint32, qint32)));
+    connect(newConnection, SIGNAL(getStockInfo(Types::UserIdType, Types::StockIdType)),
+            this,          SIGNAL(getStockInfo(Types::UserIdType, Types::StockIdType)));
 
-    connect(newConnection, SIGNAL(cancelOrder(qint32, qint32)),
-            this,          SIGNAL(cancelOrder(qint32, qint32)));
+    connect(newConnection, SIGNAL(cancelOrder(Types::UserIdType, Types::StockIdType)),
+            this,          SIGNAL(cancelOrder(Types::UserIdType, Types::StockIdType)));
     //od teraz dopiero zaczniemy przetwarzac wiadomosci z tego polaczenia
     //abysmy nie robili tego zanim polaczylismy sygnaly i sloty
     //bo moglibysmy stracic wiadomosci
     newConnection->start();
 }
 
-void Server::disconnectUser(qint32 userId)
+void Server::disconnectUser(Types::UserIdType userId)
 {
     qDebug() << "[Server] Usuwanie użytkownika " << userId
              << "z rejestru aktywnych użytkowników (lol).";

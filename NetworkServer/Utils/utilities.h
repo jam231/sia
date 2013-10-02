@@ -6,6 +6,11 @@
 #include <QVector>
 #include <QPair>
 
+#include <QHash>
+
+#include <DataTransferObjects/types.h>
+
+
 
 class InvalidPasswordError : public std::exception
 {
@@ -37,5 +42,8 @@ struct Maybe
         return !isNothing;
     }
 };
+
+
+
 
 #endif // UTILITY_H

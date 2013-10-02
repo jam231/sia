@@ -42,9 +42,9 @@ RegisterUserReqMsg::RegisterUserReqMsg(QDataStream& in) : Request()
     m_password = QString(buffer);
 }
 
-Types::MessageType RegisterUserReqMsg::type() const
+Types::Message::MessageType RegisterUserReqMsg::type() const
 {
-    return Types::MessageType::REQUEST_REGISTER_USER;
+    return Types::Message::MessageType::REQUEST_REGISTER_USER;
 }
 
 QString RegisterUserReqMsg::getPassword() const
@@ -55,7 +55,7 @@ QString RegisterUserReqMsg::getPassword() const
 
 DTO::Types::MessageLengthType RegisterUserReqMsg::length() const
 {
-    return sizeof(Types::MessageType) +
+    return sizeof(Types::Message::MessageType) +
            sizeof(Types::MessageLengthType) + m_password.toUtf8().size();
 }
 

@@ -12,9 +12,9 @@ LoginUserRespFail::LoginUserRespFail(QString reason)
     m_reason = reason;
 }
 
-Types::MessageType LoginUserRespFail::type() const
+Types::Message::MessageType LoginUserRespFail::type() const
 {
-    return Types::MessageType::LOGIN_USER_RESP_FAIL;
+    return Types::Message::MessageType::LOGIN_USER_RESP_FAIL;
 }
 
 void LoginUserRespFail::send(QIODevice* connection)
@@ -31,7 +31,7 @@ void LoginUserRespFail::send(QIODevice* connection)
 
 Types::MessageLengthType LoginUserRespFail::length() const
 {
-    return sizeof(Types::MessageType) +
+    return sizeof(Types::Message::MessageType) +
            m_reason.toUtf8().size()  + sizeof(Types::MessageLengthType);
 }
 

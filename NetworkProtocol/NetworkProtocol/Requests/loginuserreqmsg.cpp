@@ -39,9 +39,9 @@ LoginUserReqMsg::LoginUserReqMsg(QDataStream &in) : Request()
     m_password = QString(buffer);
 }
 
-Types::MessageType LoginUserReqMsg::type() const
+Types::Message::MessageType LoginUserReqMsg::type() const
 {
-    return Types::MessageType::LOGIN_USER_REQ;
+    return Types::Message::MessageType::LOGIN_USER_REQ;
 }
 
 Types::UserIdType LoginUserReqMsg::getUserId() const
@@ -56,7 +56,7 @@ QString LoginUserReqMsg::getUserPassword() const
 
 Types::MessageLengthType LoginUserReqMsg::length() const
 {
-    return sizeof(Types::MessageType) +
+    return sizeof(Types::Message::MessageType) +
            sizeof(m_userId) + sizeof(Types::MessageLengthType) + m_password.toUtf8().size();
 }
 

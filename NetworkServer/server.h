@@ -1,8 +1,9 @@
 #ifndef SERWER_H
 #define SERWER_H
 
-#include "offer.h"
+
 #include "connection.h"
+#include "utilities.h"
 
 #include "Responses/registeruserrespok.h"
 #include "Responses/loginuserrespok.h"
@@ -21,13 +22,14 @@ class TcpConnectionError : public std::exception
     }
 };
 
+
 using std::map;
 
 class Server : public QObject
 {    
     Q_OBJECT
 
-    QHash<qint32, Connection*> m_userConnections;
+    QHash<NetworkProtocol::DTO::Types::UserIdType, Connection*> m_userConnections;
     QTcpServer* m_server;
 
 public:
@@ -36,27 +38,29 @@ public:
 public slots:
     void send(NetworkProtocol::Responses::Response& msg, Connection*);
     void send(NetworkProtocol::Responses::RegisterUserRespOk& msg, Connection*);
-    void send(NetworkProtocol::Responses::LoginUserRespOk& msg, Connection*connection, qint32 userId);
+    void send(NetworkProtocol::Responses::LoginUserRespOk& msg, Connection*connection, NetworkProtocol::DTO::Types::UserIdType userId);
     void send(NetworkProtocol::Responses::Response& msg);
-    void send(NetworkProtocol::Responses::Response& msg, qint32 userId);
+    void send(NetworkProtocol::Responses::Response& msg, NetworkProtocol::DTO::Types::UserIdType userId);
 
 signals:
 
     void registerUserRequestFromServer(Connection*, QString password);
-    void loginUserRequestFromServer(Connection *connection, qint32 userId, QString password);
+    void loginUserRequestFromServer(Connection *connection, NetworkProtocol::DTO::Types::UserIdType userId, QString password);
 
-    void sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
-    void buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
+    void sellStock(NetworkProtocol::DTO::Types::UserIdType userId, NetworkProtocol::DTO::Types::StockIdType stockId,
+                   NetworkProtocol::DTO::Types::AmountType amount, NetworkProtocol::DTO::Types::PriceType price);
+    void buyStock(NetworkProtocol::DTO::Types::UserIdType userId, NetworkProtocol::DTO::Types::StockIdType stockId,
+                  NetworkProtocol::DTO::Types::AmountType amount, NetworkProtocol::DTO::Types::PriceType price);
 
-    void getMyStocks(qint32 userId);
-    void getMyOrders(qint32 userId);
-    void getStockInfo(qint32 userId, qint32 stockId);
+    void getMyStocks(NetworkProtocol::DTO::Types::UserIdType userId);
+    void getMyOrders(NetworkProtocol::DTO::Types::UserIdType userId);
+    void getStockInfo(NetworkProtocol::DTO::Types::UserIdType userId, NetworkProtocol::DTO::Types::StockIdType stockId);
 
-    void cancelOrder(qint32 userId, qint32 orderId);
+    void cancelOrder(NetworkProtocol::DTO::Types::UserIdType userId, NetworkProtocol::DTO::Types::StockIdType orderId);
 
 private slots:
     void addNewConnection();
-    void disconnectUser(qint32 userId);
+    void disconnectUser(NetworkProtocol::DTO::Types::UserIdType userId);
 
 
 };

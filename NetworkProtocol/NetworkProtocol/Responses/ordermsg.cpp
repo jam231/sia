@@ -7,7 +7,7 @@ namespace Responses
 
 using namespace DTO;
 
-OrderMsg::OrderMsg(Types::OrderIdType orderId, Types::OrderType orderType,
+OrderMsg::OrderMsg(Types::OrderIdType orderId, Types::Order::OrderType orderType,
                    Types::StockIdType stockId, Types::AmountType amount, Types::PriceType price)
     : m_order(orderId, orderType, stockId, amount, price)
 {
@@ -17,9 +17,9 @@ OrderMsg::OrderMsg(DTO::Order order) : m_order(order)
 {
 }
 
-Types::MessageType OrderMsg::type() const
+Types::Message::MessageType OrderMsg::type() const
 {
-    return Types::MessageType::ORDER;
+    return Types::Message::MessageType::ORDER;
 }
 
 void OrderMsg::send(QIODevice* connection)
@@ -33,7 +33,7 @@ void OrderMsg::send(QIODevice* connection)
 
 Types::MessageLengthType OrderMsg::length() const
 {
-    return sizeof(Types::MessageType) + m_order.lengthInBytes();
+    return sizeof(Types::Message::MessageType) + m_order.lengthInBytes();
 }
 
 const Order& OrderMsg::getOrder() const

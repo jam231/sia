@@ -12,19 +12,19 @@ SubscribeStockMsg::SubscribeStockMsg(QDataStream& in) : Request(in)
     in >> m_stockId;
 }
 
-Types::MessageType SubscribeStockMsg::type() const
+Types::Message::MessageType SubscribeStockMsg::type() const
 {
-    return Types::MessageType::SUBSCRIBE_STOCK;
+    return Types::Message::MessageType::SUBSCRIBE_STOCK;
 }
 
-DTO::Types::StockIdType SubscribeStockMsg::getStockId() const
+Types::StockIdType SubscribeStockMsg::getStockId() const
 {
     return m_stockId;
 }
 
-DTO::Types::MessageLengthType SubscribeStockMsg::length() const
+Types::MessageLengthType SubscribeStockMsg::length() const
 {
-    return sizeof(Types::MessageType) +
+    return sizeof(Types::Message::MessageType) +
            sizeof(m_stockId);
 }
 

@@ -10,13 +10,14 @@ namespace Responses
 
 class NETWORKPROTOCOLSHARED_EXPORT BuyTransactionMsg : public Response
 {
-    DTO::Types::OrderIdType m_amount;
-    DTO::Types::AmountType m_orderId;
+    DTO::Types::AmountType m_amount;
+    DTO::Types::OrderIdType m_orderId;
+
 public:
     BuyTransactionMsg(DTO::Types::OrderIdType orderId, DTO::Types::AmountType amount);
 
     DTO::Types::MessageLengthType length() const;
-    DTO::Types::MessageType type() const;
+    DTO::Types::Message::MessageType type() const;
 
     static const QString getMessageName();
 

@@ -12,14 +12,14 @@ GetMyOrderMsg::GetMyOrderMsg(QDataStream& in) : Request(in)
 {
 }
 
-Types::MessageType GetMyOrderMsg::type() const
+Types::Message::MessageType GetMyOrderMsg::type() const
 {
-    return Types::MessageType::GET_MY_ORDERS;
+    return Types::Message::MessageType::GET_MY_ORDERS;
 }
 
 Types::MessageLengthType GetMyOrderMsg::length() const
 {
-    return sizeof(Types::MessageType);
+    return sizeof(Types::Message::MessageType);
 }
 
 const QString GetMyOrderMsg::getMessageName()

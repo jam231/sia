@@ -13,12 +13,12 @@ class NETWORKPROTOCOLSHARED_EXPORT BestOrderMsg : public Response
 {
     DTO::BestOrder m_bestOrder;
 public:
-    BestOrderMsg(DTO::Types::OrderType, DTO::Types::StockIdType,
+    BestOrderMsg(DTO::Types::Order::OrderType, DTO::Types::StockIdType,
                  DTO::Types::AmountType, DTO::Types::PriceType);
     BestOrderMsg(DTO::BestOrder);
 
     DTO::Types::MessageLengthType length() const;
-    DTO::Types::MessageType type() const;
+    DTO::Types::Message::MessageType type() const;
 
     static const QString getMessageName();
 

@@ -12,18 +12,18 @@ namespace NetworkProtocol
 namespace DTO
 {
 
-class BestOrder
+class NETWORKPROTOCOLSHARED_EXPORT BestOrder
 {
 private:
-    Types::OrderType m_orderType;
+    Types::Order::OrderType m_orderType;
     Types::StockIdType m_stockId;
     Types::AmountType m_amount;
     Types::PriceType m_price;
 
 public:
-    BestOrder(Types::OrderType, Types::StockIdType, Types::AmountType, Types::PriceType);
+    BestOrder(Types::Order::OrderType, Types::StockIdType, Types::AmountType, Types::PriceType);
 
-    Types::OrderType getOrderType() const;
+    Types::Order::OrderType getOrderType() const;
     Types::StockIdType getStockId() const;
     Types::AmountType getAmount() const;
     Types::PriceType getPrice() const;

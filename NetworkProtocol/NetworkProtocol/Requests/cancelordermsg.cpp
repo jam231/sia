@@ -14,9 +14,9 @@ CancelOrderMsg::CancelOrderMsg(QDataStream &in)
     in >> m_orderId;
 }
 
-Types::MessageType CancelOrderMsg::type() const
+Types::Message::MessageType CancelOrderMsg::type() const
 {
-    return Types::MessageType::CANCEL_ORDER_REQ;
+    return Types::Message::MessageType::CANCEL_ORDER_REQ;
 }
 
 Types::OrderIdType CancelOrderMsg::getOrderId() const
@@ -26,7 +26,7 @@ Types::OrderIdType CancelOrderMsg::getOrderId() const
 
 Types::MessageLengthType CancelOrderMsg::length() const
 {
-    return sizeof(Types::MessageType) +
+    return sizeof(Types::Message::MessageType) +
            sizeof(m_orderId);
 }
 

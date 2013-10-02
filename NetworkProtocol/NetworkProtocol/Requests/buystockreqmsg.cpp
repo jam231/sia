@@ -22,9 +22,9 @@ BuyStockReqMsg::BuyStockReqMsg(QDataStream& in) : Request(in)
     }
 }
 
-Types::MessageType BuyStockReqMsg::type() const
+Types::Message::MessageType BuyStockReqMsg::type() const
 {
-    return Types::MessageType::BUY_STOCK_REQ;
+    return Types::Message::MessageType::BUY_STOCK_REQ;
 }
 
 Types::AmountType BuyStockReqMsg::getAmount() const
@@ -49,7 +49,7 @@ Types::StockIdType BuyStockReqMsg::getStockId() const
 
 Types::MessageLengthType BuyStockReqMsg::length() const
 {
-    return sizeof(Types::MessageType) +
+    return sizeof(Types::Message::MessageType) +
            sizeof(m_stockId) + sizeof(m_price)  + sizeof(m_amount);
 }
 

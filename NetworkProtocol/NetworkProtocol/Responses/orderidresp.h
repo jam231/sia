@@ -16,7 +16,7 @@ public:
     OrderIdResp(DTO::Types::OrderIdType orderId);
 
     DTO::Types::MessageLengthType length() const;
-    DTO::Types::MessageType type() const;
+    DTO::Types::Message::MessageType type() const;
 
     static const QString getMessageName();
 

@@ -5,7 +5,7 @@ namespace NetworkProtocol
 namespace DTO
 {
 
-BestOrder::BestOrder(Types::OrderType orderType, Types::StockIdType stockId,
+BestOrder::BestOrder(Types::Order::OrderType orderType, Types::StockIdType stockId,
                      Types::AmountType amount, Types::PriceType price)
     : m_orderType(orderType), m_stockId(stockId), m_amount(amount), m_price(price)
 {
@@ -16,7 +16,7 @@ Types::MessageLengthType BestOrder::lengthInBytes() const
     return sizeof(m_orderType) + sizeof(m_stockId) + sizeof(m_amount) + sizeof(m_price);
 }
 
-Types::OrderType BestOrder::getOrderType() const
+Types::Order::OrderType BestOrder::getOrderType() const
 {
     return m_orderType;
 }
@@ -49,12 +49,11 @@ QDataStream &operator<<(QDataStream& stream, const BestOrder& bestOrder)
 
 QDataStream &operator>>(QDataStream& stream, BestOrder& bestOrder)
 {
-    Types::OrderTypeType orderType;
-    stream >> orderType
+
+    stream >> bestOrder.m_orderType
            >> bestOrder.m_stockId
            >> bestOrder.m_amount
            >> bestOrder.m_price;
-    bestOrder.m_orderType = Types::toOrderType(orderType);
     return stream;
 }
 

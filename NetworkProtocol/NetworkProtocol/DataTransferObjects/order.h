@@ -17,15 +17,15 @@ class NETWORKPROTOCOLSHARED_EXPORT Order
 
 private:
     Types::OrderIdType m_orderId;
-    Types::OrderType m_orderType;
+    Types::Order::OrderType m_orderType;
     Types::StockIdType m_stockId;
     Types::AmountType m_amount;
     Types::PriceType m_price;
 public:
-    Order(Types::OrderIdType, Types::OrderType, Types::StockIdType, Types::AmountType, Types::PriceType);
+    Order(Types::OrderIdType, Types::Order::OrderType, Types::StockIdType, Types::AmountType, Types::PriceType);
 
     Types::OrderIdType getOrderId() const;
-    Types::OrderType getOrderType() const;
+    Types::Order::OrderType getOrderType() const;
     Types::StockIdType getStockId() const;
     Types::AmountType getAmount() const;
     Types::PriceType getPrice() const;

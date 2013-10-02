@@ -24,9 +24,9 @@ SellStockReqMsg::SellStockReqMsg(QDataStream& in) : Request(in)
     }
 }
 
-Types::MessageType SellStockReqMsg::type() const
+Types::Message::MessageType SellStockReqMsg::type() const
 {
-    return Types::MessageType::SELL_STOCK_REQ;
+    return Types::Message::MessageType::SELL_STOCK_REQ;
 }
 
 
@@ -47,7 +47,7 @@ DTO::Types::StockIdType SellStockReqMsg::getStockId() const
 
 DTO::Types::MessageLengthType SellStockReqMsg::length() const
 {
-    return sizeof(Types::MessageType) + sizeof(m_stockId) +
+    return sizeof(Types::Message::MessageType) + sizeof(m_stockId) +
             sizeof(m_price) + sizeof(m_amount);
 }
 

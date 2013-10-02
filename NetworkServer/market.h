@@ -3,15 +3,17 @@
 
 
 #include "server.h"
-#include "offer.h"
 #include "configmanager.h"
 
 #include <exception>
 
 #include <Responses/bestordermsg.h>
+
+#include "Utils/utilities.h"
+
 #include <DataTransferObjects/order.h>
 #include <DataTransferObjects/lasttransaction.h>
-
+#include <DataTransferObjects/types.h>
 
 #include <QTimer>
 #include <QObject>
@@ -29,8 +31,6 @@ class DatabaseError : public std::exception
     }
 };
 
-//Q_DECLARE_METATYPE(NetworkProtocol::DTO::Order)
-
 class Market : public QObject
 {
     Q_OBJECT
@@ -41,17 +41,18 @@ class Market : public QObject
 
     Server* m_server;
     QSqlDatabase m_database;
+
     QTimer* m_sessionOnTimer;
     QTimer* m_sessionOffTimer;
 
-    QHash<qint32, NetworkProtocol::DTO::LastTransaction > m_cachedLastTransaction;
-    QHash<qint32, QPair<qint32, qint32> > m_cachedBestSellOrders;
-    QHash<qint32, QPair<qint32, qint32> > m_cachedBestBuyOrders;
+    QHash<NetworkProtocol::DTO::Types::StockIdType, NetworkProtocol::DTO::LastTransaction > m_cachedLastTransaction;
+    QHash<NetworkProtocol::DTO::Types::StockIdType, QPair<NetworkProtocol::DTO::Types::AmountType, NetworkProtocol::DTO::Types::PriceType> > m_cachedBestSellOrders;
+    QHash<NetworkProtocol::DTO::Types::StockIdType, QPair<NetworkProtocol::DTO::Types::AmountType, NetworkProtocol::DTO::Types::PriceType> > m_cachedBestBuyOrders;
 
 protected:
 
-   void changeCachedBestSellOrders(qint32 stockId);
-   void changeCachedBestBuyOrders(qint32 stockId);
+   void changeCachedBestSellOrders(NetworkProtocol::DTO::Types::StockIdType stockId);
+   void changeCachedBestBuyOrders(NetworkProtocol::DTO::Types::StockIdType stockId);
 
 public:
     Market(const ConfigManager<>& config, QObject* parent = 0);
@@ -59,21 +60,23 @@ public:
 
 public slots:
     void registerNewUser(Connection*, QString password);
-    void loginUser(Connection*, qint32 userId, QString password);
+    void loginUser(Connection*, NetworkProtocol::DTO::Types::UserIdType userId, QString password);
 
     void startSession();
     void stopSession();
 
     void notificationHandler(const QString&, QSqlDriver::NotificationSource, const QVariant &);
 
-    void sellStock(qint32 userId,qint32 stockId, qint32 amount, qint32 price);
-    void buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
+    void sellStock(NetworkProtocol::DTO::Types::UserIdType userId, NetworkProtocol::DTO::Types::StockIdType stockId,
+                   NetworkProtocol::DTO::Types::AmountType amount, NetworkProtocol::DTO::Types::PriceType price);
+    void buyStock(NetworkProtocol::DTO::Types::UserIdType userId, NetworkProtocol::DTO::Types::StockIdType stockId,
+                  NetworkProtocol::DTO::Types::AmountType amount, NetworkProtocol::DTO::Types::PriceType price);
 
-    void getMyStocks(qint32 userId);
-    void getMyOrders(qint32 userId);
-    void getStockInfo(qint32 userId, qint32 stockId);
+    void getMyStocks(NetworkProtocol::DTO::Types::UserIdType userId);
+    void getMyOrders(NetworkProtocol::DTO::Types::UserIdType userId);
+    void getStockInfo(NetworkProtocol::DTO::Types::UserIdType userId, NetworkProtocol::DTO::Types::StockIdType stockId);
 
-    void cancelOrder(qint32 userId, qint32 orderId);
+    void cancelOrder(NetworkProtocol::DTO::Types::UserIdType userId, NetworkProtocol::DTO::Types::StockIdType stockId);
 };
 
 #endif // MARKET_H

@@ -13,13 +13,13 @@ OrderIdResp::OrderIdResp(Types::OrderIdType orderId) : m_orderId(orderId)
 
 Types::MessageLengthType OrderIdResp::length() const
 {
-    return sizeof(Types::MessageType) +
+    return sizeof(Types::Message::MessageType) +
            sizeof(m_orderId);
 }
 
-Types::MessageType OrderIdResp::type() const
+Types::Message::MessageType OrderIdResp::type() const
 {
-    return Types::MessageType::ORDER_ID_RESP;
+    return Types::Message::MessageType::ORDER_ID_RESP;
 }
 
 void OrderIdResp::send(QIODevice* connection)

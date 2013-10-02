@@ -16,7 +16,7 @@ public:
     RegisterUserRespOk(DTO::Types::UserIdType userId);
 
     DTO::Types::MessageLengthType length() const;
-    DTO::Types::MessageType type() const;
+    DTO::Types::Message::MessageType type() const;
     DTO::Types::UserIdType getUserId() const;
 
     static const QString getMessageName();

@@ -11,15 +11,15 @@ UnrecognizedUserMsg::UnrecognizedUserMsg()
 {
 }
 
-Types::MessageType UnrecognizedUserMsg::type() const
+Types::Message::MessageType UnrecognizedUserMsg::type() const
 {
-    return Types::MessageType::UNRECOGNIZED_USER;
+    return Types::Message::MessageType::UNRECOGNIZED_USER;
 }
 
 Types::MessageLengthType UnrecognizedUserMsg::length() const
 {
 
-    return sizeof(Types::MessageType);
+    return sizeof(Types::Message::MessageType);
 }
 
 void UnrecognizedUserMsg::send(QIODevice* connection)

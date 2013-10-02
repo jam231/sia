@@ -15,12 +15,12 @@ class NETWORKPROTOCOLSHARED_EXPORT OrderMsg : public Response
     DTO::Order m_order;
 
 public:
-    OrderMsg(DTO::Types::OrderIdType, DTO::Types::OrderType, DTO::Types::StockIdType,
+    OrderMsg(DTO::Types::OrderIdType, DTO::Types::Order::OrderType, DTO::Types::StockIdType,
              DTO::Types::AmountType, DTO::Types::PriceType);
     OrderMsg(DTO::Order order);
 
     DTO::Types::MessageLengthType length() const;
-    DTO::Types::MessageType type() const;
+    DTO::Types::Message::MessageType type() const;
 
     const DTO::Order& getOrder() const;
 

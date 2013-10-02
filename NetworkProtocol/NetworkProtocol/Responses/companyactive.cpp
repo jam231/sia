@@ -12,9 +12,9 @@ CompanyActiveResp::CompanyActiveResp(Types::CompanyIdType companyId)
     m_companyId = companyId;
 }
 
-Types::MessageType CompanyActiveResp::type() const
+Types::Message::MessageType CompanyActiveResp::type() const
 {
-    return Types::MessageType::COMPANY_ACTIVE_RESP;
+    return Types::Message::MessageType::COMPANY_ACTIVE_RESP;
 }
 
 void CompanyActiveResp::send(QIODevice *connection)
@@ -27,7 +27,7 @@ void CompanyActiveResp::send(QIODevice *connection)
 
 Types::MessageLengthType CompanyActiveResp::length() const
 {
-    return sizeof(Types::MessageType) +
+    return sizeof(Types::Message::MessageType) +
            sizeof(m_companyId);
 }
 

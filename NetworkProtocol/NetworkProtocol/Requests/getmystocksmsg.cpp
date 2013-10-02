@@ -12,14 +12,14 @@ GetMyStocksMsg::GetMyStocksMsg(QDataStream& in) : Request(in)
 {
 }
 
-Types::MessageType GetMyStocksMsg::type() const
+Types::Message::MessageType GetMyStocksMsg::type() const
 {
-    return Types::MessageType::GET_MY_STOCKS;
+    return Types::Message::MessageType::GET_MY_STOCKS;
 }
 
 DTO::Types::MessageLengthType GetMyStocksMsg::length() const
 {
-    return sizeof(Types::MessageType);
+    return sizeof(Types::Message::MessageType);
 }
 
 const QString GetMyStocksMsg::getMessageName()

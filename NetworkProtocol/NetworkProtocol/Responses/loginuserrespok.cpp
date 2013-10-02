@@ -11,9 +11,9 @@ LoginUserRespOk::LoginUserRespOk()
 {
 }
 
-Types::MessageType LoginUserRespOk::type() const
+Types::Message::MessageType LoginUserRespOk::type() const
 {
-    return Types::MessageType::LOGIN_USER_RESP_OK;
+    return Types::Message::MessageType::LOGIN_USER_RESP_OK;
 }
 
 void LoginUserRespOk::send(QIODevice* connection)
@@ -26,7 +26,7 @@ void LoginUserRespOk::send(QIODevice* connection)
 
 Types::MessageLengthType LoginUserRespOk::length() const
 {
-    return sizeof(Types::MessageType);
+    return sizeof(Types::Message::MessageType);
 }
 
 const QString LoginUserRespOk::getMessageName()

@@ -1,7 +1,5 @@
 #include "market.h"
 
-#include "transaction.h"
-#include "stock.h"
 #include "configmanager.h"
 
 
@@ -22,6 +20,9 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
+
+#include <DataTransferObjects/types.h>
+#include <DataTransferObjects/lasttransaction.h>
 
 
 
@@ -87,37 +88,38 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
     connect(m_server, SIGNAL(registerUserRequestFromServer(Connection*, QString)),
             this,     SLOT(registerNewUser(Connection*, QString)) );
 
-    connect(m_server, SIGNAL(loginUserRequestFromServer(Connection*, qint32, QString)),
-            this,     SLOT(loginUser(Connection*, qint32, QString)));
+    connect(m_server, SIGNAL(loginUserRequestFromServer(Connection*, Types::UserIdType, QString)),
+            this,     SLOT(loginUser(Connection*, Types::UserIdType, QString)));
 
     connect(m_database.driver(), SIGNAL(notification(const QString&, QSqlDriver::NotificationSource,
                                                      const QVariant&)),
             this,               SLOT(notificationHandler(const QString&, QSqlDriver::NotificationSource,
                                                          const QVariant&)));
 
-    connect(m_server, SIGNAL(sellStock(qint32, qint32, qint32, qint32)),
-            this,     SLOT(sellStock(qint32, qint32, qint32, qint32)));
+    connect(m_server, SIGNAL(sellStock(Types::UserIdType, Types::StockIdType, Types::AmountType, Types::PriceType)),
+            this,     SLOT(sellStock(Types::UserIdType, Types::StockIdType, Types::AmountType, Types::PriceType)));
 
-    connect(m_server, SIGNAL(buyStock(qint32, qint32, qint32, qint32)),
-            this,     SLOT(buyStock(qint32, qint32, qint32, qint32)));
+    connect(m_server, SIGNAL(buyStock(Types::UserIdType, Types::StockIdType ,Types::AmountType, Types::PriceType)),
+            this,     SLOT(buyStock(Types::UserIdType, Types::StockIdType, Types::AmountType, Types::PriceType)));
 
-    connect(m_server, SIGNAL(getMyStocks(qint32)),
-            this,     SLOT(getMyStocks(qint32)));
+    connect(m_server, SIGNAL(getMyStocks(Types::UserIdType)),
+            this,     SLOT(getMyStocks(Types::UserIdType)));
 
-    connect(m_server, SIGNAL(getMyOrders(qint32)),
-            this, SLOT(getMyOrders(qint32)));
+    connect(m_server, SIGNAL(getMyOrders(Types::UserIdType)),
+            this, SLOT(getMyOrders(Types::UserIdType)));
 
-    connect(m_server, SIGNAL(getStockInfo(qint32, qint32)),
-            this,     SLOT(getStockInfo(qint32, qint32)));
+    connect(m_server, SIGNAL(getStockInfo(Types::UserIdType, Types::StockIdType)),
+            this,     SLOT(getStockInfo(Types::UserIdType, Types::StockIdType)));
 
-    connect(m_server, SIGNAL(cancelOrder(qint32,qint32)),
-            this,     SLOT(cancelOrder(qint32,qint32)));
+    connect(m_server, SIGNAL(cancelOrder(Types::UserIdType, Types::StockIdType)),
+            this,     SLOT(cancelOrder(Types::UserIdType, Types::StockIdType)));
 
     connect(m_sessionOnTimer, SIGNAL(timeout()),
             this,             SLOT(stopSession()));
 
     connect(m_sessionOffTimer, SIGNAL(timeout()),
             this,              SLOT(startSession()));
+
 
     qDebug() << "[Market] Serwer jest aktywny.";
     startSession();
@@ -157,7 +159,7 @@ void Market::registerNewUser(Connection* connection, QString password)
     m_database.commit();
     if(query.first())
     {
-        RegisterUserRespOk response(static_cast<qint32>(query.value(0).toInt()));
+        RegisterUserRespOk response(Types::UserIdType(query.value(0).toInt()));
         qDebug() << "[Market] Wysyłanie identyfikatora nowemu użytkownikowi.";
         m_server->send(response, connection);
     }
@@ -172,14 +174,14 @@ void Market::registerNewUser(Connection* connection, QString password)
 
 }
 
-void Market::loginUser(Connection* connection, qint32 userId, QString password)
+void Market::loginUser(Connection* connection, Types::UserIdType userId, QString password)
 {
     qDebug() << "[Market] Wyszukiwanie użytkownika o id =" << userId
              << "w bazie...";
     QSqlQuery query(m_database);
 
     query.prepare("SELECT haslo FROM uzytkownik WHERE id_uz = :id ;");
-    query.bindValue(":id", userId);
+    query.bindValue(":id", userId.value);
 
     query.setForwardOnly(true);
 
@@ -265,8 +267,7 @@ void Market::stopSession()
     qDebug() << "[Market] Sesja zamknięta.";
 }
 
-void Market::notificationHandler(const QString& channelName,
-                                 QSqlDriver::NotificationSource source,
+void Market::notificationHandler(const QString& channelName, QSqlDriver::NotificationSource source,
                                  const QVariant& payload)
 {
 
@@ -276,9 +277,9 @@ void Market::notificationHandler(const QString& channelName,
         if(data.size() == 3)
         {
             // TODO: Sprawdzanie poprawnosci !
-            qint32 orderId = data[0].toInt(),
-                   amount = data[1].toInt(),
-                   userId = data[2].toInt();
+            Types::OrderIdType orderId = Types::OrderIdType(data[0].toInt());
+            Types::AmountType amount = Types::AmountType(data[1].toInt());
+            Types::UserIdType userId = Types::UserIdType(data[2].toInt());
 
             //changeCachedBestBuyOrders(userId);
 
@@ -296,9 +297,9 @@ void Market::notificationHandler(const QString& channelName,
         // TODO: Sprawdzanie poprawnosci !
         if(data.size() == 3)
         {
-            qint32 orderId = data[0].toInt(),
-                   amount = data[1].toInt(),
-                   userId = data[2].toInt();
+            Types::OrderIdType orderId = Types::OrderIdType(data[0].toInt());
+            Types::AmountType amount = Types::AmountType(data[1].toInt());
+            Types::UserIdType userId = Types::UserIdType(data[2].toInt());
 
             //changeCachedBestSellOrders(userId);
 
@@ -315,9 +316,9 @@ void Market::notificationHandler(const QString& channelName,
         QStringList data = payload.toString().split('|');
         if(data.size() == 4)
         {
-            qint32 stockId = data[0].toInt(),
-                   amount = data[1].toInt(),
-                   price = data[2].toInt();
+            Types::StockIdType stockId = Types::StockIdType(data[0].toInt());
+            Types::AmountType amount = Types::AmountType(data[1].toInt());
+            Types::PriceType price = Types::PriceType(data[2].toInt());
             QString date = data[3];
 
             TransactionChange msg(stockId, amount, price, date);
@@ -330,13 +331,13 @@ void Market::notificationHandler(const QString& channelName,
             //       dałoby się to zrobić optymalniej.
             if(m_cachedBestBuyOrders.contains(stockId))
             {
-                BestOrderMsg msg(Types::OrderType::BUY, stockId, m_cachedBestBuyOrders[stockId].first,
+                BestOrderMsg msg(Types::Order::OrderType::BUY, stockId, m_cachedBestBuyOrders[stockId].first,
                                  m_cachedBestBuyOrders[stockId].second);
                 m_server->send(msg);
             }
             else
             {
-                BestOrderMsg msg(Types::OrderType::BUY, stockId, 0, 0);
+                BestOrderMsg msg(Types::Order::OrderType::BUY, stockId, 0, 0);
                 m_server->send(msg);
             }
 
@@ -345,14 +346,14 @@ void Market::notificationHandler(const QString& channelName,
             //       dałoby się to zrobić optymalniej.
             if(m_cachedBestSellOrders.contains(stockId))
             {
-                BestOrderMsg msg(Types::OrderType::SELL, stockId,m_cachedBestSellOrders[stockId].first,
+                BestOrderMsg msg(Types::Order::OrderType::SELL, stockId,m_cachedBestSellOrders[stockId].first,
                                  m_cachedBestSellOrders[stockId].second);
                 //BestOrderMsg msg(m_cachedBestSellOrders[stockId]);
                 m_server->send(msg);
             }
             else
             {
-                BestOrderMsg msg(Types::OrderType::SELL, stockId, 0, 0);
+                BestOrderMsg msg(Types::Order::OrderType::SELL, stockId, 0, 0);
                 m_server->send(msg);
             }
         }
@@ -368,7 +369,8 @@ void Market::notificationHandler(const QString& channelName,
     }
 }
 
-void Market::sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price)
+void Market::sellStock(Types::UserIdType userId, Types::StockIdType stockId,
+                       Types::AmountType amount, Types::PriceType price)
 {
     qDebug() << "[Market] Użytkownik o id =" << userId
              << "zleca transakcje sprzedaży" << amount
@@ -381,10 +383,10 @@ void Market::sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 pric
     /* TODO:
      *  Jeżeli się da to naprawić.
      */
-    query.bindValue(":userId", userId);
-    query.bindValue(":stockId", stockId);
-    query.bindValue(":amount", amount);
-    query.bindValue(":price", price);
+    query.bindValue(":userId", userId.value);
+    query.bindValue(":stockId", stockId.value);
+    query.bindValue(":amount", amount.value);
+    query.bindValue(":price", price.value);
     //
     query.setForwardOnly(true);
 
@@ -419,7 +421,7 @@ void Market::sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 pric
         // if changed then send!
         if(m_cachedBestSellOrders[stockId] != lastBestOrder)
         {
-            BestOrderMsg msg(Types::OrderType::SELL, stockId,m_cachedBestSellOrders[stockId].first,
+            BestOrderMsg msg(Types::Order::OrderType::SELL, stockId,m_cachedBestSellOrders[stockId].first,
                              m_cachedBestSellOrders[stockId].second);
             m_server->send(msg);
         }
@@ -433,7 +435,8 @@ void Market::sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 pric
     }
 }
 
-void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price)
+void Market::buyStock(Types::UserIdType userId, Types::StockIdType stockId,
+                      Types::AmountType amount, Types::PriceType price)
 {
     qDebug() << "[Market] Użytkownik o id =" << userId
               << "zleca transakcje kupna" << amount
@@ -446,10 +449,10 @@ void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price
      /* TODO:
       *  Jeżeli się da to naprawić.
       */
-     query.bindValue(":userId", userId);
-     query.bindValue(":stockId", stockId);
-     query.bindValue(":amount", amount);
-     query.bindValue(":price", price);
+     query.bindValue(":userId", userId.value);
+     query.bindValue(":stockId", stockId.value);
+     query.bindValue(":amount", amount.value);
+     query.bindValue(":price", price.value);
 
 
      query.setForwardOnly(true);
@@ -487,7 +490,7 @@ void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price
              // FIX
              // Meh, wczesniej byla wiadomosc bestOrder, ktora sie po prostu wysylalo, a teraz to jakis chuj
              // za kazdym razem trzeba sie jebac z czyms takim:
-             BestOrderMsg msg(Types::OrderType::BUY, stockId, m_cachedBestBuyOrders[stockId].first,
+             BestOrderMsg msg(Types::Order::OrderType::BUY, stockId, m_cachedBestBuyOrders[stockId].first,
                               m_cachedBestBuyOrders[stockId].second);
              m_server->send(msg);
          }
@@ -502,12 +505,12 @@ void Market::buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price
 }
 
 
-void Market::changeCachedBestSellOrders(qint32 stockId)
+void Market::changeCachedBestSellOrders(Types::StockIdType stockId)
 {
     QSqlQuery query(m_database);
 
     query.prepare("SELECT * FROM najlepsza_sprzedaz(:stockId);");
-    query.bindValue(":stockId", stockId);
+    query.bindValue(":stockId", stockId.value);
 
     query.setForwardOnly(true);
 
@@ -523,8 +526,9 @@ void Market::changeCachedBestSellOrders(qint32 stockId)
             //qDebug() << "[Market] changeCachedSellBuyOrders: "
             //          << query.value(0).toInt() << " " << query.value(1).toInt();
             m_cachedBestSellOrders.insert(stockId,
-                                          qMakePair(query.value(0).toInt(),
-                                                    query.value(1).toInt()));
+                                          qMakePair(Types::AmountType(query.value(0).toInt()),
+                                                    Types::PriceType(query.value(1).toInt()))
+                                          );
         }
         else
             qDebug() << "[Market] W changeCachedBestBuyOrders"
@@ -537,12 +541,12 @@ void Market::changeCachedBestSellOrders(qint32 stockId)
     }
 }
 
-void Market::changeCachedBestBuyOrders(qint32 stockId)
+void Market::changeCachedBestBuyOrders(Types::StockIdType stockId)
 {
     QSqlQuery query(m_database);
 
     query.prepare("SELECT * FROM najlepsze_kupno(:stockId);");
-    query.bindValue(":stockId", stockId);
+    query.bindValue(":stockId", stockId.value);
 
     query.setForwardOnly(true);
 
@@ -558,8 +562,9 @@ void Market::changeCachedBestBuyOrders(qint32 stockId)
            //qDebug() << "[Market] changeCachedBestBuyOrders: "
            //          << query.value(0).toInt() << " " << query.value(1).toInt();
             m_cachedBestBuyOrders.insert(stockId,
-                                      qMakePair(query.value(0).toInt(),
-                                                query.value(1).toInt()));
+                                         qMakePair(Types::AmountType(query.value(0).toInt()),
+                                                   Types::PriceType(query.value(1).toInt()))
+                                         );
         }
         else
             qDebug() << "[Market] W changeCachedBestBuyOrders"
@@ -572,7 +577,7 @@ void Market::changeCachedBestBuyOrders(qint32 stockId)
     }
 }
 
-void Market::getMyStocks(qint32 userId)
+void Market::getMyStocks(Types::UserIdType userId)
 {
     qDebug() << "[Market] Użytkownik o id =" << userId
               << "prosi o listę zasobów";
@@ -581,7 +586,7 @@ void Market::getMyStocks(qint32 userId)
 
      query.prepare("SELECT id_zasobu, ilosc FROM dobra_uz(:userId);");
 
-     query.bindValue(":userId", userId);
+     query.bindValue(":userId", userId.value);
 
 
      query.setForwardOnly(true);
@@ -595,7 +600,7 @@ void Market::getMyStocks(qint32 userId)
      GetMyStocksRespMsg msg;
      while (query.next())
          if(query.value(0).isValid() && query.value(1).isValid())
-                msg.addStock(query.value(0).toInt(), query.value(1).toInt());
+                msg.addStock(Types::StockIdType(query.value(0).toInt()), Types::AmountType(query.value(1).toInt()));
          else
              qDebug() << "[Market] W getMyStocks"
                       << "zwrócony rekord nie ma dwóch pol.";
@@ -603,7 +608,7 @@ void Market::getMyStocks(qint32 userId)
      m_server->send(msg, userId);
 }
 
-void Market::getMyOrders(qint32 userId)
+void Market::getMyOrders(Types::UserIdType userId)
 {
     qDebug() << "[Market] Użytkownik o id =" << userId
               << "prosi o listę zlecen.";
@@ -612,7 +617,7 @@ void Market::getMyOrders(qint32 userId)
 
      query.prepare("SELECT typ, id_zlecenia, id_zasobu, ilosc, limit1 FROM zlecenia_uz(:userId);");
 
-     query.bindValue(":userId", userId);
+     query.bindValue(":userId", userId.value);
 
 
      query.setForwardOnly(true);
@@ -632,7 +637,7 @@ void Market::getMyOrders(qint32 userId)
              // RETURNS TABLE(typ integer, id_zlecenia integer, id_zasobu integer,ilosc integer, limit1 integer)
 
              msg.addOrder(query.value(1).toInt(),
-                          Types::toOrderType(query.value(0).toInt()), query.value(2).toInt(),
+                          Types::Order::toOrderType(query.value(0).toInt()), query.value(2).toInt(),
                           query.value(3).toInt(), query.value(4).toInt());
          }
 
@@ -643,14 +648,14 @@ void Market::getMyOrders(qint32 userId)
      m_server->send(msg, userId);
 }
 
-void Market::getStockInfo(qint32 userId, qint32 stockId)
+void Market::getStockInfo(Types::UserIdType userId, Types::StockIdType stockId)
 {
     qDebug() << "[Market] Użytkownik o id =" << userId
               << "prosi o szczegoly zasobu o id=" << stockId;
 
 
-    QPair<qint32, qint32> bestBuyOrder;
-    QPair<qint32, qint32> bestSellOrder;
+    QPair<Types::AmountType, Types::PriceType> bestBuyOrder;
+    QPair<Types::AmountType, Types::PriceType> bestSellOrder;
     LastTransaction lastTransaction;
 
 
@@ -672,19 +677,19 @@ void Market::getStockInfo(qint32 userId, qint32 stockId)
  *  powinno byc jednoznacznie wyznaczone dla kazdego ze zlecen, niezaleznie od typu
  *                                              -jam231
  */
-void Market::cancelOrder(qint32 userId, qint32 orderId)
+void Market::cancelOrder(Types::UserIdType userId, Types::StockIdType stockId)
 {
-    qDebug() << "[Market] Użytkownik " << userId << " prosi o anulowanie zlecenia " << orderId;
+    qDebug() << "[Market] Użytkownik " << userId << " prosi o anulowanie zlecenia " << stockId;
     QSqlQuery query1(m_database),
               query2(m_database);
 
     query1.prepare("DELETE FROM zlecenie_kupna AS zk WHERE zk.id_zlecenia = :orderId AND zk.id_uz = :userId;");
-    query1.bindValue(":orderId", orderId);
-    query1.bindValue(":userId", userId);
+    query1.bindValue(":orderId", stockId.value);
+    query1.bindValue(":userId", userId.value);
 
     query2.prepare("DELETE FROM zlecenie_sprzedazy AS zs WHERE zs.id_zlecenia = :orderId AND zs.id_uz = :userId;");
-    query2.bindValue(":orderId", orderId);
-    query2.bindValue(":userId", userId);
+    query2.bindValue(":orderId", stockId.value);
+    query2.bindValue(":userId", userId.value);
 
 
     query1.setForwardOnly(true);

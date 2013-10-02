@@ -1,10 +1,11 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
-#include "offer.h"
-
 #include <Responses/response.h>
 #include <Responses/ordermsg.h>
+
+
+#include "utilities.h"
 
 #include <QObject>
 #include <QByteArray>
@@ -18,20 +19,19 @@ class Connection : public QObject
     QByteArray m_buffer;
 
     QTcpSocket* m_socket;
-    qint32 m_userId;
-    QSet<qint32> m_subscribedStocks;
+    NetworkProtocol::DTO::Types::UserIdType m_userId;
+    QSet<NetworkProtocol::DTO::Types::StockIdType> m_subscribedStocks;
 
 public:
     Connection(QTcpSocket* socket, QObject *parent = 0);
     ~Connection();
-    int userId() const;
+    NetworkProtocol::DTO::Types::UserIdType userId() const;
     bool isUserAssigned() const;
-    //void setTmpUserId(qint32 tmpUserId);
-    void setUserId(qint32);
+    void setUserId(NetworkProtocol::DTO::Types::UserIdType);
     //dopiero od tego momentu zaczynamy odbierać wiadomości
     void start();
-    void addSubscription(qint32 stockId);
-    void dropSubscription(qint32 stockId);
+    void addSubscription(NetworkProtocol::DTO::Types::StockIdType stockId);
+    void dropSubscription(NetworkProtocol::DTO::Types::StockIdType stockId);
 public slots:
     bool send(NetworkProtocol::Responses::Response& msg);
     bool send(NetworkProtocol::Responses::OrderMsg& msg);
@@ -41,21 +41,21 @@ private slots:
     bool processMessage();
 
 signals:
-    void disconnected(qint32 userId);
+    void disconnected(NetworkProtocol::DTO::Types::UserIdType userId);
 
-    void loginUserRequestFromConnection(Connection* connection,
-                                        qint32, QString);
-    void registerUserRequestFromConnection(Connection* connection,
-                                           QString password);
+    void loginUserRequestFromConnection(Connection* connection, NetworkProtocol::DTO::Types::UserIdType, QString);
+    void registerUserRequestFromConnection(Connection* connection, QString password);
 
-    void sellStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
-    void buyStock(qint32 userId, qint32 stockId, qint32 amount, qint32 price);
+    void sellStock(NetworkProtocol::DTO::Types::UserIdType userId, NetworkProtocol::DTO::Types::StockIdType stockId,
+                   NetworkProtocol::DTO::Types::AmountType amount, NetworkProtocol::DTO::Types::PriceType price);
+    void buyStock(NetworkProtocol::DTO::Types::UserIdType userId, NetworkProtocol::DTO::Types::StockIdType stockId,
+                   NetworkProtocol::DTO::Types::AmountType amount, NetworkProtocol::DTO::Types::PriceType price);
 
-    void getMyStocks(qint32 userId);
-    void getMyOrders(qint32 userId);
-    void getStockInfo(qint32 userId, qint32 stockId);
+    void getMyStocks(NetworkProtocol::DTO::Types::UserIdType userId);
+    void getMyOrders(NetworkProtocol::DTO::Types::UserIdType userId);
+    void getStockInfo(NetworkProtocol::DTO::Types::UserIdType userId, NetworkProtocol::DTO::Types::StockIdType stockId);
 
-    void cancelOrder(qint32 userId, qint32 orderId);
+    void cancelOrder(NetworkProtocol::DTO::Types::UserIdType userId, NetworkProtocol::DTO::Types::OrderIdType orderId);
 };
 
 #endif // CONNECTION_H

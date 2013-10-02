@@ -12,7 +12,7 @@ class NETWORKPROTOCOLSHARED_EXPORT Message
 public:
     // Length of the message in BYTES
     virtual DTO::Types::MessageLengthType length() const = 0;
-    virtual DTO::Types::MessageType type() const = 0;
+    virtual DTO::Types::Message::MessageType type() const = 0;
 
     static const QString getMessageName();
 

@@ -13,7 +13,7 @@ GetMyOrdersRespMsg::GetMyOrdersRespMsg()
 
 Types::MessageLengthType GetMyOrdersRespMsg::length() const
 {
-    return sizeof(Types::MessageTypeType) +
+    return sizeof(Types::Message::MessageType) +
            sizeof(Types::MessageLengthType) +
             std::accumulate(m_orders.begin(), m_orders.end(),
                             static_cast<Types::MessageLengthType>(0),
@@ -24,9 +24,9 @@ Types::MessageLengthType GetMyOrdersRespMsg::length() const
                             );
 }
 
-Types::MessageType GetMyOrdersRespMsg::type() const
+Types::Message::MessageType GetMyOrdersRespMsg::type() const
 {
-    return Types::MessageType::GET_MY_ORDERS_RESP;
+    return Types::Message::MessageType::GET_MY_ORDERS_RESP;
 }
 
 void GetMyOrdersRespMsg::send(QIODevice* connection)
@@ -45,11 +45,11 @@ void GetMyOrdersRespMsg::send(QIODevice* connection)
 
 }
 
-void GetMyOrdersRespMsg::addOrder(Types::OrderIdType orderId, Types::OrderType orderType,
+void GetMyOrdersRespMsg::addOrder(Types::OrderIdType orderId, Types::Order::OrderType m_orderType,
                                   Types::StockIdType stockId, Types::AmountType amount,
                                   Types::PriceType price)
 {
-    m_orders.push_back(new Order(orderId, orderType, stockId, amount, price));
+    m_orders.push_back(new Order(orderId, m_orderType, stockId, amount, price));
 }
 
 void GetMyOrdersRespMsg::addOrder(Order* order)

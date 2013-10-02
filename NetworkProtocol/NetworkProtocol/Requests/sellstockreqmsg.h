@@ -20,7 +20,7 @@ public:
     DTO::Types::AmountType getAmount() const;
     DTO::Types::PriceType getPrice() const;
 
-    DTO::Types::MessageType type() const;
+    DTO::Types::Message::MessageType type() const;
     DTO::Types::MessageLengthType length() const;
 
     static const QString getMessageName();

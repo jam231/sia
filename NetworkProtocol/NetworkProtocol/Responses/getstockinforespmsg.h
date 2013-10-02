@@ -21,12 +21,14 @@ class NETWORKPROTOCOLSHARED_EXPORT GetStockInfoRespMsg : public Response
     DTO::Types::StockIdType m_stockId;
 public:
     GetStockInfoRespMsg(DTO::Types::StockIdType stockId,
-                        QPair<qint32, qint32> bestBuyOrder    = qMakePair(0,0),
-                        QPair<qint32, qint32> bestSellOrder   = qMakePair(0,0),
+                        QPair<DTO::Types::AmountType, DTO::Types::PriceType> bestBuyOrder
+                            = qMakePair(DTO::Types::AmountType(0), DTO::Types::PriceType(0)),
+                        QPair<DTO::Types::AmountType, DTO::Types::PriceType> bestSellOrder
+                            = qMakePair(DTO::Types::AmountType(0), DTO::Types::PriceType(0)),
                         DTO::LastTransaction lastTransaction  = DTO::LastTransaction());
 
     DTO::Types::MessageLengthType length() const;
-    DTO::Types::MessageType type() const;
+    DTO::Types::Message::MessageType type() const;
 
     static const QString getMessageName();
 

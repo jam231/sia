@@ -15,13 +15,13 @@ RegisterUserRespFail::RegisterUserRespFail(QString reason)
 
 Types::MessageLengthType RegisterUserRespFail::length() const
 {
-    return sizeof(Types::MessageType) +
+    return sizeof(Types::Message::MessageType) +
            sizeof(Types::MessageLengthType) + m_reason.toUtf8().size();
 }
 
-Types::MessageType RegisterUserRespFail::type() const
+Types::Message::MessageType RegisterUserRespFail::type() const
 {
-    return Types::MessageType::RESPONSE_REGISTER_USER_FAIL;
+    return Types::Message::MessageType::RESPONSE_REGISTER_USER_FAIL;
 }
 
 void RegisterUserRespFail::send(QIODevice* connection)

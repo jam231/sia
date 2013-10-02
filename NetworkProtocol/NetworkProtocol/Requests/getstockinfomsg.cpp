@@ -13,9 +13,9 @@ GetStockInfoMsg::GetStockInfoMsg(QDataStream &in) : Request(in)
     in >> m_stockId;
 }
 
-Types::MessageType GetStockInfoMsg::type() const
+Types::Message::MessageType GetStockInfoMsg::type() const
 {
-    return Types::MessageType::GET_STOCK_INFO;
+    return Types::Message::MessageType::GET_STOCK_INFO;
 }
 
 DTO::Types::StockIdType GetStockInfoMsg::getStockId() const
@@ -25,7 +25,7 @@ DTO::Types::StockIdType GetStockInfoMsg::getStockId() const
 
 Types::MessageLengthType GetStockInfoMsg::length() const
 {
-    return sizeof(Types::MessageType) +
+    return sizeof(Types::Message::MessageType) +
            sizeof(m_stockId);
 }
 

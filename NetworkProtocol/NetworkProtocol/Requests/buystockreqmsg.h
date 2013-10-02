@@ -16,7 +16,7 @@ class NETWORKPROTOCOLSHARED_EXPORT BuyStockReqMsg : public Request
 public:
     BuyStockReqMsg(QDataStream& msg);
 
-    DTO::Types::MessageType type() const;
+    DTO::Types::Message::MessageType type() const;
     DTO::Types::MessageLengthType length() const;
     DTO::Types::StockIdType getStockId() const;
     DTO::Types::AmountType getAmount() const;

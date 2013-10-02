@@ -21,13 +21,13 @@ class NETWORKPROTOCOLSHARED_EXPORT  GetMyOrdersRespMsg : public Response
 public:
     GetMyOrdersRespMsg();
 
-    DTO::Types::MessageType type() const;
+    DTO::Types::Message::MessageType type() const;
 
     DTO::Types::MessageLengthType length() const;
 
     void send(QIODevice* connection);
 
-    void addOrder(DTO::Types::OrderIdType orderId, DTO::Types::OrderType m_transactionType,
+    void addOrder(DTO::Types::OrderIdType orderId, DTO::Types::Order::OrderType m_orderType,
                   DTO::Types::StockIdType m_stockId, DTO::Types::AmountType m_amount,
                   DTO::Types::PriceType m_price);
 

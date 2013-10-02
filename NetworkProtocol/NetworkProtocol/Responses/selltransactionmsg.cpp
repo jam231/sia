@@ -24,14 +24,14 @@ void SellTransactionMsg::send(QIODevice *connection)
         << m_amount;
 }
 
-Types::MessageType SellTransactionMsg::type() const
+Types::Message::MessageType SellTransactionMsg::type() const
 {
-    return Types::MessageType::SELL_TRANSACTION;
+    return Types::Message::MessageType::SELL_TRANSACTION;
 }
 
 Types::MessageLengthType SellTransactionMsg::length() const
 {
-    return sizeof(Types::MessageType) +
+    return sizeof(Types::Message::MessageType) +
             sizeof(m_orderId) + sizeof(m_amount);
 }
 

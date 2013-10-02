@@ -12,9 +12,9 @@ UnsubscribeStockMsg::UnsubscribeStockMsg(QDataStream& in) : Request(in)
 }
 
 
-Types::MessageType UnsubscribeStockMsg::type() const
+Types::Message::MessageType UnsubscribeStockMsg::type() const
 {
-    return Types::MessageType::UNSUBSCRIBE_STOCK;
+    return Types::Message::MessageType::UNSUBSCRIBE_STOCK;
 }
 
 Types::StockIdType UnsubscribeStockMsg::getStockId() const
@@ -24,7 +24,7 @@ Types::StockIdType UnsubscribeStockMsg::getStockId() const
 
 Types::MessageLengthType UnsubscribeStockMsg::length() const
 {
-    return sizeof(Types::MessageType) +
+    return sizeof(Types::Message::MessageType) +
            sizeof(m_stockId);
 }
 

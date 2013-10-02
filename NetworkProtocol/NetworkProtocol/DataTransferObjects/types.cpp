@@ -4,9 +4,31 @@ namespace NetworkProtocol
 {
 namespace DTO
 {
+
+QDataStream &operator>>(QDataStream& stream, Types::Order::OrderType& orderType)
+{
+    Types::Order::OrderTypeType orderTypeType;
+    stream >> orderTypeType;
+    orderType = Types::Order::toOrderType(orderTypeType);
+    return stream;
+}
+
+
+QDataStream &operator>>(QDataStream& stream, Types::Message::MessageType& messageType)
+{
+    Types::Message::MessageTypeType messageTypeType;
+    stream >> messageTypeType;
+    messageType = Types::Message::toMessageType(messageTypeType);
+    return stream;
+}
+
 namespace Types
 {
 
+//                  OrderType
+
+namespace Order
+{
 OrderType toOrderType(OrderTypeType type)
 {
     switch(type)
@@ -16,7 +38,12 @@ OrderType toOrderType(OrderTypeType type)
     default: return UNDEFINED;
     };
 }
+}
 
+//                  MessageType
+
+namespace Message
+{
 MessageType toMessageType(MessageTypeType msgId)
 {
     switch(msgId)
@@ -42,7 +69,49 @@ MessageType toMessageType(MessageTypeType msgId)
     default : return MESSAGE_UNDEFINED;
     };
 }
+}
 
+OrderIdType::OrderIdType() : ContainerType<qint32>(0)
+{
+}
+OrderIdType::OrderIdType(qint32 _value) : ContainerType<qint32>(_value)
+{
+}
+
+StockIdType::StockIdType() : ContainerType<qint32>(0)
+{
+}
+StockIdType::StockIdType(qint32 _value) : ContainerType<qint32>(_value)
+{
+}
+
+UserIdType::UserIdType() : ContainerType<qint32>(0)
+{
+}
+UserIdType::UserIdType(qint32 _value) : ContainerType<qint32>(_value)
+{
+}
+
+CompanyIdType::CompanyIdType() : ContainerType<qint32>(0)
+{
+}
+CompanyIdType::CompanyIdType(qint32 _value) : ContainerType<qint32>(_value)
+{
+}
+
+AmountType::AmountType() : ContainerType<qint32>(0)
+{
+}
+AmountType::AmountType(qint32 _value) : ContainerType<qint32>(_value)
+{
+}
+
+PriceType::PriceType() : ContainerType<qint32>(0)
+{
+}
+PriceType::PriceType(qint32 _value) : ContainerType<qint32>(_value)
+{
+}
 
 }
 }

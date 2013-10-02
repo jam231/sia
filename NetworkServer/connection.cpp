@@ -1,7 +1,7 @@
 #include <QDebug>
 
 #include "connection.h"
-#include "utilities.h"
+#include "Utils/utilities.h"
 
 #include <Requests/registeruserreqmsg.h>
 #include <Requests/loginuserreqmsg.h>
@@ -37,7 +37,7 @@ Connection::~Connection()
     qDebug() << "\t\t[Connection] Połączenie zostało zerwane.";
 }
 
-int Connection::userId() const
+Types::UserIdType Connection::userId() const
 {
     return m_userId;
 }
@@ -47,7 +47,7 @@ bool Connection::isUserAssigned() const
     return m_userId != NOT_ASSIGNED;
 }
 
-void Connection::setUserId(qint32 userId)
+void Connection::setUserId(Types::UserIdType userId)
 {
     m_userId = userId;
 }
@@ -73,12 +73,12 @@ void Connection::start()
     processIncomingMessages();
 }
 
-void Connection::addSubscription(qint32 stockId)
+void Connection::addSubscription(Types::StockIdType stockId)
 {
     m_subscribedStocks.insert(stockId);
 }
 
-void Connection::dropSubscription(qint32 stockId)
+void Connection::dropSubscription(Types::StockIdType stockId)
 {
     m_subscribedStocks.remove(stockId);
 }
@@ -134,13 +134,13 @@ bool Connection::processMessage()
 
     m_socket->read(sizeof(qint16));
 
-    Types::MessageType msgType = Request::getType(message);
+    Types::Message::MessageType msgType = Request::getType(message);
 
     //qDebug() << "\t\t[Connection] Id wiadmości:" << msgType;
 
     switch(msgType)
     {
-        case Types::MessageType::REQUEST_REGISTER_USER:
+        case Types::Message::MessageType::REQUEST_REGISTER_USER:
         {
             qDebug() << "\t\t[Connection] Żądanie rejestracji.";
             if(!isUserAssigned())
@@ -163,7 +163,7 @@ bool Connection::processMessage()
             }
             return true;
         }
-        case Types::MessageType::LOGIN_USER_REQ:
+        case Types::Message::MessageType::LOGIN_USER_REQ:
         {
             if(!isUserAssigned())
             {
@@ -190,7 +190,7 @@ bool Connection::processMessage()
             }
             return true;
         }
-        case Types::MessageType::MESSAGE_UNDEFINED:
+        case Types::Message::MessageType::MESSAGE_UNDEFINED:
         {
             qDebug() << "\t\t[Connection] Otrzymano nieznany typ wiadomości: "
                      << msgType << ".";;
@@ -215,7 +215,7 @@ bool Connection::processMessage()
     {
     switch(msgType)
     {
-        case Types::MessageType::BUY_STOCK_REQ:
+        case Types::Message::MessageType::BUY_STOCK_REQ:
         {
             try
             {
@@ -229,7 +229,7 @@ bool Connection::processMessage()
             }
             break;
         }
-        case Types::MessageType::SELL_STOCK_REQ:
+        case Types::Message::MessageType::SELL_STOCK_REQ:
         {
             try
             {
@@ -243,7 +243,7 @@ bool Connection::processMessage()
             }
             break;
         }
-        case Types::MessageType::CANCEL_ORDER_REQ:
+        case Types::Message::MessageType::CANCEL_ORDER_REQ:
         {
             try
             {
@@ -256,20 +256,20 @@ bool Connection::processMessage()
             }
             break;
         }
-        case Types::MessageType::GET_MY_STOCKS:
+        case Types::Message::MessageType::GET_MY_STOCKS:
             emit getMyStocks(m_userId);
             break;
-        case Types::MessageType::GET_MY_ORDERS:
+        case Types::Message::MessageType::GET_MY_ORDERS:
             emit getMyOrders(m_userId);
             break;
-        case Types::MessageType::GET_STOCK_INFO:
+        case Types::Message::MessageType::GET_STOCK_INFO:
         {
             GetStockInfoMsg msg(message);
 
             emit getStockInfo(m_userId, msg.getStockId());
             break;
         }
-        case Types::MessageType::SUBSCRIBE_STOCK:
+        case Types::Message::MessageType::SUBSCRIBE_STOCK:
         {
             try
             {
@@ -282,7 +282,7 @@ bool Connection::processMessage()
             }
             break;
         }
-        case Types::MessageType::UNSUBSCRIBE_STOCK:
+        case Types::Message::MessageType::UNSUBSCRIBE_STOCK:
         {
             try
             {

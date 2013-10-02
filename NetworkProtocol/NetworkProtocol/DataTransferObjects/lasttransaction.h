@@ -12,7 +12,7 @@ namespace NetworkProtocol
 namespace DTO
 {
 
-class LastTransaction
+class NETWORKPROTOCOLSHARED_EXPORT LastTransaction
 {
     QString m_dateTime;
     DTO::Types::AmountType m_amount;

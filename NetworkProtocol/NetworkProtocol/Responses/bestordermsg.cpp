@@ -7,7 +7,7 @@ namespace Responses
 
 using namespace DTO;
 
-BestOrderMsg::BestOrderMsg(Types::OrderType type, Types::StockIdType stockId,
+BestOrderMsg::BestOrderMsg(Types::Order::OrderType type, Types::StockIdType stockId,
                            Types::AmountType amount, Types::PriceType price)
     : m_bestOrder(BestOrder(type, stockId, amount, price))
 {
@@ -18,9 +18,9 @@ BestOrderMsg::BestOrderMsg(BestOrder bestOrder)
 {
 }
 
-Types::MessageType BestOrderMsg::type() const
+Types::Message::MessageType BestOrderMsg::type() const
 {
-    return Types::MessageType::BEST_ORDER;
+    return Types::Message::MessageType::BEST_ORDER;
 }
 
 const QString BestOrderMsg::getMessageName()
@@ -30,7 +30,7 @@ const QString BestOrderMsg::getMessageName()
 
 Types::MessageLengthType BestOrderMsg::length() const
 {
-    return sizeof(Types::MessageType) + m_bestOrder.lengthInBytes();
+    return sizeof(Types::Message::MessageType) + m_bestOrder.lengthInBytes();
 }
 
 void BestOrderMsg::send(QIODevice *connection)

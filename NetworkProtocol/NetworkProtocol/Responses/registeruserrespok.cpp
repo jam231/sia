@@ -14,13 +14,13 @@ RegisterUserRespOk::RegisterUserRespOk(Types::UserIdType userId)
 
 Types::MessageLengthType RegisterUserRespOk::length() const
 { 
-    return sizeof(Types::MessageType) +
+    return sizeof(Types::Message::MessageType) +
            sizeof(m_userId);
 }
 
-Types::MessageType RegisterUserRespOk::type() const
+Types::Message::MessageType RegisterUserRespOk::type() const
 {
-    return Types::MessageType::RESPONSE_REGISTER_USER_OK;
+    return Types::Message::MessageType::RESPONSE_REGISTER_USER_OK;
 }
 
 void RegisterUserRespOk::send(QIODevice* connection)

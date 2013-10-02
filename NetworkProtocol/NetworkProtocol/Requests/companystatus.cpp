@@ -14,9 +14,9 @@ CompanyStatusMsg::CompanyStatusMsg(QDataStream& in) : Request(in)
 }
 
 
-Types::MessageType CompanyStatusMsg::type() const
+Types::Message::MessageType CompanyStatusMsg::type() const
 {
-    return Types::MessageType::COMPANY_STATUS_REQ;
+    return Types::Message::MessageType::COMPANY_STATUS_REQ;
 }
 
 Types::CompanyIdType CompanyStatusMsg::getCompanyId() const
@@ -26,7 +26,7 @@ Types::CompanyIdType CompanyStatusMsg::getCompanyId() const
 
 Types::MessageLengthType CompanyStatusMsg::length() const
 {
-    return sizeof(Types::MessageType) +
+    return sizeof(Types::Message::MessageType) +
            sizeof(m_companyId);
 }
 

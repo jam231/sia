@@ -14,7 +14,7 @@ public:
     CompanyStatusMsg(QDataStream& in);
 
     DTO::Types::MessageLengthType length() const;
-    DTO::Types::MessageType type() const;
+    DTO::Types::Message::MessageType type() const;
     DTO::Types::CompanyIdType getCompanyId() const;
 
     static const QString getMessageName();

@@ -14,7 +14,7 @@ public:
     CancelOrderMsg(QDataStream& in);
 
     DTO::Types::MessageLengthType length() const;
-    DTO::Types::MessageType type() const;
+    DTO::Types::Message::MessageType type() const;
     DTO::Types::OrderIdType getOrderId() const;
 
     static const QString getMessageName();
