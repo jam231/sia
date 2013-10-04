@@ -7,14 +7,14 @@ namespace Responses
 
 using namespace DTO;
 
-SellTransactionMsg::SellTransactionMsg(Types::OrderIdType orderId,
-                                       Types::AmountType amount)
+SellTransaction::SellTransaction(Types::OrderIdType orderId,
+                                Types::AmountType amount)
 {
     m_orderId = orderId;
     m_amount = amount;
 }
 
-void SellTransactionMsg::send(QIODevice *connection)
+void SellTransaction::send(QIODevice *connection)
 {
     // Domyślnie BigEndian
     QDataStream out(connection);
@@ -24,20 +24,20 @@ void SellTransactionMsg::send(QIODevice *connection)
         << m_amount;
 }
 
-Types::Message::MessageType SellTransactionMsg::type() const
+Types::Message::MessageType SellTransaction::type() const
 {
-    return Types::Message::MessageType::SELL_TRANSACTION;
+    return Types::Message::MessageType::RESPONSE_SELL_TRANSACTION;
 }
 
-Types::MessageLengthType SellTransactionMsg::length() const
+Types::MessageLengthType SellTransaction::length() const
 {
     return sizeof(Types::Message::MessageType) +
             sizeof(m_orderId) + sizeof(m_amount);
 }
 
-const QString SellTransactionMsg::getMessageName()
+const QString SellTransaction::getMessageName()
 {
-    return Response::getMessageName() + " :: SellTransactionMsg";
+    return Response::getMessageName() + " :: SellTransaction";
 }
 
 }

@@ -6,11 +6,12 @@
 namespace NetworkProtocol {
 namespace Requests
 {
-class NETWORKPROTOCOLSHARED_EXPORT GetStockInfoMsg : public Request
+
+class NETWORKPROTOCOLSHARED_EXPORT GetStockInfo : public Request
 {
     DTO::Types::StockIdType m_stockId;
 public:
-    GetStockInfoMsg(QDataStream& in);
+    GetStockInfo(QDataStream& in);
 
     DTO::Types::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;

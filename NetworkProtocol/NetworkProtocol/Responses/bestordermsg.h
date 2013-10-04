@@ -9,13 +9,13 @@ namespace NetworkProtocol
 namespace Responses
 {
 
-class NETWORKPROTOCOLSHARED_EXPORT BestOrderMsg : public Response
+class NETWORKPROTOCOLSHARED_EXPORT ShowBestOrder : public Response
 {
     DTO::BestOrder m_bestOrder;
 public:
-    BestOrderMsg(DTO::Types::Order::OrderType, DTO::Types::StockIdType,
-                 DTO::Types::AmountType, DTO::Types::PriceType);
-    BestOrderMsg(DTO::BestOrder);
+    ShowBestOrder(DTO::Types::Order::OrderType, DTO::Types::StockIdType,
+                  DTO::Types::AmountType, DTO::Types::PriceType);
+    ShowBestOrder(DTO::BestOrder);
 
     DTO::Types::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;

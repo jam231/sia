@@ -2,7 +2,7 @@
 #define CONNECTION_H
 
 #include <Responses/response.h>
-#include <Responses/ordermsg.h>
+#include <Responses/showordermsg.h>
 
 
 #include "utilities.h"
@@ -34,7 +34,7 @@ public:
     void dropSubscription(NetworkProtocol::DTO::Types::StockIdType stockId);
 public slots:
     bool send(NetworkProtocol::Responses::Response& msg);
-    bool send(NetworkProtocol::Responses::OrderMsg& msg);
+    bool send(NetworkProtocol::Responses::ShowOrder msg);
 private slots:
     void disconect();
     void processIncomingMessages();

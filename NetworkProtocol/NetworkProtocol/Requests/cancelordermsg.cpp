@@ -9,30 +9,30 @@ namespace Requests
 
 using namespace DTO;
 
-CancelOrderMsg::CancelOrderMsg(QDataStream &in)
+CancelOrder::CancelOrder(QDataStream &in) : Request(in)
 {
     in >> m_orderId;
 }
 
-Types::Message::MessageType CancelOrderMsg::type() const
+Types::Message::MessageType CancelOrder::type() const
 {
-    return Types::Message::MessageType::CANCEL_ORDER_REQ;
+    return Types::Message::MessageType::REQUEST_CANCEL_ORDER;
 }
 
-Types::OrderIdType CancelOrderMsg::getOrderId() const
+Types::OrderIdType CancelOrder::getOrderId() const
 {
     return m_orderId;
 }
 
-Types::MessageLengthType CancelOrderMsg::length() const
+Types::MessageLengthType CancelOrder::length() const
 {
     return sizeof(Types::Message::MessageType) +
            sizeof(m_orderId);
 }
 
-const QString CancelOrderMsg::getMessageName()
+const QString CancelOrder::getMessageName()
 {
-    return Request::getMessageName() + " :: CancelOrderMsg";
+    return Request::getMessageName() + " :: CancelOrder";
 }
 
 

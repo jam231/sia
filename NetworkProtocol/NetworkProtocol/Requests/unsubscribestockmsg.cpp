@@ -6,31 +6,31 @@ namespace Requests
 {
 using namespace DTO;
 
-UnsubscribeStockMsg::UnsubscribeStockMsg(QDataStream& in) : Request(in)
+UnsubscribeStock::UnsubscribeStock(QDataStream& in) : Request(in)
 {
     in >> m_stockId;
 }
 
 
-Types::Message::MessageType UnsubscribeStockMsg::type() const
+Types::Message::MessageType UnsubscribeStock::type() const
 {
-    return Types::Message::MessageType::UNSUBSCRIBE_STOCK;
+    return Types::Message::MessageType::REQUEST_UNSUBSCRIBE_STOCK;
 }
 
-Types::StockIdType UnsubscribeStockMsg::getStockId() const
+Types::StockIdType UnsubscribeStock::getStockId() const
 {
     return m_stockId;
 }
 
-Types::MessageLengthType UnsubscribeStockMsg::length() const
+Types::MessageLengthType UnsubscribeStock::length() const
 {
     return sizeof(Types::Message::MessageType) +
            sizeof(m_stockId);
 }
 
-const QString UnsubscribeStockMsg::getMessageName()
+const QString UnsubscribeStock::getMessageName()
 {
-    return Request::getMessageName() + " :: UnsubscribeStockMsg";
+    return Request::getMessageName() + " :: UnsubscribeStock";
 }
 
 }

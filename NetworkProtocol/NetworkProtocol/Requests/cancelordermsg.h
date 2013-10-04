@@ -6,12 +6,12 @@
 namespace NetworkProtocol {
 namespace Requests
 {
-class NETWORKPROTOCOLSHARED_EXPORT CancelOrderMsg : public Request
+class NETWORKPROTOCOLSHARED_EXPORT CancelOrder : public Request
 {
     DTO::Types::OrderIdType m_orderId;
 
 public:
-    CancelOrderMsg(QDataStream& in);
+    CancelOrder(QDataStream& in);
 
     DTO::Types::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;

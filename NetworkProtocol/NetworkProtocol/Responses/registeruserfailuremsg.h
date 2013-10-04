@@ -1,18 +1,21 @@
-#ifndef UNRECOGNIZEDUSERMSG_H
-#define UNRECOGNIZEDUSERMSG_H
+#ifndef REGISTERUSERRESPFAIL_H
+#define REGISTERUSERRESPFAIL_H
 
 #include "response.h"
+
+#include <QString>
 
 namespace NetworkProtocol
 {
 namespace Responses
 {
 
-class NETWORKPROTOCOLSHARED_EXPORT UnrecognizedUser : public Response
+class NETWORKPROTOCOLSHARED_EXPORT RegisterUserFailure : public Response
 {
-public:
+    QString m_reason;
 
-    UnrecognizedUser();
+public:
+    RegisterUserFailure(QString reason);
 
     DTO::Types::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;
@@ -24,4 +27,4 @@ public:
 
 }
 }
-#endif // UNRECOGNIZEDUSERMSG_H
+#endif // REGISTERUSERRESPFAIL_H

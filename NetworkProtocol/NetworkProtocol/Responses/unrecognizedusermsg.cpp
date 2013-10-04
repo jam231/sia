@@ -7,31 +7,31 @@ namespace Responses
 
 using namespace DTO;
 
-UnrecognizedUserMsg::UnrecognizedUserMsg()
+UnrecognizedUser::UnrecognizedUser()
 {
 }
 
-Types::Message::MessageType UnrecognizedUserMsg::type() const
+Types::Message::MessageType UnrecognizedUser::type() const
 {
-    return Types::Message::MessageType::UNRECOGNIZED_USER;
+    return Types::Message::MessageType::RESPONSE_UNRECOGNIZED_USER;
 }
 
-Types::MessageLengthType UnrecognizedUserMsg::length() const
+Types::MessageLengthType UnrecognizedUser::length() const
 {
 
     return sizeof(Types::Message::MessageType);
 }
 
-void UnrecognizedUserMsg::send(QIODevice* connection)
+void UnrecognizedUser::send(QIODevice* connection)
 {
     // Domyślnie BigEndian
     QDataStream out(connection);
     sendHeader(out);
 }
 
-const QString UnrecognizedUserMsg::getMessageName()
+const QString UnrecognizedUser::getMessageName()
 {
-    return Response::getMessageName() + " :: UnrecognizedUserMsg";
+    return Response::getMessageName() + " :: UnrecognizedUser";
 }
 
 }

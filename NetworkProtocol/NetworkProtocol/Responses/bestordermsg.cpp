@@ -7,33 +7,33 @@ namespace Responses
 
 using namespace DTO;
 
-BestOrderMsg::BestOrderMsg(Types::Order::OrderType type, Types::StockIdType stockId,
-                           Types::AmountType amount, Types::PriceType price)
+ShowBestOrder::ShowBestOrder(Types::Order::OrderType type, Types::StockIdType stockId,
+                     Types::AmountType amount, Types::PriceType price)
     : m_bestOrder(BestOrder(type, stockId, amount, price))
 {
 }
 
-BestOrderMsg::BestOrderMsg(BestOrder bestOrder)
+ShowBestOrder::ShowBestOrder(BestOrder bestOrder)
     : m_bestOrder(bestOrder)
 {
 }
 
-Types::Message::MessageType BestOrderMsg::type() const
+Types::Message::MessageType ShowBestOrder::type() const
 {
-    return Types::Message::MessageType::BEST_ORDER;
+    return Types::Message::MessageType::RESPONSE_SHOW_BEST_ORDER;
 }
 
-const QString BestOrderMsg::getMessageName()
+const QString ShowBestOrder::getMessageName()
 {
-    return Response::getMessageName() + ":: BestOrderMsg";
+    return Response::getMessageName() + ":: ShowBestOrder";
 }
 
-Types::MessageLengthType BestOrderMsg::length() const
+Types::MessageLengthType ShowBestOrder::length() const
 {
     return sizeof(Types::Message::MessageType) + m_bestOrder.lengthInBytes();
 }
 
-void BestOrderMsg::send(QIODevice *connection)
+void ShowBestOrder::send(QIODevice *connection)
 {
     // Domyślnie BigEndian
     QDataStream out(connection);

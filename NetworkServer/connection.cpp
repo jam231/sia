@@ -3,18 +3,18 @@
 #include "connection.h"
 #include "Utils/utilities.h"
 
-#include <Requests/registeruserreqmsg.h>
-#include <Requests/loginuserreqmsg.h>
-#include <Requests/buystockreqmsg.h>
-#include <Requests/sellstockreqmsg.h>
+#include <Requests/registerusermsg.h>
+#include <Requests/loginusermsg.h>
+#include <Requests/buystockmsg.h>
+#include <Requests/sellstockmsg.h>
 #include <Requests/subscribestockmsg.h>
 #include <Requests/unsubscribestockmsg.h>
 #include <Requests/getstockinfomsg.h>
 #include <Requests/cancelordermsg.h>
 
 #include <Responses/unrecognizedusermsg.h>
-#include <Responses/loginuserrespfail.h>
-#include <Responses/registeruserrespfail.h>
+#include <Responses/loginuserfailuremsg.h>
+#include <Responses/registeruserfailuremsg.h>
 
 #include <DataTransferObjects/order.h>
 
@@ -34,7 +34,7 @@ Connection::Connection(QTcpSocket* socket, QObject *parent) :
 Connection::~Connection()
 {
     delete m_socket;
-    qDebug() << "\t\t[Connection] Połączenie zostało zerwane.";
+    qWarning() << "\t\t[Connection] Połączenie zostało zerwane.";
 }
 
 Types::UserIdType Connection::userId() const
@@ -63,8 +63,8 @@ void Connection::start()
 
     if(!m_socket->isValid())
     {
-        qDebug() << "\t\t[Connection] Wykryto błąd" << m_socket->errorString()
-                 << " podczas rozpoczynania nowego połączenia.";
+        qCritical() << "\t\t[Connection] Wykryto błąd" << m_socket->errorString()
+                    << " podczas rozpoczynania nowego połączenia.";
         disconect(); //jak połączenie sie zerwało zanim połączyliśmy sloty
         return;
     }
@@ -98,7 +98,7 @@ bool Connection::send(Response& msg)
 
 }
 
-bool Connection::send(OrderMsg& msg)
+bool Connection::send(ShowOrder msg)
 {
     if(m_subscribedStocks.contains(msg.getOrder().getStockId()))
     {
@@ -125,14 +125,14 @@ void Connection::disconect()
  */
 bool Connection::processMessage()
 {
-    qint16 msgLength = Request::getMessageLength(m_socket);
+    Types::MessageLengthType msgLength = Request::getMessageLength(m_socket);
 
     if(0 >= msgLength || msgLength > m_socket->bytesAvailable())
         return false;
 
     QDataStream message(m_socket->read(msgLength));
 
-    m_socket->read(sizeof(qint16));
+    m_socket->read(sizeof(Types::MessageLengthType));
 
     Types::Message::MessageType msgType = Request::getType(message);
 
@@ -146,24 +146,24 @@ bool Connection::processMessage()
             if(!isUserAssigned())
             {
                 try {
-                    RegisterUserReqMsg request(message);
+                    RegisterUser request(message);
                     emit registerUserRequestFromConnection(this, request.getPassword());
                 }catch(const std::exception& e)
                 {
-                    qDebug() << "\t\t[Connection] Złapano wyjątek" << e.what()
-                             << "podczas procesu rejestracji.";
+                    qWarning() << "\t\t[Connection] Złapano wyjątek" << e.what()
+                               << "podczas procesu rejestracji.";
                 }
             }
             else
             {
-                qDebug() << "\t\t[Connection] Próba rejestracji przez "\
-                            "zalogowanego użytkownika.";
-                RegisterUserRespFail response("Zalogowany.");
+                qWarning() << "\t\t[Connection] Próba rejestracji przez "\
+                             "zalogowanego użytkownika.";
+                RegisterUserFailure response("Zalogowany.");
                 send(response);
             }
             return true;
         }
-        case Types::Message::MessageType::LOGIN_USER_REQ:
+        case Types::Message::MessageType::REQUEST_LOGIN_USER:
         {
             if(!isUserAssigned())
             {
@@ -171,21 +171,21 @@ bool Connection::processMessage()
                 qDebug() << "\t\t[Connection] Żądanie autoryzacji.";
                 try
                 {
-                    LoginUserReqMsg request(message);
+                    LoginUser request(message);
                     qDebug() << "\t\t[Connection] Id użytkownika " << request.getUserId();
                     emit loginUserRequestFromConnection(this, request.getUserId(),
                                                         request.getUserPassword());
                 }catch(const std::exception& e)
                 {
-                    qDebug() << "\t\t[Connection] Złapano wyjątek" << e.what()
-                             << "podczas procesu logowania.";
+                    qWarning() << "\t\t[Connection] Złapano wyjątek" << e.what()
+                               << "podczas procesu logowania.";
                 }
             }
             else
             {
-                qDebug() << "\t\t[Connection] Wykryto próbę wielokrotnego"
-                         << "logowania przez użytkownika" << m_userId;
-                LoginUserRespFail response("Już zalogowany.");
+                qWarning() << "\t\t[Connection] Wykryto próbę wielokrotnego"
+                           << "logowania przez użytkownika" << m_userId;
+                LoginuserFailure response("Już zalogowany.");
                 send(response);
             }
             return true;
@@ -206,92 +206,91 @@ bool Connection::processMessage()
     if(!isUserAssigned())
     {
         qDebug() << "\t\t[Connection] Nierozpoznano użytkownika.";
-        UnrecognizedUserMsg Msg;
-
-        Msg.send(m_socket);
+        UnrecognizedUser response;
+        send(response);
         return true;
     }
     try
     {
     switch(msgType)
     {
-        case Types::Message::MessageType::BUY_STOCK_REQ:
+        case Types::Message::MessageType::REQUEST_BUY_STOCK_ORDER:
         {
             try
             {
-                BuyStockReqMsg msg(message);
+                BuyStock msg(message);
                 emit buyStock(m_userId, msg.getStockId(),
                               msg.getAmount(), msg.getPrice());
             }catch(const std::exception& e)
             {
-                qDebug() << "\t\t[Connection] Złapano wyjątek" << e.what()
-                         << "podczas zlecania kupna.";
+                qWarning() << "\t\t[Connection] Złapano wyjątek" << e.what()
+                           << "podczas zlecania kupna.";
             }
             break;
         }
-        case Types::Message::MessageType::SELL_STOCK_REQ:
+        case Types::Message::MessageType::REQUEST_SELL_STOCK_ORDER:
         {
             try
             {
-                SellStockReqMsg msg(message);
+                SellStock msg(message);
                 emit sellStock(m_userId, msg.getStockId(),
                               msg.getAmount(), msg.getPrice());
             }catch(const std::exception& e)
             {
-                qDebug() << "\t\t[Connection] Złapano wyjątek" << e.what()
-                         << "podczas zlecania sprzedazy.";
+                qWarning() << "\t\t[Connection] Złapano wyjątek" << e.what()
+                           << "podczas zlecania sprzedazy.";
             }
             break;
         }
-        case Types::Message::MessageType::CANCEL_ORDER_REQ:
+        case Types::Message::MessageType::REQUEST_CANCEL_ORDER:
         {
             try
             {
-                CancelOrderMsg msg(message);
+                CancelOrder msg(message);
                 emit cancelOrder(m_userId, msg.getOrderId());
             }catch(const std::exception& e)
             {
-                qDebug() << "\t\t[Connection] Złapano wyjątek" << e.what()
-                         << "podczas anulowania transakcji.";
+                qWarning() << "\t\t[Connection] Złapano wyjątek" << e.what()
+                           << "podczas anulowania transakcji.";
             }
             break;
         }
-        case Types::Message::MessageType::GET_MY_STOCKS:
+        case Types::Message::MessageType::REQUEST_GET_MY_STOCKS:
             emit getMyStocks(m_userId);
             break;
-        case Types::Message::MessageType::GET_MY_ORDERS:
+        case Types::Message::MessageType::REQUEST_GET_MY_ORDERS:
             emit getMyOrders(m_userId);
             break;
-        case Types::Message::MessageType::GET_STOCK_INFO:
+        case Types::Message::MessageType::REQUEST_GET_STOCK_INFO:
         {
-            GetStockInfoMsg msg(message);
+            GetStockInfo msg(message);
 
             emit getStockInfo(m_userId, msg.getStockId());
             break;
         }
-        case Types::Message::MessageType::SUBSCRIBE_STOCK:
+        case Types::Message::MessageType::REQUEST_SUBSCRIBE_STOCK:
         {
             try
             {
-                SubscribeStockMsg msg(message);
+                SubscribeStock msg(message);
                 addSubscription(msg.getStockId());
             }catch(const std::exception& e)
             {
-                qDebug() << "\t\t[Connection] Złapano wyjątek" << e.what()
-                         << "podczas zlecania subskypcji.";
+                qWarning() << "\t\t[Connection] Złapano wyjątek" << e.what()
+                           << "podczas zlecania subskypcji.";
             }
             break;
         }
-        case Types::Message::MessageType::UNSUBSCRIBE_STOCK:
+        case Types::Message::MessageType::REQUEST_UNSUBSCRIBE_STOCK:
         {
             try
             {
-                UnsubscribeStockMsg msg(message);
+                UnsubscribeStock msg(message);
                 dropSubscription(msg.getStockId());
             }catch(const std::exception& e)
             {
-                qDebug() << "\t\t[Connection] Złapano wyjątek" << e.what()
-                         << "podczas zlecenia usuniecia subskrypcji.";
+                qWarning() << "\t\t[Connection] Złapano wyjątek" << e.what()
+                           << "podczas zlecenia usuniecia subskrypcji.";
             }
             break;
         }
@@ -305,7 +304,7 @@ bool Connection::processMessage()
     }
     }catch(const std::exception& e)
     {
-        qDebug() << "\t\t[Connection] STALO SIE COS NIESPODZIEWANEGO !:" << e.what();
+        qCritical() << "\t\t[Connection] STALO SIE COS NIESPODZIEWANEGO !:" << e.what();
     }
 
     return true;

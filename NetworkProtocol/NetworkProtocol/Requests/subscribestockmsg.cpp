@@ -7,30 +7,30 @@ namespace Requests
 
 using namespace DTO;
 
-SubscribeStockMsg::SubscribeStockMsg(QDataStream& in) : Request(in)
+SubscribeStock::SubscribeStock (QDataStream& in) : Request(in)
 {
     in >> m_stockId;
 }
 
-Types::Message::MessageType SubscribeStockMsg::type() const
+Types::Message::MessageType SubscribeStock::type() const
 {
-    return Types::Message::MessageType::SUBSCRIBE_STOCK;
+    return Types::Message::MessageType::REQUEST_SUBSCRIBE_STOCK;
 }
 
-Types::StockIdType SubscribeStockMsg::getStockId() const
+Types::StockIdType SubscribeStock::getStockId() const
 {
     return m_stockId;
 }
 
-Types::MessageLengthType SubscribeStockMsg::length() const
+Types::MessageLengthType SubscribeStock::length() const
 {
     return sizeof(Types::Message::MessageType) +
            sizeof(m_stockId);
 }
 
-const QString SubscribeStockMsg::getMessageName()
+const QString SubscribeStock::getMessageName()
 {
-    return Request::getMessageName() + " :: SubscribeStockMsg";
+    return Request::getMessageName() + " :: SubscribeStock";
 }
 
 }

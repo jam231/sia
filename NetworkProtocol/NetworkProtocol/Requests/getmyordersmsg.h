@@ -1,15 +1,15 @@
-#ifndef GETMYSTOCKSMSG_H
-#define GETMYSTOCKSMSG_H
+#ifndef GETMYORDERMSG_H
+#define GETMYORDERMSG_H
 
 #include "request.h"
 
 namespace NetworkProtocol {
 namespace Requests
 {
-class NETWORKPROTOCOLSHARED_EXPORT GetMyStocks : public Request
+class NETWORKPROTOCOLSHARED_EXPORT GetMyOrders : public Request
 {
 public:
-    GetMyStocks(QDataStream& in);
+    GetMyOrders(QDataStream& in);
 
     DTO::Types::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;
@@ -18,4 +18,4 @@ public:
 };
 }
 }
-#endif // GETMYSTOCKSMSG_H
+#endif // GETMYORDERMSG_H

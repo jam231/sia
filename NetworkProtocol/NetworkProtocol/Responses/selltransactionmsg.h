@@ -8,13 +8,13 @@ namespace NetworkProtocol
 namespace Responses
 {
 
-class NETWORKPROTOCOLSHARED_EXPORT SellTransactionMsg : public Response
+class NETWORKPROTOCOLSHARED_EXPORT SellTransaction : public Response
 {
     DTO::Types::AmountType m_amount;
     DTO::Types::OrderIdType m_orderId;
 
 public:
-    SellTransactionMsg(DTO::Types::OrderIdType m_orderId, DTO::Types::AmountType m_amount);
+    SellTransaction(DTO::Types::OrderIdType m_orderId, DTO::Types::AmountType m_amount);
 
     DTO::Types::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;

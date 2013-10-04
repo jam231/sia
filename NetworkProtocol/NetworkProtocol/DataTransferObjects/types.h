@@ -167,61 +167,70 @@ namespace Types
         /*0-19: komunikacja z serwerem, logowanie, etc*/
 
         REQUEST_REGISTER_USER = 0x00,
-        RESPONSE_REGISTER_USER_OK,
-        RESPONSE_REGISTER_USER_FAIL,
-        LOGIN_USER_REQ,
-        LOGIN_USER_RESP_OK,
-        LOGIN_USER_RESP_FAIL,
-        UNRECOGNIZED_USER, // Odpowiedz dla uzytkownika, gdy probuje
-                           // niezalogowany wykonac akcje wymagajaca zalogowania.
+        RESPONSE_REGISTER_USER_SUCCESS,
+        RESPONSE_REGISTER_USER_FAILURE,
+        REQUEST_LOGIN_USER,
+        RESPONSE_LOGIN_USER_SUCCESS,
+        RESPONSE_LOGIN_USER_FAILURE,
+        RESPONSE_UNRECOGNIZED_USER,             // Np. odpowiedz dla uzytkownika, gdy probuje
+                                                // niezalogowany wykonac akcje wymagajaca zalogowania.
 
 
-        /*20-39: akcje i zlecenia*/
+        /* 20-39: akcje i zlecenia */
 
-        SELL_STOCK_REQ = 0x14,  // Request zlecenie kupna
-        BUY_STOCK_REQ,          // Request zlecenie sprzedazy
+        REQUEST_SELL_STOCK_ORDER = 0x14,        // Request zlecenie kupna
+        REQUEST_BUY_STOCK_ORDER,                // Request zlecenie sprzedazy
 
-        // Te sa byc moze tymczasowe
-        BUY_TRANSACTION,        // Response wysylanie informacji o danej transakcji kupna
-        SELL_TRANSACTION,       // Response wysylanie informacji o danej transakcji sprzedazy
+        /*
+         * Przestalem wiedziec co dokladnie robia 3 ponizsze wiadomosci.
+         * Niestety (najprawdopodobniej moj) komentarz jest bardzo lakoniczny,
+         * a fragment kodu w ktorych sa wykorzystywane wskazuje na kontintuicyjnosc nazw
+         * :-(
+         *                                      -- jam231
+         */
 
-
-        TRANSACTION_CHANGE,     // Response powiadomienie o zmianie (zrealizowaniu?) danej transakcji
-                                // wszystkich zasubskrybowanych
-
-        ORDER,                  // Response informacja o nowym zleceniu
-        BEST_ORDER,             // Response informacja o nowym najlepszym zleceniu
-
-        SUBSCRIBE_STOCK,        // Request subskrybuj
-        UNSUBSCRIBE_STOCK,      // Request przestan subskrybowac
+        RESPONSE_BUY_TRANSACTION,               // Response wysylanie informacji o danej transakcji kupna
+        RESPONSE_SELL_TRANSACTION,              // Response wysylanie informacji o danej transakcji sprzedazy
 
 
-        GET_MY_STOCKS,          // Request prosba o liste wlasnych zasobów
-        GET_MY_STOCKS_RESP,     // Response Odeslanie listy zasobow
-        GET_MY_ORDERS,          // Request prosba o liste wlasnych zasobów
-        GET_MY_ORDERS_RESP,     // Response Odeslanie listy zasobow
-        GET_STOCK_INFO,         // Request prosba o info o danym zasobie
-        GET_STOCK_INFO_RESP,    // Response odpowiedz na prosbe o info
+        RESPONSE_TRANSACTION_CHANGE,            // Response powiadomienie o zmianie (zrealizowaniu?) danej transakcji
+                                                // wszystkich zasubskrybowanych do danego zasobu
 
-        CANCEL_ORDER_REQ,       // Request żadanie anulowania zlecenia o podanym id.
-        ORDER_ID_RESP,
+        RESPONSE_SHOW_ORDER,                    // Response informacja o nowym zleceniu
+        RESPONSE_SHOW_BEST_ORDER,               // Response informacja o nowym najlepszym zleceniu
+
+        REQUEST_SUBSCRIBE_STOCK,                // Request subskrybuj
+        REQUEST_UNSUBSCRIBE_STOCK,              // Request przestan subskrybowac
 
 
-        /*40-49: sesja, stan akcji */
+        REQUEST_GET_MY_STOCKS,                  // Request prosba o liste wlasnych zasobów
+        RESPONSE_SHOW_USER_STOCKS,              // Response wysylanie listy zasobow
+        REQUEST_GET_MY_ORDERS,                  // Request prosba o liste wlasnych zasobów
+        RESPONSE_SHOW_USER_ORDERS,              // Response Odeslanie listy zasobow
+        REQUEST_GET_STOCK_INFO,                 // Request prosba o info o danym zasobie
+        RESPONSE_STOCK_INFO,                    // Response odpowiedz na prosbe o info
 
-        COMPANY_STATUS_REQ = 0x28,
-        COMPANY_ACTIVE_RESP,
-        COMPANY_FROZEN_RESP,
+        REQUEST_CANCEL_ORDER,                   // Request żadanie anulowania zlecenia o podanym id.
+        RESPONSE_ORDER_ID,
 
-        // Te sa w zawieszeniu, czekaja na implementacje lub zmiane -jam231
-        SESSION_STARTED,
-        SESSION_CLOSED,
-        IS_SESSION_ACTIVE,
-        SESSION_STATUS,
 
-        /*50-99 zostawiam*/
+        /* 40-49: sesja, stan akcji */
 
-        /*100+ inne*/
+        // Te sa zaimplementowane, ale nie uzywane --jam231
+
+        REQUEST_COMPANY_STATUS = 0x28,
+        RESPONSE_COMPANY_ACTIVE,
+        RESPONSE_COMPANY_FROZEN,
+
+        // Te sa w zawieszeniu, czekaja na implementacje lub zmiane --jam231
+
+        RESPONSE_SESSION_OPEN,
+        RESPONSE_SESSION_CLOSED,
+        REQUEST_SESSION_STATUS,
+
+        /* 50-99 */
+
+        /* 100+ inne */
         MESSAGE_UNDEFINED = 0x64
     };
 

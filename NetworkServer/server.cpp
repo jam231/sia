@@ -1,6 +1,6 @@
 #include "server.h"
 
-#include <Responses/loginuserrespfail.h>
+#include <Responses/loginuserfailuremsg.h>
 
 using namespace NetworkProtocol;
 using namespace NetworkProtocol::DTO;
@@ -55,7 +55,7 @@ void Server::send(Response& msg, Connection* connection)
  *  i warstwy związanej z bazą danych.
  *                                          --jam231
  */
-void Server::send(Responses::RegisterUserRespOk& msg, Connection* connection)
+void Server::send(Responses::RegisterUserSuccess& msg, Connection* connection)
 {
 
     qDebug() << "\t[Server] Wysylanie wiadomsci: RegisterUserRespOk"
@@ -64,7 +64,7 @@ void Server::send(Responses::RegisterUserRespOk& msg, Connection* connection)
     connection->send(msg);
 }
 
-void Server::send(Responses::LoginUserRespOk& msg, Connection* connection,
+void Server::send(Responses::LoginUserSuccess& msg, Connection* connection,
                   DTO::Types::UserIdType userId)
 {
     qDebug() << "\t[Server] Wysylanie wiadomsci: LoginUserRespOk"
@@ -83,9 +83,9 @@ void Server::send(Responses::LoginUserRespOk& msg, Connection* connection,
     else
     {
         qDebug() << "\t[Server] Próba zalogowania na aktywne konto.";
-        Responses::LoginUserRespFail respMsg("Użytkownik już zalogowany.");
+        Responses::LoginuserFailure response("Użytkownik już zalogowany.");
 
-        connection->send(respMsg);
+        connection->send(response);
     }
 }
 

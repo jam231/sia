@@ -6,12 +6,12 @@
 namespace NetworkProtocol {
 namespace Requests
 {
-class NETWORKPROTOCOLSHARED_EXPORT UnsubscribeStockMsg : public Request
+class NETWORKPROTOCOLSHARED_EXPORT UnsubscribeStock : public Request
 {
     DTO::Types::StockIdType m_stockId;
 
 public:
-    UnsubscribeStockMsg(QDataStream& msg);
+    UnsubscribeStock(QDataStream& msg);
 
     DTO::Types::MessageLengthType length() const;
 

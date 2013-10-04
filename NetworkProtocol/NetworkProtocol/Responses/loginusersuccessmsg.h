@@ -1,5 +1,6 @@
-#ifndef UNRECOGNIZEDUSERMSG_H
-#define UNRECOGNIZEDUSERMSG_H
+#ifndef LOGINUSERRESPOK_H
+#define LOGINUSERRESPOK_H
+
 
 #include "response.h"
 
@@ -8,11 +9,11 @@ namespace NetworkProtocol
 namespace Responses
 {
 
-class NETWORKPROTOCOLSHARED_EXPORT UnrecognizedUser : public Response
+class NETWORKPROTOCOLSHARED_EXPORT LoginUserSuccess : public Response
 {
-public:
 
-    UnrecognizedUser();
+public:
+    LoginUserSuccess();
 
     DTO::Types::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;
@@ -24,4 +25,4 @@ public:
 
 }
 }
-#endif // UNRECOGNIZEDUSERMSG_H
+#endif // LOGINUSERRESPOK_H
