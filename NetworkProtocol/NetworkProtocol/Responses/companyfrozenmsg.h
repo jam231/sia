@@ -1,6 +1,5 @@
-#ifndef COMPANYFROZEN_H
-#define COMPANYFROZEN_H
-
+#ifndef COMPANYFROZENMSG_H
+#define COMPANYFROZENMSG_H
 
 #include "response.h"
 
@@ -26,4 +25,4 @@ public:
 
 }
 }
-#endif // COMPANYFROZEN_H
+#endif // COMPANYFROZENMSG_H

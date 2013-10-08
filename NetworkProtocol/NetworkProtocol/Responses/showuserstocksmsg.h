@@ -1,5 +1,5 @@
-#ifndef GETMYSTOCKSRESPMSG_H
-#define GETMYSTOCKSRESPMSG_H
+#ifndef SHOWUSERSTOCKSMSG_H
+#define SHOWUSERSTOCKSMSG_H
 
 #include "response.h"
 
@@ -30,4 +30,4 @@ public:
 
 }
 }
-#endif // GETMYSTOCKSRESPMSG_H
+#endif // SHOWUSERSTOCKSMSG_H

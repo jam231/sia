@@ -1,5 +1,5 @@
-#ifndef ORDERIDRESP_H
-#define ORDERIDRESP_H
+#ifndef ORDERIDMSG_H
+#define ORDERIDMSG_H
 
 #include "response.h"
 
@@ -25,4 +25,4 @@ public:
 
 }
 }
-#endif // ORDERIDRESP_H
+#endif // ORDERIDMSG_H

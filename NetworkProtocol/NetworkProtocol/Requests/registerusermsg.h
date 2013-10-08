@@ -1,5 +1,5 @@
-#ifndef REGISTERUSERmsg_H
-#define REGISTERUSERmsg_H
+#ifndef REGISTERUSERMSG_H
+#define REGISTERUSERMSG_H
 
 #include "request.h"
 
@@ -22,4 +22,4 @@ public:
 };
 }
 }
-#endif // REGISTERUSERmsg_H
+#endif // REGISTERUSERMSG_H

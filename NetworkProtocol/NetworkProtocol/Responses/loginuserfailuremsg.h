@@ -1,5 +1,5 @@
-#ifndef LOGINUSERRESPFAIL_H
-#define LOGINUSERRESPFAIL_H
+#ifndef LOGINUSERFAILUREMSG_H
+#define LOGINUSERFAILUREMSG_H
 
 
 #include "response.h"
@@ -28,4 +28,4 @@ public:
 
 }
 }
-#endif // LOGINUSERRESPFAIL_H
+#endif // LOGINUSERFAILUREMSG_H

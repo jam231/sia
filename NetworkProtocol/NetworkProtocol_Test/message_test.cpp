@@ -1,4 +1,4 @@
-#include "messagetest.h"
+#include "message_test.h"
 
 MessageTest::MessageTest()
 {

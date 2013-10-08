@@ -1,5 +1,5 @@
-#ifndef GETSTOCKINFORESPMSG_H
-#define GETSTOCKINFORESPMSG_H
+#ifndef STOCKINFOMSG_H
+#define STOCKINFOMSG_H
 
 #include "response.h"
 #include "DataTransferObjects/lasttransaction.h"
@@ -37,4 +37,4 @@ public:
 
 }
 }
-#endif // GETSTOCKINFORESPMSG_H
+#endif // STOCKINFOMSG_H

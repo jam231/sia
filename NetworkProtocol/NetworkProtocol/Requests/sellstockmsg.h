@@ -1,5 +1,5 @@
-#ifndef SELLSTOCKmsg_H
-#define SELLSTOCKmsg_H
+#ifndef SELLSTOCKMSG_H
+#define SELLSTOCKMSG_H
 
 #include "request.h"
 
@@ -27,4 +27,4 @@ public:
 };
 }
 }
-#endif // SELLSTOCKmsg_H
+#endif // SELLSTOCKMSG_H

@@ -1,5 +1,5 @@
-#ifndef COMPANYSTATUS_H
-#define COMPANYSTATUS_H
+#ifndef COMPANYSTATUSMSG_H
+#define COMPANYSTATUSMSG_H
 
 #include "request.h"
 
@@ -21,4 +21,4 @@ public:
 };
 }
 }
-#endif // COMPANYSTATUS_H
+#endif // COMPANYSTATUSMSG_H

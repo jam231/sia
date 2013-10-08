@@ -1,5 +1,5 @@
-#ifndef MESSAGETEST_H
-#define MESSAGETEST_H
+#ifndef MESSAGE_TEST_H
+#define MESSAGE_TEST_H
 
 #include "../NetworkProtocol/message.h"
 
@@ -20,4 +20,4 @@ private Q_SLOTS:
     void testCase1_data();
 };
 
-#endif // MESSAGETEST_H
+#endif // MESSAGE_TEST_H

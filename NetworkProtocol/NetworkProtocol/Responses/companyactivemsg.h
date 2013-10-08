@@ -1,5 +1,5 @@
-#ifndef COMPANYACTIVE_H
-#define COMPANYACTIVE_H
+#ifndef COMPANYACTIVEMSG_H
+#define COMPANYACTIVEMSG_H
 
 #include "response.h"
 
@@ -24,4 +24,4 @@ public:
 
 }
 }
-#endif // COMPANYACTIVE_H
+#endif // COMPANYACTIVEMSG_H

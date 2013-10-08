@@ -1,5 +1,5 @@
-#ifndef GETMYORDERSRESPMSG_H
-#define GETMYORDERSRESPMSG_H
+#ifndef SHOWUSERORDERSMSG_H
+#define SHOWUSERORDERSMSG_H
 
 
 #include "response.h"
@@ -40,4 +40,4 @@ public:
 
 }
 }
-#endif // GETMYORDERSRESPMSG_H
+#endif // SHOWUSERORDERSMSG_H

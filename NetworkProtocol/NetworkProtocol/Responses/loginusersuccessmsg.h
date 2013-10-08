@@ -1,5 +1,5 @@
-#ifndef LOGINUSERRESPOK_H
-#define LOGINUSERRESPOK_H
+#ifndef LOGINUSERSUCCESSMSG_H
+#define LOGINUSERSUCCESSMSG_H
 
 
 #include "response.h"
@@ -25,4 +25,4 @@ public:
 
 }
 }
-#endif // LOGINUSERRESPOK_H
+#endif // LOGINUSERSUCCESSMSG_H

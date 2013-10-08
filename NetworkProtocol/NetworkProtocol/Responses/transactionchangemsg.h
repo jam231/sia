@@ -1,5 +1,5 @@
-#ifndef TRANSACTIONCHANGE_H
-#define TRANSACTIONCHANGE_H
+#ifndef TRANSACTIONCHANGEMSG_H
+#define TRANSACTIONCHANGEMSG_H
 
 #include "response.h"
 
@@ -29,4 +29,4 @@ public:
 
 }
 }
-#endif // TRANSACTIONCHANGE_H
+#endif // TRANSACTIONCHANGEMSG_H

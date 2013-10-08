@@ -1,5 +1,5 @@
-#ifndef NEWTRANSACTION_H
-#define NEWTRANSACTION_H
+#ifndef SHOWORDERMSG_H
+#define SHOWORDERMSG_H
 
 #include "response.h"
 
@@ -32,4 +32,4 @@ public:
 
 }
 }
-#endif // NEWTRANSACTION_H
+#endif // SHOWORDERMSG_H

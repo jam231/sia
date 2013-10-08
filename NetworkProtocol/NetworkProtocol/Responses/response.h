@@ -1,5 +1,5 @@
-#ifndef Response_H
-#define Response_H
+#ifndef RESPONSE_H
+#define RESPONSE_H
 
 #include "message.h"
 
@@ -23,4 +23,4 @@ public:
 
 }
 }
-#endif // Response_H
+#endif // RESPONSE_H

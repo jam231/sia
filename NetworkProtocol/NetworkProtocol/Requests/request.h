@@ -1,5 +1,5 @@
-#ifndef Request_H
-#define Request_H
+#ifndef REQUEST_H
+#define REQUEST_H
 
 #include "message.h"
 
@@ -39,4 +39,4 @@ public:
 };
 }
 }
-#endif // Request_H
+#endif // REQUEST_H

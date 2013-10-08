@@ -1,5 +1,5 @@
-#ifndef BUYSTOCKREQMSG_H
-#define BUYSTOCKREQMSG_H
+#ifndef BUYSTOCKMSG_H
+#define BUYSTOCKMSG_H
 
 #include "request.h"
 
@@ -26,4 +26,4 @@ public:
 };
 }
 }
-#endif // BUYSTOCKREQMSG_H
+#endif // BUYSTOCKMSG_H
