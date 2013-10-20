@@ -70,49 +70,6 @@ MessageType toMessageType(MessageTypeType msgId)
     };
 }
 }
-
-OrderIdType::OrderIdType() : ContainerType<qint32>(0)
-{
-}
-OrderIdType::OrderIdType(qint32 _value) : ContainerType<qint32>(_value)
-{
-}
-
-StockIdType::StockIdType() : ContainerType<qint32>(0)
-{
-}
-StockIdType::StockIdType(qint32 _value) : ContainerType<qint32>(_value)
-{
-}
-
-UserIdType::UserIdType() : ContainerType<qint32>(0)
-{
-}
-UserIdType::UserIdType(qint32 _value) : ContainerType<qint32>(_value)
-{
-}
-
-CompanyIdType::CompanyIdType() : ContainerType<qint32>(0)
-{
-}
-CompanyIdType::CompanyIdType(qint32 _value) : ContainerType<qint32>(_value)
-{
-}
-
-AmountType::AmountType() : ContainerType<qint32>(0)
-{
-}
-AmountType::AmountType(qint32 _value) : ContainerType<qint32>(_value)
-{
-}
-
-PriceType::PriceType() : ContainerType<qint32>(0)
-{
-}
-PriceType::PriceType(qint32 _value) : ContainerType<qint32>(_value)
-{
-}
-
 }
 }
 }
