@@ -1,6 +1,6 @@
 #include "server.h"
 
-#include <Responses/loginuserfailuremsg.h>
+#include <Responses/failuremsg.h>
 
 using namespace NetworkProtocol;
 using namespace NetworkProtocol::DTO;
@@ -64,7 +64,7 @@ void Server::send(Responses::RegisterUserSuccess& msg, Connection* connection)
     connection->send(msg);
 }
 
-void Server::send(Responses::LoginUserSuccess& msg, Connection* connection,
+void Server::send(Responses::Ok& msg, Connection* connection,
                   DTO::Types::UserIdType userId)
 {
     qDebug() << "\t[Server] Wysylanie wiadomsci: LoginUserRespOk"
@@ -83,8 +83,7 @@ void Server::send(Responses::LoginUserSuccess& msg, Connection* connection,
     else
     {
         qDebug() << "\t[Server] Próba zalogowania na aktywne konto.";
-        Responses::LoginuserFailure response("Użytkownik już zalogowany.");
-
+        Responses::Failure response(Types::Failure::ALREADY_LOGGED);
         connection->send(response);
     }
 }

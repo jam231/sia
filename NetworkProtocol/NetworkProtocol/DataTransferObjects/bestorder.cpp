@@ -11,7 +11,7 @@ BestOrder::BestOrder(Types::Order::OrderType orderType, Types::StockIdType stock
 {
 }
 
-Types::MessageLengthType BestOrder::lengthInBytes() const
+Types::Message::MessageLengthType BestOrder::lengthInBytes() const
 {
     return sizeof(m_orderType) + sizeof(m_stockId) + sizeof(m_amount) + sizeof(m_price);
 }

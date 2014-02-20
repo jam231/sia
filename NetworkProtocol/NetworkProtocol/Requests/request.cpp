@@ -8,14 +8,14 @@ namespace Requests
 
 using namespace DTO;
 
-Types::MessageLengthType Request::getMessageLength(QIODevice* data)
+Types::Message::MessageLengthType Request::getMessageLength(QIODevice* data)
 {
     if(data->bytesAvailable() < 2)
         return -1;
 
-    Types::MessageLengthType msgLength;
+    Types::Message::MessageLengthType msgLength;
 
-    QDataStream in(data->peek(sizeof(Types::MessageLengthType)));
+    QDataStream in(data->peek(sizeof(Types::Message::MessageLengthType)));
 
     in >> msgLength;
 

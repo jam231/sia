@@ -28,7 +28,7 @@ Types::Message::MessageType BuyTransaction::type() const
     return Types::Message::MessageType::RESPONSE_BUY_TRANSACTION;
 }
 
-Types::MessageLengthType BuyTransaction::length() const
+Types::Message::MessageLengthType BuyTransaction::length() const
 {
     return sizeof(Types::Message::MessageType) +
            sizeof(m_orderId) + sizeof(m_amount);

@@ -13,7 +13,7 @@ class NETWORKPROTOCOLSHARED_EXPORT GetStockInfo : public Request
 public:
     GetStockInfo(QDataStream& in);
 
-    DTO::Types::MessageLengthType length() const;
+    DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;
     DTO::Types::StockIdType getStockId() const;
 

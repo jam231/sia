@@ -18,7 +18,7 @@ class NETWORKPROTOCOLSHARED_EXPORT ShowUserStocks : public Response
 public:
     ShowUserStocks();
 
-    DTO::Types::MessageLengthType length() const;
+    DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;
 
     static const QString getMessageName();

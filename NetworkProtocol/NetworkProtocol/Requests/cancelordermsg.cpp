@@ -24,7 +24,7 @@ Types::OrderIdType CancelOrder::getOrderId() const
     return m_orderId;
 }
 
-Types::MessageLengthType CancelOrder::length() const
+Types::Message::MessageLengthType CancelOrder::length() const
 {
     return sizeof(Types::Message::MessageType) +
            sizeof(m_orderId);

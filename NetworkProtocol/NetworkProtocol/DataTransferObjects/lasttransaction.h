@@ -26,7 +26,7 @@ public:
     DTO::Types::AmountType getAmount() const;
     DTO::Types::PriceType getPrice() const;
 
-    DTO::Types::MessageLengthType lengthInBytes() const;
+    DTO::Types::Message::MessageLengthType lengthInBytes() const;
 };
 
 

@@ -19,7 +19,7 @@ public:
           DTO::Types::AmountType, DTO::Types::PriceType);
     ShowOrder(DTO::Order order);
 
-    DTO::Types::MessageLengthType length() const;
+    DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;
 
     const DTO::Order& getOrder() const;

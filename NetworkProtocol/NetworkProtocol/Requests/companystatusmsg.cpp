@@ -24,7 +24,7 @@ Types::CompanyIdType CompanyStatus::getCompanyId() const
     return m_companyId;
 }
 
-Types::MessageLengthType CompanyStatus::length() const
+Types::Message::MessageLengthType CompanyStatus::length() const
 {
     return sizeof(Types::Message::MessageType) +
            sizeof(m_companyId);

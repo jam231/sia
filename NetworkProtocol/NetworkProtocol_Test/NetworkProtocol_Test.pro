@@ -32,23 +32,21 @@ SOURCES += \
     Requests/companystatusmsg_test.cpp \
     Requests/cancelordermsg_test.cpp \
     Requests/buystockmsg_test.cpp \
-    Responses/unrecognizedusermsg_test.cpp \
     Responses/transactionchangemsg_test.cpp \
     Responses/stockinfomsg_test.cpp \
     Responses/showuserordersmsg_test.cpp \
     Responses/showordermsg_test.cpp \
     Responses/selltransactionmsg_test.cpp \
     Responses/response_test.cpp \
-    Responses/registerusersuccessmsg_test.cpp \
-    Responses/registeruserfailuremsg_test.cpp \
     Responses/orderidmsg_test.cpp \
-    Responses/loginusersuccessmsg_test.cpp \
-    Responses/loginuserfailuremsg_test.cpp \
-    Responses/howuserstocksmsg_test.cpp \
     Responses/companyfrozenmsg_test.cpp \
     Responses/companyactivemsg_test.cpp \
     Responses/buytransactionmsg_test.cpp \
-    Responses/bestordermsg_test.cpp
+    Responses/failuremsg_test.cpp \
+    Responses/okmsg_test.cpp \
+    Responses/registerusersuccessmsg_test.cpp \
+    Responses/showbestordermsg_test.cpp \
+    Responses/showuserstocksmsg_test.cpp
 
 HEADERS += \
     message_test.h \
@@ -68,7 +66,6 @@ HEADERS += \
     Requests/companystatusmsg_test.h \
     Requests/cancelordermsg_test.h \
     Requests/buystockmsg_test.h \
-    Responses/unrecognizedusermsg_test.h \
     Responses/transactionchangemsg_test.h \
     Responses/stockinfomsg_test.h \
     Responses/showuserstocksmsg_test.h \
@@ -76,15 +73,14 @@ HEADERS += \
     Responses/showordermsg_test.h \
     Responses/selltransactionmsg_test.h \
     Responses/response_test.h \
-    Responses/registerusersuccessmsg_test.h \
-    Responses/registeruserfailuremsg_test.h \
     Responses/orderidmsg_test.h \
-    Responses/loginusersuccessmsg_test.h \
-    Responses/loginuserfailuremsg_test.h \
     Responses/companyfrozenmsg_test.h \
     Responses/companyactivemsg_test.h \
     Responses/buytransactionmsg_test.h \
-    Responses/bestordermsg_test.h
+    Responses/failuremsg_test.h \
+    Responses/okmsg_test.h \
+    Responses/registerusersuccessmsg_test.h \
+    Responses/showbestordermsg_test.h
 
 INCLUDEPATH += \
  ../NetworkProtocol/

@@ -35,16 +35,16 @@ void StockInfo::send(QIODevice* connection)
         << m_bestBuyOrder
         << m_bestSellOrder
         << m_lastTransaction.getPrice()
-        << static_cast<Types::MessageLengthType>(dateTime.size());
+        << static_cast<Types::Message::MessageLengthType>(dateTime.size());
     connection->write(dateTime);
 }
 
-Types::MessageLengthType StockInfo::length() const
+Types::Message::MessageLengthType StockInfo::length() const
 {
     return  sizeof(Types::Message::MessageType) + sizeof(m_stockId) +
             sizeof(Types::AmountType) + sizeof(Types::PriceType) + // bestBuyOrder
             sizeof(Types::AmountType) + sizeof(Types::PriceType) + // bestSellOrder
-            sizeof(Types::MessageLengthType) + m_lastTransaction.lengthInBytes();
+            sizeof(Types::Message::MessageLengthType) + m_lastTransaction.lengthInBytes();
 }
 
 const QString StockInfo::getMessageName()

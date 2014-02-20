@@ -21,7 +21,7 @@ public:
     DTO::Types::PriceType getPrice() const;
 
     DTO::Types::Message::MessageType type() const;
-    DTO::Types::MessageLengthType length() const;
+    DTO::Types::Message::MessageLengthType length() const;
 
     static const QString getMessageName();
 };

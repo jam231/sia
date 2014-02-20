@@ -14,7 +14,7 @@ class NETWORKPROTOCOLSHARED_EXPORT  LoginUser : public Request
 public:
     LoginUser(QDataStream& in);
 
-    DTO::Types::MessageLengthType length() const;
+    DTO::Types::Message::MessageLengthType length() const;
 
     DTO::Types::Message::MessageType type() const;
     DTO::Types::UserIdType getUserId() const;

@@ -17,7 +17,7 @@ Types::Message::MessageType GetMyOrders::type() const
     return Types::Message::MessageType::REQUEST_GET_MY_ORDERS;
 }
 
-Types::MessageLengthType GetMyOrders::length() const
+Types::Message::MessageLengthType GetMyOrders::length() const
 {
     return sizeof(Types::Message::MessageType);
 }

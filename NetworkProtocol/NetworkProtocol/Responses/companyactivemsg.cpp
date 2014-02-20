@@ -25,7 +25,7 @@ void CompanyActive::send(QIODevice *connection)
     out << m_companyId;
 }
 
-Types::MessageLengthType CompanyActive::length() const
+Types::Message::MessageLengthType CompanyActive::length() const
 {
     return sizeof(Types::Message::MessageType) +
            sizeof(m_companyId);

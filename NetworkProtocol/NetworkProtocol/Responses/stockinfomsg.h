@@ -27,7 +27,7 @@ public:
                             = qMakePair(DTO::Types::AmountType(0), DTO::Types::PriceType(0)),
                         DTO::LastTransaction lastTransaction  = DTO::LastTransaction());
 
-    DTO::Types::MessageLengthType length() const;
+    DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;
 
     static const QString getMessageName();

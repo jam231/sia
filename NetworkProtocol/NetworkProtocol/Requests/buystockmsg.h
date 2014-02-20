@@ -17,7 +17,7 @@ public:
     BuyStock(QDataStream& msg);
 
     DTO::Types::Message::MessageType type() const;
-    DTO::Types::MessageLengthType length() const;
+    DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::StockIdType getStockId() const;
     DTO::Types::AmountType getAmount() const;
     DTO::Types::PriceType getPrice() const;

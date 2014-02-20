@@ -31,7 +31,7 @@ protected:
     void validateRequest(QDataStream& in);
 public:
     static DTO::Types::Message::MessageType getType(QDataStream &in);
-    static DTO::Types::MessageLengthType getMessageLength(QIODevice* data);
+    static DTO::Types::Message::MessageLengthType getMessageLength(QIODevice* data);
 
     static const QString getMessageName();
 

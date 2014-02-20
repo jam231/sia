@@ -11,13 +11,13 @@ ShowUserOrders::ShowUserOrders()
 {
 }
 
-Types::MessageLengthType ShowUserOrders::length() const
+Types::Message::MessageLengthType ShowUserOrders::length() const
 {
     return sizeof(Types::Message::MessageType) +
-           sizeof(Types::MessageLengthType) +
+           sizeof(Types::Message::MessageLengthType) +
             std::accumulate(m_orders.begin(), m_orders.end(),
-                            static_cast<Types::MessageLengthType>(0),
-                            [](Types::MessageLengthType len, Order* order) -> Types::MessageLengthType
+                            static_cast<Types::Message::MessageLengthType>(0),
+                            [](Types::Message::MessageLengthType len, Order* order) -> Types::Message::MessageLengthType
                                    {
                                         return len + order->lengthInBytes();
                                     }
@@ -35,7 +35,7 @@ void ShowUserOrders::send(QIODevice* connection)
     QDataStream out(connection);
 
     sendHeader(out);
-    out << static_cast<Types::MessageLengthType>(m_orders.size());
+    out << static_cast<Types::Message::MessageLengthType>(m_orders.size());
     for(int i = 0; i < m_orders.size(); ++i)
         out << m_orders[i]->getOrderId()
             << m_orders[i]->getOrderType()

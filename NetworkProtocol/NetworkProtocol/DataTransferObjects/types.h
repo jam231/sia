@@ -88,12 +88,20 @@ template<BasicTypeName TypeName, typename ValueType, ValueType defaultType>
 QDebug &operator>>(QDebug& stream, ContainerType<TypeName,ValueType,defaultType>&);
 
 
-
-
-
-
-typedef qint16 MessageLengthType;
-
+namespace Failure
+{
+typedef qint8 FailureTypeType;
+enum FailureType : FailureTypeType
+{
+    BAD_PASSWORD,
+    CANNOT_REGISTER_WHEN_LOGGED,
+    BAD_USERID_OR_PASSWORD,
+    NOT_LOGGED,
+    ALREADY_LOGGED,
+    INVALID_MESSAGE,
+    UNRECOGNIZED_MESSAGE
+};
+}
 
 // Force separation
 namespace Order
@@ -113,6 +121,7 @@ NETWORKPROTOCOLSHARED_EXPORT OrderType toOrderType(OrderTypeType);
 // Force separation
 namespace Message
 {
+typedef qint16 MessageLengthType;
 typedef qint8 MessageTypeType;
 enum MessageType : MessageTypeType
 {
@@ -120,11 +129,13 @@ enum MessageType : MessageTypeType
 
     REQUEST_REGISTER_USER = 0x00,
     RESPONSE_REGISTER_USER_SUCCESS,
-    RESPONSE_REGISTER_USER_FAILURE,
+    RESPONSE_OK,
+    RESPONSE_FAILURE,
     REQUEST_LOGIN_USER,
-    RESPONSE_LOGIN_USER_SUCCESS,
-    RESPONSE_LOGIN_USER_FAILURE,
-    RESPONSE_UNRECOGNIZED_USER,             // Np. odpowiedz dla uzytkownika, gdy probuje
+
+    //RESPONSE_LOGIN_USER_SUCCESS,
+    //RESPONSE_LOGIN_USER_FAILURE,
+    //RESPONSE_UNRECOGNIZED_USER,             // Np. odpowiedz dla uzytkownika, gdy probuje
     // niezalogowany wykonac akcje wymagajaca zalogowania.
 
 

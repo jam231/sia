@@ -16,7 +16,7 @@ class NETWORKPROTOCOLSHARED_EXPORT BuyTransaction : public Response
 public:
     BuyTransaction(DTO::Types::OrderIdType orderId, DTO::Types::AmountType amount);
 
-    DTO::Types::MessageLengthType length() const;
+    DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;
 
     static const QString getMessageName();

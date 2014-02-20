@@ -25,7 +25,7 @@ Types::PriceType LastTransaction::getPrice() const
     return m_price;
 }
 
-Types::MessageLengthType LastTransaction::lengthInBytes() const
+Types::Message::MessageLengthType LastTransaction::lengthInBytes() const
 {
     return m_dateTime.toUtf8().size() + sizeof(m_amount) + sizeof(m_price);
 }

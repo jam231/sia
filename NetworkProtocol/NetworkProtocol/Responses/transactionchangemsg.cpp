@@ -16,7 +16,7 @@ TransactionChange::TransactionChange(Types::StockIdType stockId, Types::AmountTy
     m_dateTime = dateTime;
 }
 
-Types::MessageLengthType TransactionChange::length() const
+Types::Message::MessageLengthType TransactionChange::length() const
 {
     return sizeof(Types::Message::MessageType) +
             sizeof(m_stockId) + sizeof(m_amount) + sizeof(m_price) + m_dateTime.toUtf8().size();
@@ -33,7 +33,7 @@ void TransactionChange::send(QIODevice *connection)
     out << m_stockId
         << m_amount
         << m_price
-        << static_cast<Types::MessageLengthType>(dateTime_bytes.size());
+        << static_cast<Types::Message::MessageLengthType>(dateTime_bytes.size());
     connection->write(dateTime_bytes);
 }
 

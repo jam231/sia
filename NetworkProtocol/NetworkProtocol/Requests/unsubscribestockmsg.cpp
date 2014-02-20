@@ -22,7 +22,7 @@ Types::StockIdType UnsubscribeStock::getStockId() const
     return m_stockId;
 }
 
-Types::MessageLengthType UnsubscribeStock::length() const
+Types::Message::MessageLengthType UnsubscribeStock::length() const
 {
     return sizeof(Types::Message::MessageType) +
            sizeof(m_stockId);

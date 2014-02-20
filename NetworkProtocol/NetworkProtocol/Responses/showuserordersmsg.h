@@ -23,7 +23,7 @@ public:
 
     DTO::Types::Message::MessageType type() const;
 
-    DTO::Types::MessageLengthType length() const;
+    DTO::Types::Message::MessageLengthType length() const;
 
     void send(QIODevice* connection);
 

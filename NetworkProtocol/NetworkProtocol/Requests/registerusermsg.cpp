@@ -19,7 +19,7 @@ RegisterUser::RegisterUser(QDataStream& in) : Request() // Pakiet może mieć r�
      *                                          --jam231
      */
 
-    Types::MessageLengthType passwordLength;
+    Types::Message::MessageLengthType passwordLength;
 
     if(in.device()->bytesAvailable() < sizeof(passwordLength))
     {
@@ -57,10 +57,10 @@ QString RegisterUser::getPassword() const
 }
 
 
-DTO::Types::MessageLengthType RegisterUser::length() const
+DTO::Types::Message::MessageLengthType RegisterUser::length() const
 {
     return sizeof(Types::Message::MessageType) +
-           sizeof(Types::MessageLengthType) + m_password.toUtf8().size();
+           sizeof(Types::Message::MessageLengthType) + m_password.toUtf8().size();
 }
 
 const QString RegisterUser::getMessageName()

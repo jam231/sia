@@ -28,7 +28,7 @@ public:
     Types::AmountType getAmount() const;
     Types::PriceType getPrice() const;
 
-    Types::MessageLengthType lengthInBytes() const;
+    Types::Message::MessageLengthType lengthInBytes() const;
 
     friend QDataStream &operator<<(QDataStream& stream, const BestOrder& bestOrder);
     friend QDataStream &operator>>(QDataStream& stream, BestOrder& bestOrder);

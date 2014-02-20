@@ -34,7 +34,7 @@ Types::PriceType Order::getPrice() const
     return m_price;
 }
 
-Types::MessageLengthType Order::lengthInBytes() const
+Types::Message::MessageLengthType Order::lengthInBytes() const
 {
     return sizeof(m_orderId) + sizeof(m_orderType) +
            sizeof(m_stockId) + sizeof(m_amount) + sizeof(m_price);

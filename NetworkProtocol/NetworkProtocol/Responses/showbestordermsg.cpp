@@ -1,4 +1,4 @@
-#include "bestordermsg.h"
+#include "showbestordermsg.h"
 
 namespace NetworkProtocol
 {
@@ -28,7 +28,7 @@ const QString ShowBestOrder::getMessageName()
     return Response::getMessageName() + ":: ShowBestOrder";
 }
 
-Types::MessageLengthType ShowBestOrder::length() const
+Types::Message::MessageLengthType ShowBestOrder::length() const
 {
     return sizeof(Types::Message::MessageType) + m_bestOrder.lengthInBytes();
 }

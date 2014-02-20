@@ -19,7 +19,7 @@ public:
     TransactionChange(DTO::Types::StockIdType, DTO::Types::AmountType,
                       DTO::Types::PriceType, QString);
 
-    DTO::Types::MessageLengthType length() const;
+    DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;
 
     static const QString getMessageName();

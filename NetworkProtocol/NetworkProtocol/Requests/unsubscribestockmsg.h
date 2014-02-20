@@ -13,7 +13,7 @@ class NETWORKPROTOCOLSHARED_EXPORT UnsubscribeStock : public Request
 public:
     UnsubscribeStock(QDataStream& msg);
 
-    DTO::Types::MessageLengthType length() const;
+    DTO::Types::Message::MessageLengthType length() const;
 
     DTO::Types::Message::MessageType type() const;
     DTO::Types::StockIdType getStockId() const;

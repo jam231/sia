@@ -22,19 +22,16 @@ SOURCES += \
     ../NetworkProtocol/Requests/companystatusmsg.cpp \
     ../NetworkProtocol/Requests/cancelordermsg.cpp \
     ../NetworkProtocol/Requests/buystockmsg.cpp \
-    ../NetworkProtocol/Responses/unrecognizedusermsg.cpp \
     ../NetworkProtocol/Responses/transactionchangemsg.cpp \
     ../NetworkProtocol/Responses/selltransactionmsg.cpp \
     ../NetworkProtocol/Responses/showordermsg.cpp \
     ../NetworkProtocol/Responses/orderidmsg.cpp \
-    ../NetworkProtocol/Responses/loginusersuccessmsg.cpp \
-    ../NetworkProtocol/Responses/loginuserfailuremsg.cpp \
-    ../NetworkProtocol/Responses/registerusersuccessmsg.cpp \
-    ../NetworkProtocol/Responses/registeruserfailuremsg.cpp \
+    ../NetworkProtocol/Responses/okmsg.cpp \
+    ../NetworkProtocol/Responses/failuremsg.cpp \
     ../NetworkProtocol/Responses/companyfrozenmsg.cpp \
     ../NetworkProtocol/Responses/companyactivemsg.cpp \
     ../NetworkProtocol/Responses/buytransactionmsg.cpp \
-    ../NetworkProtocol/Responses/bestordermsg.cpp \
+    ../NetworkProtocol/Responses/showbestordermsg.cpp \
     ../NetworkProtocol/Responses/stockinfomsg.cpp \
     ../NetworkProtocol/Responses/showuserordersmsg.cpp \
     ../NetworkProtocol/Responses/showuserstocksmsg.cpp \
@@ -44,7 +41,8 @@ SOURCES += \
     DataTransferObjects/order.cpp \
     DataTransferObjects/bestorder.cpp \
     DataTransferObjects/types.cpp \
-    DataTransferObjects/lasttransaction.cpp
+    DataTransferObjects/lasttransaction.cpp \
+    Responses/registerusersuccessmsg.cpp
 
 
 HEADERS += \
@@ -60,19 +58,16 @@ HEADERS += \
     ../NetworkProtocol/Requests/companystatusmsg.h \
     ../NetworkProtocol/Requests/cancelordermsg.h \
     ../NetworkProtocol/Requests/buystockmsg.h \
-    ../NetworkProtocol/Responses/unrecognizedusermsg.h \
     ../NetworkProtocol/Responses/transactionchangemsg.h \
     ../NetworkProtocol/Responses/selltransactionmsg.h \
     ../NetworkProtocol/Responses/showordermsg.h \
     ../NetworkProtocol/Responses/orderidmsg.h \
-    ../NetworkProtocol/Responses/loginusersuccessmsg.h \
-    ../NetworkProtocol/Responses/loginuserfailuremsg.h \
-    ../NetworkProtocol/Responses/registerusersuccessmsg.h \
-    ../NetworkProtocol/Responses/registeruserfailuremsg.h \
+    ../NetworkProtocol/Responses/okmsg.h \
+    ../NetworkProtocol/Responses/failuremsg.h \
     ../NetworkProtocol/Responses/companyfrozenmsg.h \
     ../NetworkProtocol/Responses/companyactivemsg.h \
     ../NetworkProtocol/Responses/buytransactionmsg.h \
-    ../NetworkProtocol/Responses/bestordermsg.h \
+    ../NetworkProtocol/Responses/showbestordermsg.h \
     ../NetworkProtocol/Responses/stockinfomsg.h \
     ../NetworkProtocol/Responses/showuserordersmsg.h \
     ../NetworkProtocol/Responses/showuserstocksmsg.h \
@@ -82,7 +77,8 @@ HEADERS += \
     DataTransferObjects/order.h \
     DataTransferObjects/bestorder.h \
     DataTransferObjects/types.h \
-    DataTransferObjects/lasttransaction.h
+    DataTransferObjects/lasttransaction.h \
+    Responses/registerusersuccessmsg.h
 
 
 

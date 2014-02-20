@@ -4,9 +4,8 @@
 
 
 #include <Responses/registerusersuccessmsg.h>
-#include <Responses/registeruserfailuremsg.h>
-#include <Responses/loginuserfailuremsg.h>
-#include <Responses/loginusersuccessmsg.h>
+#include <Responses/okmsg.h>
+#include <Responses/failuremsg.h>
 #include <Responses/showuserstocksmsg.h>
 #include <Responses/showordermsg.h>
 #include <Responses/showuserordersmsg.h>
@@ -174,7 +173,7 @@ void Market::registerNewUser(Connection* connection, QString password)
     {
         qDebug() << "[Market] Nowy indentyfikator użytkownika nie został"
                  << "zwrócony. Błąd: " << query.lastError().text();
-        RegisterUserFailure response("Niepoprawne hasło.");
+        Failure response(Types::Failure::BAD_PASSWORD);
         m_server->send(response, connection);
 
     }
@@ -198,7 +197,7 @@ void Market::loginUser(Connection* connection, Types::UserIdType userId, QString
 
     m_database.commit();
 
-    QString failReason;
+    //QString failReason;
     if(query.first())
     {
         QString pswd = query.value(0).toString();
@@ -206,7 +205,7 @@ void Market::loginUser(Connection* connection, Types::UserIdType userId, QString
         {
             qDebug() << "[Market] Wysyłanie potwierdzenia udanej "\
                         "autoryzacji do uzytkownika id =" << userId;
-            LoginUserSuccess response;
+            Ok response;
             m_server->send(response, connection, userId);
             return;
         }
@@ -214,15 +213,15 @@ void Market::loginUser(Connection* connection, Types::UserIdType userId, QString
         {
             qDebug() << "[Market] Użytkownik id =" << userId
                      << "podał błędne hasło.";
-            failReason = "Błędne hasło";
+            //failReason = "Błędne hasło";
         }
     }
     else
     {
         qDebug() << "[Market] Nie znaleziono użytkownika w bazie.";
-        failReason = "Błędne id";
+        //failReason = "Błędne id";
     }
-    LoginuserFailure response(failReason);
+    Failure response(Types::Failure::BAD_USERID_OR_PASSWORD);
     m_server->send(response, connection);
 }
 

@@ -29,7 +29,7 @@ Types::Message::MessageType SellTransaction::type() const
     return Types::Message::MessageType::RESPONSE_SELL_TRANSACTION;
 }
 
-Types::MessageLengthType SellTransaction::length() const
+Types::Message::MessageLengthType SellTransaction::length() const
 {
     return sizeof(Types::Message::MessageType) +
             sizeof(m_orderId) + sizeof(m_amount);

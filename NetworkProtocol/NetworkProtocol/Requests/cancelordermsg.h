@@ -13,7 +13,7 @@ class NETWORKPROTOCOLSHARED_EXPORT CancelOrder : public Request
 public:
     CancelOrder(QDataStream& in);
 
-    DTO::Types::MessageLengthType length() const;
+    DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;
     DTO::Types::OrderIdType getOrderId() const;
 

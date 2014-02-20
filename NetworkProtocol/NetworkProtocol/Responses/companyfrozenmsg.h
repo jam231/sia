@@ -15,7 +15,7 @@ class NETWORKPROTOCOLSHARED_EXPORT CompanyFrozen : public Response
 public:
     CompanyFrozen(DTO::Types::CompanyIdType companyId);
 
-    DTO::Types::MessageLengthType length() const;
+    DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;
 
     static const QString getMessageName();

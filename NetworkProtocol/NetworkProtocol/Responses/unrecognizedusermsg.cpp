@@ -16,7 +16,7 @@ Types::Message::MessageType UnrecognizedUser::type() const
     return Types::Message::MessageType::RESPONSE_UNRECOGNIZED_USER;
 }
 
-Types::MessageLengthType UnrecognizedUser::length() const
+Types::Message::MessageLengthType UnrecognizedUser::length() const
 {
 
     return sizeof(Types::Message::MessageType);

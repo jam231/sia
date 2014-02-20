@@ -16,7 +16,7 @@ class NETWORKPROTOCOLSHARED_EXPORT SellTransaction : public Response
 public:
     SellTransaction(DTO::Types::OrderIdType m_orderId, DTO::Types::AmountType m_amount);
 
-    DTO::Types::MessageLengthType length() const;
+    DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;
 
     static const QString getMessageName();

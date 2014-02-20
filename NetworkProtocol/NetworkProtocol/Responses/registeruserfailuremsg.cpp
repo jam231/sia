@@ -13,10 +13,10 @@ RegisterUserFailure::RegisterUserFailure(QString reason)
     m_reason = reason;
 }
 
-Types::MessageLengthType RegisterUserFailure::length() const
+Types::Message::MessageLengthType RegisterUserFailure::length() const
 {
     return sizeof(Types::Message::MessageType) +
-           sizeof(Types::MessageLengthType) + m_reason.toUtf8().size();
+           sizeof(Types::Message::MessageLengthType) + m_reason.toUtf8().size();
 }
 
 Types::Message::MessageType RegisterUserFailure::type() const
@@ -33,7 +33,7 @@ void RegisterUserFailure::send(QIODevice* connection)
 
     sendHeader(out);
 
-    out << static_cast<Types::MessageLengthType>(reason_bytes.size());
+    out << static_cast<Types::Message::MessageLengthType>(reason_bytes.size());
     connection->write(reason_bytes);
 }
 

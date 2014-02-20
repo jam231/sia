@@ -12,10 +12,7 @@
 #include <Requests/getstockinfomsg.h>
 #include <Requests/cancelordermsg.h>
 
-#include <Responses/unrecognizedusermsg.h>
-#include <Responses/loginuserfailuremsg.h>
-#include <Responses/registeruserfailuremsg.h>
-
+#include <Responses/failuremsg.h>
 #include <DataTransferObjects/order.h>
 
 
@@ -125,14 +122,14 @@ void Connection::disconect()
  */
 bool Connection::processMessage()
 {
-    Types::MessageLengthType msgLength = Request::getMessageLength(m_socket);
+    Types::Message::MessageLengthType msgLength = Request::getMessageLength(m_socket);
 
     if(0 >= msgLength || msgLength > m_socket->bytesAvailable())
         return false;
 
     QDataStream message(m_socket->read(msgLength));
 
-    m_socket->read(sizeof(Types::MessageLengthType));
+    m_socket->read(sizeof(Types::Message::MessageLengthType));
 
     Types::Message::MessageType msgType = Request::getType(message);
 
@@ -158,7 +155,7 @@ bool Connection::processMessage()
             {
                 qWarning() << "\t\t[Connection] Próba rejestracji przez "\
                              "zalogowanego użytkownika.";
-                RegisterUserFailure response("Zalogowany.");
+                Failure response(Types::Failure::CANNOT_REGISTER_WHEN_LOGGED);
                 send(response);
             }
             return true;
@@ -185,7 +182,7 @@ bool Connection::processMessage()
             {
                 qWarning() << "\t\t[Connection] Wykryto próbę wielokrotnego"
                            << "logowania przez użytkownika" << m_userId;
-                LoginuserFailure response("Już zalogowany.");
+                Failure response(Types::Failure::ALREADY_LOGGED);
                 send(response);
             }
             return true;
@@ -202,11 +199,11 @@ bool Connection::processMessage()
         }
     }
 
-    //jesli nie mamy przypisanego usera do tego polaczenia wysylamy UNRECOGNIZED
+    //jesli nie mamy przypisanego usera do tego polaczenia wysylamy FAILUE::NOT_LOGGED
     if(!isUserAssigned())
     {
         qDebug() << "\t\t[Connection] Nierozpoznano użytkownika.";
-        UnrecognizedUser response;
+        Failure response(Types::Failure::NOT_LOGGED);
         send(response);
         return true;
     }

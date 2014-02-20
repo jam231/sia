@@ -11,7 +11,7 @@ class NETWORKPROTOCOLSHARED_EXPORT GetMyStocks : public Request
 public:
     GetMyStocks(QDataStream& in);
 
-    DTO::Types::MessageLengthType length() const;
+    DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;
 
     static const QString getMessageName();

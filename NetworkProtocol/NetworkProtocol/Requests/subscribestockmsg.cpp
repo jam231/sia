@@ -22,7 +22,7 @@ Types::StockIdType SubscribeStock::getStockId() const
     return m_stockId;
 }
 
-Types::MessageLengthType SubscribeStock::length() const
+Types::Message::MessageLengthType SubscribeStock::length() const
 {
     return sizeof(Types::Message::MessageType) +
            sizeof(m_stockId);

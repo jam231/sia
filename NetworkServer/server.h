@@ -5,8 +5,8 @@
 #include "connection.h"
 #include "utilities.h"
 
-#include "Responses/registerusersuccessmsg.h"
-#include "Responses/loginusersuccessmsg.h"
+#include <Responses/registerusersuccessmsg.h>
+#include <Responses/okmsg.h>
 
 #include <exception>
 
@@ -38,7 +38,7 @@ public:
 public slots:
     void send(NetworkProtocol::Responses::Response& msg, Connection*);
     void send(NetworkProtocol::Responses::RegisterUserSuccess& msg, Connection*);
-    void send(NetworkProtocol::Responses::LoginUserSuccess& msg, Connection*connection, NetworkProtocol::DTO::Types::UserIdType userId);
+    void send(NetworkProtocol::Responses::Ok& msg, Connection*connection, NetworkProtocol::DTO::Types::UserIdType userId);
     void send(NetworkProtocol::Responses::Response& msg);
     void send(NetworkProtocol::Responses::Response& msg, NetworkProtocol::DTO::Types::UserIdType userId);
 

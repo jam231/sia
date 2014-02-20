@@ -22,7 +22,7 @@ void ShowUserStocks::send(QIODevice* connection)
     QDataStream out(connection);
 
     sendHeader(out);
-    out << static_cast<Types::MessageLengthType>(m_stocks.size());
+    out << static_cast<Types::Message::MessageLengthType>(m_stocks.size());
     for(int i = 0; i < m_stocks.size(); ++i)
     {
         out << m_stocks[i].first
@@ -30,10 +30,10 @@ void ShowUserStocks::send(QIODevice* connection)
     }
 }
 
-Types::MessageLengthType ShowUserStocks::length() const
+Types::Message::MessageLengthType ShowUserStocks::length() const
 {
     return sizeof(Types::Message::MessageType) +
-                sizeof(Types::MessageLengthType) +
+                sizeof(Types::Message::MessageLengthType) +
                 m_stocks.size() * (sizeof(Types::StockIdType) + sizeof(Types::AmountType));
 }
 

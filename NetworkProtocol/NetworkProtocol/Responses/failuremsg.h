@@ -1,5 +1,6 @@
-#ifndef REGISTERUSEPFAILUREMSG_H
-#define REGISTERUSERFAILUREMSG_H
+#ifndef FAILUREMSG_H
+#define FAILUREMSG_H
+
 
 #include "response.h"
 
@@ -10,12 +11,12 @@ namespace NetworkProtocol
 namespace Responses
 {
 
-class NETWORKPROTOCOLSHARED_EXPORT RegisterUserFailure : public Response
+class NETWORKPROTOCOLSHARED_EXPORT Failure : public Response
 {
-    QString m_reason;
+    DTO::Types::Failure::FailureType m_reason;
 
 public:
-    RegisterUserFailure(QString reason);
+    Failure(DTO::Types::Failure::FailureType);
 
     DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;
@@ -27,4 +28,4 @@ public:
 
 }
 }
-#endif // REGISTERUSERFAILUREMSG_H
+#endif // FAILUREMSG_H

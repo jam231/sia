@@ -17,7 +17,7 @@ public:
                   DTO::Types::AmountType, DTO::Types::PriceType);
     ShowBestOrder(DTO::BestOrder);
 
-    DTO::Types::MessageLengthType length() const;
+    DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;
 
     static const QString getMessageName();

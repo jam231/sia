@@ -14,7 +14,7 @@ class NETWORKPROTOCOLSHARED_EXPORT CompanyActive : public Response
 public:
     CompanyActive(DTO::Types::CompanyIdType companyId);
 
-    DTO::Types::MessageLengthType length() const;
+    DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;
 
     static const QString getMessageName();
