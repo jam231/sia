@@ -1,7 +1,7 @@
 #ifndef GLOBALUTILITIESTEST_H
 #define GLOBALUTILITIESTEST_H
 
-#include <Utilities.h>
+#include <utilities.h>
 
 #include <QString>
 #include <QtTest>

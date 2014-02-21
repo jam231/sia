@@ -1,5 +1,6 @@
 #include "logger.h"
 
+#include <stdexcept>
 
 QString AbstractLogger::createLogEntry(QString loggingLevel, QString message,
                                        QString file, QString function, qint32 line)
