@@ -1,5 +1,5 @@
 #include "utilities.h"
-
+#include <stdexcept>
 
 std::shared_ptr<AbstractLogger> GlobalUtilities::_logger = std::shared_ptr<AbstractLogger>(new DummyLogger());
 
