@@ -1,7 +1,7 @@
 #include <QDebug>
 
 #include "connection.h"
-#include "Utils/utilities.h"
+#include "Utils/utils.h"
 
 #include <Requests/registerusermsg.h>
 #include <Requests/loginusermsg.h>

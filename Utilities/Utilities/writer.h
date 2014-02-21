@@ -25,6 +25,7 @@ public:
     FileWriter(QString file_name);
     // Not thread-safe
     void write(QString data);
+    void flush();
 
     virtual ~FileWriter();
 };
@@ -36,7 +37,6 @@ public:
     StdInWriter();
     // Not thread-safe
     void write(QString data);
-
     virtual ~StdInWriter();
 };
 
@@ -51,6 +51,8 @@ public:
 
     // Not thread-safe
     void write(QString data);
+
+    void flush();
 
     // Writes all remaining messages before destruction.
     virtual ~BufferedWriter();

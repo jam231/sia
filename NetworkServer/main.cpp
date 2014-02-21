@@ -6,14 +6,23 @@
 
 #include <configmanager.h>
 
+#include <utilities.h>
+#include <logger.h>
+
 int main(int argv, char **args)
 {
     QCoreApplication app(argv, args);
+
+    LoggerFactory* factory = new LoggerFactory();
+    GlobalUtilities::setLogger(factory->create(LoggingLevel::Trace, new FileWriter("hejho.txt")));
+    delete factory;
 
     try {
 
         QString configFilePath = "Files/config.ini";
         ConfigManager<> config(configFilePath);
+
+        LOG_INFO("\t!TEST!");
 
         Market market(config);
 

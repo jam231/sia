@@ -22,8 +22,6 @@ class GlobalUtilities
 {
     static std::shared_ptr<AbstractLogger> _logger;
 public:
-
-
     static void setLogger(AbstractLogger* logger);
     static std::shared_ptr<AbstractLogger> getLogger();
 };

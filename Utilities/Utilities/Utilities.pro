@@ -18,6 +18,7 @@ HEADERS += \
     logger.h \
     configmanager.h \
     utilities.h
+
 unix:!symbian {
     maemo5 {
         target.path = /opt/usr/lib

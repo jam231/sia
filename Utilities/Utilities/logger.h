@@ -38,6 +38,7 @@ public:
                        QString function, qint32 line) = 0;
     virtual void trace(QString message, QString file,
                        QString function, qint32 line) = 0;
+    virtual ~AbstractLogger() {}
  protected:
         // Template method
     QString createLogEntry(QString loggingLevel, QString message,
@@ -45,13 +46,18 @@ public:
 
 };
 
+
 class DummyLogger : public AbstractLogger
 {
+public:
+    DummyLogger() {}
     void error(QString, QString, QString, qint32) {}
     void warning(QString, QString, QString, qint32) {}
     void info(QString, QString, QString, qint32) {}
     void debug(QString, QString, QString, qint32) {}
     void trace(QString, QString, QString, qint32) {}
+
+    virtual ~DummyLogger() {}
 };
 
 
@@ -66,6 +72,8 @@ public:
                 QString function, qint32 line);
     void warning(QString message, QString file,
                 QString function, qint32 line);
+
+    virtual ~WarningLogger() {}
 };
 
 // I want the code to be DRY, hence this seemingly peculiar inheritance hierarchy.
@@ -76,6 +84,8 @@ public:
 
     void info(QString message, QString file,
                 QString function, qint32 line);
+
+    virtual ~InfoLogger() {}
 };
 
 // I want the code to be DRY, hence this seemingly peculiar inheritance hierarchy.
@@ -86,6 +96,8 @@ public:
 
     void debug(QString message, QString file,
                 QString function, qint32 line);
+
+    virtual ~DebugLogger() {}
 };
 
 // I want the code to be DRY, hence this seemingly peculiar inheritance hierarchy.
@@ -96,6 +108,8 @@ public:
 
     void trace(QString message, QString file,
                 QString function, qint32 line);
+
+    virtual ~TraceLogger() {}
 };
 
 

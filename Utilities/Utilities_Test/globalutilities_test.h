@@ -5,18 +5,20 @@
 
 #include <QString>
 #include <QtTest>
-
+#include <vector>
 
 class GlobalUtilitiesTest : public QObject
 {
         Q_OBJECT
-public:
-    GlobalUtilitiesTest();
 
 private Q_SLOTS:
-    void initTestCase();
-    void cleanupTestCase();
-    void testCase1();
+    void defaultGlobalLogger();
+
+    void setLoggerWithNull();
+
+    void setLogger_data();
+    void setLogger();
+
 };
 
 #endif // GLOBALUTILITIESTEST_H

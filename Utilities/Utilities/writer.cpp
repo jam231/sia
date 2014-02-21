@@ -43,11 +43,16 @@ FileWriter::FileWriter(QString file_name)
 void FileWriter::write(QString data)
 {
     stream << data;
+}
+
+void FileWriter::flush()
+{
     stream.flush();
 }
 
 FileWriter::~FileWriter()
 {
+    flush();
     file->close();
 }
 
@@ -78,13 +83,18 @@ void BufferedWriter::write(QString data)
     }
 }
 
-BufferedWriter::~BufferedWriter()
+void BufferedWriter::flush()
 {
     if(!_message_queue.empty())
     {
         _writer->write(_message_queue.join(""));
         _message_queue.clear();
     }
+}
+
+BufferedWriter::~BufferedWriter()
+{
+    flush();
 }
 
 
