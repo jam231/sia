@@ -91,3 +91,15 @@ unix:!symbian {
     }
     INSTALLS += target
 }
+
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../Utilities/Utilities/release/ -lUtilities
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../Utilities/Utilities/debug/ -lUtilities
+else:unix: LIBS += -L$$OUT_PWD/../../Utilities/Utilities/ -lUtilities
+
+INCLUDEPATH += $$PWD/../../Utilities/Utilities
+DEPENDPATH += $$PWD/../../Utilities/Utilities
+
+gcc:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Utilities/Utilities/release/libUtilities.a
+else:gcc:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Utilities/Utilities/debug/libUtilities.a
+else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../Utilities/Utilities/libUtilities.a

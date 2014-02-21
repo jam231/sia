@@ -4,8 +4,10 @@
 
 #include "market.h"
 
-#include <configmanager.h>
 
+#include <QDateTime>
+
+#include <configmanager.h>
 #include <utilities.h>
 #include <logger.h>
 
@@ -13,16 +15,22 @@ int main(int argv, char **args)
 {
     QCoreApplication app(argv, args);
 
+    // Malutki test celem sprawdzanie czy wszystko sie dolacza, bo byly z tym problemy.
     LoggerFactory* factory = new LoggerFactory();
-    GlobalUtilities::setLogger(factory->create(LoggingLevel::Trace, new FileWriter("hejho.txt")));
+    GlobalUtilities::setLogger(factory->create(LoggingLevel::Trace,
+                                               new FileWriter(
+                                                   QDate::currentDate().toString() + ".log"
+                                               ))
+                               );
     delete factory;
+
+    LOG_INFO("-------------------------------START-------------------------------");
 
     try {
 
         QString configFilePath = "Files/config.ini";
         ConfigManager<> config(configFilePath);
 
-        LOG_INFO("\t!TEST!");
 
         Market market(config);
 
