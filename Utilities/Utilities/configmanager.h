@@ -39,15 +39,15 @@ class InvalidValue : public std::exception
 class IniParser
 {
     /*
-     *  I assume .ini file have following syntax:
-     *   - one line == one statement
-     *   - Statement is in one of the two following forms:
-     *      #A comment which will be ignored in parsing process
+     *  I assume the .ini file have following syntax:
+     *   - at most one statement per line
+     *   - Statement has one of the two following forms:
+     *      #A comment which will be ignored in the parsing process
      *      [whitespaces]constant_name[whitespaces]=[whitespaces]value[whitespaces]
-     *   - The '=' and '#' signs reserved and should be present in a noncomment
+     *   - The '=' and '#' signs are reserved and should be present in a noncomment
      *     statement only once!
-     *   - statements first part (the key) of the statement is not case sensitive
-     *     and by default they will be perceived as being lowercase.
+     *   - First part of the satement is constant_name, it is not case sensitive
+     *     and by default will be perceived as being lowercase.
      *     Second part (the value) is case sensitive.
      *
      *  Everything which is not a equality statement parseINI ignores,
@@ -148,14 +148,14 @@ public:
 };
 
 /*
- *  ConfigManager reads configuration file from a given path.
- *  When it has a set of Key, Value pairs it can be queried
- *  in given manner:
+ *  ConfigManager reads the configuration file with given path.
+ *  When it has a set of (Key, Value) pairs it can be queried
+ *  in the following manner:
  *
  *      int port = myConfig["SERVER PORT"];
  *      bool hasServerIp = myConfig.contains("SERVER IP");
  *
- *  It is ConfigManger's role to check whether VALUE held by a given
+ *  It is ConfigManger's role to check whether a VALUE held by a given
  *  key can be translated to an output type.
  *
  */

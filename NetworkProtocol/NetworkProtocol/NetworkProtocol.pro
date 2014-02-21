@@ -1,4 +1,4 @@
-QMAKE_CXXFLAGS += -std=c++0x -Wall -Wextra -Wfloat-equal -Wundef \
+QMAKE_CXXFLAGS += -std=c++0x -Wall -Wextra -Wundef \
                   -Wpointer-arith
 
 QT       += network

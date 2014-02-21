@@ -3,8 +3,8 @@
 
 
 #include "market.h"
-#include "configmanager.h"
 
+#include <configmanager.h>
 
 int main(int argv, char **args)
 {
@@ -19,15 +19,18 @@ int main(int argv, char **args)
 
         return app.exec();
 
+
     }catch(const std::exception& e)
     {
         qDebug() << "[main] Złapano wyjątek: "
                  << e.what();
+
         return 1;
     }
     catch(...)
     {
         qDebug() << "[main] Załapano nieznany wyjątek.";
+
         return 2;
     }
     return 0;
