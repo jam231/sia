@@ -6,6 +6,7 @@
 #include <QDateTime>
 
 #include <memory>
+#include <stdexcept>
 
 #include <writer.h>
 
