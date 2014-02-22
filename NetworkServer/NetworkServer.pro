@@ -34,8 +34,8 @@ else:unix: LIBS += -L$$OUT_PWD/../NetworkProtocol/NetworkProtocol/ -lNetworkProt
 INCLUDEPATH += $$PWD/../NetworkProtocol/NetworkProtocol
 DEPENDPATH += $$PWD/../NetworkProtocol/NetworkProtocol
 
-win32|gcc:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../Utilities/Utilities/release/ -lUtilities
-else:win32|gcc:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../Utilities/Utilities/debug/ -lUtilities
+gcc:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../Utilities/Utilities/release/ -lUtilities
+else:gcc:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../Utilities/Utilities/debug/ -lUtilities
 else:unix: LIBS += -L$$OUT_PWD/../Utilities/Utilities/ -lUtilities
 
 INCLUDEPATH += $$PWD/../Utilities/Utilities
