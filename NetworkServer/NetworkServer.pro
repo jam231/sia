@@ -34,13 +34,13 @@ else:unix: LIBS += -L$$OUT_PWD/../NetworkProtocol/NetworkProtocol/ -lNetworkProt
 INCLUDEPATH += $$PWD/../NetworkProtocol/NetworkProtocol
 DEPENDPATH += $$PWD/../NetworkProtocol/NetworkProtocol
 
-gcc:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../Utilities/Utilities/release/ -lUtilities
-else:gcc:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../Utilities/Utilities/debug/ -lUtilities
+win32:gcc:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../Utilities/Utilities/release/ -lUtilities
+else:win32:gcc:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../Utilities/Utilities/debug/ -lUtilities
 else:unix: LIBS += -L$$OUT_PWD/../Utilities/Utilities/ -lUtilities
 
 INCLUDEPATH += $$PWD/../Utilities/Utilities
 DEPENDPATH += $$PWD/../Utilities/Utilities
 
-gcc:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../Utilities/Utilities/release/libUtilities.a
-else:gcc:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../Utilities/Utilities/debug/libUtilities.a
+win32:gcc:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../Utilities/Utilities/release/libUtilities.a
+else:win32:gcc:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../Utilities/Utilities/debug/libUtilities.a
 else:unix: PRE_TARGETDEPS += $$OUT_PWD/../Utilities/Utilities/libUtilities.a

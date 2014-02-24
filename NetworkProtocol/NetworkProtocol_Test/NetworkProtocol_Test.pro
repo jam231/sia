@@ -86,8 +86,8 @@ INCLUDEPATH += \
  ../NetworkProtocol/
 
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../NetworkProtocol/release/ -lNetworkProtocol
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../NetworkProtocol/debug/ -lNetworkProtocol
+win32:gcc:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../NetworkProtocol/release/ -lNetworkProtocol
+else:win32:gcc:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../NetworkProtocol/debug/ -lNetworkProtocol
 else:unix: LIBS += -L$$OUT_PWD/../NetworkProtocol/ -lNetworkProtocol
 
 INCLUDEPATH += $$PWD/../NetworkProtocol
