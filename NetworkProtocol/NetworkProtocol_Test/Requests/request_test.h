@@ -8,7 +8,7 @@ class RequestMock : public NetworkProtocol::Requests::Request
 public:
     RequestMock()
     {}
-    RequestMock(QDataStream &in)
+    RequestMock(QDataStream&)
     {}
 };
 

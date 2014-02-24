@@ -1,6 +1,11 @@
 #include "logger.h"
 
 #include <stdexcept>
+#include <utility>
+
+
+using namespace std;
+
 
 QString AbstractLogger::createLogEntry(QString loggingLevel, QString message,
                                        QString file, QString function, qint32 line)
@@ -12,6 +17,12 @@ QString AbstractLogger::createLogEntry(QString loggingLevel, QString message,
     return elements.join("");
 }
 
+
+
+
+WarningLogger::WarningLogger(unique_ptr<AbstractWriter> writer)
+    : _writer(move(writer))
+{}
 
 void  WarningLogger::error(QString message, QString file,
             QString function, qint32 line)
@@ -28,6 +39,9 @@ void  WarningLogger::warning(QString message, QString file,
 
 
 
+InfoLogger::InfoLogger(std::unique_ptr<AbstractWriter> writer)
+    : WarningLogger(move(writer))
+{}
 
 void InfoLogger::info(QString message, QString file,
             QString function, qint32 line)
@@ -37,6 +51,9 @@ void InfoLogger::info(QString message, QString file,
 
 
 
+DebugLogger::DebugLogger(unique_ptr<AbstractWriter> writer)
+    : InfoLogger(move(writer))
+{}
 
 void DebugLogger::debug(QString message, QString file,
             QString function, qint32 line)
@@ -46,6 +63,9 @@ void DebugLogger::debug(QString message, QString file,
 
 
 
+TraceLogger::TraceLogger(unique_ptr<AbstractWriter> writer)
+    : DebugLogger(move(writer))
+{}
 
 void TraceLogger::trace(QString message, QString file,
             QString function, qint32 line)
@@ -54,18 +74,19 @@ void TraceLogger::trace(QString message, QString file,
 }
 
 
-AbstractLogger* LoggerFactory::create(LoggingLevel level, AbstractWriter* writer)
+
+AbstractLogger* LoggerFactory::create(LoggingLevel level, unique_ptr<AbstractWriter> writer)
 {
     switch(level)
     {
         case Warning:
-            return new WarningLogger(writer);
+            return new WarningLogger(move(writer));
         case Info:
-            return new InfoLogger(writer);
+            return new InfoLogger(move(writer));
         case Debug:
-            return new DebugLogger(writer);
+            return new DebugLogger(move(writer));
         case Trace:
-            return new TraceLogger(writer);
+            return new TraceLogger(move(writer));
         case Off:
             return new DummyLogger();
         default:

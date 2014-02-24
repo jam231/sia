@@ -5,6 +5,7 @@
 
 #include <QString>
 #include <QtTest>
+
 #include <vector>
 
 class GlobalUtilitiesTest : public QObject

@@ -3,12 +3,16 @@
 #include <typeinfo>
 #include <exception>
 #include <stdexcept>
+#include <memory>
+#include <utility>
 
 #include <utilities.h>
 #include <logger.h>
 
+
 #include <mockobjects.h>
 
+using namespace std;
 
 void GlobalUtilitiesTest::defaultGlobalLogger()
 {
@@ -46,11 +50,16 @@ void GlobalUtilitiesTest::setLogger_data()
 
     LoggerFactory* factory = new LoggerFactory();
 
-    QTest::newRow("No logging") << factory->create(LoggingLevel::Off, new MockWriter());
-    QTest::newRow("Warning logging") << factory->create(LoggingLevel::Warning, new MockWriter());
-    QTest::newRow("Info logging") << factory->create(LoggingLevel::Info, new MockWriter());
-    QTest::newRow("Debug logging") << factory->create(LoggingLevel::Debug, new MockWriter());
-    QTest::newRow("Trace logging") << factory->create(LoggingLevel::Trace, new MockWriter());
+    QTest::newRow("No logging")         << factory->create(LoggingLevel::Off,
+                                                           unique_ptr<AbstractWriter>(new MockWriter()));
+    QTest::newRow("Warning logging")    << factory->create(LoggingLevel::Warning,
+                                                           unique_ptr<AbstractWriter>(new MockWriter()));
+    QTest::newRow("Info logging")       << factory->create(LoggingLevel::Info,
+                                                           unique_ptr<AbstractWriter>(new MockWriter()));
+    QTest::newRow("Debug logging")      << factory->create(LoggingLevel::Debug,
+                                                           unique_ptr<AbstractWriter>(new MockWriter()));
+    QTest::newRow("Trace logging")      << factory->create(LoggingLevel::Trace,
+                                                           unique_ptr<AbstractWriter>(new MockWriter()));
 
     delete factory;
 }

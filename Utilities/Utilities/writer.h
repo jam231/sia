@@ -16,6 +16,13 @@ public:
     virtual ~AbstractWriter() {}
 };
 
+template<class T>
+AbstractWriter* operator<<(AbstractWriter*, const T&);
+
+template<class T>
+AbstractWriter& operator<<(AbstractWriter&, const T&);
+
+
 class FileWriter : public AbstractWriter
 {
     QTextStream stream;
@@ -40,6 +47,13 @@ public:
     virtual ~StdInWriter();
 };
 
+/*
+ *
+ *  When buffer_size <= 2 then factual buffer size will be 1
+ *
+ *  Write to underlying buffer is requested when
+ *  aftering requesting new write buffer contains buffer_size elements.
+ */
 class BufferedWriter : public AbstractWriter
 {
     std::unique_ptr<AbstractWriter> _writer;
@@ -47,7 +61,7 @@ class BufferedWriter : public AbstractWriter
     qint32 _buffer_size;
 public:
     // For better performance try tweaking the buffer_size value.
-    BufferedWriter(AbstractWriter* writer, qint32 buffer_size=1024);
+    BufferedWriter(std::unique_ptr<AbstractWriter> writer, qint32 buffer_size=1024);
 
     // Not thread-safe
     void write(QString data);
@@ -67,7 +81,7 @@ class ConcurrentWriter : public AbstractWriter
 public:
 
     // Writer's write must be thread-safe !!!
-    ConcurrentWriter(AbstractWriter* writer);
+    ConcurrentWriter(std::unique_ptr<AbstractWriter> writer);
     // Thread-safe
     void write(QString data);
 };

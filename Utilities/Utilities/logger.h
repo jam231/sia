@@ -67,7 +67,7 @@ class WarningLogger : public DummyLogger
 protected:
     std::unique_ptr<AbstractWriter> _writer;
 public:
-    WarningLogger(AbstractWriter* writer) : _writer(std::unique_ptr<AbstractWriter>(writer)) {}
+    WarningLogger(std::unique_ptr<AbstractWriter> writer);
     void error(QString message, QString file,
                 QString function, qint32 line);
     void warning(QString message, QString file,
@@ -80,7 +80,7 @@ public:
 class InfoLogger : public WarningLogger
 {
 public:
-    InfoLogger(AbstractWriter* writer) : WarningLogger(writer) {}
+    InfoLogger(std::unique_ptr<AbstractWriter> writer);
 
     void info(QString message, QString file,
                 QString function, qint32 line);
@@ -92,7 +92,7 @@ public:
 class DebugLogger : public InfoLogger
 {
 public:
-    DebugLogger(AbstractWriter* writer) : InfoLogger(writer) {}
+    DebugLogger(std::unique_ptr<AbstractWriter> writer);
 
     void debug(QString message, QString file,
                 QString function, qint32 line);
@@ -104,7 +104,7 @@ public:
 class TraceLogger : public DebugLogger
 {
 public:
-    TraceLogger(AbstractWriter* writer) : DebugLogger(writer) {}
+    TraceLogger(std::unique_ptr<AbstractWriter> writer);
 
     void trace(QString message, QString file,
                 QString function, qint32 line);
@@ -117,7 +117,7 @@ class LoggerFactory
 {
 public:
     LoggerFactory() {}
-    AbstractLogger* create(LoggingLevel level, AbstractWriter* writer);
+    AbstractLogger* create(LoggingLevel level, std::unique_ptr<AbstractWriter> writer);
 };
 
 

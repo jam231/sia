@@ -6,13 +6,15 @@
 
 #include "mockobjects.h"
 
+#include <memory>
+
 class BufferedWriterTest : public QObject
 {
-    MockWriter _mock_writer;
+    std::unique_ptr<MockWriter> _mock_writer;
     Q_OBJECT
 private Q_SLOTS:
 
-    void cleanup();
+    void init();
 
     void write_data();
     void write();
@@ -24,4 +26,4 @@ private Q_SLOTS:
     void flushOnDestruction();
 };
 
-#endif // BUFFEREDWRITERTEST_H
+#endif // BUFFEREDWRITERTE_H
