@@ -15,7 +15,6 @@ DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 SOURCES += \
     main.cpp \
-    message_test.cpp \
     DataTransferObjects/types_test.cpp \
     DataTransferObjects/order_test.cpp \
     DataTransferObjects/lasttransaction_test.cpp \
@@ -49,7 +48,6 @@ SOURCES += \
     Responses/showuserstocksmsg_test.cpp
 
 HEADERS += \
-    message_test.h \
     DataTransferObjects/types_test.h \
     DataTransferObjects/order_test.h \
     DataTransferObjects/lasttransaction_test.h \
@@ -92,3 +90,15 @@ else:unix: LIBS += -L$$OUT_PWD/../NetworkProtocol/ -lNetworkProtocol
 
 INCLUDEPATH += $$PWD/../NetworkProtocol
 DEPENDPATH += $$PWD/../NetworkProtocol
+
+
+win32:gcc:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../Utilities/Utilities/release/ -lUtilities
+else:win32:gcc:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../Utilities/Utilities/debug/ -lUtilities
+else:unix: LIBS += -L$$OUT_PWD/../../Utilities/Utilities/ -lUtilities
+
+INCLUDEPATH += $$PWD/../../Utilities/Utilities
+DEPENDPATH += $$PWD/../../Utilities/Utilities
+
+win32:gcc:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Utilities/Utilities/release/libUtilities.a
+else:win32:gcc:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Utilities/Utilities/debug/libUtilities.a
+else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../Utilities/Utilities/libUtilities.a

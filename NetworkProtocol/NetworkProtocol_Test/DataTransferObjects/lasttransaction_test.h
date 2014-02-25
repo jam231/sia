@@ -1,7 +1,7 @@
 #ifndef LASTTRANSACTION_TEST_H
 #define LASTTRANSACTION_TEST_H
 
-#include "../NetworkProtocol/DataTransferObjects/lasttransaction.h"
+#include <DataTransferObjects/lasttransaction.h>
 
 #include <QtTest>
 

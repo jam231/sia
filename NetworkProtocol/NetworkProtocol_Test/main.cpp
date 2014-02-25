@@ -1,12 +1,15 @@
-#include "message_test.h"
+
+#include "DataTransferObjects/bestorder_test.h"
+
 
 int main(int argc, char *argv[])
 {
     bool result = 0;
 
-    MessageTest message_test;
+    BestOrderTest bestOrder_test;
 
-    result |= QTest::qExec(&message_test, argc, argv);
+    result |= QTest::qExec(&bestOrder_test, argc, argv);
+
 
     return result;
 }
