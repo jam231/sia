@@ -28,10 +28,6 @@ Types::Message::MessageLengthType SubscribeStock::length() const
            sizeof(m_stockId);
 }
 
-const QString SubscribeStock::getMessageName()
-{
-    return Request::getMessageName() + " :: SubscribeStock";
-}
 
 }
 }

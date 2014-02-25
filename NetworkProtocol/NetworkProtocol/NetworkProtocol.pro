@@ -37,7 +37,6 @@ SOURCES += \
     ../NetworkProtocol/Responses/showuserstocksmsg.cpp \
     ../NetworkProtocol/Requests/request.cpp \
     ../NetworkProtocol/Responses/response.cpp \
-    ../NetworkProtocol/message.cpp \
     DataTransferObjects/order.cpp \
     DataTransferObjects/bestorder.cpp \
     DataTransferObjects/types.cpp \

@@ -31,10 +31,7 @@ void OrderId::send(QIODevice* connection)
     out << m_orderId;
 }
 
-const QString OrderId::getMessageName()
-{
-    return Response::getMessageName() + " :: OrderId";
-}
+
 
 }
 }

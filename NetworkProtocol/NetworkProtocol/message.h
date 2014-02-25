@@ -14,8 +14,6 @@ public:
     virtual DTO::Types::Message::MessageLengthType length() const = 0;
     virtual DTO::Types::Message::MessageType type() const = 0;
 
-    static const QString getMessageName();
-
     virtual ~Message() {}
 };
 }

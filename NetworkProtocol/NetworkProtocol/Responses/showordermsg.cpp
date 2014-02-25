@@ -41,10 +41,7 @@ const Order& ShowOrder::getOrder() const
     return m_order;
 }
 
-const QString ShowOrder::getMessageName()
-{
-    return Response::getMessageName() + " :: ShowOrder";
-}
+
 
 }
 }

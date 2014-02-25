@@ -35,10 +35,6 @@ Types::Message::MessageLengthType SellTransaction::length() const
             sizeof(m_orderId) + sizeof(m_amount);
 }
 
-const QString SellTransaction::getMessageName()
-{
-    return Response::getMessageName() + " :: SellTransaction";
-}
 
 }
 }

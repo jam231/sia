@@ -42,10 +42,7 @@ void ShowUserStocks::addStock(Types::StockIdType stockId, Types::AmountType amou
     m_stocks.push_back(qMakePair(stockId, amount));
 }
 
-const QString ShowUserStocks::getMessageName()
-{
-    return Response::getMessageName() + " :: ShowUserStocks";
-}
+
 
 }
 }

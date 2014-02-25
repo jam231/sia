@@ -29,10 +29,6 @@ Types::Message::MessageLengthType Ok::length() const
     return sizeof(Types::Message::MessageType);
 }
 
-const QString Ok::getMessageName()
-{
-    return Response::getMessageName() + " :: Ok";
-}
 
 }
 }

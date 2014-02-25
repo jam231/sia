@@ -33,8 +33,6 @@ public:
 
     void addOrder(DTO::Order* order);
 
-    static const QString getMessageName();
-
     virtual ~ShowUserOrders();
 };
 

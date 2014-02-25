@@ -26,7 +26,7 @@ Types::Message::MessageType Request::getType(QDataStream& in)
 {
     if(in.device()->bytesAvailable() < 1)
     {
-        qWarning() <<"[" << getMessageName() << "] Nie można odczytać typu wiadomości - Pusty strumień.";
+        qWarning() <<"[] Nie można odczytać typu wiadomości - Pusty strumień.";
 
         return Types::Message::MessageType::MESSAGE_UNDEFINED;
     }
@@ -45,16 +45,11 @@ Request::Request()
 {
 }
 
-const QString Request::getMessageName()
-{
-    return Message::getMessageName() + " :: Request";
-}
-
 void Request::validateRequest(QDataStream &in)
 {
     if(in.device()->bytesAvailable() != length())
     {
-        qWarning() <<"[" << getMessageName() << "] Niepoprawna długość wiadomości.\n"
+        qWarning() <<"[] Niepoprawna długość wiadomości.\n"
                    << "Oczekiwano" << length() << "bajtów.\n"
                    << "Liczba bajtów dostępnych w buforze:"
                    << in.device()->bytesAvailable();
@@ -66,7 +61,7 @@ void Request::validateRequest(QDataStream &in)
 
     if(requestType != type())
     {
-        qWarning() <<"[" << getMessageName() << "] Niepoprawny typ wiadomości.\n"
+        qWarning() <<"[] Niepoprawny typ wiadomości.\n"
                    << "Oczekiwano typu:" << type() << "\n"
                    << "Typ podany w wiadomości:" << requestType;
         throw InvalidRequest();

@@ -17,7 +17,7 @@ BuyStock::BuyStock(QDataStream& in) : Request(in)
 
     if(m_amount <= 0 || m_price <= 0)
     {
-        qWarning() << "[" << getMessageName() << "] Wiadomośc nie spełnia: m_amount <= 0 || m_price <= 0";
+        qWarning() << "[] Wiadomośc nie spełnia: m_amount <= 0 || m_price <= 0";
         throw InvalidRequest();
     }
 }
@@ -37,10 +37,6 @@ Types::PriceType BuyStock::getPrice() const
     return m_price;
 }
 
-const QString BuyStock::getMessageName()
-{
-    return Request::getMessageName() + " :: BuyStock";
-}
 
 Types::StockIdType BuyStock::getStockId() const
 {

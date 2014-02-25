@@ -29,10 +29,6 @@ Types::Message::MessageLengthType GetStockInfo::length() const
            sizeof(m_stockId);
 }
 
-const QString GetStockInfo::getMessageName()
-{
-    return Request::getMessageName() + " :: GetStockInfo";
-}
 
 }
 }

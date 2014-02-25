@@ -20,7 +20,6 @@ public:
     DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;
 
-    static const QString getMessageName();
 
     void send(QIODevice *connection);
 };

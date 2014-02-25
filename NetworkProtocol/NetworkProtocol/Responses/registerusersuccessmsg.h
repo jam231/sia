@@ -19,7 +19,6 @@ public:
     DTO::Types::Message::MessageType type() const;
     DTO::Types::UserIdType getUserId() const;
 
-    static const QString getMessageName();
 
     void send(QIODevice* connection);
 };

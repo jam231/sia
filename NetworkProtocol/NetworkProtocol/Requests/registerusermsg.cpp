@@ -23,7 +23,7 @@ RegisterUser::RegisterUser(QDataStream& in) : Request() // Pakiet może mieć r�
 
     if(in.device()->bytesAvailable() < sizeof(passwordLength))
     {
-        qWarning() <<"[" << getMessageName() << "] Zbyt mało bajtów by odczytać długośc hasła.\n"
+        qWarning() <<"[] Zbyt mało bajtów by odczytać długośc hasła.\n"
                    << "Oczekiwano" << sizeof(passwordLength) << "bajtów.\n"
                    << "Liczba bajtów dostępnych w buforze:"
                    << in.device()->bytesAvailable();
@@ -34,7 +34,7 @@ RegisterUser::RegisterUser(QDataStream& in) : Request() // Pakiet może mieć r�
 
     if(in.device()->bytesAvailable() != passwordLength)
     {
-        qWarning() <<"[" << getMessageName() << "] Niepoprawna długość hasła.\n"
+        qWarning() <<"[] Niepoprawna długość hasła.\n"
                    << "Oczekiwano" << length() << "bajtów.\n"
                    << "Liczba bajtów dostępnych w buforze:"
                    << in.device()->bytesAvailable();
@@ -61,11 +61,6 @@ DTO::Types::Message::MessageLengthType RegisterUser::length() const
 {
     return sizeof(Types::Message::MessageType) +
            sizeof(Types::Message::MessageLengthType) + m_password.toUtf8().size();
-}
-
-const QString RegisterUser::getMessageName()
-{
-    return Request::getMessageName() + " :: RegisterUser";
 }
 
 }

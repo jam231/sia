@@ -65,10 +65,7 @@ ShowUserOrders::~ShowUserOrders()
     }
 }
 
-const QString ShowUserOrders::getMessageName()
-{
-    return Response::getMessageName() + " :: ShowUserOrders";
-}
+
 
 }
 }

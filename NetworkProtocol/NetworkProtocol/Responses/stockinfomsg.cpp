@@ -47,9 +47,6 @@ Types::Message::MessageLengthType StockInfo::length() const
             sizeof(Types::Message::MessageLengthType) + m_lastTransaction.lengthInBytes();
 }
 
-const QString StockInfo::getMessageName()
-{
-    return Response::getMessageName() + " :: StockInfo";
-}
+
 }
 }

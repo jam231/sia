@@ -33,10 +33,5 @@ Types::Message::MessageLengthType Failure::length() const
            sizeof(Types::Failure::FailureType);
 }
 
-const QString Failure::getMessageName()
-{
-    return Response::getMessageName() + " :: Failure";
-}
-
 }
 }

@@ -19,7 +19,7 @@ SellStock::SellStock(QDataStream& in) : Request(in)
     // a juz na pewno m_stockId
     if(m_amount <= 0 || m_price <= 0)
     {
-        qWarning() << "[" << getMessageName() << "] Wiadomośc nie spełnia: m_amount <= 0 || m_price <= 0";
+        qWarning() << "[] Wiadomośc nie spełnia: m_amount <= 0 || m_price <= 0";
         throw InvalidRequest();
     }
 }
@@ -51,10 +51,7 @@ DTO::Types::Message::MessageLengthType SellStock::length() const
             sizeof(m_price) + sizeof(m_amount);
 }
 
-const QString SellStock::getMessageName()
-{
-    return Request::getMessageName() + " :: SellStock";
-}
+
 
 }
 }

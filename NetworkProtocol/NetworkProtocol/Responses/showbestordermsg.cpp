@@ -23,10 +23,6 @@ Types::Message::MessageType ShowBestOrder::type() const
     return Types::Message::MessageType::RESPONSE_SHOW_BEST_ORDER;
 }
 
-const QString ShowBestOrder::getMessageName()
-{
-    return Response::getMessageName() + ":: ShowBestOrder";
-}
 
 Types::Message::MessageLengthType ShowBestOrder::length() const
 {

@@ -18,7 +18,7 @@ LoginUser::LoginUser(QDataStream &in) : Request() // Pakiet może mieć różną
 
     if(in.device()->bytesAvailable() < (sizeof(m_userId) + sizeof(passwordLength)))
     {
-        qWarning() <<"[" << getMessageName() << "] Zbyt mało bajtów by odczytać długośc hasła.\n"
+        qWarning() <<"[] Zbyt mało bajtów by odczytać długośc hasła.\n"
                   << "Oczekiwano" << sizeof(passwordLength) << "bajtów.\n"
                    << "Liczba bajtów dostępnych w buforze:"
                    << in.device()->bytesAvailable();
@@ -29,7 +29,7 @@ LoginUser::LoginUser(QDataStream &in) : Request() // Pakiet może mieć różną
 
     if(in.device()->bytesAvailable() != passwordLength)
     {
-        qWarning() <<"[" << getMessageName() << "] Niepoprawna długość hasła.\n"
+        qWarning() <<"[] Niepoprawna długość hasła.\n"
                    << "Oczekiwano" << length() << "bajtów.\n"
                    << "Liczba bajtów dostępnych w buforze:"
                    << in.device()->bytesAvailable();
@@ -60,11 +60,6 @@ Types::Message::MessageLengthType LoginUser::length() const
 {
     return sizeof(Types::Message::MessageType) +
            sizeof(m_userId) + sizeof(Types::Message::MessageLengthType) + m_password.toUtf8().size();
-}
-
-const QString LoginUser::getMessageName()
-{
-    return Request::getMessageName() + " :: LoginUser";
 }
 
 

@@ -22,10 +22,6 @@ DTO::Types::Message::MessageLengthType GetMyStocks::length() const
     return sizeof(Types::Message::MessageType);
 }
 
-const QString GetMyStocks::getMessageName()
-{
-    return Request::getMessageName() + " :: GetMyStocks";
-}
 
 }
 }

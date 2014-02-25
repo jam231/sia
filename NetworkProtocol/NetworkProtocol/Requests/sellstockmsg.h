@@ -23,7 +23,6 @@ public:
     DTO::Types::Message::MessageType type() const;
     DTO::Types::Message::MessageLengthType length() const;
 
-    static const QString getMessageName();
 };
 }
 }

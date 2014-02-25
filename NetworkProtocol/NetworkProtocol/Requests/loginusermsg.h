@@ -20,7 +20,6 @@ public:
     DTO::Types::UserIdType getUserId() const;
     QString getUserPassword() const;
 
-    static const QString getMessageName();
 };
 }
 }

@@ -28,10 +28,5 @@ Types::Message::MessageLengthType UnsubscribeStock::length() const
            sizeof(m_stockId);
 }
 
-const QString UnsubscribeStock::getMessageName()
-{
-    return Request::getMessageName() + " :: UnsubscribeStock";
-}
-
 }
 }

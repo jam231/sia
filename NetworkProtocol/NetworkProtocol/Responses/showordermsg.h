@@ -24,8 +24,6 @@ public:
 
     const DTO::Order& getOrder() const;
 
-    static const QString getMessageName();
-
     void send(QIODevice *connection);
 
 };

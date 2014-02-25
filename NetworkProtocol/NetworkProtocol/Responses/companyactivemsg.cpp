@@ -31,10 +31,6 @@ Types::Message::MessageLengthType CompanyActive::length() const
            sizeof(m_companyId);
 }
 
-const QString CompanyActive::getMessageName()
-{
-    return Response::getMessageName() + " :: CompanyActive";
-}
 
 }
 }

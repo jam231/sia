@@ -37,10 +37,6 @@ Types::UserIdType RegisterUserSuccess::getUserId() const
     return m_userId;
 }
 
-const QString RegisterUserSuccess::getMessageName()
-{
-    return Response::getMessageName() + " :: RegisterUserSuccess";
-}
 
 }
 }

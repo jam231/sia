@@ -30,11 +30,6 @@ Types::Message::MessageLengthType CancelOrder::length() const
            sizeof(m_orderId);
 }
 
-const QString CancelOrder::getMessageName()
-{
-    return Request::getMessageName() + " :: CancelOrder";
-}
-
 
 }
 }

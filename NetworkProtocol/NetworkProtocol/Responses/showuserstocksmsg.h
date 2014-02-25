@@ -21,8 +21,6 @@ public:
     DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;
 
-    static const QString getMessageName();
-
     void send(QIODevice* connection);
 
     void addStock(DTO::Types::StockIdType stockId, DTO::Types::AmountType amount);
