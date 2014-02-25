@@ -1,6 +1,13 @@
 #include "globalutilities_test.h"
 #include "bufferedwriter_test.h"
 
+/// TODO:
+///     Continue testing BufferedWriter
+///     Test ConcurrentWriter
+///
+///
+
+
 int main(int argc, char *argv[])
 {
     bool result = 0;

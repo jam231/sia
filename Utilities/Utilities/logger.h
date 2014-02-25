@@ -116,9 +116,12 @@ public:
 class LoggerFactory
 {
 public:
-    LoggerFactory() {}
-    AbstractLogger* create(LoggingLevel level, std::unique_ptr<AbstractWriter> writer);
+    AbstractLogger* create(LoggingLevel level,
+                           std::unique_ptr<AbstractWriter> writer = std::unique_ptr<AbstractWriter>(new DummyWriter()));
 };
+
+AbstractLogger* make_logger(LoggingLevel level,
+                            std::unique_ptr<AbstractWriter> writer = std::unique_ptr<AbstractWriter>(new DummyWriter()));
 
 
 

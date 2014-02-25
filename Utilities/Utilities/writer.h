@@ -23,6 +23,12 @@ template<class T>
 AbstractWriter& operator<<(AbstractWriter&, const T&);
 
 
+class DummyWriter : public AbstractWriter
+{
+public:
+    void write(QString) {}
+};
+
 class FileWriter : public AbstractWriter
 {
     QTextStream stream;

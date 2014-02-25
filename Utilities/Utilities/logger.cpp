@@ -73,9 +73,7 @@ void TraceLogger::trace(QString message, QString file,
     _writer->write(createLogEntry("Trace", message, file, function, line));
 }
 
-
-
-AbstractLogger* LoggerFactory::create(LoggingLevel level, unique_ptr<AbstractWriter> writer)
+AbstractLogger* make_logger(LoggingLevel level, std::unique_ptr<AbstractWriter> writer)
 {
     switch(level)
     {
@@ -92,4 +90,9 @@ AbstractLogger* LoggerFactory::create(LoggingLevel level, unique_ptr<AbstractWri
         default:
             throw std::invalid_argument("FactoryLogger.Create(level, writer) with level = unexpected value.");
     }
+}
+
+AbstractLogger* LoggerFactory::create(LoggingLevel level, unique_ptr<AbstractWriter> writer)
+{
+    return make_logger(level, move(writer));
 }
