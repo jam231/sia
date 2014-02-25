@@ -3,6 +3,7 @@
 #include <DataTransferObjects/types.h>
 
 #include <utilities.h>
+#include <stdexcept>
 
 using namespace NetworkProtocol::DTO;
 using namespace Types;
@@ -100,7 +101,7 @@ void BestOrderTest::creation_invalid()
         BestOrder best_order(order_type, stock_id, amount, price);
         QFAIL("std::invalid_argument should have been thrown.");
     }
-    catch(std::invalid_argument& e)
+    catch(std::invalid_argument&)
     {
         return;
     }
