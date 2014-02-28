@@ -8,7 +8,7 @@ using namespace DTO;
 
 UnsubscribeStock::UnsubscribeStock(QDataStream& in) : Request(in)
 {
-    in >> m_stockId;
+    in >> _stockId;
 }
 
 
@@ -19,13 +19,13 @@ Types::Message::MessageType UnsubscribeStock::type() const
 
 Types::StockIdType UnsubscribeStock::getStockId() const
 {
-    return m_stockId;
+    return _stockId;
 }
 
 Types::Message::MessageLengthType UnsubscribeStock::length() const
 {
     return sizeof(Types::Message::MessageType) +
-           sizeof(m_stockId);
+           sizeof(_stockId);
 }
 
 }

@@ -7,19 +7,19 @@ using namespace NetworkProtocol::DTO;
 using namespace NetworkProtocol::Responses;
 
 Server::Server(QObject *parent, int portNumber)
-    : QObject(parent), m_server(new QTcpServer(this))
+    : QObject(parent), _server(new QTcpServer(this))
 {
     qDebug() << "\t[Server] Tworzenie połączenia na porcie"
              << portNumber << "...";
 
-    m_server = new QTcpServer(this);
+    _server = new QTcpServer(this);
 
-    connect(m_server, SIGNAL(newConnection()),
+    connect(_server, SIGNAL(newConnection()),
             this,     SLOT(addNewConnection()));
 
-    if(!m_server->listen(QHostAddress::Any, portNumber))
+    if(!_server->listen(QHostAddress::Any, portNumber))
     {
-        qDebug() << "\t[Server] Wykryto błąd " << m_server->errorString()
+        qDebug() << "\t[Server] Wykryto błąd " << _server->errorString()
                  << "podczas tworzenia połączenia tcp.";
         throw TcpConnectionError();
     }
@@ -29,9 +29,9 @@ Server::Server(QObject *parent, int portNumber)
 
 Server::~Server()
 {
-    m_server->close();
+    _server->close();
     qDebug() << "\t[Server] Połączenie tcp zostało zamknięte.";
-    delete m_server;
+    delete _server;
 }
 
 /* TODO:
@@ -73,9 +73,9 @@ void Server::send(Responses::Ok& msg, Connection* connection,
      *  Sprawdź, czy jest już taki użytkownik w systemie.
      *  Jeżeli jest to wyślij wiadomość świadczącą o niepowodzeniu.
      */
-    if(!m_userConnections.contains(userId))
+    if(!_userConnections.contains(userId))
     {
-        m_userConnections[userId] = connection;
+        _userConnections[userId] = connection;
         connection->setUserId(userId);
 
         connection->send(msg);
@@ -93,7 +93,7 @@ void Server::send(Response& msg)
     qDebug() << "\t[Server] Wysylanie wiadomsci: " << msg.type()
              << " do wszystkich.";
 
-    for(auto it = m_userConnections.begin(); it != m_userConnections.end(); it++)
+    for(auto it = _userConnections.begin(); it != _userConnections.end(); it++)
     {
         it.value()->send(msg);
     }
@@ -104,20 +104,20 @@ void Server::send(Response& msg, Types::UserIdType userId)
     /* TODO:
      *
      *      Wydajniej by bylo za jednym zamachem zwrocic wartosc value
-     *      o ile m_userConnections zawiera klucz key
+     *      o ile _userConnections zawiera klucz key
      */
 
     qDebug() << "\t[Server] Wysylanie wiadomsci: " << msg.type()
              << " do uzytkownika z id=" << userId;
 
-    if(m_userConnections.contains(userId))
-        m_userConnections[userId]->send(msg);
+    if(_userConnections.contains(userId))
+        _userConnections[userId]->send(msg);
 }
 
 void Server::addNewConnection()
 {
     qDebug() << "[Server] Nawiązywanie nowego połączenia.";
-    Connection* newConnection = new Connection(m_server->nextPendingConnection(),
+    Connection* newConnection = new Connection(_server->nextPendingConnection(),
                                          this);
 
     connect(newConnection, SIGNAL(disconnected(Types::UserIdType)),
@@ -157,7 +157,7 @@ void Server::disconnectUser(Types::UserIdType userId)
     qDebug() << "[Server] Usuwanie użytkownika " << userId
              << "z rejestru aktywnych użytkowników (lol).";
     // To się chyba nie powinno zdarzyć.
-    if(m_userConnections.remove(userId) == 0)
+    if(_userConnections.remove(userId) == 0)
     {
         qDebug() << "[Server] Próba usunięcia niepołączonego użytkownika.";
     }

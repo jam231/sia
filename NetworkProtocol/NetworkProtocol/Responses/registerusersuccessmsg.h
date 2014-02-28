@@ -10,7 +10,7 @@ namespace Responses
 
 class NETWORKPROTOCOLSHARED_EXPORT RegisterUserSuccess : public Response
 {
-    DTO::Types::UserIdType m_userId;
+    DTO::Types::UserIdType _userId;
 
 public:
     RegisterUserSuccess(DTO::Types::UserIdType userId);

@@ -157,7 +157,7 @@ enum MessageType : MessageTypeType
 
 
     RESPONSE_TRANSACTION_CHANGE,            // Response powiadomienie o zmianie (zrealizowaniu?) danej transakcji
-    // wszystkich zasubskrybowanych do danego zasobu
+                                            // wszystkich zasubskrybowanych do danego zasobu
 
     RESPONSE_SHOW_ORDER,                    // Response informacja o nowym zleceniu
     RESPONSE_SHOW_BEST_ORDER,               // Response informacja o nowym najlepszym zleceniu

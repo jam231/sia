@@ -8,7 +8,7 @@ namespace Requests
 {
 class NETWORKPROTOCOLSHARED_EXPORT SubscribeStock : public Request
 {
-    DTO::Types::StockIdType m_stockId;
+    DTO::Types::StockIdType _stockId;
 
 public:
     SubscribeStock(QDataStream& msg);

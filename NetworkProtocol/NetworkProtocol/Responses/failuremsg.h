@@ -13,7 +13,7 @@ namespace Responses
 
 class NETWORKPROTOCOLSHARED_EXPORT Failure : public Response
 {
-    DTO::Types::Failure::FailureType m_reason;
+    DTO::Types::Failure::FailureType _reason;
 
 public:
     Failure(DTO::Types::Failure::FailureType);

@@ -10,7 +10,7 @@ namespace Responses
 
 class NETWORKPROTOCOLSHARED_EXPORT OrderId : public Response
 {
-    DTO::Types::OrderIdType m_orderId;
+    DTO::Types::OrderIdType _orderId;
 
 public:
     OrderId(DTO::Types::OrderIdType orderId);

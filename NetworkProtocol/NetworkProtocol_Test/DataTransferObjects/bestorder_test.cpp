@@ -131,12 +131,12 @@ void BestOrderTest::creation_invalid()
     }
 }
 
-void BestOrderTest::toStream_valid_data()
+void BestOrderTest::toStrea_valid_data()
 {
     generate_valid_data();
 }
 
-void BestOrderTest::toStream_valid()
+void BestOrderTest::toStrea_valid()
 {
     QFETCH(OrderType, order_type);
     QFETCH(StockIdType, stock_id);
@@ -165,13 +165,13 @@ void BestOrderTest::toStream_valid()
 }
 
 
-void BestOrderTest::fromStream_valid_data()
+void BestOrderTest::fromStrea_valid_data()
 {
     generate_valid_data();
 }
 
 
-void BestOrderTest::fromStream_valid()
+void BestOrderTest::fromStrea_valid()
 {
     QFETCH(OrderType, order_type);
     QFETCH(StockIdType, stock_id);
@@ -195,23 +195,23 @@ void BestOrderTest::fromStream_valid()
                             "Should be %1 is %2.")
                             .arg(correct_number_of_bytes).arg(stream.device()->size())));
 
-        BestOrder from_stream = BestOrder::fromStream(stream);
+        BestOrder fro_stream = BestOrder::fromStream(stream);
 
-        QVERIFY2(from_stream.getOrderType() == order_type,
+        QVERIFY2(fro_stream.getOrderType() == order_type,
                  qPrintable(QString("Order type doesn't match. Is %1 should be %2")
-                            .arg(from_stream.getOrderType())
+                            .arg(fro_stream.getOrderType())
                             .arg(order_type)));
-        QVERIFY2(from_stream.getStockId() == stock_id,
+        QVERIFY2(fro_stream.getStockId() == stock_id,
                  qPrintable(QString("Stock id doesn't match. Is %1 should be %2")
-                            .arg(from_stream.getStockId().value)
+                            .arg(fro_stream.getStockId().value)
                             .arg(stock_id.value)));
-        QVERIFY2(from_stream.getAmount() == amount,
+        QVERIFY2(fro_stream.getAmount() == amount,
                  qPrintable(QString("Amount doesn't match. Is %1 should be %2")
-                            .arg(from_stream.getAmount().value)
+                            .arg(fro_stream.getAmount().value)
                             .arg(amount.value)));
-        QVERIFY2(from_stream.getPrice() == price,
+        QVERIFY2(fro_stream.getPrice() == price,
                  qPrintable(QString("Price doesn't match. Is %1 should be %2")
-                            .arg(from_stream.getPrice().value)
+                            .arg(fro_stream.getPrice().value)
                             .arg(price.value)));
 
     }
@@ -225,13 +225,13 @@ void BestOrderTest::fromStream_valid()
     }
 }
 
-void BestOrderTest::fromStream_invalid_data()
+void BestOrderTest::fromStrea_invalid_data()
 {
     generate_invalid_data();
 }
 
 
-void BestOrderTest::fromStream_invalid()
+void BestOrderTest::fromStrea_invalid()
 {
     QFETCH(OrderType, order_type);
     QFETCH(StockIdType, stock_id);
@@ -296,9 +296,9 @@ void BestOrderTest::lengthSerialized()
 
     BestOrder best_order(order_type, stock_id, amount, price);
 
-    Message::MessageLengthType sum_of_sizeofs = sizeof(order_type) + sizeof(stock_id) +
+    Message::MessageLengthType su_of_sizeofs = sizeof(order_type) + sizeof(stock_id) +
                                                 sizeof(amount) + sizeof(price);
 
-    QVERIFY2(best_order.lengthSerialized() == sum_of_sizeofs, "Best order length in bytes is incorrect.");
+    QVERIFY2(best_order.lengthSerialized() == su_of_sizeofs, "Best order length in bytes is incorrect.");
 }
 

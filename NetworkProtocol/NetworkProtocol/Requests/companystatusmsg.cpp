@@ -10,7 +10,7 @@ using namespace DTO;
 
 CompanyStatus::CompanyStatus(QDataStream& in) : Request(in)
 {
-    in >> m_companyId;
+    in >> _companyId;
 }
 
 
@@ -21,13 +21,13 @@ Types::Message::MessageType CompanyStatus::type() const
 
 Types::CompanyIdType CompanyStatus::getCompanyId() const
 {
-    return m_companyId;
+    return _companyId;
 }
 
 Types::Message::MessageLengthType CompanyStatus::length() const
 {
     return sizeof(Types::Message::MessageType) +
-           sizeof(m_companyId);
+           sizeof(_companyId);
 }
 
 

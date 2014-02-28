@@ -11,7 +11,7 @@ namespace Responses
 
 class NETWORKPROTOCOLSHARED_EXPORT ShowBestOrder : public Response
 {
-    DTO::BestOrder m_bestOrder;
+    DTO::BestOrder _bestOrder;
 public:
     ShowBestOrder(DTO::Types::Order::OrderType, DTO::Types::StockIdType,
                   DTO::Types::AmountType, DTO::Types::PriceType);

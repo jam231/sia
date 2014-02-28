@@ -9,12 +9,12 @@ using namespace DTO;
 
 ShowBestOrder::ShowBestOrder(Types::Order::OrderType type, Types::StockIdType stockId,
                      Types::AmountType amount, Types::PriceType price)
-    : m_bestOrder(BestOrder(type, stockId, amount, price))
+    : _bestOrder(BestOrder(type, stockId, amount, price))
 {
 }
 
 ShowBestOrder::ShowBestOrder(BestOrder bestOrder)
-    : m_bestOrder(bestOrder)
+    : _bestOrder(bestOrder)
 {
 }
 
@@ -26,7 +26,7 @@ Types::Message::MessageType ShowBestOrder::type() const
 
 Types::Message::MessageLengthType ShowBestOrder::length() const
 {
-    return sizeof(Types::Message::MessageType) + m_bestOrder.lengthSerialized();
+    return sizeof(Types::Message::MessageType) + _bestOrder.lengthSerialized();
 }
 
 void ShowBestOrder::send(QIODevice *connection)
@@ -36,7 +36,7 @@ void ShowBestOrder::send(QIODevice *connection)
 
     sendHeader(out);
 
-    out << m_bestOrder;
+    out << _bestOrder;
 }
 
 }

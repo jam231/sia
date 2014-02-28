@@ -8,7 +8,7 @@ namespace Requests
 {
 class NETWORKPROTOCOLSHARED_EXPORT CompanyStatus : public Request
 {
-    DTO::Types::CompanyIdType m_companyId;
+    DTO::Types::CompanyIdType _companyId;
 
 public:
     CompanyStatus(QDataStream& in);

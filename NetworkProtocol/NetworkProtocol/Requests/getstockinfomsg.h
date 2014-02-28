@@ -9,7 +9,7 @@ namespace Requests
 
 class NETWORKPROTOCOLSHARED_EXPORT GetStockInfo : public Request
 {
-    DTO::Types::StockIdType m_stockId;
+    DTO::Types::StockIdType _stockId;
 public:
     GetStockInfo(QDataStream& in);
 

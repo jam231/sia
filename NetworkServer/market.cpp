@@ -48,82 +48,82 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
     QString dbHost = config["DATABASE HOST"];
     int dbPort = config.intAt("DATABASE PORT");
 
-    m_database = QSqlDatabase::addDatabase("QPSQL",
+    _database = QSqlDatabase::addDatabase("QPSQL",
                                            QLatin1String("Rynki finansowe 1"));
 
-    m_database.setHostName(dbHost);
-    m_database.setDatabaseName(dbName);
-    m_database.setUserName(dbUserName);
-    m_database.setPassword(dbPassword);
-    m_database.setPort(dbPort);
+    _database.setHostName(dbHost);
+    _database.setDatabaseName(dbName);
+    _database.setUserName(dbUserName);
+    _database.setPassword(dbPassword);
+    _database.setPort(dbPort);
 
     qDebug() << "[Market] Otwieranie nowego połączenia z bazą danych...";
-    if(!m_database.open())
+    if(!_database.open())
     {
-        qDebug() << "[Market] Wykryto błąd" << m_database.lastError().text()
+        qDebug() << "[Market] Wykryto błąd" << _database.lastError().text()
                  << "podczas otwierania nowego połączenia z bazą daynch.";
         throw DatabaseError();
     }
 
-    m_database.driver()->subscribeToNotification(BUY_TRANSACTIONS_CHANNEL);
-    m_database.driver()->subscribeToNotification(SELL_TRANSACTIONS_CHANNEL);
-    m_database.driver()->subscribeToNotification(CHANGE_CHANNEL);
+    _database.driver()->subscribeToNotification(BUY_TRANSACTIONS_CHANNEL);
+    _database.driver()->subscribeToNotification(SELL_TRANSACTIONS_CHANNEL);
+    _database.driver()->subscribeToNotification(CHANGE_CHANNEL);
 
     qDebug() << "[Market] Ustanowiono połączenie z bazą danych.";
 
-    //qDebug() << "Database tables:\n" << m_database.tables();
+    //qDebug() << "Database tables:\n" << _database.tables();
 
     qDebug() << "[Market] Uruchamianie serwera...";
-    m_server = new Server(this, serverPort);
+    _server = new Server(this, serverPort);
 
-    m_sessionOffTimer = new QTimer(this);
-    m_sessionOffTimer->setInterval(sessionOffInterval * 1000);
+    _sessionOffTimer = new QTimer(this);
+    _sessionOffTimer->setInterval(sessionOffInterval * 1000);
 
-    m_sessionOnTimer = new QTimer(this);
-    m_sessionOnTimer->setInterval(sessionOnInterval * 1000);
+    _sessionOnTimer = new QTimer(this);
+    _sessionOnTimer->setInterval(sessionOnInterval * 1000);
 
 
-    connect(m_server, SIGNAL(registerUserRequestFromServer(Connection*, QString)),
+    connect(_server, SIGNAL(registerUserRequestFromServer(Connection*, QString)),
             this,     SLOT(registerNewUser(Connection*, QString)) );
 
-    connect(m_server, SIGNAL(loginUserRequestFromServer(Connection*, NetworkProtocol::DTO::Types::UserIdType, QString)),
+    connect(_server, SIGNAL(loginUserRequestFromServer(Connection*, NetworkProtocol::DTO::Types::UserIdType, QString)),
             this,     SLOT(loginUser(Connection*, NetworkProtocol::DTO::Types::UserIdType, QString)));
 
-    connect(m_database.driver(), SIGNAL(notification(const QString&, QSqlDriver::NotificationSource,
+    connect(_database.driver(), SIGNAL(notification(const QString&, QSqlDriver::NotificationSource,
                                                      const QVariant&)),
             this,               SLOT(notificationHandler(const QString&, QSqlDriver::NotificationSource,
                                                          const QVariant&)));
 
-    connect(m_server, SIGNAL(sellStock(NetworkProtocol::DTO::Types::UserIdType, NetworkProtocol::DTO::Types::StockIdType,
+    connect(_server, SIGNAL(sellStock(NetworkProtocol::DTO::Types::UserIdType, NetworkProtocol::DTO::Types::StockIdType,
                                        NetworkProtocol::DTO::Types::AmountType, NetworkProtocol::DTO::Types::PriceType)),
             this,     SLOT(sellStock(NetworkProtocol::DTO::Types::UserIdType, NetworkProtocol::DTO::Types::StockIdType,
                                      NetworkProtocol::DTO::Types::AmountType, NetworkProtocol::DTO::Types::PriceType)));
 
-    connect(m_server, SIGNAL(buyStock(NetworkProtocol::DTO::Types::UserIdType, NetworkProtocol::DTO::Types::StockIdType,
+    connect(_server, SIGNAL(buyStock(NetworkProtocol::DTO::Types::UserIdType, NetworkProtocol::DTO::Types::StockIdType,
                                       NetworkProtocol::DTO::Types::AmountType, NetworkProtocol::DTO::Types::PriceType)),
             this,     SLOT(buyStock(NetworkProtocol::DTO::Types::UserIdType, NetworkProtocol::DTO::Types::StockIdType,
                                     NetworkProtocol::DTO::Types::AmountType, NetworkProtocol::DTO::Types::PriceType)));
 
-    connect(m_server, SIGNAL(getMyStocks(NetworkProtocol::DTO::Types::UserIdType)),
+    connect(_server, SIGNAL(getMyStocks(NetworkProtocol::DTO::Types::UserIdType)),
             this,     SLOT(getMyStocks(NetworkProtocol::DTO::Types::UserIdType)));
 
-    connect(m_server, SIGNAL(getMyOrders(NetworkProtocol::DTO::Types::UserIdType)),
+    connect(_server, SIGNAL(getMyOrders(NetworkProtocol::DTO::Types::UserIdType)),
             this, SLOT(getMyOrders(NetworkProtocol::DTO::Types::UserIdType)));
 
-    connect(m_server, SIGNAL(getStockInfo(NetworkProtocol::DTO::Types::UserIdType,
+    connect(_server, SIGNAL(getStockInfo(NetworkProtocol::DTO::Types::UserIdType,
                                           NetworkProtocol::DTO::Types::StockIdType)),
             this,     SLOT(getStockInfo(NetworkProtocol::DTO::Types::UserIdType,
                                         NetworkProtocol::DTO::Types::StockIdType)));
 
-    connect(m_server, SIGNAL(cancelOrder(NetworkProtocol::DTO::Types::UserIdType,
+    connect(_server, SIGNAL(cancelOrder(NetworkProtocol::DTO::Types::UserIdType,
                                          NetworkProtocol::DTO::Types::StockIdType)),
             this,     SLOT(cancelOrder(NetworkProtocol::DTO::Types::UserIdType,
                                        NetworkProtocol::DTO::Types::StockIdType)));
 
-    connect(m_sessionOnTimer, SIGNAL(timeout()),
+    connect(_sessionOnTimer, SIGNAL(timeout()),
             this,             SLOT(stopSession()));
 
-    connect(m_sessionOffTimer, SIGNAL(timeout()),
+    connect(_sessionOffTimer, SIGNAL(timeout()),
             this,              SLOT(startSession()));
 
 
@@ -133,16 +133,16 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
 
 Market::~Market()
 {
-    m_sessionOnTimer->stop();
-    m_sessionOffTimer->stop();
-    delete m_sessionOnTimer;
-    delete m_sessionOffTimer;
+    _sessionOnTimer->stop();
+    _sessionOffTimer->stop();
+    delete _sessionOnTimer;
+    delete _sessionOffTimer;
 
     qDebug() << "[Marker] Zamykanie połączenia z bazą danych...";
-    m_database.close();
+    _database.close();
     qDebug() << "[Market] Połączenie z bazą danych zostało zamknięte.";
     qDebug() << "[Market] Zamykanie serwera.";
-    delete m_server;
+    delete _server;
     qDebug() << "[Market] Serwer został zamknięty.";
 }
 
@@ -151,30 +151,30 @@ void Market::registerNewUser(Connection* connection, QString password)
 {
 
     qDebug() << "[Market] Rejestrowane nowego uzytkownika w toku...";
-    QSqlQuery query(m_database);
+    QSqlQuery query(_database);
     //
     query.prepare("SELECT nowy_uzytkownik(:password);");
     query.bindValue(":password", password);
     //
     query.setForwardOnly(true);
 
-    m_database.transaction();
+    _database.transaction();
 
     query.exec();
 
-    m_database.commit();
+    _database.commit();
     if(query.first())
     {
         RegisterUserSuccess response(Types::UserIdType(query.value(0).toInt()));
         qDebug() << "[Market] Wysyłanie identyfikatora nowemu użytkownikowi.";
-        m_server->send(response, connection);
+        _server->send(response, connection);
     }
     else
     {
         qDebug() << "[Market] Nowy indentyfikator użytkownika nie został"
                  << "zwrócony. Błąd: " << query.lastError().text();
         Failure response(Types::Failure::BAD_PASSWORD);
-        m_server->send(response, connection);
+        _server->send(response, connection);
 
     }
 
@@ -184,18 +184,18 @@ void Market::loginUser(Connection* connection, Types::UserIdType userId, QString
 {
     qDebug() << "[Market] Wyszukiwanie użytkownika o id =" << userId
              << "w bazie...";
-    QSqlQuery query(m_database);
+    QSqlQuery query(_database);
 
     query.prepare("SELECT haslo FROM uzytkownik WHERE id_uz = :id ;");
     query.bindValue(":id", userId.value);
 
     query.setForwardOnly(true);
 
-    m_database.transaction();
+    _database.transaction();
 
     query.exec();
 
-    m_database.commit();
+    _database.commit();
 
     //QString failReason;
     if(query.first())
@@ -206,7 +206,7 @@ void Market::loginUser(Connection* connection, Types::UserIdType userId, QString
             qDebug() << "[Market] Wysyłanie potwierdzenia udanej "\
                         "autoryzacji do uzytkownika id =" << userId;
             Ok response;
-            m_server->send(response, connection, userId);
+            _server->send(response, connection, userId);
             return;
         }
         else
@@ -222,12 +222,12 @@ void Market::loginUser(Connection* connection, Types::UserIdType userId, QString
         //failReason = "Błędne id";
     }
     Failure response(Types::Failure::BAD_USERID_OR_PASSWORD);
-    m_server->send(response, connection);
+    _server->send(response, connection);
 }
 
 void Market::startSession()
 {
-    m_sessionOffTimer->stop();
+    _sessionOffTimer->stop();
 
     for (qint32 i=2;i<=21;i++) {
         changeCachedBestSellOrders(i);
@@ -235,40 +235,40 @@ void Market::startSession()
     }
 
 
-    QSqlQuery query(m_database);
+    QSqlQuery query(_database);
     query.prepare("SELECT rozpocznij_sesje();");
     ShowUserStocks msg;
     query.setForwardOnly(true);
 
-    m_database.transaction();
+    _database.transaction();
 
     if (query.exec() == false)
         qDebug() << "[Market] Błąd przy rozpoczynaniu sesji " << (query.lastError().text());
 
 
 
-    m_database.commit();
+    _database.commit();
 
-    m_sessionOnTimer->start();
+    _sessionOnTimer->start();
 
     qDebug() << "[Market] Sesja rozpoczęta.";
 }
 
 void Market::stopSession()
 {
-    m_sessionOnTimer->stop();
-    QSqlQuery query(m_database);
+    _sessionOnTimer->stop();
+    QSqlQuery query(_database);
     query.prepare("SELECT zakoncz_sesje();");
 
     query.setForwardOnly(true);
 
-    m_database.transaction();
+    _database.transaction();
 
     query.exec();
 
-    m_database.commit();
+    _database.commit();
 
-    m_sessionOffTimer->start();
+    _sessionOffTimer->start();
 
     qDebug() << "[Market] Sesja zamknięta.";
 }
@@ -287,7 +287,7 @@ void Market::notificationHandler(const QString& channelName, QSqlDriver::Notific
             Types::UserIdType userId = Types::UserIdType(data[2].toInt());
 
             BuyTransaction msg(orderId, amount);
-            m_server->send(msg, userId);
+            _server->send(msg, userId);
         }
         else
             qDebug() << "[Market] " << BUY_TRANSACTIONS_CHANNEL
@@ -305,7 +305,7 @@ void Market::notificationHandler(const QString& channelName, QSqlDriver::Notific
             Types::UserIdType userId = Types::UserIdType(data[2].toInt());
 
             SellTransaction msg(orderId, amount);
-            m_server->send(msg, userId);
+            _server->send(msg, userId);
         }
         else
             qDebug() << "[Market] " << SELL_TRANSACTIONS_CHANNEL
@@ -323,39 +323,39 @@ void Market::notificationHandler(const QString& channelName, QSqlDriver::Notific
             QString date = data[3];
 
             TransactionChange msg(stockId, amount, price, date);
-            m_server->send(msg);
+            _server->send(msg);
 
-            m_cachedLastTransaction[stockId] = LastTransaction(date, amount, price);
+            _cachedLastTransaction[stockId] = std::shared_ptr<LastTransaction>(new LastTransaction(date, amount, price));
 
             changeCachedBestBuyOrders(stockId);
             // TODO: Jak już gdzieś wspomniałem być może
             //       dałoby się to zrobić optymalniej.
-            if(m_cachedBestBuyOrders.contains(stockId))
+            if(_cachedBestBuyOrders.contains(stockId))
             {
-                ShowBestOrder sg(Types::Order::OrderType::BUY, stockId, m_cachedBestBuyOrders[stockId].first,
-                                 m_cachedBestBuyOrders[stockId].second);
-                m_server->send(msg);
+                ShowBestOrder sg(Types::Order::OrderType::BUY, stockId, _cachedBestBuyOrders[stockId]->getAmount(),
+                                 _cachedBestBuyOrders[stockId]->getPrice());
+                _server->send(msg);
             }
             else
             {
                 ShowBestOrder sg(Types::Order::OrderType::BUY, stockId, 0, 0);
-                m_server->send(msg);
+                _server->send(msg);
             }
 
             changeCachedBestSellOrders(stockId);
             // TODO: Jak już gdzieś wspomniałem być może
             //       dałoby się to zrobić optymalniej.
-            if(m_cachedBestSellOrders.contains(stockId))
+            if(_cachedBestSellOrders.contains(stockId))
             {
                 ShowBestOrder msg(Types::Order::OrderType::SELL, stockId,
-                                  m_cachedBestSellOrders[stockId].first, m_cachedBestSellOrders[stockId].second);
+                                  _cachedBestSellOrders[stockId]->getAmount(), _cachedBestSellOrders[stockId]->getPrice());
 
-                m_server->send(msg);
+                _server->send(msg);
             }
             else
             {
                 ShowBestOrder msg(Types::Order::OrderType::SELL, stockId, 0, 0);
-                m_server->send(msg);
+                _server->send(msg);
             }
         }
         else
@@ -378,7 +378,7 @@ void Market::sellStock(Types::UserIdType userId, Types::StockIdType stockId,
              << "dobra o id =" << stockId
              << "za cenę" << price;
 
-    QSqlQuery query(m_database);
+    QSqlQuery query(_database);
     //
     query.prepare("SELECT * FROM zlec_sprzedaz(:userId, :stockId, :amount, :price);");
     /* TODO:
@@ -391,40 +391,40 @@ void Market::sellStock(Types::UserIdType userId, Types::StockIdType stockId,
     //
     query.setForwardOnly(true);
 
-    m_database.transaction();
+    _database.transaction();
 
     query.exec();
 
-    m_database.commit();
+    _database.commit();
 
     if(!query.lastError().isValid())
     {
         if(query.first())
         {
             OrderId msg(query.value(0).toInt());
-            m_server->send(msg, userId);
+            _server->send(msg, userId);
         }
         else
         {
             qDebug() << "[Market] Błąd nadania id dla zlecenia sprzedaży";
             OrderId msg(-1);
-            m_server->send(msg, userId);
+            _server->send(msg, userId);
         }
 
-        auto lastBestOrder = m_cachedBestSellOrders[stockId];
+        auto lastBestOrder = _cachedBestSellOrders[stockId];
         changeCachedBestSellOrders(stockId);
 
         //Order order(Order::SELL, stockId, amount, price);
         // Wyślij wszystkim subskrybentom.
         //Order msg(order);
-        //m_server->send(msg);
+        //_server->send(msg);
 
         // if changed then send!
-        if(m_cachedBestSellOrders[stockId] != lastBestOrder)
+        if(_cachedBestSellOrders[stockId] != lastBestOrder)
         {
             ShowBestOrder msg(Types::Order::OrderType::SELL, stockId,
-                              m_cachedBestSellOrders[stockId].first, m_cachedBestSellOrders[stockId].second);
-            m_server->send(msg);
+                              _cachedBestSellOrders[stockId]->getAmount(), _cachedBestSellOrders[stockId]->getPrice());
+            _server->send(msg);
         }
     }
     else
@@ -432,7 +432,7 @@ void Market::sellStock(Types::UserIdType userId, Types::StockIdType stockId,
         qDebug() << "[Market] Błąd przy zleceniu sprzedaży"
                  << query.lastError().text();
         OrderId msg(-1);
-        m_server->send(msg, userId);
+        _server->send(msg, userId);
     }
 }
 
@@ -444,7 +444,7 @@ void Market::buyStock(Types::UserIdType userId, Types::StockIdType stockId,
               << "dobra o id =" << stockId
               << "za cenę" << price;
 
-     QSqlQuery query(m_database);
+     QSqlQuery query(_database);
 
      query.prepare("SELECT * FROM zlec_kupno(:userId, :stockId, :amount, :price);");
      /* TODO:
@@ -458,42 +458,41 @@ void Market::buyStock(Types::UserIdType userId, Types::StockIdType stockId,
 
      query.setForwardOnly(true);
 
-     m_database.transaction();
+     _database.transaction();
 
      query.exec();
 
-     m_database.commit();
+     _database.commit();
      if(!query.lastError().isValid())
      {
          if(query.first())
          {
              OrderId msg(query.value(0).toInt());
-             m_server->send(msg, userId);
+             _server->send(msg, userId);
          }
          else
          {
+             /// TODO:
+             ///    Investigate what that code below does.
              qDebug() << "[Market] Błąd nadania id dla zlecenia kupna";
              OrderId msg(-1);
-             m_server->send(msg, userId);
+             _server->send(msg, userId);
          }
 
-         auto lastBestOrder = m_cachedBestBuyOrders[stockId];
+         auto lastBestOrder = _cachedBestBuyOrders[stockId];
          changeCachedBestBuyOrders(stockId);
 
          // Order order(Order::BUY, stockId, amount, price);
          // Wyślij wszytkim subskrybentom.
          //Order sg(order);
-         //m_server->send(msg);
+         //_server->send(msg);
 
          // if changed then send!]
-         if(m_cachedBestBuyOrders[stockId] != lastBestOrder)
+         if(_cachedBestBuyOrders[stockId] != lastBestOrder)
          {
-             // FIX
-             // Meh, wczesniej byla wiadomosc bestOrder, ktora sie po prostu wysylalo, a teraz to jakis chuj
-             // za kazdym razem trzeba sie jebac z czyms takim:
-             ShowBestOrder msg(Types::Order::OrderType::BUY, stockId, m_cachedBestBuyOrders[stockId].first,
-                              m_cachedBestBuyOrders[stockId].second);
-             m_server->send(msg);
+             ShowBestOrder msg(Types::Order::OrderType::BUY, stockId, _cachedBestBuyOrders[stockId]->getAmount(),
+                              _cachedBestBuyOrders[stockId]->getPrice());
+             _server->send(msg);
          }
      }
      else
@@ -501,35 +500,36 @@ void Market::buyStock(Types::UserIdType userId, Types::StockIdType stockId,
          qDebug() << "[Market] Błąd przy zleceniu kupna"
                   << query.lastError().text();
          OrderId msg(-1);
-         m_server->send(msg, userId);
+         _server->send(msg, userId);
      }
 }
 
 
 void Market::changeCachedBestSellOrders(Types::StockIdType stockId)
 {
-    QSqlQuery query(m_database);
+    QSqlQuery query(_database);
 
     query.prepare("SELECT * FROM najlepsza_sprzedaz(:stockId);");
     query.bindValue(":stockId", stockId.value);
 
     query.setForwardOnly(true);
 
-    m_database.transaction();
+    _database.transaction();
 
     query.exec();
 
-    m_database.commit();
+    _database.commit();
     if(query.first())
     {
         if(query.value(0).isValid() && query.value(1).isValid())
         {
             //qDebug() << "[Market] changeCachedSellBuyOrders: "
             //          << query.value(0).toInt() << " " << query.value(1).toInt();
-            m_cachedBestSellOrders.insert(stockId,
-                                          qMakePair(Types::AmountType(query.value(0).toInt()),
-                                                    Types::PriceType(query.value(1).toInt()))
-                                          );
+            _cachedBestSellOrders.insert(stockId,
+                                         std::shared_ptr<BestOrder>(
+                                             new BestOrder(Types::Order::BUY, stockId,
+                                                           Types::AmountType(query.value(0).toInt()),
+                                                           Types::PriceType(query.value(1).toInt()))));
         }
         else
             qDebug() << "[Market] W changeCachedBestBuyOrders"
@@ -538,34 +538,36 @@ void Market::changeCachedBestSellOrders(Types::StockIdType stockId)
     // To znaczy, ze dla danej transakcji nie ma w ogole oferty...
     else
     {
-        m_cachedBestSellOrders.remove(stockId);
+        _cachedBestSellOrders.remove(stockId);
     }
 }
 
 void Market::changeCachedBestBuyOrders(Types::StockIdType stockId)
 {
-    QSqlQuery query(m_database);
+    QSqlQuery query(_database);
 
     query.prepare("SELECT * FROM najlepsze_kupno(:stockId);");
     query.bindValue(":stockId", stockId.value);
 
     query.setForwardOnly(true);
 
-    m_database.transaction();
+    _database.transaction();
 
     query.exec();
 
-    m_database.commit();
+    _database.commit();
     if(query.first())
     {
         if(query.value(0).isValid() && query.value(1).isValid())
         {
            //qDebug() << "[Market] changeCachedBestBuyOrders: "
            //          << query.value(0).toInt() << " " << query.value(1).toInt();
-            m_cachedBestBuyOrders.insert(stockId,
-                                         qMakePair(Types::AmountType(query.value(0).toInt()),
-                                                   Types::PriceType(query.value(1).toInt()))
-                                         );
+            _cachedBestBuyOrders.insert(stockId,
+                                        std::shared_ptr<BestOrder>(
+                                            new BestOrder(Types::Order::SELL, stockId,
+                                                          Types::AmountType(query.value(0).toInt()),
+                                                          Types::PriceType(query.value(1).toInt()))));
+
         }
         else
             qDebug() << "[Market] W changeCachedBestBuyOrders"
@@ -574,7 +576,7 @@ void Market::changeCachedBestBuyOrders(Types::StockIdType stockId)
     // To znaczy, ze dla danej transakcji nie ma w ogole oferty...
     else
     {
-        m_cachedBestBuyOrders.remove(stockId);
+        _cachedBestBuyOrders.remove(stockId);
     }
 }
 
@@ -583,7 +585,7 @@ void Market::getMyStocks(Types::UserIdType userId)
     qDebug() << "[Market] Użytkownik o id =" << userId
               << "prosi o listę zasobów";
 
-     QSqlQuery query(m_database);
+     QSqlQuery query(_database);
 
      query.prepare("SELECT id_zasobu, ilosc FROM dobra_uz(:userId);");
 
@@ -592,11 +594,11 @@ void Market::getMyStocks(Types::UserIdType userId)
 
      query.setForwardOnly(true);
 
-     m_database.transaction();
+     _database.transaction();
 
      query.exec();
 
-     m_database.commit();
+     _database.commit();
 
      ShowUserStocks msg;
      while (query.next())
@@ -606,7 +608,7 @@ void Market::getMyStocks(Types::UserIdType userId)
              qDebug() << "[Market] W getMyStocks"
                       << "zwrócony rekord nie ma dwóch pol.";
 
-     m_server->send(msg, userId);
+     _server->send(msg, userId);
 }
 
 void Market::getMyOrders(Types::UserIdType userId)
@@ -614,7 +616,7 @@ void Market::getMyOrders(Types::UserIdType userId)
     qDebug() << "[Market] Użytkownik o id =" << userId
               << "prosi o listę zlecen.";
 
-     QSqlQuery query(m_database);
+     QSqlQuery query(_database);
 
      query.prepare("SELECT typ, id_zlecenia, id_zasobu, ilosc, limit1 FROM zlecenia_uz(:userId);");
 
@@ -623,11 +625,11 @@ void Market::getMyOrders(Types::UserIdType userId)
 
      query.setForwardOnly(true);
 
-     m_database.transaction();
+     _database.transaction();
 
      query.exec();
 
-     m_database.commit();
+     _database.commit();
 
      ShowUserOrders msg;
      while (query.next())
@@ -646,30 +648,16 @@ void Market::getMyOrders(Types::UserIdType userId)
             qDebug() << "[Market] W getMyOrders"
                      << "zwrócony rekord nie ma czterech pol.";
      }
-     m_server->send(msg, userId);
+     _server->send(msg, userId);
 }
 
 void Market::getStockInfo(Types::UserIdType userId, Types::StockIdType stockId)
 {
     qDebug() << "[Market] Użytkownik o id =" << userId
-              << "prosi o szczegoly zasobu o id=" << stockId;
+              << "prosi o szczegoly zasobu o id=" << stockId;    
 
-
-    QPair<Types::AmountType, Types::PriceType> bestBuyOrder;
-    QPair<Types::AmountType, Types::PriceType> bestSellOrder;
-    LastTransaction lastTransaction;
-
-
-
-    if(m_cachedBestBuyOrders.contains(stockId))
-        bestBuyOrder = m_cachedBestBuyOrders[stockId];
-    if(m_cachedBestSellOrders.contains(stockId))
-        bestSellOrder = m_cachedBestSellOrders[stockId];
-    if(m_cachedLastTransaction.contains(stockId))
-        lastTransaction = m_cachedLastTransaction[stockId];
-
-    StockInfo msg(stockId, bestBuyOrder, bestSellOrder, lastTransaction);
-    m_server->send(msg, userId);
+    StockInfo msg(stockId, _cachedBestBuyOrders[stockId], _cachedBestSellOrders[stockId], _cachedLastTransaction[stockId]);
+    _server->send(msg, userId);
 }
 
 /*
@@ -681,8 +669,8 @@ void Market::getStockInfo(Types::UserIdType userId, Types::StockIdType stockId)
 void Market::cancelOrder(Types::UserIdType userId, Types::StockIdType stockId)
 {
     qDebug() << "[Market] Użytkownik " << userId << " prosi o anulowanie zlecenia " << stockId;
-    QSqlQuery query1(m_database),
-              query2(m_database);
+    QSqlQuery query1(_database),
+              query2(_database);
 
     query1.prepare("DELETE FROM zlecenie_kupna AS zk WHERE zk.id_zlecenia = :orderId AND zk.id_uz = :userId;");
     query1.bindValue(":orderId", stockId.value);
@@ -696,12 +684,12 @@ void Market::cancelOrder(Types::UserIdType userId, Types::StockIdType stockId)
     query1.setForwardOnly(true);
     query2.setForwardOnly(true);
 
-    m_database.transaction();
+    _database.transaction();
 
     query1.exec();
     query2.exec();
 
-    m_database.commit();
+    _database.commit();
 
     if(query1.lastError().isValid())
     {

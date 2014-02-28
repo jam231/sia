@@ -16,13 +16,14 @@ class NETWORKPROTOCOLSHARED_EXPORT Order
 {
 
 private:
-    Types::OrderIdType m_orderId;
-    Types::Order::OrderType m_orderType;
-    Types::StockIdType m_stockId;
-    Types::AmountType m_amount;
-    Types::PriceType m_price;
+    Types::OrderIdType _orderId;
+    Types::Order::OrderType _orderType;
+    Types::StockIdType _stockId;
+    Types::AmountType _amount;
+    Types::PriceType _price;
 public:
-    Order(Types::OrderIdType, Types::Order::OrderType, Types::StockIdType, Types::AmountType, Types::PriceType);
+    Order(Types::OrderIdType, Types::Order::OrderType, Types::StockIdType,
+          Types::AmountType, Types::PriceType);
 
     Types::OrderIdType getOrderId() const;
     Types::Order::OrderType getOrderType() const;
@@ -30,11 +31,18 @@ public:
     Types::AmountType getAmount() const;
     Types::PriceType getPrice() const;
 
-    Types::Message::MessageLengthType lengthInBytes() const;
+    Types::Message::MessageLengthType lengthSerialized() const;
 
     friend QDataStream &operator<<(QDataStream& stream, const Order& order);
-    friend QDataStream &operator>>(QDataStream& stream, Order& order);
+
+    static Order fromStream(QDataStream&);
 };
+/*
+ *  It serializes contents of BestOrder object, however it does NOT insert at the begging
+ *  length !
+ */
+NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator<<(QDataStream& stream, const Order& bestOrder);
+
 }
 }
 

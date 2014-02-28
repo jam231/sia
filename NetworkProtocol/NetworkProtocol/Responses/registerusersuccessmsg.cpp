@@ -8,14 +8,14 @@ namespace Responses
 using namespace DTO;
 
 RegisterUserSuccess::RegisterUserSuccess(Types::UserIdType userId)
-    : m_userId(userId)
+    : _userId(userId)
 {
 }
 
 Types::Message::MessageLengthType RegisterUserSuccess::length() const
 { 
     return sizeof(Types::Message::MessageType) +
-           sizeof(m_userId);
+           sizeof(_userId);
 }
 
 Types::Message::MessageType RegisterUserSuccess::type() const
@@ -29,12 +29,12 @@ void RegisterUserSuccess::send(QIODevice* connection)
     QDataStream out(connection);
 
     sendHeader(out);
-    out << m_userId;
+    out << _userId;
 }
 
 Types::UserIdType RegisterUserSuccess::getUserId() const
 {
-    return m_userId;
+    return _userId;
 }
 
 

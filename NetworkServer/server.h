@@ -29,8 +29,8 @@ class Server : public QObject
 {    
     Q_OBJECT
 
-    QHash<NetworkProtocol::DTO::Types::UserIdType, Connection*> m_userConnections;
-    QTcpServer* m_server;
+    QHash<NetworkProtocol::DTO::Types::UserIdType, Connection*> _userConnections;
+    QTcpServer* _server;
 
 public:
     explicit Server(QObject *parent = 0, int portNumber = 6666);

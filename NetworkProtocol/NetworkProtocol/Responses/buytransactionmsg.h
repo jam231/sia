@@ -10,8 +10,8 @@ namespace Responses
 
 class NETWORKPROTOCOLSHARED_EXPORT BuyTransaction : public Response
 {
-    DTO::Types::AmountType m_amount;
-    DTO::Types::OrderIdType m_orderId;
+    DTO::Types::AmountType _amount;
+    DTO::Types::OrderIdType _orderId;
 
 public:
     BuyTransaction(DTO::Types::OrderIdType orderId, DTO::Types::AmountType amount);

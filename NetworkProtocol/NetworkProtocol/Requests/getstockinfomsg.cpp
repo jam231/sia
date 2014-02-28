@@ -10,7 +10,7 @@ using namespace DTO;
 
 GetStockInfo::GetStockInfo(QDataStream &in) : Request(in)
 {
-    in >> m_stockId;
+    in >> _stockId;
 }
 
 Types::Message::MessageType GetStockInfo::type() const
@@ -20,13 +20,13 @@ Types::Message::MessageType GetStockInfo::type() const
 
 DTO::Types::StockIdType GetStockInfo::getStockId() const
 {
-    return m_stockId;
+    return _stockId;
 }
 
 Types::Message::MessageLengthType GetStockInfo::length() const
 {
     return sizeof(Types::Message::MessageType) +
-           sizeof(m_stockId);
+           sizeof(_stockId);
 }
 
 

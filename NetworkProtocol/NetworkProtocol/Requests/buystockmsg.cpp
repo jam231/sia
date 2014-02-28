@@ -11,13 +11,13 @@ using namespace DTO;
 
 BuyStock::BuyStock(QDataStream& in) : Request(in)
 {   
-    in >> m_stockId;
-    in >> m_amount;
-    in >> m_price;
+    in >> _stockId;
+    in >> _amount;
+    in >> _price;
 
-    if(m_amount <= 0 || m_price <= 0)
+    if(_amount <= 0 || _price <= 0)
     {
-        qWarning() << "[] Wiadomośc nie spełnia: m_amount <= 0 || m_price <= 0";
+        qWarning() << "[] Wiadomośc nie spełnia: _amount <= 0 || _price <= 0";
         throw InvalidRequest();
     }
 }
@@ -29,24 +29,24 @@ Types::Message::MessageType BuyStock::type() const
 
 Types::AmountType BuyStock::getAmount() const
 {
-    return m_amount;
+    return _amount;
 }
 
 Types::PriceType BuyStock::getPrice() const
 {
-    return m_price;
+    return _price;
 }
 
 
 Types::StockIdType BuyStock::getStockId() const
 {
-    return m_stockId;
+    return _stockId;
 }
 
 Types::Message::MessageLengthType BuyStock::length() const
 {
     return sizeof(Types::Message::MessageType) +
-           sizeof(m_stockId) + sizeof(m_price)  + sizeof(m_amount);
+           sizeof(_stockId) + sizeof(_price)  + sizeof(_amount);
 }
 
 }

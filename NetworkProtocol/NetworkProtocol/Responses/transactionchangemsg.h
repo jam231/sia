@@ -10,10 +10,10 @@ namespace Responses
 
 class NETWORKPROTOCOLSHARED_EXPORT TransactionChange : public Response
 {
-    DTO::Types::StockIdType m_stockId;
-    DTO::Types::AmountType m_amount;
-    DTO::Types::PriceType m_price;
-    QString m_dateTime;
+    DTO::Types::StockIdType _stockId;
+    DTO::Types::AmountType _amount;
+    DTO::Types::PriceType _price;
+    QString _dateTime;
 
 public:
     TransactionChange(DTO::Types::StockIdType, DTO::Types::AmountType,

@@ -171,14 +171,14 @@ template<typename ConfigFormat = IniParser,
          typename Container = QHash<QString, QString> >
 class ConfigManager
 {
-    Container m_container;
+    Container _container;
 public:
     ConfigManager(const QString& pathToConfigFile)
     {
         qDebug() << "[ConfigManager] Tworzenie danych konfiguracyjnych" \
                     "przy pomocy "
                  << pathToConfigFile << "...";
-        ConfigFormat::parseFile(pathToConfigFile, m_container, 100);
+        ConfigFormat::parseFile(pathToConfigFile, _container, 100);
         qDebug() << "[ConfigManager] Dane konfiguracyjne zostały stworzone.";
     }
 

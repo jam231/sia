@@ -10,7 +10,7 @@ namespace Responses
 
 class NETWORKPROTOCOLSHARED_EXPORT CompanyFrozen : public Response
 {
-    DTO::Types::CompanyIdType m_companyId;
+    DTO::Types::CompanyIdType _companyId;
 
 public:
     CompanyFrozen(DTO::Types::CompanyIdType companyId);

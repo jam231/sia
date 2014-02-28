@@ -39,15 +39,18 @@ class Market : public QObject
     static const QString SELL_TRANSACTIONS_CHANNEL;// = "ch_zlecenia_sprzedazy";
     static const QString CHANGE_CHANNEL;// = "ch_zmiana";
 
-    Server* m_server;
-    QSqlDatabase m_database;
+    Server* _server;
+    QSqlDatabase _database;
 
-    QTimer* m_sessionOnTimer;
-    QTimer* m_sessionOffTimer;
+    QTimer* _sessionOnTimer;
+    QTimer* _sessionOffTimer;
 
-    QHash<NetworkProtocol::DTO::Types::StockIdType, NetworkProtocol::DTO::LastTransaction > m_cachedLastTransaction;
-    QHash<NetworkProtocol::DTO::Types::StockIdType, QPair<NetworkProtocol::DTO::Types::AmountType, NetworkProtocol::DTO::Types::PriceType> > m_cachedBestSellOrders;
-    QHash<NetworkProtocol::DTO::Types::StockIdType, QPair<NetworkProtocol::DTO::Types::AmountType, NetworkProtocol::DTO::Types::PriceType> > m_cachedBestBuyOrders;
+    QHash<NetworkProtocol::DTO::Types::StockIdType,
+          std::shared_ptr<NetworkProtocol::DTO::LastTransaction> > _cachedLastTransaction;
+    QHash<NetworkProtocol::DTO::Types::StockIdType,
+          std::shared_ptr<NetworkProtocol::DTO::BestOrder> > _cachedBestSellOrders;
+    QHash<NetworkProtocol::DTO::Types::StockIdType,
+          std::shared_ptr<NetworkProtocol::DTO::BestOrder> > _cachedBestBuyOrders;
 
 protected:
 

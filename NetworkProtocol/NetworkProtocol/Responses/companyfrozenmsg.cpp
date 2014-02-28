@@ -9,7 +9,7 @@ using namespace DTO;
 
 CompanyFrozen::CompanyFrozen(Types::CompanyIdType companyId)
 {
-    m_companyId = companyId;
+    _companyId = companyId;
 }
 
 Types::Message::MessageType CompanyFrozen::type() const
@@ -22,13 +22,13 @@ void CompanyFrozen::send(QIODevice *connection)
     QDataStream out(connection);
 
     sendHeader(out);
-    out << m_companyId;
+    out << _companyId;
 }
 
 Types::Message::MessageLengthType CompanyFrozen::length() const
 {
     return sizeof(Types::Message::MessageType) +
-           sizeof(m_companyId);
+           sizeof(_companyId);
 }
 
 

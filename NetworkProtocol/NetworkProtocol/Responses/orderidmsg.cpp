@@ -7,14 +7,14 @@ namespace Responses
 
 using namespace DTO;
 
-OrderId::OrderId(Types::OrderIdType orderId) : m_orderId(orderId)
+OrderId::OrderId(Types::OrderIdType orderId) : _orderId(orderId)
 {
 }
 
 Types::Message::MessageLengthType OrderId::length() const
 {
     return sizeof(Types::Message::MessageType) +
-           sizeof(m_orderId);
+           sizeof(_orderId);
 }
 
 Types::Message::MessageType OrderId::type() const
@@ -28,7 +28,7 @@ void OrderId::send(QIODevice* connection)
     QDataStream out(connection);
 
     sendHeader(out);
-    out << m_orderId;
+    out << _orderId;
 }
 
 

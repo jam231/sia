@@ -8,7 +8,7 @@ namespace Requests
 {
 class NETWORKPROTOCOLSHARED_EXPORT CancelOrder : public Request
 {
-    DTO::Types::OrderIdType m_orderId;
+    DTO::Types::OrderIdType _orderId;
 
 public:
     CancelOrder(QDataStream& in);

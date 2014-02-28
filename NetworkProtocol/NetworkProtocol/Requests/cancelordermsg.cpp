@@ -11,7 +11,7 @@ using namespace DTO;
 
 CancelOrder::CancelOrder(QDataStream &in) : Request(in)
 {
-    in >> m_orderId;
+    in >> _orderId;
 }
 
 Types::Message::MessageType CancelOrder::type() const
@@ -21,13 +21,13 @@ Types::Message::MessageType CancelOrder::type() const
 
 Types::OrderIdType CancelOrder::getOrderId() const
 {
-    return m_orderId;
+    return _orderId;
 }
 
 Types::Message::MessageLengthType CancelOrder::length() const
 {
     return sizeof(Types::Message::MessageType) +
-           sizeof(m_orderId);
+           sizeof(_orderId);
 }
 
 

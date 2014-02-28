@@ -10,12 +10,12 @@ namespace DTO
 
 BestOrder::BestOrder(Types::Order::OrderType orderType, Types::StockIdType stockId,
                      Types::AmountType amount, Types::PriceType price)
-    : m_orderType(orderType), m_stockId(stockId), m_amount(amount), m_price(price)
+    : _orderType(orderType), _stockId(stockId), _amount(amount), _price(price)
 {
-    if(stockId <= 0 || m_amount <= 0 || m_price <= 0)
+    if(stockId <= 0 || _amount <= 0 || _price <= 0)
     {
-        LOG_TRACE(QString("stockId(%1) <= 0 || m_amount(%2) <= 0 || m_price(%3) <= 0 == false")
-                  .arg(m_stockId.value).arg(m_amount.value).arg(m_price.value));
+        LOG_TRACE(QString("stockId(%1) <= 0 || _amount(%2) <= 0 || _price(%3) <= 0 == false")
+                  .arg(_stockId.value).arg(_amount.value).arg(_price.value));
         throw std::invalid_argument("One of stockId, amount, price is <= 0.");
 
     }
@@ -23,27 +23,26 @@ BestOrder::BestOrder(Types::Order::OrderType orderType, Types::StockIdType stock
 
 Types::Message::MessageLengthType BestOrder::lengthSerialized() const
 {
-    return sizeof(m_orderType) + sizeof(m_stockId) + sizeof(m_amount) + sizeof(m_price);
+    return sizeof(_orderType) + sizeof(_stockId) + sizeof(_amount) + sizeof(_price);
 }
 
 Types::Order::OrderType BestOrder::getOrderType() const
 {
-    return m_orderType;
+    return _orderType;
 }
 
 Types::StockIdType BestOrder::getStockId() const
 {
-    return m_stockId;
+    return _stockId;
 }
-
 Types::AmountType BestOrder::getAmount() const
 {
-    return m_amount;
+    return _amount;
 }
 
 Types::PriceType BestOrder::getPrice() const
 {
-    return m_price;
+    return _price;
 }
 
 
@@ -55,6 +54,7 @@ QDataStream &operator<<(QDataStream& stream, const BestOrder& bestOrder)
            << bestOrder.getPrice();
     return stream;
 }
+
 
 BestOrder BestOrder::fromStream(QDataStream& stream)
 {

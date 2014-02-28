@@ -12,7 +12,7 @@ using namespace DTO;
 RegisterUser::RegisterUser(QDataStream& in) : Request() // Pakiet może mieć różną długość w zależności
 {                                                       // od długości hasła.
     /*
-     *  in >> m_Password
+     *  in >> _Password
      *  Czytanie QStringa nie zadziała, jeżeli do jego wysyłania
      *  nie został użyty QDataStream - tak wyczytałem na stackoverflow,
      *  i rzeczywiscie nie chciał mi się wczytać
@@ -43,7 +43,7 @@ RegisterUser::RegisterUser(QDataStream& in) : Request() // Pakiet może mieć r�
 
     QByteArray buffer(passwordLength, Qt::Uninitialized);
     in.readRawData(buffer.data(), passwordLength);
-    m_password = QString(buffer);
+    _password = QString(buffer);
 }
 
 Types::Message::MessageType RegisterUser::type() const
@@ -53,14 +53,14 @@ Types::Message::MessageType RegisterUser::type() const
 
 QString RegisterUser::getPassword() const
 {
-    return m_password;
+    return _password;
 }
 
 
 DTO::Types::Message::MessageLengthType RegisterUser::length() const
 {
     return sizeof(Types::Message::MessageType) +
-           sizeof(Types::Message::MessageLengthType) + m_password.toUtf8().size();
+           sizeof(Types::Message::MessageLengthType) + _password.toUtf8().size();
 }
 
 }

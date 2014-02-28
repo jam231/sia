@@ -10,16 +10,16 @@ using namespace DTO;
 TransactionChange::TransactionChange(Types::StockIdType stockId, Types::AmountType amount,
                                      Types::PriceType price, QString dateTime)
 {
-    m_stockId = stockId;
-    m_amount = amount;
-    m_price = price;
-    m_dateTime = dateTime;
+    _stockId = stockId;
+    _amount = amount;
+    _price = price;
+    _dateTime = dateTime;
 }
 
 Types::Message::MessageLengthType TransactionChange::length() const
 {
     return sizeof(Types::Message::MessageType) +
-            sizeof(m_stockId) + sizeof(m_amount) + sizeof(m_price) + m_dateTime.toUtf8().size();
+            sizeof(_stockId) + sizeof(_amount) + sizeof(_price) + _dateTime.toUtf8().size();
 }
 
 void TransactionChange::send(QIODevice *connection)
@@ -27,12 +27,12 @@ void TransactionChange::send(QIODevice *connection)
     // Domyślnie BigEndian.
     QDataStream out(connection);
 
-    QByteArray dateTime_bytes = m_dateTime.toUtf8();
+    QByteArray dateTime_bytes = _dateTime.toUtf8();
 
     sendHeader(out);
-    out << m_stockId
-        << m_amount
-        << m_price
+    out << _stockId
+        << _amount
+        << _price
         << static_cast<Types::Message::MessageLengthType>(dateTime_bytes.size());
     connection->write(dateTime_bytes);
 }

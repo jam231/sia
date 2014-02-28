@@ -10,7 +10,7 @@ namespace Responses
 
 class NETWORKPROTOCOLSHARED_EXPORT CompanyActive : public Response
 {
-    DTO::Types::CompanyIdType m_companyId;
+    DTO::Types::CompanyIdType _companyId;
 public:
     CompanyActive(DTO::Types::CompanyIdType companyId);
 

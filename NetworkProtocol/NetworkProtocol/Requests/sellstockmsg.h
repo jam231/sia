@@ -8,9 +8,9 @@ namespace Requests
 {
 class NETWORKPROTOCOLSHARED_EXPORT SellStock : public Request
 {
-    DTO::Types::StockIdType m_stockId;
-    DTO::Types::AmountType m_amount;
-    DTO::Types::PriceType m_price;
+    DTO::Types::StockIdType _stockId;
+    DTO::Types::AmountType _amount;
+    DTO::Types::PriceType _price;
 
 
 public:

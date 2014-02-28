@@ -9,7 +9,7 @@ using namespace DTO;
 
 CompanyActive::CompanyActive(Types::CompanyIdType companyId)
 {
-    m_companyId = companyId;
+    _companyId = companyId;
 }
 
 Types::Message::MessageType CompanyActive::type() const
@@ -22,13 +22,13 @@ void CompanyActive::send(QIODevice *connection)
     QDataStream out(connection);
 
     sendHeader(out);
-    out << m_companyId;
+    out << _companyId;
 }
 
 Types::Message::MessageLengthType CompanyActive::length() const
 {
     return sizeof(Types::Message::MessageType) +
-           sizeof(m_companyId);
+           sizeof(_companyId);
 }
 
 

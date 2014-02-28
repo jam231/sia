@@ -10,7 +10,7 @@ namespace Requests
 {
 class NETWORKPROTOCOLSHARED_EXPORT RegisterUser : public Request
 {
-    QString m_password;
+    QString _password;
 public:
     RegisterUser(QDataStream& msg);
 

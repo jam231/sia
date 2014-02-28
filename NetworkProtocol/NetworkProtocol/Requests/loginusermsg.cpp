@@ -16,7 +16,7 @@ LoginUser::LoginUser(QDataStream &in) : Request() // Pakiet może mieć różną
     // Domyślnie BigEndian
     Types::Message::MessageLengthType passwordLength;
 
-    if(in.device()->bytesAvailable() < (sizeof(m_userId) + sizeof(passwordLength)))
+    if(in.device()->bytesAvailable() < (sizeof(_userId) + sizeof(passwordLength)))
     {
         qWarning() <<"[] Zbyt mało bajtów by odczytać długośc hasła.\n"
                   << "Oczekiwano" << sizeof(passwordLength) << "bajtów.\n"
@@ -24,7 +24,7 @@ LoginUser::LoginUser(QDataStream &in) : Request() // Pakiet może mieć różną
                    << in.device()->bytesAvailable();
         throw InvalidRequest();
     }
-    in >> m_userId;
+    in >> _userId;
     in >> passwordLength;
 
     if(in.device()->bytesAvailable() != passwordLength)
@@ -38,7 +38,7 @@ LoginUser::LoginUser(QDataStream &in) : Request() // Pakiet może mieć różną
     QByteArray buffer(passwordLength, Qt::Uninitialized);
 
     in.readRawData(buffer.data(), passwordLength);
-    m_password = QString(buffer);
+    _password = QString(buffer);
 }
 
 Types::Message::MessageType LoginUser::type() const
@@ -48,18 +48,18 @@ Types::Message::MessageType LoginUser::type() const
 
 Types::UserIdType LoginUser::getUserId() const
 {
-    return m_userId;
+    return _userId;
 }
 
 QString LoginUser::getUserPassword() const
 {
-    return m_password;
+    return _password;
 }
 
 Types::Message::MessageLengthType LoginUser::length() const
 {
     return sizeof(Types::Message::MessageType) +
-           sizeof(m_userId) + sizeof(Types::Message::MessageLengthType) + m_password.toUtf8().size();
+           sizeof(_userId) + sizeof(Types::Message::MessageLengthType) + _password.toUtf8().size();
 }
 
 

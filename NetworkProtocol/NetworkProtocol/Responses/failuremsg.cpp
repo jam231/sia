@@ -9,7 +9,7 @@ using namespace DTO;
 
 Failure::Failure(Types::Failure::FailureType reason)
 {
-    m_reason = reason;
+    _reason = reason;
 }
 
 Types::Message::MessageType Failure::type() const
@@ -24,7 +24,7 @@ void Failure::send(QIODevice* connection)
 
     sendHeader(out);
 
-    out << m_reason;
+    out << _reason;
 }
 
 Types::Message::MessageLengthType Failure::length() const

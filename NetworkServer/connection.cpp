@@ -23,44 +23,44 @@ using namespace NetworkProtocol::Responses;
 using namespace DTO;
 
 Connection::Connection(QTcpSocket* socket, QObject *parent) :
-    QObject(parent), m_socket(socket), m_userId(NOT_ASSIGNED)
+    QObject(parent), _socket(socket), _userId(NOT_ASSIGNED)
 {
-    m_socket->setParent(this);
+    _socket->setParent(this);
 }
 
 Connection::~Connection()
 {
-    delete m_socket;
+    delete _socket;
     qWarning() << "\t\t[Connection] Połączenie zostało zerwane.";
 }
 
 Types::UserIdType Connection::userId() const
 {
-    return m_userId;
+    return _userId;
 }
 
 bool Connection::isUserAssigned() const
 {
-    return m_userId != NOT_ASSIGNED;
+    return _userId != NOT_ASSIGNED;
 }
 
 void Connection::setUserId(Types::UserIdType userId)
 {
-    m_userId = userId;
+    _userId = userId;
 }
 void Connection::start()
 {
     qDebug() << "\t\t[Connection] Rozpoczynanie nowego połączenia.";
 
-    connect(m_socket, SIGNAL(disconnected()),
+    connect(_socket, SIGNAL(disconnected()),
             this,     SLOT(disconect()));
 
-    connect(m_socket, SIGNAL(readyRead()),
+    connect(_socket, SIGNAL(readyRead()),
             this,     SLOT(processIncomingMessages()));
 
-    if(!m_socket->isValid())
+    if(!_socket->isValid())
     {
-        qCritical() << "\t\t[Connection] Wykryto błąd" << m_socket->errorString()
+        qCritical() << "\t\t[Connection] Wykryto błąd" << _socket->errorString()
                     << " podczas rozpoczynania nowego połączenia.";
         disconect(); //jak połączenie sie zerwało zanim połączyliśmy sloty
         return;
@@ -72,12 +72,12 @@ void Connection::start()
 
 void Connection::addSubscription(Types::StockIdType stockId)
 {
-    m_subscribedStocks.insert(stockId);
+    _subscribedStocks.insert(stockId);
 }
 
 void Connection::dropSubscription(Types::StockIdType stockId)
 {
-    m_subscribedStocks.remove(stockId);
+    _subscribedStocks.remove(stockId);
 }
 
 bool Connection::send(Response& msg)
@@ -90,14 +90,14 @@ bool Connection::send(Response& msg)
      *   return false;
      */
     qDebug() << "\t\t[Connection] Wiadomośc: " << msg.type() << " wysłana.";
-    msg.send(m_socket);
+    msg.send(_socket);
     return true;
 
 }
 
 bool Connection::send(ShowOrder msg)
 {
-    if(m_subscribedStocks.contains(msg.getOrder().getStockId()))
+    if(_subscribedStocks.contains(msg.getOrder().getStockId()))
     {
         return send(static_cast<Response&>(msg));
 
@@ -108,8 +108,8 @@ bool Connection::send(ShowOrder msg)
 void Connection::disconect()
 {
     qDebug() << "\t\t[Connection] Zrywanie połączenia...";
-    if(m_userId != NOT_ASSIGNED)
-        emit disconnected(m_userId);
+    if(_userId != NOT_ASSIGNED)
+        emit disconnected(_userId);
     // Usun po tym jak wszystkie sygnaly zostały przetworzone.
     deleteLater();
 }
@@ -122,14 +122,14 @@ void Connection::disconect()
  */
 bool Connection::processMessage()
 {
-    Types::Message::MessageLengthType msgLength = Request::getMessageLength(m_socket);
+    Types::Message::MessageLengthType msgLength = Request::getMessageLength(_socket);
 
-    if(0 >= msgLength || msgLength > m_socket->bytesAvailable())
+    if(0 >= msgLength || msgLength > _socket->bytesAvailable())
         return false;
 
-    QDataStream message(m_socket->read(msgLength));
+    QDataStream message(_socket->read(msgLength));
 
-    m_socket->read(sizeof(Types::Message::MessageLengthType));
+    _socket->read(sizeof(Types::Message::MessageLengthType));
 
     Types::Message::MessageType msgType = Request::getType(message);
 
@@ -181,7 +181,7 @@ bool Connection::processMessage()
             else
             {
                 qWarning() << "\t\t[Connection] Wykryto próbę wielokrotnego"
-                           << "logowania przez użytkownika" << m_userId;
+                           << "logowania przez użytkownika" << _userId;
                 Failure response(Types::Failure::ALREADY_LOGGED);
                 send(response);
             }
@@ -216,7 +216,7 @@ bool Connection::processMessage()
             try
             {
                 BuyStock msg(message);
-                emit buyStock(m_userId, msg.getStockId(),
+                emit buyStock(_userId, msg.getStockId(),
                               msg.getAmount(), msg.getPrice());
             }catch(const std::exception& e)
             {
@@ -230,7 +230,7 @@ bool Connection::processMessage()
             try
             {
                 SellStock msg(message);
-                emit sellStock(m_userId, msg.getStockId(),
+                emit sellStock(_userId, msg.getStockId(),
                               msg.getAmount(), msg.getPrice());
             }catch(const std::exception& e)
             {
@@ -244,7 +244,7 @@ bool Connection::processMessage()
             try
             {
                 CancelOrder msg(message);
-                emit cancelOrder(m_userId, msg.getOrderId());
+                emit cancelOrder(_userId, msg.getOrderId());
             }catch(const std::exception& e)
             {
                 qWarning() << "\t\t[Connection] Złapano wyjątek" << e.what()
@@ -253,16 +253,16 @@ bool Connection::processMessage()
             break;
         }
         case Types::Message::MessageType::REQUEST_GET_MY_STOCKS:
-            emit getMyStocks(m_userId);
+            emit getMyStocks(_userId);
             break;
         case Types::Message::MessageType::REQUEST_GET_MY_ORDERS:
-            emit getMyOrders(m_userId);
+            emit getMyOrders(_userId);
             break;
         case Types::Message::MessageType::REQUEST_GET_STOCK_INFO:
         {
             GetStockInfo msg(message);
 
-            emit getStockInfo(m_userId, msg.getStockId());
+            emit getStockInfo(_userId, msg.getStockId());
             break;
         }
         case Types::Message::MessageType::REQUEST_SUBSCRIBE_STOCK:

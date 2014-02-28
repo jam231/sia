@@ -11,15 +11,15 @@ using namespace DTO;
 
 SellStock::SellStock(QDataStream& in) : Request(in)
 {
-    in >> m_stockId;
-    in >> m_amount;
-    in >> m_price;
+    in >> _stockId;
+    in >> _amount;
+    in >> _price;
 
     // Mam wielka nadzieje, ze w bazie te rzeczy sa sprawdane,
-    // a juz na pewno m_stockId
-    if(m_amount <= 0 || m_price <= 0)
+    // a juz na pewno _stockId
+    if(_amount <= 0 || _price <= 0)
     {
-        qWarning() << "[] Wiadomośc nie spełnia: m_amount <= 0 || m_price <= 0";
+        qWarning() << "[] Wiadomośc nie spełnia: _amount <= 0 || _price <= 0";
         throw InvalidRequest();
     }
 }
@@ -32,23 +32,23 @@ Types::Message::MessageType SellStock::type() const
 
 DTO::Types::AmountType SellStock::getAmount() const
 {
-    return m_amount;
+    return _amount;
 }
 
 DTO::Types::PriceType SellStock::getPrice() const
 {
-    return m_price;
+    return _price;
 }
 
 DTO::Types::StockIdType SellStock::getStockId() const
 {
-    return m_stockId;
+    return _stockId;
 }
 
 DTO::Types::Message::MessageLengthType SellStock::length() const
 {
-    return sizeof(Types::Message::MessageType) + sizeof(m_stockId) +
-            sizeof(m_price) + sizeof(m_amount);
+    return sizeof(Types::Message::MessageType) + sizeof(_stockId) +
+            sizeof(_price) + sizeof(_amount);
 }
 
 

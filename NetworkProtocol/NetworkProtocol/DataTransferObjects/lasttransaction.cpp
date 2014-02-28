@@ -5,34 +5,43 @@ namespace NetworkProtocol
 namespace DTO
 {
 
-LastTransaction::LastTransaction()
-    : m_dateTime(""), m_amount(0), m_price(0)
-{
-}
-
 QString LastTransaction::getDateTime() const
 {
-    return m_dateTime;
+    return _dateTime;
 }
 
 Types::AmountType LastTransaction::getAmount() const
 {
-    return m_amount;
+    return _amount;
 }
 
 Types::PriceType LastTransaction::getPrice() const
 {
-    return m_price;
+    return _price;
 }
 
-Types::Message::MessageLengthType LastTransaction::lengthInBytes() const
+Types::Message::MessageLengthType LastTransaction::lengthSerialized() const
 {
-    return m_dateTime.toUtf8().size() + sizeof(m_amount) + sizeof(m_price);
+    return sizeof(Types::Message::MessageLengthType) + _dateTime.toUtf8().size() +
+           sizeof(_amount) + sizeof(_price);
 }
 
-LastTransaction::LastTransaction(QString dateTime, Types::AmountType amount, Types::PriceType price)
-    : m_dateTime(dateTime), m_amount(amount), m_price(price)
+LastTransaction::LastTransaction(QString dateTime, Types::AmountType amount,
+                                 Types::PriceType price)
+    : _dateTime(dateTime), _amount(amount), _price(price)
 {
+}
+
+
+QDataStream &operator<<(QDataStream& stream, const LastTransaction& lastTransaction)
+{
+    QByteArray dateTime = lastTransaction._dateTime.toUtf8();
+
+    stream << lastTransaction._amount
+           << static_cast<Types::Message::MessageLengthType>(lastTransaction._dateTime.toUtf8().size());
+    stream.device()->write(dateTime);
+    stream << lastTransaction.getPrice();
+    return stream;
 }
 
 }

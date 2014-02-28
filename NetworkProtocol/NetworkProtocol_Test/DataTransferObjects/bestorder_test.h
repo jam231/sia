@@ -21,14 +21,14 @@ private Q_SLOTS:
     void creation_invalid_data();
     void creation_invalid();
 
-    void toStream_valid_data();
-    void toStream_valid();
+    void toStrea_valid_data();
+    void toStrea_valid();
 
-    void fromStream_valid_data();
-    void fromStream_valid();
+    void fromStrea_valid_data();
+    void fromStrea_valid();
 
-    void fromStream_invalid_data();
-    void fromStream_invalid();
+    void fromStrea_invalid_data();
+    void fromStrea_invalid();
 
     void lengthSerialized_data();
     void lengthSerialized();

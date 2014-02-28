@@ -12,7 +12,7 @@ namespace Responses
 
 class NETWORKPROTOCOLSHARED_EXPORT ShowOrder : public Response
 {
-    DTO::Order m_order;
+    DTO::Order _order;
 
 public:
     ShowOrder(DTO::Types::OrderIdType, DTO::Types::Order::OrderType, DTO::Types::StockIdType,

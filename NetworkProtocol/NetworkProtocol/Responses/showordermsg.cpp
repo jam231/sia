@@ -9,11 +9,11 @@ using namespace DTO;
 
 ShowOrder::ShowOrder(Types::OrderIdType orderId, Types::Order::OrderType orderType,
                      Types::StockIdType stockId, Types::AmountType amount, Types::PriceType price)
-    : m_order(orderId, orderType, stockId, amount, price)
+    : _order(orderId, orderType, stockId, amount, price)
 {
 }
 
-ShowOrder::ShowOrder(Order order) : m_order(order)
+ShowOrder::ShowOrder(Order order) : _order(order)
 {
 }
 
@@ -28,17 +28,17 @@ void ShowOrder::send(QIODevice* connection)
     QDataStream out(connection);
 
     sendHeader(out);
-    out << m_order;
+    out << _order;
 }
 
 Types::Message::MessageLengthType ShowOrder::length() const
 {
-    return sizeof(Types::Message::MessageType) + m_order.lengthSerialized();
+    return sizeof(Types::Message::MessageType) + _order.lengthSerialized();
 }
 
 const Order& ShowOrder::getOrder() const
 {
-    return m_order;
+    return _order;
 }
 
 

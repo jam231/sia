@@ -8,8 +8,8 @@ namespace Requests
 {
 class NETWORKPROTOCOLSHARED_EXPORT  LoginUser : public Request
 {
-    DTO::Types::UserIdType m_userId;
-    QString m_password;
+    DTO::Types::UserIdType _userId;
+    QString _password;
 
 public:
     LoginUser(QDataStream& in);

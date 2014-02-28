@@ -5,13 +5,13 @@ template<>
 QString ConfigManager<>::operator[](const QString& key) const
 {
     QString keyLower = key.toLower();
-    if(!m_container.contains(keyLower))
+    if(!_container.contains(keyLower))
     {
         qDebug() << "[ConfigManager] Klucz " << key
                  << "nie został znaleziony.";
         throw KeyNotFound();
     }
-    return m_container[keyLower];
+    return _container[keyLower];
 }
 
 template<>
@@ -25,7 +25,7 @@ qint32 ConfigManager<>::intAt(const QString& key) const
     if(!ok)
     {
         qDebug() << "[ConfigManager] Nieudana próba konwersji"
-                 << m_container[key] << "do qint32 dla klucza"
+                 << _container[key] << "do qint32 dla klucza"
                  << key << ".";
         throw InvalidValue();
     }
@@ -36,5 +36,5 @@ qint32 ConfigManager<>::intAt(const QString& key) const
 template<>
 bool ConfigManager<>::contains(const QString& key) const
 {
-    return m_container.contains(key.toLower());
+    return _container.contains(key.toLower());
 }

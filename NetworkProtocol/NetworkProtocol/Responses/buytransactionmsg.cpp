@@ -9,8 +9,8 @@ using namespace DTO;
 
 BuyTransaction::BuyTransaction(Types::OrderIdType orderId, Types::AmountType amount)
 {
-    m_orderId = orderId;
-    m_amount = amount;
+    _orderId = orderId;
+    _amount = amount;
 }
 
 void BuyTransaction::send(QIODevice *connection)
@@ -19,8 +19,8 @@ void BuyTransaction::send(QIODevice *connection)
     QDataStream out(connection);
 
     sendHeader(out);
-    out  << m_orderId
-         << m_amount;
+    out  << _orderId
+         << _amount;
 }
 
 Types::Message::MessageType BuyTransaction::type() const
@@ -31,7 +31,7 @@ Types::Message::MessageType BuyTransaction::type() const
 Types::Message::MessageLengthType BuyTransaction::length() const
 {
     return sizeof(Types::Message::MessageType) +
-           sizeof(m_orderId) + sizeof(m_amount);
+           sizeof(_orderId) + sizeof(_amount);
 }
 
 

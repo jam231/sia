@@ -14,19 +14,17 @@ namespace DTO
 
 class NETWORKPROTOCOLSHARED_EXPORT BestOrder
 {
-private:
-    Types::Order::OrderType m_orderType;
-    Types::StockIdType m_stockId;
-    Types::AmountType m_amount;
-    Types::PriceType m_price;
-
+protected:
+    Types::AmountType _amount;
+    Types::PriceType _price;
+    Types::Order::OrderType _orderType;
+    Types::StockIdType _stockId;
 public:
     BestOrder(Types::Order::OrderType, Types::StockIdType, Types::AmountType, Types::PriceType);
-
-    Types::Order::OrderType getOrderType() const;
-    Types::StockIdType getStockId() const;
     Types::AmountType getAmount() const;
     Types::PriceType getPrice() const;
+    Types::Order::OrderType getOrderType() const;
+    Types::StockIdType getStockId() const;
 
     Types::Message::MessageLengthType lengthSerialized() const;
 
@@ -34,9 +32,11 @@ public:
 
     static BestOrder fromStream(QDataStream&);
 };
-
+/*
+ *  It serializes contents of BestOrder object, however it does NOT insert at the begging
+ *  length !
+ */
 NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator<<(QDataStream& stream, const BestOrder& bestOrder);
-
 
 }
 }

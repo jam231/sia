@@ -15,7 +15,7 @@ Types::Message::MessageLengthType ShowUserOrders::length() const
 {
     return sizeof(Types::Message::MessageType) +
            sizeof(Types::Message::MessageLengthType) +
-            std::accumulate(m_orders.begin(), m_orders.end(),
+            std::accumulate(_orders.begin(), _orders.end(),
                             static_cast<Types::Message::MessageLengthType>(0),
                             [](Types::Message::MessageLengthType len, Order* order) -> Types::Message::MessageLengthType
                                    {
@@ -35,31 +35,31 @@ void ShowUserOrders::send(QIODevice* connection)
     QDataStream out(connection);
 
     sendHeader(out);
-    out << static_cast<Types::Message::MessageLengthType>(m_orders.size());
-    for(int i = 0; i < m_orders.size(); ++i)
-        out << m_orders[i]->getOrderId()
-            << m_orders[i]->getOrderType()
-            << m_orders[i]->getStockId()
-            << m_orders[i]->getAmount()
-            << m_orders[i]->getPrice();
+    out << static_cast<Types::Message::MessageLengthType>(_orders.size());
+    for(int i = 0; i < _orders.size(); ++i)
+        out << _orders[i]->getOrderId()
+            << _orders[i]->getOrderType()
+            << _orders[i]->getStockId()
+            << _orders[i]->getAmount()
+            << _orders[i]->getPrice();
 
 }
 
-void ShowUserOrders::addOrder(Types::OrderIdType orderId, Types::Order::OrderType m_orderType,
+void ShowUserOrders::addOrder(Types::OrderIdType orderId, Types::Order::OrderType _orderType,
                                   Types::StockIdType stockId, Types::AmountType amount,
                                   Types::PriceType price)
 {
-    m_orders.push_back(new Order(orderId, m_orderType, stockId, amount, price));
+    _orders.push_back(new Order(orderId, _orderType, stockId, amount, price));
 }
 
 void ShowUserOrders::addOrder(Order* order)
 {
-    m_orders.push_back(order);
+    _orders.push_back(order);
 }
 
 ShowUserOrders::~ShowUserOrders()
 {
-    foreach(Order* order, m_orders)
+    foreach(Order* order, _orders)
     {
         delete order;
     }

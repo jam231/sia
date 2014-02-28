@@ -16,11 +16,11 @@ class Connection : public QObject
     Q_OBJECT
     static const qint32 NOT_ASSIGNED = -1;
 
-    QByteArray m_buffer;
+    QByteArray _buffer;
 
-    QTcpSocket* m_socket;
-    NetworkProtocol::DTO::Types::UserIdType m_userId;
-    QSet<NetworkProtocol::DTO::Types::StockIdType> m_subscribedStocks;
+    QTcpSocket* _socket;
+    NetworkProtocol::DTO::Types::UserIdType _userId;
+    QSet<NetworkProtocol::DTO::Types::StockIdType> _subscribedStocks;
 
 public:
     Connection(QTcpSocket* socket, QObject *parent = 0);

@@ -9,7 +9,7 @@ using namespace DTO;
 
 SubscribeStock::SubscribeStock (QDataStream& in) : Request(in)
 {
-    in >> m_stockId;
+    in >> _stockId;
 }
 
 Types::Message::MessageType SubscribeStock::type() const
@@ -19,13 +19,13 @@ Types::Message::MessageType SubscribeStock::type() const
 
 Types::StockIdType SubscribeStock::getStockId() const
 {
-    return m_stockId;
+    return _stockId;
 }
 
 Types::Message::MessageLengthType SubscribeStock::length() const
 {
     return sizeof(Types::Message::MessageType) +
-           sizeof(m_stockId);
+           sizeof(_stockId);
 }
 
 

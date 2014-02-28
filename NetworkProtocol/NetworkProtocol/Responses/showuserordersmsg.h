@@ -16,7 +16,7 @@ namespace Responses
 
 class NETWORKPROTOCOLSHARED_EXPORT  ShowUserOrders : public Response
 {    
-    QVector<DTO::Order*> m_orders;
+    QVector<DTO::Order*> _orders;
 
 public:
     ShowUserOrders();
@@ -27,9 +27,9 @@ public:
 
     void send(QIODevice* connection);
 
-    void addOrder(DTO::Types::OrderIdType orderId, DTO::Types::Order::OrderType m_orderType,
-                  DTO::Types::StockIdType m_stockId, DTO::Types::AmountType m_amount,
-                  DTO::Types::PriceType m_price);
+    void addOrder(DTO::Types::OrderIdType orderId, DTO::Types::Order::OrderType _orderType,
+                  DTO::Types::StockIdType _stockId, DTO::Types::AmountType _amount,
+                  DTO::Types::PriceType _price);
 
     void addOrder(DTO::Order* order);
 

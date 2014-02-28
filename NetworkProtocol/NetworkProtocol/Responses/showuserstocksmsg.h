@@ -13,7 +13,7 @@ namespace Responses
 
 class NETWORKPROTOCOLSHARED_EXPORT ShowUserStocks : public Response
 {
-    QVector<QPair<DTO::Types::StockIdType, DTO::Types::AmountType> > m_stocks;
+    QVector<QPair<DTO::Types::StockIdType, DTO::Types::AmountType> > _stocks;
 
 public:
     ShowUserStocks();
