@@ -38,7 +38,7 @@ public:
     static Order fromStream(QDataStream&);
 };
 /*
- *  It serializes contents of BestOrder object, however it does NOT insert at the begging
+ *  It serializes contents of BestOrder object, however it does NOT insert at the begining
  *  length !
  */
 NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator<<(QDataStream& stream, const Order& bestOrder);

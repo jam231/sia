@@ -31,7 +31,7 @@ public:
 
 };
 /*
- *  It serializes contents of LastTransaction object, however it does NOT insert at the begging
+ *  It serializes contents of LastTransaction object, however it does NOT insert at the begining
  *  length !
  */
 NETWORKPROTOCOLSHARED_EXPORT QDataStream& operator<<(QDataStream&, const LastTransaction&);
