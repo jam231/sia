@@ -17,12 +17,14 @@ SOURCES += \
     main.cpp \
     globalutilities_test.cpp \
     mockobjects.cpp \
-    bufferedwriter_test.cpp
+    bufferedwriter_test.cpp \
+    concurrentwriter_test.cpp
 
 HEADERS += \
     globalutilities_test.h \
     mockobjects.h \
-    bufferedwriter_test.h
+    bufferedwriter_test.h \
+    concurrentwriter_test.h
 
 win32:gcc:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../Utilities/release/ -lUtilities
 else:win32:gcc:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../Utilities/debug/ -lUtilities
