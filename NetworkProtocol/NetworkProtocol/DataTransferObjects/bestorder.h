@@ -28,11 +28,15 @@ public:
     Types::AmountType getAmount() const;
     Types::PriceType getPrice() const;
 
-    Types::Message::MessageLengthType lengthInBytes() const;
+    Types::Message::MessageLengthType lengthSerialized() const;
 
     friend QDataStream &operator<<(QDataStream& stream, const BestOrder& bestOrder);
-    friend QDataStream &operator>>(QDataStream& stream, BestOrder& bestOrder);
+
+    static BestOrder fromStream(QDataStream&);
 };
+
+NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator<<(QDataStream& stream, const BestOrder& bestOrder);
+
 
 }
 }

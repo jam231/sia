@@ -4,7 +4,11 @@ namespace NetworkProtocol
 {
 namespace DTO
 {
-
+QDataStream &operator<<(QDataStream& stream, const Types::Order::OrderType& orderType)
+{
+    stream << static_cast<Types::Order::OrderTypeType>(orderType);
+    return stream;
+}
 QDataStream &operator>>(QDataStream& stream, Types::Order::OrderType& orderType)
 {
     Types::Order::OrderTypeType orderTypeType;
@@ -13,6 +17,11 @@ QDataStream &operator>>(QDataStream& stream, Types::Order::OrderType& orderType)
     return stream;
 }
 
+QDataStream &operator<<(QDataStream& stream, const Types::Message::MessageType& messageType)
+{
+    stream << static_cast<Types::Message::MessageType>(messageType);
+    return stream;
+}
 
 QDataStream &operator>>(QDataStream& stream, Types::Message::MessageType& messageType)
 {

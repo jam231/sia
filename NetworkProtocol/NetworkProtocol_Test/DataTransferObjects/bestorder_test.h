@@ -9,6 +9,8 @@ class BestOrderTest : public QObject
 {
     Q_OBJECT
 
+    void generate_valid_data();
+    void generate_invalid_data();
 private Q_SLOTS:
 
     void initTestCase();
@@ -19,20 +21,17 @@ private Q_SLOTS:
     void creation_invalid_data();
     void creation_invalid();
 
-    void operatorLSH_valid_data();
-    void operatorLSH_valid();
+    void toStream_valid_data();
+    void toStream_valid();
 
-    void operatorLSH_invalid_data();
-    void operatorLSH_invalid();
+    void fromStream_valid_data();
+    void fromStream_valid();
 
-    void operatorRSH_valid_data();
-    void operatorRSH_valid();
+    void fromStream_invalid_data();
+    void fromStream_invalid();
 
-    void operatorRSH_invalid_data();
-    void operatorRSH_invalid();
-
-    void lengthInBytes_data();
-    void lengthInBytes();
+    void lengthSerialized_data();
+    void lengthSerialized();
 };
 
 #endif // BESTORDER_TEST_H

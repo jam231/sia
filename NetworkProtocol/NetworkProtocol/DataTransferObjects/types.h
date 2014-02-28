@@ -326,6 +326,10 @@ bool ContainerType<TypeName, ValueType, defaultValue>::operator<(const ValueType
 // Outside of Types namespace
 NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator>>(QDataStream& stream, Types::Message::MessageType&);
 NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator>>(QDataStream& stream, Types::Order::OrderType&);
+NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator<<(QDataStream& stream, const Types::Message::MessageType&);
+NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator<<(QDataStream& stream, const Types::Order::OrderType&);
+
+
 
 }
 }

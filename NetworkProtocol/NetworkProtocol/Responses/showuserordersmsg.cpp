@@ -19,7 +19,7 @@ Types::Message::MessageLengthType ShowUserOrders::length() const
                             static_cast<Types::Message::MessageLengthType>(0),
                             [](Types::Message::MessageLengthType len, Order* order) -> Types::Message::MessageLengthType
                                    {
-                                        return len + order->lengthInBytes();
+                                        return len + order->lengthSerialized();
                                     }
                             );
 }

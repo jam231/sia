@@ -33,7 +33,7 @@ void ShowOrder::send(QIODevice* connection)
 
 Types::Message::MessageLengthType ShowOrder::length() const
 {
-    return sizeof(Types::Message::MessageType) + m_order.lengthInBytes();
+    return sizeof(Types::Message::MessageType) + m_order.lengthSerialized();
 }
 
 const Order& ShowOrder::getOrder() const

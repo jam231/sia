@@ -44,7 +44,7 @@ Types::Message::MessageLengthType StockInfo::length() const
     return  sizeof(Types::Message::MessageType) + sizeof(m_stockId) +
             sizeof(Types::AmountType) + sizeof(Types::PriceType) + // bestBuyOrder
             sizeof(Types::AmountType) + sizeof(Types::PriceType) + // bestSellOrder
-            sizeof(Types::Message::MessageLengthType) + m_lastTransaction.lengthInBytes();
+            sizeof(Types::Message::MessageLengthType) + m_lastTransaction.lengthSerialized();
 }
 
 
