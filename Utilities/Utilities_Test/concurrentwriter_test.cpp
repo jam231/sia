@@ -20,7 +20,7 @@ using namespace std;
 void ConcurrentWriterTest::init()
 {
     _mock_writer = unique_ptr<MockWriter>(new MockWriter());
-    assert(_mock_writer->buffer.empty());
+    assert(_mock_writer->buffer->empty());
 }
 
 
@@ -80,7 +80,7 @@ void ConcurrentWriterTest::rapidWrite()
     int old_maxThreadCount = QThreadPool::globalInstance()->maxThreadCount();
     QThreadPool::globalInstance()->setMaxThreadCount(worker_threads_count);
 
-    QStringList* mock_writers_buffer = &(_mock_writer->buffer);
+    std::shared_ptr<QStringList> mock_writers_buffer(_mock_writer->buffer);
     ConcurrentWriter writer(move(_mock_writer));
 
     // First check if order is preserved.

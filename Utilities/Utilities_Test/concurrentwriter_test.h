@@ -10,6 +10,7 @@
 
 #include <memory>
 
+
 class ConcurrentWriterTest : public QObject
 {
     std::unique_ptr<MockWriter> _mock_writer;

@@ -11,10 +11,9 @@
 class MockWriter : public AbstractWriter
 {
 public:
-    QStringList buffer;
-
+    std::shared_ptr<QStringList> buffer;
     MockWriter();
-
+    MockWriter(const std::shared_ptr<QStringList>& buffer);
     void write(QString);
 };
 

@@ -58,7 +58,7 @@ public:
  *  When buffer_size <= 2 then factual buffer size will be 1
  *
  *  Write to underlying buffer is requested when
- *  aftering requesting new write buffer contains buffer_size elements.
+ *  after requesting new write buffer contains buffer_size elements.
  */
 class BufferedWriter : public AbstractWriter
 {
