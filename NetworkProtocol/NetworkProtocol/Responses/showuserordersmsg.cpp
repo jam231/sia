@@ -13,15 +13,14 @@ ShowUserOrders::ShowUserOrders()
 
 Types::Message::MessageLengthType ShowUserOrders::length() const
 {
+    Types::Message::MessageLengthType order_length_in_bytes = 0;
+    if(_orders.size() > 0)
+    {
+        order_length_in_bytes = _orders.first()->lengthSerialized();
+    }
+
     return sizeof(Types::Message::MessageType) +
-           sizeof(Types::Message::MessageLengthType) +
-            std::accumulate(_orders.begin(), _orders.end(),
-                            static_cast<Types::Message::MessageLengthType>(0),
-                            [](Types::Message::MessageLengthType len, Order* order) -> Types::Message::MessageLengthType
-                                   {
-                                        return len + order->lengthSerialized();
-                                    }
-                            );
+           sizeof(Types::Message::MessageLengthType) + _orders.size() * order_length_in_bytes;
 }
 
 Types::Message::MessageType ShowUserOrders::type() const
@@ -37,34 +36,27 @@ void ShowUserOrders::send(QIODevice* connection)
     sendHeader(out);
     out << static_cast<Types::Message::MessageLengthType>(_orders.size());
     for(int i = 0; i < _orders.size(); ++i)
+    {
         out << _orders[i]->getOrderId()
             << _orders[i]->getOrderType()
             << _orders[i]->getStockId()
             << _orders[i]->getAmount()
             << _orders[i]->getPrice();
-
-}
-
-void ShowUserOrders::addOrder(Types::OrderIdType orderId, Types::Order::OrderType _orderType,
-                                  Types::StockIdType stockId, Types::AmountType amount,
-                                  Types::PriceType price)
-{
-    _orders.push_back(new Order(orderId, _orderType, stockId, amount, price));
-}
-
-void ShowUserOrders::addOrder(Order* order)
-{
-    _orders.push_back(order);
-}
-
-ShowUserOrders::~ShowUserOrders()
-{
-    foreach(Order* order, _orders)
-    {
-        delete order;
     }
 }
 
+void ShowUserOrders::addOrder(Types::OrderIdType orderId, Types::Order::OrderType _orderType,
+                              Types::StockIdType stockId, Types::AmountType amount,
+                              Types::PriceType price)
+{
+    _orders.push_back(std::shared_ptr<Order>(
+                          new Order(orderId, _orderType, stockId, amount, price)));
+}
+
+void ShowUserOrders::addOrder(std::shared_ptr<Order> order)
+{
+    _orders.push_back(order);
+}
 
 
 }
