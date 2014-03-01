@@ -23,7 +23,7 @@ StockInfo::StockInfo (Types::StockIdType stockId,
 {
     if(stockId.value >= 0)
     {
-        LOG_TRACE(QString("stockId(%1) <= 0 == false").arg(_stockId.value));
+        LOG_TRACE(QString("Invalid argument: stockId(%1) <= 0").arg(_stockId.value));
         throw std::invalid_argument("stockId <= 0.");
     }
     if(_bestBuyOrder == nullptr ||

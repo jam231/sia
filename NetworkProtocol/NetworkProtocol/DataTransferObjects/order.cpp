@@ -17,7 +17,7 @@ Order::Order(Types::OrderIdType orderId, Types::Order::OrderType orderType,
 {
     if(_orderId <= 0 || _stockId <= 0 || _amount <= 0 || _price <= 0)
     {
-        LOG_TRACE(QString("orderId(%1) <= 0 || stockId(%2) <= 0 || amount(%3) <= 0 || price(%4) <= 0 == false")
+        LOG_TRACE(QString("Invalid arguments: orderId(%1) <= 0 || stockId(%2) <= 0 || amount(%3) <= 0 || price(%4) <= 0")
                   .arg(_orderId.value).arg(_stockId.value).arg(_amount.value).arg(_price.value));
         throw std::invalid_argument("One of orderId, stockId, amount, price is <= 0.");
     }

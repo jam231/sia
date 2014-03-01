@@ -14,7 +14,7 @@ BestOrder::BestOrder(Types::Order::OrderType orderType, Types::StockIdType stock
 {
     if(_stockId <= 0 || _amount <= 0 || _price <= 0)
     {
-        LOG_TRACE(QString("stockId(%1) <= 0 || amount(%2) <= 0 || price(%3) <= 0 == false")
+        LOG_TRACE(QString("Invalid arguments: stockId(%1) <= 0 || amount(%2) <= 0 || price(%3) <= 0.")
                   .arg(_stockId.value).arg(_amount.value).arg(_price.value));
         throw std::invalid_argument("One of stock id, amount, price is <= 0.");
     }

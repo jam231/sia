@@ -35,7 +35,7 @@ LastTransaction::LastTransaction(QString dateTime, Types::AmountType amount,
 {
     if(_amount <= 0 || _price <= 0)
     {
-        LOG_TRACE(QString("amount(%1) <= 0 || price(%2) <= 0 == false")
+        LOG_TRACE(QString("Invalid arguments: amount(%1) <= 0 || price(%2) <= 0")
                   .arg(_amount.value).arg(_price.value));
         throw std::invalid_argument("One of amount, price is <= 0.");
 
