@@ -117,6 +117,17 @@ enum OrderType : OrderTypeType
 NETWORKPROTOCOLSHARED_EXPORT OrderType toOrderType(OrderTypeType);
 }
 
+namespace Company
+{
+    typedef qint8 CompanyStatusTypeType;
+    enum CompanyStatusType : CompanyStatusTypeType
+    {
+        UNDEFINED = 0,
+        ACTIVE,
+        FROZEN
+    };
+    NETWORKPROTOCOLSHARED_EXPORT CompanyStatusType toCompanyStatusType(CompanyStatusTypeType);
+}
 
 // Force separation
 namespace Message
@@ -182,8 +193,8 @@ enum MessageType : MessageTypeType
     // Te sa zaimplementowane, ale nie uzywane --jam231
 
     REQUEST_COMPANY_STATUS = 0x28,
-    RESPONSE_COMPANY_ACTIVE,
-    RESPONSE_COMPANY_FROZEN,
+    RESPONSE_COMPANY_STATUS,
+
 
     // Te sa w zawieszeniu, czekaja na implementacje lub zmiane --jam231
 
@@ -326,9 +337,10 @@ bool ContainerType<TypeName, ValueType, defaultValue>::operator<(const ValueType
 // Outside of Types namespace
 NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator>>(QDataStream& stream, Types::Message::MessageType&);
 NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator>>(QDataStream& stream, Types::Order::OrderType&);
+NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator>>(QDataStream& stream, Types::Company::CompanyStatusType&);
 NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator<<(QDataStream& stream, const Types::Message::MessageType&);
 NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator<<(QDataStream& stream, const Types::Order::OrderType&);
-
+NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator<<(QDataStream& stream, const Types::Company::CompanyStatusType&);
 
 
 }

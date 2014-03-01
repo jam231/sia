@@ -4,13 +4,22 @@
 
 #include "response.h"
 
-#include <QString>
-
 namespace NetworkProtocol
 {
 namespace Responses
 {
-
+/*
+ *  Responses :: Failure
+ *
+ *  This message is for notifying about failure of request.
+ *  Message contains error number.
+ *
+ *  Message format:
+ *  <message_length : 2><message_type : 1><failure_type : 1>
+ *
+ *  where
+ *      message_type         = Message::RESPONSE_FAILURE;
+ */
 class NETWORKPROTOCOLSHARED_EXPORT Failure : public Response
 {
     DTO::Types::Failure::FailureType _reason;

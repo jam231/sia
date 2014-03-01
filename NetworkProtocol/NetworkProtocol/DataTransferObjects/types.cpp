@@ -31,8 +31,37 @@ QDataStream &operator>>(QDataStream& stream, Types::Message::MessageType& messag
     return stream;
 }
 
+QDataStream &operator<<(QDataStream& stream, const Types::Company::CompanyStatusType& companyStatus)
+{
+    stream << static_cast<Types::Company::CompanyStatusType>(companyStatus);
+    return stream;
+}
+
+QDataStream &operator>>(QDataStream& stream, Types::Company::CompanyStatusType& companyStatus)
+{
+    Types::Company::CompanyStatusType companyStatusTypeType;
+    stream >> companyStatusTypeType;
+    companyStatus = Types::Company::toCompanyStatusType(companyStatusTypeType);
+    return stream;
+}
+
+
 namespace Types
 {
+
+//                  CompanyStatusType
+namespace Company
+{
+CompanyStatusType toCompanyStatusType(CompanyStatusTypeType type)
+{
+    switch(type)
+    {
+    case ACTIVE: return ACTIVE;
+    case FROZEN: return FROZEN;
+    default:     return UNDEFINED;
+    };
+}
+}
 
 //                  OrderType
 
@@ -62,8 +91,8 @@ MessageType toMessageType(MessageTypeType msgId)
     case RESPONSE_FAILURE : return RESPONSE_FAILURE;
     case RESPONSE_OK : return RESPONSE_OK;
     case REQUEST_LOGIN_USER : return REQUEST_LOGIN_USER;
-    //case RESPONSE_LOGIN_USER_SUCCESS : return RESPONSE_LOGIN_USER_SUCCESS;
-    //case RESPONSE_LOGIN_USER_FAILURE : return RESPONSE_LOGIN_USER_FAILURE;
+        //case RESPONSE_LOGIN_USER_SUCCESS : return RESPONSE_LOGIN_USER_SUCCESS;
+        //case RESPONSE_LOGIN_USER_FAILURE : return RESPONSE_LOGIN_USER_FAILURE;
     case REQUEST_SUBSCRIBE_STOCK : return REQUEST_SUBSCRIBE_STOCK;
     case REQUEST_UNSUBSCRIBE_STOCK : return REQUEST_UNSUBSCRIBE_STOCK;
     case REQUEST_SELL_STOCK_ORDER : return REQUEST_SELL_STOCK_ORDER;

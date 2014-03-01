@@ -8,7 +8,17 @@ namespace NetworkProtocol
 {
 namespace Responses
 {
-
+/*
+ *  Responses :: Ok
+ *
+ *  This message is for sending confirmation of request acceptance.
+ *
+ *  Message format:
+ *  <message_length : 2><message_type : 1>
+ *
+ *  where
+ *      message_type         = Message::RESPONSE_OK;
+ */
 class NETWORKPROTOCOLSHARED_EXPORT Ok : public Response
 {
 

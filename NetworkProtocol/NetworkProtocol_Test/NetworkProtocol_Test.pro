@@ -38,8 +38,6 @@ SOURCES += \
     Responses/selltransactionmsg_test.cpp \
     Responses/response_test.cpp \
     Responses/orderidmsg_test.cpp \
-    Responses/companyfrozenmsg_test.cpp \
-    Responses/companyactivemsg_test.cpp \
     Responses/buytransactionmsg_test.cpp \
     Responses/failuremsg_test.cpp \
     Responses/okmsg_test.cpp \
@@ -72,8 +70,6 @@ HEADERS += \
     Responses/selltransactionmsg_test.h \
     Responses/response_test.h \
     Responses/orderidmsg_test.h \
-    Responses/companyfrozenmsg_test.h \
-    Responses/companyactivemsg_test.h \
     Responses/buytransactionmsg_test.h \
     Responses/failuremsg_test.h \
     Responses/okmsg_test.h \
