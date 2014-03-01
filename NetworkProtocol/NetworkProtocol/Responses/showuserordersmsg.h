@@ -21,11 +21,11 @@ namespace Responses
  *  This message is for sending user information about his pending orders.
  *
  *  Message format:
- *  <message_length : 2><message_type : 1><orders_count : 2><order : >^order_count
+ *  <message_length : 2><message_type : 1><orders_count : 2><order : 17>^order_count
  *
  *  where
  *      message_type    = MessageType::RESPONSE_SHOW_USER_ORDERS
- *      <order : 19>    = <order_id : 4><order_type : 1><stock_id : 4><amount : 4><price : 4>
+ *      <order : 17>    = <order_id : 4><order_type : 1><stock_id : 4><amount : 4><price : 4>
  */
 class NETWORKPROTOCOLSHARED_EXPORT  ShowUserOrders : public Response
 {    
