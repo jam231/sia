@@ -2,8 +2,10 @@
 
 #include <memory>
 
-#include <assert.h>
 
+
+#include <stdexcept>
+#include <utilities.h>
 namespace NetworkProtocol
 {
 namespace Responses
@@ -19,21 +21,34 @@ StockInfo::StockInfo (Types::StockIdType stockId,
     : _stockId(stockId), _bestBuyOrder(bestBuyOrder),
       _bestSellOrder(bestSellOrder), _lastTransaction(lastTransaction)
 {
-    // Maybe it should instead throw an exception ? I think that the violation below
-    // can be caused only by a developer's mistake, therefore when assert fails there is a bug in program
-    // that needs to be fixed, so it should fail.
-    assert(_bestBuyOrder == nullptr ||
-           (_bestBuyOrder->getOrderType() == Order::BUY && _bestBuyOrder->getStockId() == _stockId));
-    assert(_bestSellOrder == nullptr ||
-           (_bestSellOrder->getOrderType() == Order::BUY && _bestSellOrder->getStockId() == _stockId));
-
+    if(stockId.value >= 0)
+    {
+        LOG_TRACE(QString("stockId(%1) <= 0 == false").arg(_stockId.value));
+        throw std::invalid_argument("stockId <= 0.");
+    }
+    if(_bestBuyOrder == nullptr ||
+       (_bestBuyOrder->getOrderType() == Order::BUY && _bestBuyOrder->getStockId() == _stockId))
+    {
+        LOG_TRACE(QString("Best buy order is invalid - wrong stock id (should be %1 is %2) or order type(%3).")
+                  .arg(_stockId.value).arg(_bestBuyOrder->getStockId().value)
+                  .arg(_bestBuyOrder->getOrderType()));
+        throw std::invalid_argument("Best buy order is invalid - wrong stock Id or order type.");
+    }
+    if(_bestSellOrder == nullptr ||
+       (_bestSellOrder->getOrderType() == Order::SELL && _bestSellOrder->getStockId() == _stockId))
+    {
+        LOG_TRACE(QString("Best sell order is invalid - wrong stock id (should be %1 is %2) or order type(%3).")
+                  .arg(_stockId.value).arg(_bestSellOrder->getStockId().value)
+                  .arg(_bestSellOrder->getOrderType()));
+        throw std::invalid_argument("Best sell order is invalid - wrong stock Id or order type.");
+    }
 }
 
 void StockInfo::send(BestOrder* bestOrder, QDataStream &out)
 {
     if(bestOrder == nullptr)
     {
-        out << -1;
+        out << 0;
     }
     else
     {
@@ -45,7 +60,7 @@ void StockInfo::send(LastTransaction* lastTransaction, QDataStream& out)
 {
     if(lastTransaction == nullptr)
     {
-        out << -1;
+        out << 0;
     }
     else
     {
@@ -76,7 +91,8 @@ Message::MessageLengthType StockInfo::getSerializedLength(DTO::LastTransaction* 
     }
     else
     {
-        return sizeof(Types::Message::MessageLengthType) +
+        return  sizeof(PriceType) +
+                sizeof(Types::Message::MessageLengthType) +
                 last_transaction->getDateTime().toUtf8().size();
     }
 }
