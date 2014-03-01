@@ -8,8 +8,9 @@ namespace NetworkProtocol
 namespace DTO
 {
 
-Order::Order(Types::OrderIdType orderId, Types::Order::OrderType orderType, Types::StockIdType stockId,
-             Types::AmountType amount, Types::PriceType price)
+Order::Order(Types::OrderIdType orderId, Types::Order::OrderType orderType,
+             Types::StockIdType stockId, Types::AmountType amount,
+             Types::PriceType price)
 
     : _orderId(orderId), _orderType(orderType),
       _stockId(stockId), _amount(amount), _price(price)
