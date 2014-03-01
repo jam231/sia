@@ -37,11 +37,13 @@ public:
 
     static Order fromStream(QDataStream&);
 };
+
 /*
- *  It serializes contents of BestOrder object, however it does NOT insert at the begining
- *  length !
+ *  Serialization format:
+ *  <order_id : 4><order_type : 1><stock_id : 4><amount : 4><price : 4>
+ *
  */
-NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator<<(QDataStream& stream, const Order& bestOrder);
+NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator<<(QDataStream& stream, const Order&);
 
 }
 }

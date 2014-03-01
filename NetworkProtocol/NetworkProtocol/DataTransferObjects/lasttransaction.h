@@ -30,9 +30,11 @@ public:
     friend QDataStream &operator<<(QDataStream& stream, const LastTransaction&);
 
 };
+
 /*
- *  It serializes contents of LastTransaction object, however it does NOT insert at the begining
- *  length !
+ *  Serialization format:
+ *  <amount : 4><price : 4><data_time_str_length : 2><date_time_str : data_time_str_length>
+ *
  */
 NETWORKPROTOCOLSHARED_EXPORT QDataStream& operator<<(QDataStream&, const LastTransaction&);
 
