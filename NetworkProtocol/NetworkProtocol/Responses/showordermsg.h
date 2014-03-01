@@ -9,7 +9,18 @@ namespace NetworkProtocol
 {
 namespace Responses
 {
-
+/*
+ *  Responses :: ShowOrder
+ *
+ *  This message is for sending user information about new order for stock with stockId.
+ *
+ *  Message format:
+ *  <message_length : 2><message_type : 1><order : 17>
+ *
+ *  where
+ *      message_type    = MessageType::RESPONSE_SHOW_ORDER
+ *      <order : 17>    = <order_id : 4><order_type : 1><stock_id : 4><amount : 4><price : 4>
+ */
 class NETWORKPROTOCOLSHARED_EXPORT ShowOrder : public Response
 {
     DTO::Order _order;

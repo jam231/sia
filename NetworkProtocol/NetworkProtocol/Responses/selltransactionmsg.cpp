@@ -1,5 +1,8 @@
 #include "selltransactionmsg.h"
 
+#include <utilities.h>
+#include <stdexcept>
+
 namespace NetworkProtocol
 {
 namespace Responses
@@ -8,10 +11,15 @@ namespace Responses
 using namespace DTO;
 
 SellTransaction::SellTransaction(Types::OrderIdType orderId,
-                                Types::AmountType amount)
+                                 Types::AmountType amount)
+    : _orderId(orderId), _amount(amount)
 {
-    _orderId = orderId;
-    _amount = amount;
+    if(_orderId <= 0 || _amount <= 0)
+    {
+        LOG_TRACE(QString("orderId(%1) <= 0 || amount(%3) <= 0  <= 0 == false")
+                  .arg(_orderId.value).arg(_amount.value));
+        throw std::invalid_argument("One of orderId, amount is <= 0.");
+    }
 }
 
 void SellTransaction::send(QIODevice *connection)

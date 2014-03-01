@@ -11,6 +11,8 @@ ShowOrder::ShowOrder(Types::OrderIdType orderId, Types::Order::OrderType orderTy
                      Types::StockIdType stockId, Types::AmountType amount, Types::PriceType price)
     : _order(orderId, orderType, stockId, amount, price)
 {
+    // No need to validate the arguments - ShowOrder constructor delegates it to
+    // constructor of Order.
 }
 
 ShowOrder::ShowOrder(Order order) : _order(order)
@@ -40,8 +42,6 @@ const Order& ShowOrder::getOrder() const
 {
     return _order;
 }
-
-
 
 }
 }

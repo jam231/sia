@@ -8,7 +8,19 @@ namespace NetworkProtocol
 {
 namespace Responses
 {
-
+/*
+ *  Responses :: ShowBestOrder
+ *
+ *  This message is for sending user information about new best order
+ *  for stock with stockId.
+ *
+ *  Message format:
+ *  <message_length : 2><message_type : 1><best_order : 17>
+ *
+ *  where
+ *      message_type         = MessageType::RESPONSE_SHOW_BEST_ORDER
+ *      <best_order : 17>    = <order_type : 1><stock_id : 4><amount : 4><price : 4>
+ */
 class NETWORKPROTOCOLSHARED_EXPORT ShowBestOrder : public Response
 {
     DTO::BestOrder _bestOrder;
