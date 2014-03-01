@@ -16,7 +16,6 @@
 using namespace std;
 
 
-
 void ConcurrentWriterTest::init()
 {
     _mock_writer = unique_ptr<MockWriter>(new MockWriter());

@@ -15,6 +15,7 @@ Q_DECLARE_METATYPE(StockIdType)
 Q_DECLARE_METATYPE(AmountType)
 Q_DECLARE_METATYPE(PriceType)
 
+
 void BestOrderTest::initTestCase()
 {
     GlobalUtilities::setLogger(make_logger(LoggingLevel::Off));
@@ -255,7 +256,7 @@ void BestOrderTest::fromStream_invalid()
                             "Should be %1 is %2.")
                             .arg(correct_number_of_bytes ).arg(stream.device()->size())));
 
-        BestOrder from_stream = BestOrder::fromStream(stream);
+        BestOrder::fromStream(stream);
         QFAIL("std::invalid_argument should have been thrown.");
 
     }
