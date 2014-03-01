@@ -6,6 +6,7 @@
 namespace NetworkProtocol {
 namespace Requests
 {
+/// TODO:   Add description with serialization format.
 class NETWORKPROTOCOLSHARED_EXPORT  LoginUser : public Request
 {
     DTO::Types::UserIdType _userId;

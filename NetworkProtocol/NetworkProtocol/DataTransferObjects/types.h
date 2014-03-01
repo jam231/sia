@@ -193,7 +193,7 @@ enum MessageType : MessageTypeType
     // Te sa zaimplementowane, ale nie uzywane --jam231
 
     REQUEST_COMPANY_STATUS = 0x28,
-    RESPONSE_COMPANY_STATUS,
+    RESPONSE_SHOW_COMPANY_STATUS,
 
 
     // Te sa w zawieszeniu, czekaja na implementacje lub zmiane --jam231

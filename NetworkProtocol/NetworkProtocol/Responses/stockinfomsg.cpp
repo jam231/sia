@@ -2,10 +2,9 @@
 
 #include <memory>
 
-
-
 #include <stdexcept>
 #include <utilities.h>
+
 namespace NetworkProtocol
 {
 namespace Responses

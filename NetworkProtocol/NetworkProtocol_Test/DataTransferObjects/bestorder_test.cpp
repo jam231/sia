@@ -131,12 +131,12 @@ void BestOrderTest::creation_invalid()
     }
 }
 
-void BestOrderTest::toStrea_valid_data()
+void BestOrderTest::toStream_valid_data()
 {
     generate_valid_data();
 }
 
-void BestOrderTest::toStrea_valid()
+void BestOrderTest::toStream_valid()
 {
     QFETCH(OrderType, order_type);
     QFETCH(StockIdType, stock_id);
@@ -165,13 +165,13 @@ void BestOrderTest::toStrea_valid()
 }
 
 
-void BestOrderTest::fromStrea_valid_data()
+void BestOrderTest::fromStream_valid_data()
 {
     generate_valid_data();
 }
 
 
-void BestOrderTest::fromStrea_valid()
+void BestOrderTest::fromStream_valid()
 {
     QFETCH(OrderType, order_type);
     QFETCH(StockIdType, stock_id);
@@ -225,13 +225,13 @@ void BestOrderTest::fromStrea_valid()
     }
 }
 
-void BestOrderTest::fromStrea_invalid_data()
+void BestOrderTest::fromStream_invalid_data()
 {
     generate_invalid_data();
 }
 
 
-void BestOrderTest::fromStrea_invalid()
+void BestOrderTest::fromStream_invalid()
 {
     QFETCH(OrderType, order_type);
     QFETCH(StockIdType, stock_id);

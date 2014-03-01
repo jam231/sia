@@ -12,7 +12,7 @@ namespace NetworkProtocol
 {
 namespace Requests
 {
-
+/// TODO:   Add description with serialization format.
 class NETWORKPROTOCOLSHARED_EXPORT InvalidRequest : public std::exception
 {
 public:

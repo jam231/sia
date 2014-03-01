@@ -11,7 +11,7 @@ namespace Responses
  *  Responses :: SellTransaction
  *
  *  This message is for notyfing user about (complete) realization
- *  of one of his orders.
+ *  of one of his SELL type orders.
  *
  *  Message format:
  *  <message_length : 2><message_type : 1><order_id : 4><amount : 4>

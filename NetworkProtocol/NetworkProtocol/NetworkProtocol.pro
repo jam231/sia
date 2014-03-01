@@ -11,9 +11,27 @@ TEMPLATE = lib
 DEFINES += NETWORKPROTOCOL_LIBRARY
 
 SOURCES += \
+    Responses/transactionchangemsg.cpp \
+    Responses/stockinfomsg.cpp \
+    Responses/showuserstocksmsg.cpp \
+    Responses/showuserordersmsg.cpp \
+    Responses/showordermsg.cpp \
+    Responses/showbestordermsg.cpp \
+    Responses/selltransactionmsg.cpp \
+    Responses/response.cpp \
+    Responses/registerusersuccessmsg.cpp \
+    Responses/orderidmsg.cpp \
+    Responses/okmsg.cpp \
+    Responses/failuremsg.cpp \
+    Responses/buytransactionmsg.cpp \
+    DataTransferObjects/types.cpp \
+    DataTransferObjects/order.cpp \
+    DataTransferObjects/lasttransaction.cpp \
+    DataTransferObjects/bestorder.cpp \
     Requests/unsubscribestockmsg.cpp \
     Requests/subscribestockmsg.cpp \
     Requests/sellstockmsg.cpp \
+    Requests/request.cpp \
     Requests/registerusermsg.cpp \
     Requests/loginusermsg.cpp \
     Requests/getstockinfomsg.cpp \
@@ -22,32 +40,33 @@ SOURCES += \
     Requests/companystatusmsg.cpp \
     Requests/cancelordermsg.cpp \
     Requests/buystockmsg.cpp \
-    Responses/transactionchangemsg.cpp \
-    Responses/selltransactionmsg.cpp \
-    Responses/showordermsg.cpp \
-    Responses/orderidmsg.cpp \
-    Responses/okmsg.cpp \
-    Responses/failuremsg.cpp \
-    Responses/buytransactionmsg.cpp \
-    Responses/showbestordermsg.cpp \
-    Responses/stockinfomsg.cpp \
-    Responses/showuserordersmsg.cpp \
-    Responses/showuserstocksmsg.cpp \
-    Requests/request.cpp \
-    Responses/response.cpp \
-    DataTransferObjects/order.cpp \
-    DataTransferObjects/bestorder.cpp \
-    DataTransferObjects/types.cpp \
-    DataTransferObjects/lasttransaction.cpp \
-    Responses/registerusersuccessmsg.cpp \
-    Responses/companystatusmsg.cpp
+    Responses/showcompanystatusmsg.cpp
+
+
 
 
 HEADERS += \
-    networkprotocol_global.h \
+    Responses/transactionchangemsg.h \
+    Responses/stockinfomsg.h \
+    Responses/showuserstocksmsg.h \
+    Responses/showuserordersmsg.h \
+    Responses/showordermsg.h \
+    Responses/showbestordermsg.h \
+    Responses/selltransactionmsg.h \
+    Responses/response.h \
+    Responses/registerusersuccessmsg.h \
+    Responses/orderidmsg.h \
+    Responses/okmsg.h \
+    Responses/failuremsg.h \
+    Responses/buytransactionmsg.h \
+    DataTransferObjects/types.h \
+    DataTransferObjects/order.h \
+    DataTransferObjects/lasttransaction.h \
+    DataTransferObjects/bestorder.h \
     Requests/unsubscribestockmsg.h \
     Requests/subscribestockmsg.h \
     Requests/sellstockmsg.h \
+    Requests/request.h \
     Requests/registerusermsg.h \
     Requests/loginusermsg.h \
     Requests/getstockinfomsg.h \
@@ -56,28 +75,7 @@ HEADERS += \
     Requests/companystatusmsg.h \
     Requests/cancelordermsg.h \
     Requests/buystockmsg.h \
-    Responses/transactionchangemsg.h \
-    Responses/selltransactionmsg.h \
-    Responses/showordermsg.h \
-    Responses/orderidmsg.h \
-    Responses/okmsg.h \
-    Responses/failuremsg.h \
-    Responses/buytransactionmsg.h \
-    Responses/showbestordermsg.h \
-    Responses/stockinfomsg.h \
-    Responses/showuserordersmsg.h \
-    Responses/showuserstocksmsg.h \
-    Requests/request.h \
-    Responses/response.h \
-    message.h \
-    DataTransferObjects/order.h \
-    DataTransferObjects/bestorder.h \
-    DataTransferObjects/types.h \
-    DataTransferObjects/lasttransaction.h \
-    Responses/registerusersuccessmsg.h \
-    Responses/companystatusmsg.h
-
-
+    Responses/showcompanystatusmsg.h
 
 
 unix:!symbian {

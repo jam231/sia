@@ -6,7 +6,7 @@
 namespace NetworkProtocol {
 namespace Requests
 {
-
+/// TODO:   Add description with serialization format.
 class NETWORKPROTOCOLSHARED_EXPORT BuyStock : public Request
 {
     DTO::Types::StockIdType _stockId;

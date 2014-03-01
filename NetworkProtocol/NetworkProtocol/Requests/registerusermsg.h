@@ -8,6 +8,7 @@
 namespace NetworkProtocol {
 namespace Requests
 {
+/// TODO:   Add description with serialization format.
 class NETWORKPROTOCOLSHARED_EXPORT RegisterUser : public Request
 {
     QString _password;
