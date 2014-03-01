@@ -36,7 +36,7 @@ public:
 
 /*
  *  Serialization format:
- *  <order_type : 1><order_id : 4><stock_id : 4><amount : 4><price : 4>
+ *  <order_type : 1><stock_id : 4><amount : 4><price : 4>
  *
  */
 NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator<<(QDataStream& stream, const BestOrder& bestOrder);
