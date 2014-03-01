@@ -1,5 +1,9 @@
 #include "orderidmsg.h"
 
+#include <utilities.h>
+
+#include <stdexcept>
+
 namespace NetworkProtocol
 {
 namespace Responses
@@ -9,6 +13,12 @@ using namespace DTO;
 
 OrderId::OrderId(Types::OrderIdType orderId) : _orderId(orderId)
 {
+    if(_orderId <= 0)
+    {
+        LOG_TRACE(QString("Invalid argument: orderId(%1) <= 0")
+                  .arg(_orderId.value));
+        throw std::invalid_argument("orderId <= 0.");
+    }
 }
 
 Types::Message::MessageLengthType OrderId::length() const

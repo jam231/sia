@@ -10,13 +10,14 @@ namespace Responses
 /*
  *  Responses :: RegisterUserSuccess
  *
- *  This message is for sending id for newly registered user.
+ *  This message is for sending confirmation of registration.
+ *  Message contains newly registered user's id.
  *
  *  Message format:
  *  <message_length : 2><message_type : 1><user_id : 4>
  *
  *  where
- *      message_type         = ::RESPONSE_REGISTER_USER_SUCCESS
+ *      message_type         = MessageType::RESPONSE_REGISTER_USER_SUCCESS
  */
 class NETWORKPROTOCOLSHARED_EXPORT RegisterUserSuccess : public Response
 {
