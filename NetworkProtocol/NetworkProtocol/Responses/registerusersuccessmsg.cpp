@@ -1,5 +1,8 @@
 #include "registerusersuccessmsg.h"
 
+#include <utilities.h>
+#include <stdexcept>
+
 namespace NetworkProtocol
 {
 namespace Responses
@@ -10,6 +13,12 @@ using namespace DTO;
 RegisterUserSuccess::RegisterUserSuccess(Types::UserIdType userId)
     : _userId(userId)
 {
+    if(_userId <= 0 )
+    {
+        LOG_TRACE(QString("Invalid argument: userId(%1) <= 0")
+                  .arg(_userId.value));
+        throw std::invalid_argument("userId <= 0.");
+    }
 }
 
 Types::Message::MessageLengthType RegisterUserSuccess::length() const
