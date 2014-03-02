@@ -65,9 +65,9 @@ public:
 class WarningLogger : public DummyLogger
 {
 protected:
-    std::unique_ptr<AbstractWriter> _writer;
+    std::shared_ptr<AbstractWriter> _writer;
 public:
-    WarningLogger(std::unique_ptr<AbstractWriter> writer);
+    WarningLogger(std::shared_ptr<AbstractWriter> writer);
     void error(QString message, QString file,
                 QString function, qint32 line);
     void warning(QString message, QString file,
@@ -80,7 +80,7 @@ public:
 class InfoLogger : public WarningLogger
 {
 public:
-    InfoLogger(std::unique_ptr<AbstractWriter> writer);
+    InfoLogger(std::shared_ptr<AbstractWriter> writer);
 
     void info(QString message, QString file,
                 QString function, qint32 line);
@@ -92,7 +92,7 @@ public:
 class DebugLogger : public InfoLogger
 {
 public:
-    DebugLogger(std::unique_ptr<AbstractWriter> writer);
+    DebugLogger(std::shared_ptr<AbstractWriter> writer);
 
     void debug(QString message, QString file,
                 QString function, qint32 line);
@@ -104,7 +104,7 @@ public:
 class TraceLogger : public DebugLogger
 {
 public:
-    TraceLogger(std::unique_ptr<AbstractWriter> writer);
+    TraceLogger(std::shared_ptr<AbstractWriter> writer);
 
     void trace(QString message, QString file,
                 QString function, qint32 line);
@@ -117,11 +117,11 @@ class LoggerFactory
 {
 public:
     AbstractLogger* create(LoggingLevel level,
-                           std::unique_ptr<AbstractWriter> writer = std::unique_ptr<AbstractWriter>(new DummyWriter()));
+                           std::shared_ptr<AbstractWriter> writer = std::shared_ptr<AbstractWriter>(new DummyWriter()));
 };
 
 AbstractLogger* make_logger(LoggingLevel level,
-                            std::unique_ptr<AbstractWriter> writer = std::unique_ptr<AbstractWriter>(new DummyWriter()));
+                            std::shared_ptr<AbstractWriter> writer = std::shared_ptr<AbstractWriter>(new DummyWriter()));
 
 
 

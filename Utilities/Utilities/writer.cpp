@@ -76,7 +76,7 @@ using namespace std;
 
 
 
-BufferedWriter::BufferedWriter(unique_ptr<AbstractWriter> writer, qint32 buffer_size)
+BufferedWriter::BufferedWriter(shared_ptr<AbstractWriter> writer, qint32 buffer_size)
         : _writer(move(writer)), _buffer_size(buffer_size)
 {
     if(!_writer)
@@ -114,7 +114,7 @@ BufferedWriter::~BufferedWriter()
 
 
 
-ConcurrentWriter::ConcurrentWriter(unique_ptr<AbstractWriter> writer)
+ConcurrentWriter::ConcurrentWriter(shared_ptr<AbstractWriter> writer)
     : _writer(move(writer))
 {
     if(!_writer)

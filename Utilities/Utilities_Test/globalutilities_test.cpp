@@ -51,15 +51,15 @@ void GlobalUtilitiesTest::setLogger_data()
     LoggerFactory* factory = new LoggerFactory();
 
     QTest::newRow("No logging")         << factory->create(LoggingLevel::Off,
-                                                           unique_ptr<AbstractWriter>(new MockWriter()));
+                                                           shared_ptr<AbstractWriter>(new MockWriter()));
     QTest::newRow("Warning logging")    << factory->create(LoggingLevel::Warning,
-                                                           unique_ptr<AbstractWriter>(new MockWriter()));
+                                                           shared_ptr<AbstractWriter>(new MockWriter()));
     QTest::newRow("Info logging")       << factory->create(LoggingLevel::Info,
-                                                           unique_ptr<AbstractWriter>(new MockWriter()));
+                                                           shared_ptr<AbstractWriter>(new MockWriter()));
     QTest::newRow("Debug logging")      << factory->create(LoggingLevel::Debug,
-                                                           unique_ptr<AbstractWriter>(new MockWriter()));
+                                                           shared_ptr<AbstractWriter>(new MockWriter()));
     QTest::newRow("Trace logging")      << factory->create(LoggingLevel::Trace,
-                                                           unique_ptr<AbstractWriter>(new MockWriter()));
+                                                           shared_ptr<AbstractWriter>(new MockWriter()));
 
     delete factory;
 }

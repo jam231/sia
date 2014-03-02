@@ -18,12 +18,10 @@ int main(int argv, char **args)
     // Malutki test celem sprawdzanie czy wszystko sie dolacza, bo byly z tym problemy.
     LoggerFactory* factory = new LoggerFactory();
     GlobalUtilities::setLogger(factory->create(LoggingLevel::Trace,
-                                               std::unique_ptr<AbstractWriter>(
+                                               std::shared_ptr<AbstractWriter>(
                                                    new FileWriter(
                                                        QDate::currentDate().toString() + ".log")
-                                                   )
-                                               )
-                               );
+                                                   )));
     delete factory;
 
     LOG_INFO("-------------------------------START-------------------------------");

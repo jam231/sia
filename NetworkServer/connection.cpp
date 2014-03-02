@@ -156,7 +156,7 @@ bool Connection::processMessage()
             {
                 qWarning() << "\t\t[Connection] Próba rejestracji przez "\
                              "zalogowanego użytkownika.";
-                Failure response(Types::Failure::CANNOT_REGISTER_WHEN_LOGGED);
+                Failure response(Types::Failure::ALREADY_LOGGED);
                 send(response);
             }
             return true;

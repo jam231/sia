@@ -20,7 +20,7 @@ QString AbstractLogger::createLogEntry(QString loggingLevel, QString message,
 
 
 
-WarningLogger::WarningLogger(unique_ptr<AbstractWriter> writer)
+WarningLogger::WarningLogger(shared_ptr<AbstractWriter> writer)
     : _writer(move(writer))
 {}
 
@@ -39,7 +39,7 @@ void  WarningLogger::warning(QString message, QString file,
 
 
 
-InfoLogger::InfoLogger(std::unique_ptr<AbstractWriter> writer)
+InfoLogger::InfoLogger(std::shared_ptr<AbstractWriter> writer)
     : WarningLogger(move(writer))
 {}
 
@@ -51,7 +51,7 @@ void InfoLogger::info(QString message, QString file,
 
 
 
-DebugLogger::DebugLogger(unique_ptr<AbstractWriter> writer)
+DebugLogger::DebugLogger(shared_ptr<AbstractWriter> writer)
     : InfoLogger(move(writer))
 {}
 
@@ -63,7 +63,7 @@ void DebugLogger::debug(QString message, QString file,
 
 
 
-TraceLogger::TraceLogger(unique_ptr<AbstractWriter> writer)
+TraceLogger::TraceLogger(shared_ptr<AbstractWriter> writer)
     : DebugLogger(move(writer))
 {}
 
@@ -73,7 +73,7 @@ void TraceLogger::trace(QString message, QString file,
     _writer->write(createLogEntry("Trace", message, file, function, line));
 }
 
-AbstractLogger* make_logger(LoggingLevel level, std::unique_ptr<AbstractWriter> writer)
+AbstractLogger* make_logger(LoggingLevel level, std::shared_ptr<AbstractWriter> writer)
 {
     switch(level)
     {
@@ -92,7 +92,7 @@ AbstractLogger* make_logger(LoggingLevel level, std::unique_ptr<AbstractWriter> 
     }
 }
 
-AbstractLogger* LoggerFactory::create(LoggingLevel level, unique_ptr<AbstractWriter> writer)
+AbstractLogger* LoggerFactory::create(LoggingLevel level, shared_ptr<AbstractWriter> writer)
 {
     return make_logger(level, move(writer));
 }

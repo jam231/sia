@@ -62,12 +62,12 @@ public:
  */
 class BufferedWriter : public AbstractWriter
 {
-    std::unique_ptr<AbstractWriter> _writer;
+    std::shared_ptr<AbstractWriter> _writer;
     QStringList _message_queue;
     qint32 _buffer_size;
 public:
     // For better performance try tweaking the buffer_size value.
-    BufferedWriter(std::unique_ptr<AbstractWriter> writer, qint32 buffer_size=1024);
+    BufferedWriter(std::shared_ptr<AbstractWriter> writer, qint32 buffer_size=1024);
 
     // Not thread-safe
     void write(QString data);
@@ -82,12 +82,12 @@ public:
 class ConcurrentWriter : public AbstractWriter
 {
     QMutex _lock;
-    std::unique_ptr<AbstractWriter> _writer;
+    std::shared_ptr<AbstractWriter> _writer;
     QFuture<void> _previous_task;
 public:
 
     // Writer's write must be thread-safe !!!
-    ConcurrentWriter(std::unique_ptr<AbstractWriter> writer);
+    ConcurrentWriter(std::shared_ptr<AbstractWriter> writer);
     // Thread-safe
     void write(QString data);
 };
