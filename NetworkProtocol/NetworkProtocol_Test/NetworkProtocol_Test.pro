@@ -15,7 +15,6 @@ DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 SOURCES += \
     main.cpp \
-    DataTransferObjects/types_test.cpp \
     DataTransferObjects/order_test.cpp \
     DataTransferObjects/lasttransaction_test.cpp \
     DataTransferObjects/bestorder_test.cpp \
@@ -46,7 +45,6 @@ SOURCES += \
     Responses/showuserstocksmsg_test.cpp
 
 HEADERS += \
-    DataTransferObjects/types_test.h \
     DataTransferObjects/order_test.h \
     DataTransferObjects/lasttransaction_test.h \
     DataTransferObjects/bestorder_test.h \

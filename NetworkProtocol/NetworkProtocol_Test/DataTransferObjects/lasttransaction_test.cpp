@@ -1,25 +1,81 @@
 #include "lasttransaction_test.h"
 
-LastTransactionTest::LastTransactionTest()
-{
-}
+#include <DataTransferObjects/types.h>
+
+#include <utilities.h>
+#include <stdexcept>
+#include <assert.h>
+
+using namespace NetworkProtocol::DTO;
+using namespace Types;
+using namespace Order;
+
+/// TODO:
+///     Impelement tests
 
 void LastTransactionTest::initTestCase()
 {
+    GlobalUtilities::setLogger(make_logger(LoggingLevel::Off));
 }
 
-void LastTransactionTest::cleanupTestCase()
+
+void LastTransactionTest::creation_valid_data()
 {
 }
 
-void LastTransactionTest::testCase1()
+void LastTransactionTest::creation_valid()
 {
-    //QFETCH(QString, data);
-    QVERIFY2(true, "This test should success.");
+    QSKIP("Not implemented yet.");
 }
 
-void LastTransactionTest::testCase1_data()
+
+void LastTransactionTest::creation_invalid_data()
 {
-    //QTest::addColumn<QString>("data");
-    //QTest::newRow("0") << QString();
 }
+
+void LastTransactionTest::creation_invalid()
+{
+    QSKIP("Not implemented yet.");
+
+}
+
+void LastTransactionTest::toStream_valid_data()
+{
+}
+
+void LastTransactionTest::toStream_valid()
+{
+    QSKIP("Not implemented yet.");
+
+}
+
+
+void LastTransactionTest::fromStream_valid_data()
+{
+}
+
+
+void LastTransactionTest::fromStream_valid()
+{
+    QSKIP("Not implemented yet.");
+}
+
+void LastTransactionTest::fromStream_invalid_data()
+{
+}
+
+
+void LastTransactionTest::fromStream_invalid()
+{
+    QSKIP("Not implemented yet.");
+}
+
+void LastTransactionTest::lengthSerialized_data()
+{
+}
+
+void LastTransactionTest::lengthSerialized()
+{
+    QSKIP("Not implemented yet.");
+}
+
