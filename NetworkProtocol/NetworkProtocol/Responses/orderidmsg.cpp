@@ -23,8 +23,7 @@ OrderId::OrderId(Types::OrderIdType orderId) : _orderId(orderId)
 
 Types::Message::MessageLengthType OrderId::length() const
 {
-    return sizeof(Types::Message::MessageType) +
-           sizeof(_orderId);
+    return sizeof(_orderId);
 }
 
 Types::Message::MessageType OrderId::type() const

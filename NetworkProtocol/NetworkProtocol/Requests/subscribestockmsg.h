@@ -6,13 +6,23 @@
 namespace NetworkProtocol {
 namespace Requests
 {
-/// TODO:   Add description with serialization format.
+/*
+ *  Request :: SubscribeStock
+ *
+ *  This message is for requesting subscription of stock with given id.
+ *
+ *  Message format:
+ *  <message_length : 2><message_type : 1><stock_id : 4>
+ *
+ *  where
+ *      message_type         = MessageType::REQUEST_SUBSCRIBE_STOCK
+ */
 class NETWORKPROTOCOLSHARED_EXPORT SubscribeStock : public Request
 {
     DTO::Types::StockIdType _stockId;
 
 public:
-    SubscribeStock(QDataStream& msg);
+    SubscribeStock(QDataStream&);
 
     DTO::Types::Message::MessageLengthType length() const;
 

@@ -1,6 +1,6 @@
 #include "registerusermsg.h"
 
-#include <QDebug>
+#include "networkprotocol_utilities.h"
 
 namespace NetworkProtocol
 {
@@ -9,40 +9,39 @@ namespace Requests
 
 using namespace DTO;
 
-RegisterUser::RegisterUser(QDataStream& in) : Request() // Pakiet może mieć różną długość w zależności
-{                                                       // od długości hasła.
-    /*
-     *  in >> _Password
-     *  Czytanie QStringa nie zadziała, jeżeli do jego wysyłania
-     *  nie został użyty QDataStream - tak wyczytałem na stackoverflow,
-     *  i rzeczywiscie nie chciał mi się wczytać
-     *                                          --jam231
-     */
-
-    Types::Message::MessageLengthType passwordLength;
-
-    if(in.device()->bytesAvailable() < sizeof(passwordLength))
+RegisterUser::RegisterUser(QDataStream& serialized_request)
+{
+    Types::Message::MessageLengthType password_length;
+    if(serialized_request.device()->bytesAvailable() < sizeof(password_length))
     {
-        qWarning() <<"[] Zbyt mało bajtów by odczytać długośc hasła.\n"
-                   << "Oczekiwano" << sizeof(passwordLength) << "bajtów.\n"
-                   << "Liczba bajtów dostępnych w buforze:"
-                   << in.device()->bytesAvailable();
-        throw InvalidRequest();
+        LOG_TRACE(QString("Malformed request: Not enough bytes in serialized_request"\
+                          " to read password length. Is %1 should be >%2.")
+                  .arg(serialized_request.device()->bytesAvailable())
+                  .arg(sizeof(password_length)));
+        throw MalformedRequest("Not enough bytes in serialized_request to read"\
+                               " password length.");
     }
 
-    in >> passwordLength;
-
-    if(in.device()->bytesAvailable() != passwordLength)
+    serialized_request >> password_length;
+    if(password_length <= 4)
     {
-        qWarning() <<"[] Niepoprawna długość hasła.\n"
-                   << "Oczekiwano" << length() << "bajtów.\n"
-                   << "Liczba bajtów dostępnych w buforze:"
-                   << in.device()->bytesAvailable();
-        throw InvalidRequest();
+        LOG_TRACE(QString("Invalid password length. Is %1 should be > 4.")
+                  .arg(serialized_request.device()->bytesAvailable())
+                  .arg(password_length));
+        throw InvalidRequestBody("Password is <= 4.");
+    }
+    if(serialized_request.device()->bytesAvailable() != password_length)
+    {
+        LOG_TRACE(QString("Invalid request body: Wrong number of bytes in stream."\
+                          " Is %1 should be %2.")
+                  .arg(serialized_request.device()->bytesAvailable())
+                  .arg(password_length));
+        throw MalformedRequest("Wrong number of bytes in serialized_request"\
+                               "for password.");
     }
 
-    QByteArray buffer(passwordLength, Qt::Uninitialized);
-    in.readRawData(buffer.data(), passwordLength);
+    QByteArray buffer(password_length, Qt::Uninitialized);
+    serialized_request.readRawData(buffer.data(), password_length);
     _password = QString(buffer);
 }
 
@@ -59,8 +58,7 @@ QString RegisterUser::getPassword() const
 
 DTO::Types::Message::MessageLengthType RegisterUser::length() const
 {
-    return sizeof(Types::Message::MessageType) +
-           sizeof(Types::Message::MessageLengthType) + _password.toUtf8().size();
+    return sizeof(Types::Message::MessageLengthType) + _password.toUtf8().size();
 }
 
 }

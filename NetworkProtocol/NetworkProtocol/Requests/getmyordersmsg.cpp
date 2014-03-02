@@ -1,5 +1,7 @@
 #include "getmyordersmsg.h"
 
+#include "networkprotocol_utilities.h"
+
 
 namespace NetworkProtocol
 {
@@ -7,8 +9,11 @@ namespace Requests
 {
 
 using namespace DTO;
+GetMyOrders::GetMyOrders()
+{
+}
 
-GetMyOrders::GetMyOrders(QDataStream& in) : Request(in)
+GetMyOrders::GetMyOrders(QDataStream&)
 {
 }
 
@@ -19,9 +24,8 @@ Types::Message::MessageType GetMyOrders::type() const
 
 Types::Message::MessageLengthType GetMyOrders::length() const
 {
-    return sizeof(Types::Message::MessageType);
+    return 0;
 }
-
 
 
 }

@@ -29,8 +29,7 @@ void Failure::send(QIODevice* connection)
 
 Types::Message::MessageLengthType Failure::length() const
 {
-    return sizeof(Types::Message::MessageType) +
-           sizeof(_reason);
+    return sizeof(_reason);
 }
 
 }

@@ -40,8 +40,7 @@ Types::Message::MessageType BuyTransaction::type() const
 
 Types::Message::MessageLengthType BuyTransaction::length() const
 {
-    return sizeof(Types::Message::MessageType) +
-           sizeof(_orderId) + sizeof(_amount);
+    return sizeof(_orderId) + sizeof(_amount);
 }
 
 

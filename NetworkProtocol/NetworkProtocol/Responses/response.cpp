@@ -9,11 +9,8 @@ using namespace DTO;
 
 void Response::sendHeader(QDataStream& out)
 {
-    out << length()
-        << type();
+    out << length() << type();
 }
-
-
 
 }
 }

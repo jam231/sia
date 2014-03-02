@@ -173,7 +173,7 @@ void Market::registerNewUser(Connection* connection, QString password)
     {
         qDebug() << "[Market] Nowy indentyfikator użytkownika nie został"
                  << "zwrócony. Błąd: " << query.lastError().text();
-        Failure response(Types::Failure::BAD_PASSWORD);
+        Failure response(Types::Failure::INVALID_MESSAGE_BODY);
         _server->send(response, connection);
 
     }

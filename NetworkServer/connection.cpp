@@ -15,6 +15,7 @@
 #include <Responses/failuremsg.h>
 #include <DataTransferObjects/order.h>
 
+#include <networkprotocol_utilities.h>
 
 using namespace NetworkProtocol;
 using namespace NetworkProtocol::Requests;
@@ -122,7 +123,7 @@ void Connection::disconect()
  */
 bool Connection::processMessage()
 {
-    Types::Message::MessageLengthType msgLength = Request::getMessageLength(_socket);
+    Types::Message::MessageLengthType msgLength = Requests::getLength(_socket);
 
     if(0 >= msgLength || msgLength > _socket->bytesAvailable())
         return false;
@@ -131,7 +132,7 @@ bool Connection::processMessage()
 
     _socket->read(sizeof(Types::Message::MessageLengthType));
 
-    Types::Message::MessageType msgType = Request::getType(message);
+    Types::Message::MessageType msgType = Requests::readType_NoEx(message);
 
     //qDebug() << "\t\t[Connection] Id wiadmości:" << msgType;
 

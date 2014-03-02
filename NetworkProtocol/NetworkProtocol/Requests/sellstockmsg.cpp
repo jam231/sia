@@ -1,6 +1,7 @@
 #include "sellstockmsg.h"
 
-#include <QDebug>
+#include "networkprotocol_utilities.h"
+
 
 namespace NetworkProtocol
 {
@@ -9,18 +10,27 @@ namespace Requests
 
 using namespace DTO;
 
-SellStock::SellStock(QDataStream& in) : Request(in)
+SellStock::SellStock(QDataStream& serialized_request)
 {
-    in >> _stockId;
-    in >> _amount;
-    in >> _price;
-
-    // Mam wielka nadzieje, ze w bazie te rzeczy sa sprawdane,
-    // a juz na pewno _stockId
-    if(_amount <= 0 || _price <= 0)
+    serialized_request >> _stockId;
+    serialized_request >> _amount;
+    serialized_request >> _price;
+    if(serialized_request.device()->bytesAvailable() == sizeof(_stockId) +
+                                                        sizeof(_amount) + sizeof(_price))
     {
-        qWarning() << "[] Wiadomośc nie spełnia: _amount <= 0 || _price <= 0";
-        throw InvalidRequest();
+        LOG_TRACE(QString("Malformed request: Not enough bytes in serialized_request"\
+                          " to read stock id, amount and price. Is %1 should be >%2.")
+                  .arg(serialized_request.device()->bytesAvailable())
+                  .arg(sizeof(_stockId) + sizeof(_amount) + sizeof(_price)));
+        throw MalformedRequest("Wrong number bytes in serialized_request for"\
+                               " stock id.");
+    }
+    if(_stockId <= 0 || _amount <= 0 || _price <= 0)
+    {
+        LOG_TRACE(QString("Invalid request body: stockId(%1) <= 0 || amount(%2) <= 0 "\
+                          "|| price <= 0.")
+                  .arg(_stockId.value).arg(_amount.value).arg(_price.value));
+        throw InvalidRequestBody("One of stockId, amount, price is <= 0.");
     }
 }
 
@@ -47,8 +57,7 @@ DTO::Types::StockIdType SellStock::getStockId() const
 
 DTO::Types::Message::MessageLengthType SellStock::length() const
 {
-    return sizeof(Types::Message::MessageType) + sizeof(_stockId) +
-            sizeof(_price) + sizeof(_amount);
+    return sizeof(_stockId) + sizeof(_price) + sizeof(_amount);
 }
 
 

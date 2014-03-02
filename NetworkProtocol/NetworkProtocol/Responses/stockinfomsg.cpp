@@ -20,7 +20,7 @@ StockInfo::StockInfo (Types::StockIdType stockId,
     : _stockId(stockId), _bestBuyOrder(bestBuyOrder),
       _bestSellOrder(bestSellOrder), _lastTransaction(lastTransaction)
 {
-    if(stockId.value >= 0)
+    if(stockId.value <= 0)
     {
         LOG_TRACE(QString("Invalid argument: stockId(%1) <= 0").arg(_stockId.value));
         throw std::invalid_argument("stockId <= 0.");
@@ -28,18 +28,18 @@ StockInfo::StockInfo (Types::StockIdType stockId,
     if(_bestBuyOrder == nullptr ||
        (_bestBuyOrder->getOrderType() == Order::BUY && _bestBuyOrder->getStockId() == _stockId))
     {
-        LOG_TRACE(QString("Best buy order is invalid - wrong stock id (should be %1 is %2) or order type(%3).")
+        LOG_TRACE(QString("Best buy order is invalid: wrong stock id (should be %1 is %2) or order type(%3).")
                   .arg(_stockId.value).arg(_bestBuyOrder->getStockId().value)
                   .arg(_bestBuyOrder->getOrderType()));
-        throw std::invalid_argument("Best buy order is invalid - wrong stock Id or order type.");
+        throw std::invalid_argument("Best buy order is invalid: wrong stock Id or order type.");
     }
     if(_bestSellOrder == nullptr ||
        (_bestSellOrder->getOrderType() == Order::SELL && _bestSellOrder->getStockId() == _stockId))
     {
-        LOG_TRACE(QString("Best sell order is invalid - wrong stock id (should be %1 is %2) or order type(%3).")
+        LOG_TRACE(QString("Best sell order is invalid: wrong stock id (should be %1 is %2) or order type(%3).")
                   .arg(_stockId.value).arg(_bestSellOrder->getStockId().value)
                   .arg(_bestSellOrder->getOrderType()));
-        throw std::invalid_argument("Best sell order is invalid - wrong stock Id or order type.");
+        throw std::invalid_argument("Best sell order is invalid: wrong stock Id or order type.");
     }
 }
 

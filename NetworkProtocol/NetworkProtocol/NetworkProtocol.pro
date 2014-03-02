@@ -40,7 +40,8 @@ SOURCES += \
     Requests/companystatusmsg.cpp \
     Requests/cancelordermsg.cpp \
     Requests/buystockmsg.cpp \
-    Responses/showcompanystatusmsg.cpp
+    Responses/showcompanystatusmsg.cpp \
+    networkprotocol_utilities.cpp
 
 
 
@@ -75,7 +76,8 @@ HEADERS += \
     Requests/companystatusmsg.h \
     Requests/cancelordermsg.h \
     Requests/buystockmsg.h \
-    Responses/showcompanystatusmsg.h
+    Responses/showcompanystatusmsg.h \
+    networkprotocol_utilities.h
 
 
 unix:!symbian {

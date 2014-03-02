@@ -93,13 +93,16 @@ namespace Failure
 typedef qint8 FailureTypeType;
 enum FailureType : FailureTypeType
 {
-    BAD_PASSWORD,
-    CANNOT_REGISTER_WHEN_LOGGED,
     BAD_USERID_OR_PASSWORD,
     NOT_LOGGED,
     ALREADY_LOGGED,
-    INVALID_MESSAGE,
-    UNRECOGNIZED_MESSAGE
+    RESOURCE_NOT_FOUND,             // When user requests order for nonexistent stock, or wants to cancel order
+                                    // he doesn't have.
+    INSUFFICENT_FUNDS,              // When user requests BUY order he can't afford
+                                    // or SELL order for stock he doesn't have (or have too litle) -- (Red Alert wtf!)
+    MALFORMED_MESSAGE,              // Lengths don't match
+    INVALID_MESSAGE_BODY,           // Contents are well-formed, but violate constraints
+    UNRECOGNIZED_MESSAGE            // Message type is not defined.
 };
 }
 
@@ -144,9 +147,6 @@ enum MessageType : MessageTypeType
     RESPONSE_FAILURE,
     REQUEST_LOGIN_USER,
 
-    //RESPONSE_LOGIN_USER_SUCCESS,
-    //RESPONSE_LOGIN_USER_FAILURE,
-    //RESPONSE_UNRECOGNIZED_USER,             // Np. odpowiedz dla uzytkownika, gdy probuje
     // niezalogowany wykonac akcje wymagajaca zalogowania.
 
 
@@ -155,13 +155,6 @@ enum MessageType : MessageTypeType
     REQUEST_SELL_STOCK_ORDER = 0x14,        // Request zlecenie kupna
     REQUEST_BUY_STOCK_ORDER,                // Request zlecenie sprzedazy
 
-    /*
-         * Przestalem wiedziec co dokladnie robia 3 ponizsze wiadomosci.
-         * Niestety (najprawdopodobniej moj) komentarz jest bardzo lakoniczny,
-         * a fragment kodu w ktorych sa wykorzystywane wskazuje na kontintuicyjnosc nazw
-         * :-(
-         *                                      -- jam231
-         */
 
     RESPONSE_BUY_TRANSACTION,               // Response wysylanie informacji o danej transakcji kupna
     RESPONSE_SELL_TRANSACTION,              // Response wysylanie informacji o danej transakcji sprzedazy

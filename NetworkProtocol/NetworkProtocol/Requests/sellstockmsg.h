@@ -6,7 +6,17 @@
 namespace NetworkProtocol {
 namespace Requests
 {
-/// TODO:   Add description with serialization format.
+/*
+ *  Request :: SellStock
+ *
+ *  This message is for requesting SELL order for stock with given id.
+ *
+ *  Message format:
+ *  <message_length : 2><message_type : 1><stock_id : 4><amount : 4><price : 4>
+ *
+ *  where
+ *      message_type         = MessageType::REQUEST_SELL_STOCK_ORDER
+ */
 class NETWORKPROTOCOLSHARED_EXPORT SellStock : public Request
 {
     DTO::Types::StockIdType _stockId;
@@ -15,7 +25,7 @@ class NETWORKPROTOCOLSHARED_EXPORT SellStock : public Request
 
 
 public:
-    SellStock(QDataStream& msg);
+    SellStock(QDataStream&);
 
     DTO::Types::StockIdType getStockId() const;
     DTO::Types::AmountType getAmount() const;

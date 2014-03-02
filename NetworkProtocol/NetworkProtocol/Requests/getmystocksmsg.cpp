@@ -1,5 +1,7 @@
 #include "getmystocksmsg.h"
 
+#include "networkprotocol_utilities.h"
+
 
 namespace NetworkProtocol
 {
@@ -8,7 +10,11 @@ namespace Requests
 
 using namespace DTO;
 
-GetMyStocks::GetMyStocks(QDataStream& in) : Request(in)
+GetMyStocks::GetMyStocks()
+{
+}
+
+GetMyStocks::GetMyStocks(QDataStream&)
 {
 }
 
@@ -19,7 +25,7 @@ Types::Message::MessageType GetMyStocks::type() const
 
 DTO::Types::Message::MessageLengthType GetMyStocks::length() const
 {
-    return sizeof(Types::Message::MessageType);
+    return 0;
 }
 
 

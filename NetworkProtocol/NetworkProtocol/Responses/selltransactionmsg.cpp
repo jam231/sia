@@ -28,8 +28,7 @@ void SellTransaction::send(QIODevice *connection)
     QDataStream out(connection);
 
     sendHeader(out);
-    out << _orderId
-        << _amount;
+    out << _orderId << _amount;
 }
 
 Types::Message::MessageType SellTransaction::type() const
@@ -39,8 +38,7 @@ Types::Message::MessageType SellTransaction::type() const
 
 Types::Message::MessageLengthType SellTransaction::length() const
 {
-    return sizeof(Types::Message::MessageType) +
-            sizeof(_orderId) + sizeof(_amount);
+    return sizeof(_orderId) + sizeof(_amount);
 }
 
 

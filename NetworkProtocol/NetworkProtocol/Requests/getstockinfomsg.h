@@ -6,12 +6,22 @@
 namespace NetworkProtocol {
 namespace Requests
 {
-/// TODO:   Add description with serialization format.
+/*
+ *  Request :: GetStockInfo
+ *
+ *  This message is for requesting information about stock with given id
+ *
+ *  Message format:
+ *  <message_length : 2><message_type : 1><stock_id : 4>
+ *
+ *  where
+ *      message_type         = MessageType::REQUEST_GET_STOCK_INFO
+ */
 class NETWORKPROTOCOLSHARED_EXPORT GetStockInfo : public Request
 {
     DTO::Types::StockIdType _stockId;
 public:
-    GetStockInfo(QDataStream& in);
+    GetStockInfo(QDataStream&);
 
     DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;

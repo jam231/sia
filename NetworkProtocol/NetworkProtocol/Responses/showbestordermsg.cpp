@@ -28,7 +28,7 @@ Types::Message::MessageType ShowBestOrder::type() const
 
 Types::Message::MessageLengthType ShowBestOrder::length() const
 {
-    return sizeof(Types::Message::MessageType) + _bestOrder.lengthSerialized();
+    return _bestOrder.lengthSerialized();
 }
 
 void ShowBestOrder::send(QIODevice *connection)
