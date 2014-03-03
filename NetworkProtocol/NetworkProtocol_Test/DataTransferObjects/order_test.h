@@ -1,7 +1,7 @@
 #ifndef ORDER_TEST_H
 #define ORDER_TEST_H
 
-#include "../NetworkProtocol/DataTransferObjects/order.h"
+#include <DataTransferObjects/order.h>
 
 #include <QtTest>
 
@@ -9,9 +9,8 @@ class OrderTest : public QObject
 {
     Q_OBJECT
 
-public:
-    OrderTest();
-
+    void generate_valid_data();
+    void generate_invalid_data();
 private Q_SLOTS:
     void initTestCase();
 

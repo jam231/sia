@@ -217,7 +217,7 @@ void BestOrderTest::fromStream_valid()
 
         Types::Message::MessageLengthType should_be_bytes = sizeof(OrderType) +
                 sizeof(StockIdType) + sizeof(AmountType) + sizeof(PriceType);
-        assert(should_be_bytes == 13);
+
         QVERIFY2(stream.device()->bytesAvailable() == should_be_bytes,
                  qPrintable(QString("Bytes available in device doesn't equal to "
                                     "(supposedly) written. Should be %1 is %2.")
