@@ -1,6 +1,6 @@
 
 #include "DataTransferObjects/bestorder_test.h"
-
+#include "DataTransferObjects/lasttransaction_test.h"
 /// TODO:
 ///
 /// - tests for remaining DataTransferObjects (Order, LastTransaction)
@@ -25,8 +25,10 @@ int main(int argc, char *argv[])
     bool result = 0;
 
     BestOrderTest bestOrder_test;
+    LastTransactionTest lastTransaction_test;
 
     result |= QTest::qExec(&bestOrder_test, argc, argv);
+    result |= QTest::qExec(&lastTransaction_test, argc, argv);
 
 
     return result;

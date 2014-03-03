@@ -9,9 +9,8 @@ class LastTransactionTest : public QObject
 {
     Q_OBJECT
 
-public:
-    LastTransactionTest();
-
+    void generate_valid_data();
+    void generate_invalid_data();
 private Q_SLOTS:
     void initTestCase();
 
