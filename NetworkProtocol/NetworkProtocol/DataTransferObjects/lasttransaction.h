@@ -29,6 +29,7 @@ public:
 
     friend QDataStream &operator<<(QDataStream& stream, const LastTransaction&);
 
+    static LastTransaction fromStream(QDataStream&);
 };
 
 /*

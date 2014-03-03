@@ -54,6 +54,37 @@ QDataStream &operator<<(QDataStream& stream, const LastTransaction& lastTransact
     return stream;
 }
 
+LastTransaction LastTransaction::fromStream(QDataStream& stream)
+{
+    Types::Message::MessageLengthType date_length;
+    Types::AmountType amount;
+    Types::PriceType price;
+
+    if(stream.device()->bytesAvailable() <= sizeof(date_length))
+    {
+        LOG_TRACE(QString("Wrong number of bytes in the stream to read"\
+                          " LastTransaction. Should be >%1 is %2")
+                  .arg(sizeof(date_length))
+                  .arg(stream.device()->bytesAvailable()));
+        throw std::runtime_error("Not enough bytes in the stream to read LastTransaction.");
+    }
+    stream >> date_length;
+
+    if(date_length + sizeof(amount) + sizeof(price) > stream.device()->bytesAvailable())
+    {
+        LOG_TRACE(QString("Wrong number of bytes in the stream to read"\
+                          " LastTransaction. Should be %1 is %2")
+                  .arg(date_length + sizeof(amount) + sizeof(price))
+                  .arg(stream.device()->bytesAvailable()));
+        throw std::runtime_error("Not enough bytes in the stream to read LastTransaction.");
+    }
+    QByteArray buffer;
+    buffer.resize(date_length);
+    stream.readRawData(buffer.data(), date_length);
+    stream >> amount >> price;
+    return LastTransaction(QString::fromUtf8(buffer), amount, price);
+}
+
 }
 }
 
