@@ -297,9 +297,11 @@ void BestOrderTest::lengthSerialized()
 
     BestOrder best_order(order_type, stock_id, amount, price);
 
-    Message::MessageLengthType su_of_sizeofs = sizeof(order_type) + sizeof(stock_id) +
+    Message::MessageLengthType sum_of_sizeofs = sizeof(order_type) + sizeof(stock_id) +
                                                 sizeof(amount) + sizeof(price);
 
-    QVERIFY2(best_order.lengthSerialized() == su_of_sizeofs, "Best order length in bytes is incorrect.");
+    QVERIFY2(best_order.lengthSerialized() == sum_of_sizeofs,
+             "Best order length in bytes is incorrect.");
+
 }
 
