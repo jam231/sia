@@ -153,11 +153,38 @@ void BestOrderTest::toStream_valid()
         assert(stream.byteOrder() == QDataStream::BigEndian);
 
         stream << best_order;
+        stream.device()->reset();
+        qint32 should_be_bytes = sizeof(order_type) + sizeof(stock_id) +
+                                 sizeof(amount) + sizeof(price);
 
-        QVERIFY2(stream.device()->size() == best_order.lengthSerialized(),
-                 qPrintable(QString("Bytes saved in device doesn't equal to (supposedly) written. "\
-                            "Should be %1 is %2.")
-                            .arg(best_order.lengthSerialized()).arg(stream.device()->size())));
+        QVERIFY2(stream.device()->size() == should_be_bytes,
+                 qPrintable(QString("Bytes saved in device doesn't equal to "\
+                                    "(supposedly) written. Should be %1 is %2.")
+                            .arg(should_be_bytes).arg(stream.device()->size())));
+
+        OrderType   should_be_order_type;
+        StockIdType should_be_stock_id;
+        AmountType  should_be_amount;
+        PriceType   should_be_price;
+        stream >> should_be_order_type >> should_be_stock_id
+               >> should_be_amount >> should_be_price;
+
+        QVERIFY2(should_be_order_type == order_type,
+                 qPrintable(QString("Order type doesn't match. Is %1 should be %2")
+                            .arg(should_be_order_type)
+                            .arg(order_type)));
+        QVERIFY2(should_be_stock_id == stock_id,
+                 qPrintable(QString("Stock id doesn't match. Is %1 should be %2")
+                            .arg(should_be_stock_id.value)
+                            .arg(stock_id.value)));
+        QVERIFY2(should_be_amount == amount,
+                 qPrintable(QString("Amount doesn't match. Is %1 should be %2")
+                            .arg(should_be_amount.value)
+                            .arg(amount.value)));
+        QVERIFY2(should_be_price == price,
+                 qPrintable(QString("Price doesn't match. Is %1 should be %2")
+                            .arg(should_be_price.value)
+                            .arg(price.value)));
     }
     catch(...)
     {
@@ -188,31 +215,32 @@ void BestOrderTest::fromStream_valid()
         stream << order_type << stock_id << amount << price;
         stream.device()->reset();
 
-        Types::Message::MessageLengthType correct_number_of_bytes =
-                sizeof(OrderType) + sizeof(StockIdType) + sizeof(AmountType) + sizeof(PriceType);
+        Types::Message::MessageLengthType should_be_bytes = sizeof(OrderType) +
+                sizeof(StockIdType) + sizeof(AmountType) + sizeof(PriceType);
+        assert(should_be_bytes == 13);
+        QVERIFY2(stream.device()->bytesAvailable() == should_be_bytes,
+                 qPrintable(QString("Bytes available in device doesn't equal to "
+                                    "(supposedly) written. Should be %1 is %2.")
+                            .arg(should_be_bytes)
+                            .arg(stream.device()->size())));
 
-        QVERIFY2(stream.device()->bytesAvailable() == correct_number_of_bytes,
-                 qPrintable(QString("Bytes available in device doesn't equal to (supposedly) written. "\
-                            "Should be %1 is %2.")
-                            .arg(correct_number_of_bytes).arg(stream.device()->size())));
+        BestOrder from_stream = BestOrder::fromStream(stream);
 
-        BestOrder fro_stream = BestOrder::fromStream(stream);
-
-        QVERIFY2(fro_stream.getOrderType() == order_type,
+        QVERIFY2(from_stream.getOrderType() == order_type,
                  qPrintable(QString("Order type doesn't match. Is %1 should be %2")
-                            .arg(fro_stream.getOrderType())
+                            .arg(from_stream.getOrderType())
                             .arg(order_type)));
-        QVERIFY2(fro_stream.getStockId() == stock_id,
+        QVERIFY2(from_stream.getStockId() == stock_id,
                  qPrintable(QString("Stock id doesn't match. Is %1 should be %2")
-                            .arg(fro_stream.getStockId().value)
+                            .arg(from_stream.getStockId().value)
                             .arg(stock_id.value)));
-        QVERIFY2(fro_stream.getAmount() == amount,
+        QVERIFY2(from_stream.getAmount() == amount,
                  qPrintable(QString("Amount doesn't match. Is %1 should be %2")
-                            .arg(fro_stream.getAmount().value)
+                            .arg(from_stream.getAmount().value)
                             .arg(amount.value)));
-        QVERIFY2(fro_stream.getPrice() == price,
+        QVERIFY2(from_stream.getPrice() == price,
                  qPrintable(QString("Price doesn't match. Is %1 should be %2")
-                            .arg(fro_stream.getPrice().value)
+                            .arg(from_stream.getPrice().value)
                             .arg(price.value)));
 
     }
@@ -248,13 +276,15 @@ void BestOrderTest::fromStream_invalid()
         stream << order_type << stock_id << amount << price;
         stream.device()->reset();
 
-        Types::Message::MessageLengthType correct_number_of_bytes =
-                sizeof(OrderType) + sizeof(StockIdType) + sizeof(AmountType) + sizeof(PriceType);
+        Types::Message::MessageLengthType should_be_bytes =
+                sizeof(OrderType) + sizeof(StockIdType) + sizeof(AmountType) +
+                sizeof(PriceType);
 
-        QVERIFY2(stream.device()->bytesAvailable() == correct_number_of_bytes,
-                 qPrintable(QString("Bytes available in device doesn't equal to (supposedly) written. "\
-                            "Should be %1 is %2.")
-                            .arg(correct_number_of_bytes ).arg(stream.device()->size())));
+        QVERIFY2(stream.device()->bytesAvailable() == should_be_bytes,
+                 qPrintable(QString("Bytes available in device doesn't equal to"\
+                                    "(supposedly) written. Should be %1 is %2.")
+                            .arg(should_be_bytes)
+                            .arg(stream.device()->size())));
 
         BestOrder::fromStream(stream);
         QFAIL("std::invalid_argument should have been thrown.");
@@ -301,7 +331,9 @@ void BestOrderTest::lengthSerialized()
                                                 sizeof(amount) + sizeof(price);
 
     QVERIFY2(best_order.lengthSerialized() == sum_of_sizeofs,
-             "Best order length in bytes is incorrect.");
+             qPrintable(QString("Best order length in bytes is incorrect."\
+                                "Is %1 should be %2.")
+                        .arg(best_order.lengthSerialized()).arg(sum_of_sizeofs)));
 
 }
 

@@ -18,6 +18,7 @@ std::shared_ptr<Request> fromStream(QDataStream& stream)
     // Read length bytes even if request is malformed.
     QDataStream serialized_request(stream.device()->read(length));
     Request* request;
+    try{
     switch(type)
     {
     case REQUEST_REGISTER_USER:
@@ -61,6 +62,12 @@ std::shared_ptr<Request> fromStream(QDataStream& stream)
         throw InvalidRequestType();
         break;
     };
+    }catch(std::invalid_argument& e)
+    {
+        LOG_TRACE(e.what());
+        throw InvalidRequestBody(e.what());
+    }
+
     return std::shared_ptr<Request>(request);
 }
 

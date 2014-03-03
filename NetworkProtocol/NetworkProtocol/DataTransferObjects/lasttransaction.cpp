@@ -25,8 +25,8 @@ Types::PriceType LastTransaction::getPrice() const
 
 Types::Message::MessageLengthType LastTransaction::lengthSerialized() const
 {
-    return sizeof(Types::Message::MessageLengthType) + _dateTime.toUtf8().size() +
-           sizeof(_amount) + sizeof(_price);
+    return sizeof(Types::Message::MessageLengthType) +
+            _dateTime.toUtf8().size() + sizeof(_amount) + sizeof(_price);
 }
 
 LastTransaction::LastTransaction(QString dateTime, Types::AmountType amount,
@@ -49,7 +49,8 @@ QDataStream &operator<<(QDataStream& stream, const LastTransaction& lastTransact
 
     stream << lastTransaction._amount
            << lastTransaction._price
-           << static_cast<Types::Message::MessageLengthType>(lastTransaction._dateTime.toUtf8().size());
+           << static_cast<Types::Message::MessageLengthType>(lastTransaction._dateTime
+                                                             .toUtf8().size());
     stream.device()->write(dateTime);
     return stream;
 }
@@ -66,7 +67,8 @@ LastTransaction LastTransaction::fromStream(QDataStream& stream)
                           " LastTransaction. Should be >%1 is %2")
                   .arg(sizeof(date_length))
                   .arg(stream.device()->bytesAvailable()));
-        throw std::runtime_error("Not enough bytes in the stream to read LastTransaction.");
+        throw std::invalid_argument("Not enough bytes in the stream to read"\
+                                    " LastTransaction.");
     }
     stream >> date_length;
 
@@ -76,7 +78,8 @@ LastTransaction LastTransaction::fromStream(QDataStream& stream)
                           " LastTransaction. Should be %1 is %2")
                   .arg(date_length + sizeof(amount) + sizeof(price))
                   .arg(stream.device()->bytesAvailable()));
-        throw std::runtime_error("Not enough bytes in the stream to read LastTransaction.");
+        throw std::invalid_argument("Not enough bytes in the stream to read"\
+                                    " LastTransaction.");
     }
     QByteArray buffer;
     buffer.resize(date_length);

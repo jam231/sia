@@ -1,5 +1,6 @@
 #include "types.h"
 
+#include <assert.h>
 namespace NetworkProtocol
 {
 namespace DTO
