@@ -94,10 +94,11 @@ unix:!symbian {
 
 win32:CONFIG(debug, debug|release) {
     DLLDESTDIR += $$OUT_PWD/../NetworkProtocol_TEST/debug/
-    message("Copying to Jane Debug Directory.")
+    message("Copying to NetworkProtocol_Test Debug Directory.")
 }
-else:unix:CONFIG(debug, debug|release) {
+else:unix {
     DLLDESTDIR += $$OUT_PWD/../NetworkProtocol_TEST
+    message("Copying to NetworkProtocol_Test Directory.")
 }
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../Utilities/Utilities/release/ -lUtilities
