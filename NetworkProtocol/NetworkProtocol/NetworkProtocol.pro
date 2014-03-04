@@ -47,6 +47,8 @@ SOURCES += \
 
 
 HEADERS += \
+    networkprotocol_global.h \
+    message.h \
     Responses/transactionchangemsg.h \
     Responses/stockinfomsg.h \
     Responses/showuserstocksmsg.h \
