@@ -92,8 +92,16 @@ unix:!symbian {
 }
 
 
-win32:gcc:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../Utilities/Utilities/release/ -lUtilities
-else:win32:gcc:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../Utilities/Utilities/debug/ -lUtilities
+win32:CONFIG(debug, debug|release) {
+    DLLDESTDIR += $$OUT_PWD/../NetworkProtocol_TEST/debug/
+    message("Copying to Jane Debug Directory.")
+}
+else:unix:CONFIG(debug, debug|release) {
+    DLLDESTDIR += $$OUT_PWD/../NetworkProtocol_TEST
+}
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../Utilities/Utilities/release/ -lUtilities
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../Utilities/Utilities/debug/ -lUtilities
 else:unix: LIBS += -L$$OUT_PWD/../../Utilities/Utilities/ -lUtilities
 
 INCLUDEPATH += $$PWD/../../Utilities/Utilities

@@ -3,13 +3,13 @@ QMAKE_CXXFLAGS += -std=c++0x -Wall -Wextra  -Wfloat-equal -Wundef \
 
 TARGET = NetworkProtocol_TEST
 
-QT       += network testlib
+QT       += testlib
 
 QT       -= gui
 
-CONFIG += console
-CONFIG += testcase
-CONFIG -= app_bundle
+CONFIG   += console
+CONFIG   += testcase
+CONFIG   -= app_bundle
 
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
@@ -74,20 +74,19 @@ HEADERS += \
     Responses/registerusersuccessmsg_test.h \
     Responses/showbestordermsg_test.h
 
-INCLUDEPATH += \
- ../NetworkProtocol/
 
 
-win32:gcc:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../NetworkProtocol/release/ -lNetworkProtocol
-else:win32:gcc:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../NetworkProtocol/debug/ -lNetworkProtocol
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../NetworkProtocol/release/ -lNetworkProtocol
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../NetworkProtocol/debug/ -lNetworkProtocol
 else:unix: LIBS += -L$$OUT_PWD/../NetworkProtocol/ -lNetworkProtocol
 
 INCLUDEPATH += $$PWD/../NetworkProtocol
 DEPENDPATH += $$PWD/../NetworkProtocol
 
 
-win32:gcc:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../Utilities/Utilities/release/ -lUtilities
-else:win32:gcc:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../Utilities/Utilities/debug/ -lUtilities
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../Utilities/Utilities/release/ -lUtilities
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../Utilities/Utilities/debug/ -lUtilities
 else:unix: LIBS += -L$$OUT_PWD/../../Utilities/Utilities/ -lUtilities
 
 INCLUDEPATH += $$PWD/../../Utilities/Utilities
