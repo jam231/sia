@@ -15,7 +15,7 @@ RegisterUserSuccess::RegisterUserSuccess(Types::UserIdType userId)
 {
     if(_userId <= 0 )
     {
-        LOG_TRACE(QString("Invalid argument: userId(%1) <= 0")
+        GLOBAL_LOG_TRACE(QString("Invalid argument: userId(%1) <= 0")
                   .arg(_userId.value));
         throw std::invalid_argument("userId <= 0.");
     }

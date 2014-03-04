@@ -35,7 +35,7 @@ LastTransaction::LastTransaction(QString dateTime, Types::AmountType amount,
 {
     if(_amount <= 0 || _price <= 0)
     {
-        LOG_TRACE(QString("Invalid arguments: amount(%1) <= 0 || price(%2) <= 0")
+        GLOBAL_LOG_TRACE(QString("Invalid arguments: amount(%1) <= 0 || price(%2) <= 0")
                   .arg(_amount.value).arg(_price.value));
         throw std::invalid_argument("One of amount, price is <= 0.");
 
@@ -63,7 +63,7 @@ LastTransaction LastTransaction::fromStream(QDataStream& stream)
 
     if(stream.device()->bytesAvailable() <= sizeof(date_length))
     {
-        LOG_TRACE(QString("Wrong number of bytes in the stream to read"\
+        GLOBAL_LOG_TRACE(QString("Wrong number of bytes in the stream to read"\
                           " LastTransaction. Should be >%1 is %2")
                   .arg(sizeof(date_length))
                   .arg(stream.device()->bytesAvailable()));
@@ -74,7 +74,7 @@ LastTransaction LastTransaction::fromStream(QDataStream& stream)
 
     if(date_length + sizeof(amount) + sizeof(price) > stream.device()->bytesAvailable())
     {
-        LOG_TRACE(QString("Wrong number of bytes in the stream to read"\
+        GLOBAL_LOG_TRACE(QString("Wrong number of bytes in the stream to read"\
                           " LastTransaction. Should be %1 is %2")
                   .arg(date_length + sizeof(amount) + sizeof(price))
                   .arg(stream.device()->bytesAvailable()));

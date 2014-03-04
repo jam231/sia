@@ -14,7 +14,7 @@ RegisterUser::RegisterUser(QDataStream& serialized_request)
     Types::Message::MessageLengthType password_length;
     if(serialized_request.device()->bytesAvailable() < sizeof(password_length))
     {
-        LOG_TRACE(QString("Malformed request: Not enough bytes in serialized_request"\
+        GLOBAL_LOG_TRACE(QString("Malformed request: Not enough bytes in serialized_request"\
                           " to read password length. Is %1 should be >%2.")
                   .arg(serialized_request.device()->bytesAvailable())
                   .arg(sizeof(password_length)));
@@ -25,14 +25,14 @@ RegisterUser::RegisterUser(QDataStream& serialized_request)
     serialized_request >> password_length;
     if(password_length <= 4)
     {
-        LOG_TRACE(QString("Invalid password length. Is %1 should be > 4.")
+        GLOBAL_LOG_TRACE(QString("Invalid password length. Is %1 should be > 4.")
                   .arg(serialized_request.device()->bytesAvailable())
                   .arg(password_length));
         throw InvalidRequestBody("Password is <= 4.");
     }
     if(serialized_request.device()->bytesAvailable() != password_length)
     {
-        LOG_TRACE(QString("Invalid request body: Wrong number of bytes in stream."\
+        GLOBAL_LOG_TRACE(QString("Invalid request body: Wrong number of bytes in stream."\
                           " Is %1 should be %2.")
                   .arg(serialized_request.device()->bytesAvailable())
                   .arg(password_length));

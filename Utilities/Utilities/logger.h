@@ -10,7 +10,7 @@
 
 #include <writer.h>
 
-#define LOG(call, message) call(message, __FILE__,__PRETTY_FUNCTION__,__LINE__)
+#define LOG(call, message) call(message,__FILE__,__PRETTY_FUNCTION__,__LINE__)
 
 
 
@@ -112,16 +112,48 @@ public:
     virtual ~TraceLogger() {}
 };
 
-
-class LoggerFactory
+class AbstractLoggerFactory
 {
 public:
-    AbstractLogger* create(LoggingLevel level,
-                           std::shared_ptr<AbstractWriter> writer = std::shared_ptr<AbstractWriter>(new DummyWriter()));
+    virtual std::shared_ptr<AbstractLogger> createLoggingSession() = 0;
+    virtual ~AbstractLoggerFactory() {}
 };
 
-AbstractLogger* make_logger(LoggingLevel level,
-                            std::shared_ptr<AbstractWriter> writer = std::shared_ptr<AbstractWriter>(new DummyWriter()));
+class SimpleLoggerFactory : public AbstractLoggerFactory
+{
+    LoggingLevel _level;
+    std::shared_ptr<AbstractWriter> _writer;
+public:
+    SimpleLoggerFactory(LoggingLevel level, std::shared_ptr<AbstractWriter> writer);
+    std::shared_ptr<AbstractLogger> createLoggingSession();
+};
+
+
+/*
+ *  class TransactionalLoggerFactory : AbstractLoggerFactory
+ *  {
+ *      LoggingLevel _level;
+ *      std::shared_ptr<AbstractWriter> _writer;
+ *  public:
+ *      SimpleLoggerFactory(LoggingLevel level, std::shared_ptr<AbstractWriter> writer);
+ *      std::shared_ptr<AbstractLogger> createLoggingSession()
+ *      {
+ *          std::shared_ptr<AbstractWriter> writer = new UnboundedBufferedWriter(_writer);
+ *          std::shared<AbstractLogger> logger = make_logger(_level, writer);
+ *          // Ideally we should output transaction log as:
+ *          // <------- START LOG TRANSACTION ------->
+ *          //  ..........entries.........
+ *          //  ..........entries.........
+ *          //  ..........entries.........
+ *          // <------- END LOG TRANSACTION ------->
+ *      }
+ *  };
+ */
+
+
+AbstractLogger *make_logger(LoggingLevel level,
+                            std::shared_ptr<AbstractWriter> writer =
+                                std::shared_ptr<AbstractWriter>(new DummyWriter()));
 
 
 

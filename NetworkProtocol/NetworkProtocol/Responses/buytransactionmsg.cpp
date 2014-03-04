@@ -17,7 +17,7 @@ BuyTransaction::BuyTransaction(Types::OrderIdType orderId,
 
     if(_orderId <= 0 || _amount <= 0)
     {
-        LOG_TRACE(QString("Invalid arguments: orderId(%1) <= 0 || amount(%3) <= 0 ")
+        GLOBAL_LOG_TRACE(QString("Invalid arguments: orderId(%1) <= 0 || amount(%3) <= 0 ")
                   .arg(_orderId.value).arg(_amount.value));
         throw std::invalid_argument("One of orderId, amount is <= 0.");
     }

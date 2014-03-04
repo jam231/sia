@@ -14,7 +14,7 @@ GetStockInfo::GetStockInfo(QDataStream &serialized_request)
 {
     if(serialized_request.device()->bytesAvailable() < sizeof(_stockId))
     {
-        LOG_TRACE(QString("Malformed request: Not enough bytes in serialized_request"\
+        GLOBAL_LOG_TRACE(QString("Malformed request: Not enough bytes in serialized_request"\
                           " to stock id. Is %1 should be >%2.")
                   .arg(serialized_request.device()->bytesAvailable())
                   .arg(sizeof(_stockId)));
@@ -26,7 +26,7 @@ GetStockInfo::GetStockInfo(QDataStream &serialized_request)
 
     if(_stockId <= 0)
     {
-        LOG_TRACE(QString("Invalid stock id. stockId(%1) <= 0.")
+        GLOBAL_LOG_TRACE(QString("Invalid stock id. stockId(%1) <= 0.")
                   .arg(_stockId.value));
         throw InvalidRequestBody("stock id <= 0.");
     }

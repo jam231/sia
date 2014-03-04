@@ -5,12 +5,12 @@
 
 std::shared_ptr<AbstractLogger> GlobalUtilities::_logger = std::shared_ptr<AbstractLogger>(new DummyLogger());
 
-void GlobalUtilities::setLogger(AbstractLogger* logger)
+void GlobalUtilities::setLogger(std::shared_ptr<AbstractLogger> logger)
 {
-    if(logger == NULL)
-        throw std::invalid_argument("GlobalUtilities::setLogger(logger) with logger == NULL.");
-    else
-        _logger = std::shared_ptr<AbstractLogger>(logger);
+
+    if(!logger)
+        throw std::invalid_argument("GlobalUtilities::setLogger(logger) with logger == nullptr.");
+    _logger.swap(logger);
 }
 
 std::shared_ptr<AbstractLogger> GlobalUtilities::getLogger()

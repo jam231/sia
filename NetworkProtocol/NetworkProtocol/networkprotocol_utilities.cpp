@@ -58,13 +58,13 @@ std::shared_ptr<Request> fromStream(QDataStream& stream)
     //    request = new SessionStatus(serialized_request);
     //    break;
     default:
-        LOG_ERROR(QString("Invalid type(%1). This shouldn't happpen.").arg(type));
+        GLOBAL_LOG_ERROR(QString("Invalid type(%1). This shouldn't happpen.").arg(type));
         throw InvalidRequestType();
         break;
     };
     }catch(std::invalid_argument& e)
     {
-        LOG_TRACE(e.what());
+        GLOBAL_LOG_TRACE(e.what());
         throw InvalidRequestBody(e.what());
     }
 
@@ -75,7 +75,7 @@ Message::MessageLengthType getLength(QIODevice* data)
 {
     if(data->bytesAvailable() < 2)
     {
-        LOG_TRACE(QString("Not enough bytes in device. Should be %1 is %2")
+        GLOBAL_LOG_TRACE(QString("Not enough bytes in device. Should be %1 is %2")
                   .arg(sizeof(Message::MessageLengthType)).arg(data->bytesAvailable()));
         return -1;
     }
@@ -93,7 +93,7 @@ Message::MessageLengthType readLength(QDataStream& stream)
     Message::MessageLengthType request_length = getLength(stream.device());
     if(request_length < stream.device()->bytesAvailable())
     {
-        LOG_TRACE(QString("Request is incomplete. Request supposed length: %1"\
+        GLOBAL_LOG_TRACE(QString("Request is incomplete. Request supposed length: %1"\
                           " Available bytes in stream %2.")
                   .arg(request_length).arg(stream.device()->bytesAvailable()));
         throw IncompleteRequest(request_length);
@@ -106,7 +106,7 @@ Message::MessageType readType_NoEx(QDataStream& stream)
 {
     if(stream.device()->bytesAvailable() < 1)
     {
-        LOG_TRACE(QString("Can't read %1 byte(s) from empty stream.")
+        GLOBAL_LOG_TRACE(QString("Can't read %1 byte(s) from empty stream.")
                   .arg(sizeof(Message::MessageType)));
 
         return Message::MessageType::MESSAGE_UNDEFINED;
@@ -122,7 +122,7 @@ Message::MessageType readType(QDataStream& stream)
     Message::MessageType type = readType_NoEx(stream);
     if(type == Message::MESSAGE_UNDEFINED)
     {
-        LOG_TRACE(QString("Invalid request type."));
+        GLOBAL_LOG_TRACE(QString("Invalid request type."));
         throw InvalidRequestType();
     }
 

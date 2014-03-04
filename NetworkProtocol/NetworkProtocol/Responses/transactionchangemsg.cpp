@@ -16,8 +16,8 @@ TransactionChange::TransactionChange(Types::StockIdType stockId, Types::AmountTy
 {
     if(_stockId <= 0 || _amount <= 0 || _price <= 0)
     {
-        LOG_TRACE(QString("Invalid arguments: stockId(%1) <= 0 || _amount(%2) <= 0 || _price(%3) <= 0")
-                  .arg(_stockId.value).arg(_amount.value).arg(_price.value));
+        GLOBAL_LOG_TRACE(QString("Invalid arguments: stockId(%1) <= 0 || _amount(%2) <= 0 || _price(%3) <= 0")
+                         .arg(_stockId.value).arg(_amount.value).arg(_price.value));
         throw std::invalid_argument("One of stockId, amount, price is <= 0.");
     }
 }

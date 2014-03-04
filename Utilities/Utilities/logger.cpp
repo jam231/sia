@@ -25,13 +25,13 @@ WarningLogger::WarningLogger(shared_ptr<AbstractWriter> writer)
 {}
 
 void  WarningLogger::error(QString message, QString file,
-            QString function, qint32 line)
+                           QString function, qint32 line)
 {
     _writer->write(createLogEntry("Error", message, file, function, line));
 }
 
 void  WarningLogger::warning(QString message, QString file,
-            QString function, qint32 line)
+                             QString function, qint32 line)
 {
     _writer->write(createLogEntry("Warning", message, file, function, line));
 }
@@ -44,7 +44,7 @@ InfoLogger::InfoLogger(std::shared_ptr<AbstractWriter> writer)
 {}
 
 void InfoLogger::info(QString message, QString file,
-            QString function, qint32 line)
+                      QString function, qint32 line)
 {
     _writer->write(createLogEntry("Info", message, file, function, line));
 }
@@ -56,7 +56,7 @@ DebugLogger::DebugLogger(shared_ptr<AbstractWriter> writer)
 {}
 
 void DebugLogger::debug(QString message, QString file,
-            QString function, qint32 line)
+                        QString function, qint32 line)
 {
     _writer->write(createLogEntry("Debug", message, file, function, line));
 }
@@ -68,31 +68,38 @@ TraceLogger::TraceLogger(shared_ptr<AbstractWriter> writer)
 {}
 
 void TraceLogger::trace(QString message, QString file,
-            QString function, qint32 line)
+                        QString function, qint32 line)
 {
     _writer->write(createLogEntry("Trace", message, file, function, line));
 }
 
-AbstractLogger* make_logger(LoggingLevel level, std::shared_ptr<AbstractWriter> writer)
+AbstractLogger* make_logger(LoggingLevel level,
+                            shared_ptr<AbstractWriter> writer)
 {
     switch(level)
     {
-        case Warning:
-            return new WarningLogger(move(writer));
-        case Info:
-            return new InfoLogger(move(writer));
-        case Debug:
-            return new DebugLogger(move(writer));
-        case Trace:
-            return new TraceLogger(move(writer));
-        case Off:
-            return new DummyLogger();
-        default:
-            throw std::invalid_argument("FactoryLogger.Create(level, writer) with level = unexpected value.");
+    case Warning:
+        return new WarningLogger(move(writer));
+    case Info:
+        return new InfoLogger(move(writer));
+    case Debug:
+        return new DebugLogger(move(writer));
+    case Trace:
+        return new TraceLogger(move(writer));
+    case Off:
+        return new DummyLogger();
+    default:
+        throw std::invalid_argument("FactoryLogger.Create(level, writer) with level = unexpected value.");
     }
 }
 
-AbstractLogger* LoggerFactory::create(LoggingLevel level, shared_ptr<AbstractWriter> writer)
+SimpleLoggerFactory::SimpleLoggerFactory(LoggingLevel level,
+                                         std::shared_ptr<AbstractWriter> writer)
+    : _level(level), _writer(writer)
 {
-    return make_logger(level, move(writer));
+}
+
+shared_ptr<AbstractLogger> SimpleLoggerFactory::createLoggingSession()
+{
+    return shared_ptr<AbstractLogger>(make_logger(_level, move(_writer)));
 }
