@@ -16,15 +16,15 @@ int main(int argv, char **args)
     QCoreApplication app(argv, args);
 
     // Malutki test celem sprawdzanie czy wszystko sie dolacza, bo byly z tym problemy.
-    LoggerFactory* factory = new LoggerFactory();
-    GlobalUtilities::setLogger(factory->create(LoggingLevel::Trace,
-                                               std::shared_ptr<AbstractWriter>(
-                                                   new FileWriter(
-                                                       QDate::currentDate().toString() + ".log")
-                                                   )));
+    AbstractLoggerFactory* factory = new SimpleLoggerFactory(LoggingLevel::Trace,
+                                                             std::shared_ptr<AbstractWriter>(
+                                                                 new FileWriter(
+                                                                     QDate::currentDate().toString() + ".log")
+                                                                 ));
+    GlobalUtilities::setLogger(factory->createLoggingSession());
     delete factory;
 
-    LOG_INFO("-------------------------------START-------------------------------");
+    GLOBAL_LOG_INFO("-------------------------------START-------------------------------");
 
     try {
 

@@ -3,7 +3,9 @@
 #include <DataTransferObjects/types.h>
 
 #include <utilities.h>
+
 #include <stdexcept>
+#include <memory>
 #include <assert.h>
 
 using namespace NetworkProtocol::DTO;
@@ -18,7 +20,8 @@ Q_DECLARE_METATYPE(PriceType)
 
 void BestOrderTest::initTestCase()
 {
-    GlobalUtilities::setLogger(make_logger(LoggingLevel::Off));
+    GlobalUtilities::setLogger(move(std::shared_ptr<AbstractLogger>(
+                                        make_logger(LoggingLevel::Off))));
 }
 
 void BestOrderTest::generate_valid_data()

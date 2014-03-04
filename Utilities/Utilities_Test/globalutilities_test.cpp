@@ -17,10 +17,11 @@ using namespace std;
 void GlobalUtilitiesTest::defaultGlobalLogger()
 {
     AbstractLogger* global_logger = GlobalUtilities::getLogger().get();
-    QVERIFY2(global_logger != NULL, "Global logger is NULL.");
+    QVERIFY2(global_logger != nullptr, "Global logger is NULL.");
 
     DummyLogger* global_logger_as_DummyLogger = dynamic_cast<DummyLogger*>(global_logger);
-    QVERIFY2(global_logger_as_DummyLogger != NULL, "Default global logger should be of type DummyLogger.");
+    QVERIFY2(global_logger_as_DummyLogger != nullptr,
+             "Default global logger should be of type DummyLogger.");
 }
 
 void GlobalUtilitiesTest::setLoggerWithNull()
@@ -28,7 +29,7 @@ void GlobalUtilitiesTest::setLoggerWithNull()
     AbstractLogger* global_logger_before = GlobalUtilities::getLogger().get();
     try
     {
-        GlobalUtilities::setLogger(NULL);
+        GlobalUtilities::setLogger(nullptr);
         QFAIL("Exception hasn't been thrown.");
     }
     catch(const std::invalid_argument& e)
@@ -48,20 +49,16 @@ void GlobalUtilitiesTest::setLogger_data()
 
     QTest::addColumn<AbstractLogger*>("logger");
 
-    LoggerFactory* factory = new LoggerFactory();
-
-    QTest::newRow("No logging")         << factory->create(LoggingLevel::Off,
-                                                           shared_ptr<AbstractWriter>(new MockWriter()));
-    QTest::newRow("Warning logging")    << factory->create(LoggingLevel::Warning,
-                                                           shared_ptr<AbstractWriter>(new MockWriter()));
-    QTest::newRow("Info logging")       << factory->create(LoggingLevel::Info,
-                                                           shared_ptr<AbstractWriter>(new MockWriter()));
-    QTest::newRow("Debug logging")      << factory->create(LoggingLevel::Debug,
-                                                           shared_ptr<AbstractWriter>(new MockWriter()));
-    QTest::newRow("Trace logging")      << factory->create(LoggingLevel::Trace,
-                                                           shared_ptr<AbstractWriter>(new MockWriter()));
-
-    delete factory;
+    QTest::newRow("No logging")         << make_logger(LoggingLevel::Off,
+                                                       move(shared_ptr<AbstractWriter>(new MockWriter())));
+    QTest::newRow("Warning logging")    << make_logger(LoggingLevel::Warning,
+                                                       move(shared_ptr<AbstractWriter>(new MockWriter())));
+    QTest::newRow("Info logging")       << make_logger(LoggingLevel::Info,
+                                                       move(shared_ptr<AbstractWriter>(new MockWriter())));
+    QTest::newRow("Debug logging")      << make_logger(LoggingLevel::Debug,
+                                                       move(shared_ptr<AbstractWriter>(new MockWriter())));
+    QTest::newRow("Trace logging")      << make_logger(LoggingLevel::Trace,
+                                                       move(shared_ptr<AbstractWriter>(new MockWriter())));
 }
 
 void GlobalUtilitiesTest::setLogger()
@@ -72,7 +69,7 @@ void GlobalUtilitiesTest::setLogger()
 
     try
     {
-        GlobalUtilities::setLogger(logger);
+        GlobalUtilities::setLogger(move(std::shared_ptr<AbstractLogger>(logger)));
         QVERIFY2(logger == GlobalUtilities::getLogger().get(),
                  qPrintable("Failed to set global logger. Global logger is set to " +
                     QString(typeid(GlobalUtilities::getLogger().get()).name())));
