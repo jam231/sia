@@ -82,8 +82,6 @@ void ConcurrentWriterTest::rapidWrite()
     std::shared_ptr<QStringList> mock_writers_buffer(_mock_writer->buffer);
     ConcurrentWriter writer(move(_mock_writer));
 
-    // First check if order is preserved.
-
     QFutureSynchronizer<void> future_synchronizer;
     //QBENCHMARK {
     // Write
@@ -112,6 +110,17 @@ void ConcurrentWriterTest::rapidWrite()
         serial_write += str;
     }
 
-    QVERIFY2(serial_write.join("") == mock_writers_buffer->join(""), "Write order has been violated or some has been entries lost).");
+    QString should_be_string = serial_write.join("");
+    QString result           = mock_writers_buffer->join("");
+    QVERIFY2(result.size() == should_be_string.size(),
+             qPrintable(QString("Some entries has been lost. Result string length is %1 should be %2")
+                        .arg(result.size()).arg(should_be_string.size())));
+    for(int i = 0; i < result.size(); i++)
+    {
+        QVERIFY2(result[i] == should_be_string[i],
+                 qPrintable(QString("Write order has been violated. Mismatch on position %1."\
+                                    " Is %2 should be %3.")
+                            .arg(QString::number(i)).arg(result[i]).arg(should_be_string[i])));
+    }
 }
 
