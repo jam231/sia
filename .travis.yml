@@ -8,6 +8,6 @@ before_install:
   - sudo apt-get install -qq zlib1g-dev qtdeclarative5-dev qtbase5-dev qtchooser
   - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
-script: qtchooser -run-tool=qmake -qt=qt5 && make && make check
+script: qtchooser -run-tool=qmake -qt=qt5 && make install && make check
 services:
   - postgresql
