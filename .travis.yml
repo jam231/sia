@@ -1,6 +1,7 @@
 language: cpp
 compiler:
   - gcc
+cache: apt
 before_install:
   - yes | sudo apt-add-repository ppa:ubuntu-sdk-team/ppa
   - yes | sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
