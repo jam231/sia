@@ -86,19 +86,17 @@ unix:!symbian {
     maemo5 {
         target.path = /opt/usr/lib
     } else {
-        target.path = /usr/lib
+        target.path += /usr/lib
     }
     INSTALLS += target
 }
 
-
 win32:CONFIG(debug, debug|release) {
-    DLLDESTDIR += $$OUT_PWD/../NetworkProtocol_TEST/debug/
-    message("Copying to NetworkProtocol_Test Debug Directory.")
-}
-else:unix {
-    DLLDESTDIR += $$OUT_PWD/../NetworkProtocol_TEST
-    message("Copying to NetworkProtocol_Test Directory.")
+    DLLDESTDIR += $$OUT_PWD/../NetworkProtocol_Test/debug/
+    message("Copying to NetworkProtocol_Test debug directory.")
+} else:win32:CONFIG(debug, debug|release) {
+    DLLDESTDIR += $$OUT_PWD/../NetworkProtocol_Test/release/
+    message("Copying to NetworkProtocol_Test release directory.")
 }
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../Utilities/Utilities/release/ -lUtilities
@@ -111,3 +109,4 @@ DEPENDPATH += $$PWD/../../Utilities/Utilities
 win32:gcc:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Utilities/Utilities/release/libUtilities.a
 else:win32:gcc:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Utilities/Utilities/debug/libUtilities.a
 else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../Utilities/Utilities/libUtilities.a
+

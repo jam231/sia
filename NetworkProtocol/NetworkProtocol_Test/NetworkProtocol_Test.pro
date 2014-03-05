@@ -75,8 +75,6 @@ HEADERS += \
     Responses/showbestordermsg_test.h
 
 
-
-
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../NetworkProtocol/release/ -lNetworkProtocol
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../NetworkProtocol/debug/ -lNetworkProtocol
 else:unix: LIBS += -L$$OUT_PWD/../NetworkProtocol/ -lNetworkProtocol
