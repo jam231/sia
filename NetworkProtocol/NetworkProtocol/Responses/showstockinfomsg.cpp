@@ -1,4 +1,4 @@
-#include "stockinfomsg.h"
+#include "showstockinfomsg.h"
 
 #include <memory>
 
@@ -13,7 +13,7 @@ namespace Responses
 using namespace DTO;
 using namespace DTO::Types;
 
-StockInfo::StockInfo (Types::StockIdType stockId,
+ShowStockInfo::ShowStockInfo (Types::StockIdType stockId,
                       std::shared_ptr<BestOrder> bestBuyOrder,
                       std::shared_ptr<BestOrder> bestSellOrder,
                       std::shared_ptr<LastTransaction> lastTransaction)
@@ -43,7 +43,7 @@ StockInfo::StockInfo (Types::StockIdType stockId,
     }
 }
 
-void StockInfo::send(BestOrder* bestOrder, QDataStream &out)
+void ShowStockInfo::send(BestOrder* bestOrder, QDataStream &out)
 {
     if(bestOrder == nullptr)
     {
@@ -55,7 +55,7 @@ void StockInfo::send(BestOrder* bestOrder, QDataStream &out)
     }
 }
 
-void StockInfo::send(LastTransaction* lastTransaction, QDataStream& out)
+void ShowStockInfo::send(LastTransaction* lastTransaction, QDataStream& out)
 {
     if(lastTransaction == nullptr)
     {
@@ -70,7 +70,7 @@ void StockInfo::send(LastTransaction* lastTransaction, QDataStream& out)
     }
 }
 
-Message::MessageLengthType StockInfo::getSerializedLength(DTO::BestOrder* best_order) const
+Message::MessageLengthType ShowStockInfo::getSerializedLength(DTO::BestOrder* best_order) const
 {
     if(best_order == nullptr)
     {
@@ -82,7 +82,7 @@ Message::MessageLengthType StockInfo::getSerializedLength(DTO::BestOrder* best_o
     }
 }
 
-Message::MessageLengthType StockInfo::getSerializedLength(DTO::LastTransaction* last_transaction) const
+Message::MessageLengthType ShowStockInfo::getSerializedLength(DTO::LastTransaction* last_transaction) const
 {
     if(last_transaction == nullptr)
     {
@@ -96,12 +96,12 @@ Message::MessageLengthType StockInfo::getSerializedLength(DTO::LastTransaction* 
     }
 }
 
-Types::Message::MessageType StockInfo::type() const
+Types::Message::MessageType ShowStockInfo::type() const
 {
     return Types::Message::MessageType::RESPONSE_STOCK_INFO;
 }
 
-void StockInfo::send(QIODevice* connection)
+void ShowStockInfo::send(QIODevice* connection)
 {
     // Domyślnie BigEndian
     QDataStream out(connection);
@@ -113,7 +113,7 @@ void StockInfo::send(QIODevice* connection)
     send(_lastTransaction.get(), out);
 }
 
-Types::Message::MessageLengthType StockInfo::length() const
+Types::Message::MessageLengthType ShowStockInfo::length() const
 {
 
     return  sizeof(Types::Message::MessageType) + sizeof(_stockId) +

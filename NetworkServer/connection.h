@@ -34,7 +34,7 @@ public:
     void dropSubscription(NetworkProtocol::DTO::Types::StockIdType stockId);
 public slots:
     bool send(NetworkProtocol::Responses::Response& msg);
-    bool send(NetworkProtocol::Responses::ShowOrder msg);
+    bool send(NetworkProtocol::Responses::ShowNewOrder msg);
 private slots:
     void disconect();
     void processIncomingMessages();

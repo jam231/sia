@@ -73,12 +73,14 @@ public:
 
 
 NETWORKPROTOCOLSHARED_EXPORT std::shared_ptr<Request> FromStream(QDataStream&);
-
+// Gets request length (IT DOESN'T MODIFY STREAM!) from stream.
 NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageLengthType getLength(QIODevice*);
-// Gets request type and discards sizeof(Message::MessageLengthType) bytes from stream.
+// Gets request length and discards sizeof(Message::MessageLengthType) bytes from stream.
 NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageLengthType readLength(QDataStream&);
-// Gets request type and discards sizeof(Message::MessageType) bytes from stream.
-// If there isn't enough bytes in the stream it returns MESSAGE_UNDEFINED.
+/*
+ * Gets request type and discards sizeof(Message::MessageType) bytes from stream.
+ * If there isn't enough bytes in the stream it returns MESSAGE_UNDEFINED.
+ */
 NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageType readType_NoEx(QDataStream&);
 // Does the same as readType, but throw InvalidRequestType on either MESSAGE_UNDEFINED
 // or not enough bytes.

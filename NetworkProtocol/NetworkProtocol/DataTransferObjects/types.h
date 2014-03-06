@@ -139,62 +139,61 @@ typedef qint16 MessageLengthType;
 typedef qint8 MessageTypeType;
 enum MessageType : MessageTypeType
 {
-    /*0-19: komunikacja z serwerem, logowanie, etc*/
+    /*0-19: login, register, etc. */
 
-    REQUEST_REGISTER_USER = 0x00,
-    RESPONSE_REGISTER_USER_SUCCESS,
-    RESPONSE_OK,
-    RESPONSE_FAILURE,
+    REQUEST_REGISTER_USER = 0x00,           // Requests::RegisterUser
+    RESPONSE_REGISTER_USER_SUCCESS,         // Responses::RegisterUserSuccess
+    RESPONSE_OK,                            // Responses::Ok
+    RESPONSE_FAILURE,                       // Responses::Failure
     REQUEST_LOGIN_USER,
 
 
-    /* 20-39: akcje i zlecenia */
+    /* 20-39: stocks & orders */
 
-    REQUEST_SELL_STOCK_ORDER = 0x14,        // Request zlecenie kupna
-    REQUEST_BUY_STOCK_ORDER,                // Request zlecenie sprzedazy
-
-
-    RESPONSE_BUY_TRANSACTION,               // Response wysylanie informacji o danej transakcji kupna
-    RESPONSE_SELL_TRANSACTION,              // Response wysylanie informacji o danej transakcji sprzedazy
+    REQUEST_SELL_STOCK_ORDER = 0x14,        // Requests::SellStock
+    REQUEST_BUY_STOCK_ORDER,                // Requests::BuyStock
 
 
-    RESPONSE_TRANSACTION_CHANGE,            // Response powiadomienie o zmianie (zrealizowaniu?) danej transakcji
-                                            // wszystkich zasubskrybowanych do danego zasobu
-
-    RESPONSE_SHOW_ORDER,                    // Response informacja o nowym zleceniu
-    RESPONSE_SHOW_BEST_ORDER,               // Response informacja o nowym najlepszym zleceniu
-
-    REQUEST_SUBSCRIBE_STOCK,                // Request subskrybuj
-    REQUEST_UNSUBSCRIBE_STOCK,              // Request przestan subskrybowac
+    RESPONSE_BUY_TRANSACTION,               // Responses::BuyTransaction
+    RESPONSE_SELL_TRANSACTION,              // Responses::SellTransaction
 
 
-    REQUEST_GET_MY_STOCKS,                  // Request prosba o liste wlasnych zasobów
-    RESPONSE_SHOW_USER_STOCKS,              // Response wysylanie listy zasobow
-    REQUEST_GET_MY_ORDERS,                  // Request prosba o liste wlasnych zasobów
-    RESPONSE_SHOW_USER_ORDERS,              // Response Odeslanie listy zasobow
-    REQUEST_GET_STOCK_INFO,                 // Request prosba o info o danym zasobie
-    RESPONSE_STOCK_INFO,                    // Response odpowiedz na prosbe o info
-
-    REQUEST_CANCEL_ORDER,                   // Request żadanie anulowania zlecenia o podanym id.
-    RESPONSE_ORDER_ID,
+    RESPONSE_TRANSACTION_CHANGE,            // Responses::TransactionChange
 
 
-    /* 40-49: sesja, stan akcji */
+    RESPONSE_SHOW_NEW_ORDER,                // Responses::ShowNewOrder
+    RESPONSE_SHOW_BEST_ORDER,               // NOT IMPLEMENTED
 
-    // Te sa zaimplementowane, ale nie uzywane --jam231
-
-    REQUEST_COMPANY_STATUS = 0x28,
-    RESPONSE_SHOW_COMPANY_STATUS,
+    REQUEST_SUBSCRIBE_STOCK,                // Requests::SubscribeStock
+    REQUEST_UNSUBSCRIBE_STOCK,              // Requests::UnsubscribeStock
 
 
-    // Te sa w zawieszeniu, czekaja na implementacje lub zmiane --jam231
+    REQUEST_GET_MY_STOCKS,                  // Requests::GetMyStocks
+    RESPONSE_SHOW_USER_STOCKS,              // Responses::ShowUserStocks
+    REQUEST_GET_MY_ORDERS,                  // Requests::GetMyOrders
+    RESPONSE_SHOW_USER_ORDERS,              // Responses::ShowUserOrders
+    REQUEST_GET_STOCK_INFO,                 // Requests::GetStockInfo
+    RESPONSE_SHOW_STOCK_INFO,               // Responses::ShowStockInfo
+    REQUEST_CANCEL_ORDER,                   // Requests::CancelOrder
+
+    RESPONSE_ORDER_ACCEPTED,                // Responses::OrderAccepted
+
+    /* 40-49: session, company  */
+
+    // Implemented but not used.
+
+    REQUEST_COMPANY_STATUS = 0x28,          // Requests::CompanyStatus
+    RESPONSE_SHOW_COMPANY_STATUS,           // Response::ShowCompanyStatus
+
+
+    // Not implemented
 
     RESPONSE_SESSION_STATUS,
     REQUEST_SESSION_STATUS,
 
     /* 50-99 */
 
-    /* 100+ inne */
+    /* 100+ others */
     MESSAGE_UNDEFINED = 0x64
 };
 

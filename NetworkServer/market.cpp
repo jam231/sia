@@ -401,13 +401,13 @@ void Market::sellStock(Types::UserIdType userId, Types::StockIdType stockId,
     {
         if(query.first())
         {
-            OrderId msg(query.value(0).toInt());
+            OrderAccepted msg(query.value(0).toInt());
             _server->send(msg, userId);
         }
         else
         {
             qDebug() << "[Market] Błąd nadania id dla zlecenia sprzedaży";
-            OrderId msg(-1);
+            OrderAccepted msg(-1);
             _server->send(msg, userId);
         }
 
@@ -431,7 +431,7 @@ void Market::sellStock(Types::UserIdType userId, Types::StockIdType stockId,
     {
         qDebug() << "[Market] Błąd przy zleceniu sprzedaży"
                  << query.lastError().text();
-        OrderId msg(-1);
+        OrderAccepted msg(-1);
         _server->send(msg, userId);
     }
 }
@@ -467,7 +467,7 @@ void Market::buyStock(Types::UserIdType userId, Types::StockIdType stockId,
      {
          if(query.first())
          {
-             OrderId msg(query.value(0).toInt());
+             OrderAccepted msg(query.value(0).toInt());
              _server->send(msg, userId);
          }
          else
@@ -475,7 +475,7 @@ void Market::buyStock(Types::UserIdType userId, Types::StockIdType stockId,
              /// TODO:
              ///    Investigate what that code below does.
              qDebug() << "[Market] Błąd nadania id dla zlecenia kupna";
-             OrderId msg(-1);
+             OrderAccepted msg(-1);
              _server->send(msg, userId);
          }
 
@@ -499,7 +499,7 @@ void Market::buyStock(Types::UserIdType userId, Types::StockIdType stockId,
      {
          qDebug() << "[Market] Błąd przy zleceniu kupna"
                   << query.lastError().text();
-         OrderId msg(-1);
+         OrderAccepted msg(-1);
          _server->send(msg, userId);
      }
 }
@@ -656,7 +656,7 @@ void Market::getStockInfo(Types::UserIdType userId, Types::StockIdType stockId)
     qDebug() << "[Market] Użytkownik o id =" << userId
               << "prosi o szczegoly zasobu o id=" << stockId;    
 
-    StockInfo msg(stockId, _cachedBestBuyOrders[stockId], _cachedBestSellOrders[stockId], _cachedLastTransaction[stockId]);
+    ShowStockInfo msg(stockId, _cachedBestBuyOrders[stockId], _cachedBestSellOrders[stockId], _cachedLastTransaction[stockId]);
     _server->send(msg, userId);
 }
 

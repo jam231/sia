@@ -12,7 +12,6 @@ DEFINES += NETWORKPROTOCOL_LIBRARY
 
 SOURCES += \
     Responses/transactionchangemsg.cpp \
-    Responses/stockinfomsg.cpp \
     Responses/showuserstocksmsg.cpp \
     Responses/showuserordersmsg.cpp \
     Responses/showordermsg.cpp \
@@ -20,7 +19,6 @@ SOURCES += \
     Responses/selltransactionmsg.cpp \
     Responses/response.cpp \
     Responses/registerusersuccessmsg.cpp \
-    Responses/orderidmsg.cpp \
     Responses/okmsg.cpp \
     Responses/failuremsg.cpp \
     Responses/buytransactionmsg.cpp \
@@ -41,7 +39,9 @@ SOURCES += \
     Requests/cancelordermsg.cpp \
     Requests/buystockmsg.cpp \
     Responses/showcompanystatusmsg.cpp \
-    networkprotocol_utilities.cpp
+    networkprotocol_utilities.cpp \
+    Responses/orderacceptedmsg.cpp \
+    Responses/showstockinfomsg.cpp
 
 
 
@@ -50,7 +50,6 @@ HEADERS += \
     networkprotocol_global.h \
     message.h \
     Responses/transactionchangemsg.h \
-    Responses/stockinfomsg.h \
     Responses/showuserstocksmsg.h \
     Responses/showuserordersmsg.h \
     Responses/showordermsg.h \
@@ -58,7 +57,6 @@ HEADERS += \
     Responses/selltransactionmsg.h \
     Responses/response.h \
     Responses/registerusersuccessmsg.h \
-    Responses/orderidmsg.h \
     Responses/okmsg.h \
     Responses/failuremsg.h \
     Responses/buytransactionmsg.h \
@@ -79,7 +77,9 @@ HEADERS += \
     Requests/cancelordermsg.h \
     Requests/buystockmsg.h \
     Responses/showcompanystatusmsg.h \
-    networkprotocol_utilities.h
+    networkprotocol_utilities.h \
+    Responses/orderacceptedmsg.h \
+    Responses/showstockinfomsg.h
 
 
 unix:!symbian {

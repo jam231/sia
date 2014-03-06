@@ -8,7 +8,7 @@ namespace NetworkProtocol
 namespace Responses
 {
 /*
- *  Responses :: OrderId
+ *  Responses :: OrderAccepted
  *
  *  This message is for sending confirmation of acceptance of new order.
  *  Message contains order's id.
@@ -17,14 +17,14 @@ namespace Responses
  *  <message_length : 2><message_type : 1><order_id : 4>
  *
  *  where
- *      message_type         = MessageType::RESPONSE_ORDER_ID;
+ *      message_type         = MessageType::RESPONSE_ORDER_ACCEPTED;
  */
-class NETWORKPROTOCOLSHARED_EXPORT OrderId : public Response
+class NETWORKPROTOCOLSHARED_EXPORT OrderAccepted : public Response
 {
     DTO::Types::OrderIdType _orderId;
 
 public:
-    OrderId(DTO::Types::OrderIdType orderId);
+    OrderAccepted(DTO::Types::OrderIdType orderId);
 
     DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;

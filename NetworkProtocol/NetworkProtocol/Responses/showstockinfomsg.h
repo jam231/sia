@@ -13,7 +13,7 @@ namespace NetworkProtocol
 namespace Responses
 {
 /*
- *  Responses :: StockInfo
+ *  Responses :: ShowStockInfo
  *
  *  This message is for sending a basic information about the stock with stock_id.
  *
@@ -21,7 +21,7 @@ namespace Responses
  *  <message_length : 2><message_type : 1><stock_id : 4> <best_buy_offer : ?><best_sell_offer : ?><last_transaction : ?>
  *
  *  where
- *      message_type                                      = MessageType::RESPONSE_STOCK_INFO
+ *      message_type                                      = MessageType::RESPONSE_SHOW_STOCK_INFO
  *      <best_buy_offer : ?>  when no best buy offer      = <0 : 4>
  *      <best_buy_offer : ?>  otherwise                   = <amount : 4><price : 4>
  *      <best_sell_offer : ?> when no best sell offer     = <0 : 4>
@@ -31,7 +31,7 @@ namespace Responses
  *
  *  0 value is a safe choice for guard value, i.e. amount or price cannot be equal to 0.
  */
-class NETWORKPROTOCOLSHARED_EXPORT StockInfo : public Response
+class NETWORKPROTOCOLSHARED_EXPORT ShowStockInfo : public Response
 {
 protected:
     std::shared_ptr<DTO::BestOrder> _bestBuyOrder;
@@ -45,7 +45,7 @@ protected:
     DTO::Types::Message::MessageLengthType getSerializedLength(DTO::BestOrder*) const;
     DTO::Types::Message::MessageLengthType getSerializedLength(DTO::LastTransaction*) const;
 public:
-    StockInfo(DTO::Types::StockIdType stockId,
+    ShowStockInfo(DTO::Types::StockIdType stockId,
               std::shared_ptr<DTO::BestOrder> bestBuyOrder = nullptr,
               std::shared_ptr<DTO::BestOrder> bestSellOrder = nullptr,
               std::shared_ptr<DTO::LastTransaction> lastTransaction = nullptr);

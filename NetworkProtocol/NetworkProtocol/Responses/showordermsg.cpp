@@ -7,7 +7,7 @@ namespace Responses
 
 using namespace DTO;
 
-ShowOrder::ShowOrder(Types::OrderIdType orderId, Types::Order::OrderType orderType,
+ShowNewOrder::ShowNewOrder(Types::OrderIdType orderId, Types::Order::OrderType orderType,
                      Types::StockIdType stockId, Types::AmountType amount, Types::PriceType price)
     : _order(orderId, orderType, stockId, amount, price)
 {
@@ -15,16 +15,16 @@ ShowOrder::ShowOrder(Types::OrderIdType orderId, Types::Order::OrderType orderTy
     // constructor of Order.
 }
 
-ShowOrder::ShowOrder(Order order) : _order(order)
+ShowNewOrder::ShowNewOrder(Order order) : _order(order)
 {
 }
 
-Types::Message::MessageType ShowOrder::type() const
+Types::Message::MessageType ShowNewOrder::type() const
 {
     return Types::Message::MessageType::RESPONSE_SHOW_ORDER;
 }
 
-void ShowOrder::send(QIODevice* connection)
+void ShowNewOrder::send(QIODevice* connection)
 {
     // Domyślnie BigEndian
     QDataStream out(connection);
@@ -33,12 +33,12 @@ void ShowOrder::send(QIODevice* connection)
     out << _order;
 }
 
-Types::Message::MessageLengthType ShowOrder::length() const
+Types::Message::MessageLengthType ShowNewOrder::length() const
 {
     return sizeof(Types::Message::MessageType) + _order.lengthSerialized();
 }
 
-const Order& ShowOrder::getOrder() const
+const Order& ShowNewOrder::getOrder() const
 {
     return _order;
 }

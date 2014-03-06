@@ -96,7 +96,7 @@ bool Connection::send(Response& msg)
 
 }
 
-bool Connection::send(ShowOrder msg)
+bool Connection::send(ShowNewOrder msg)
 {
     if(_subscribedStocks.contains(msg.getOrder().getStockId()))
     {

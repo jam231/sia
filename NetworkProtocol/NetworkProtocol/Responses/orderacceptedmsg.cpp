@@ -1,4 +1,4 @@
-#include "orderidmsg.h"
+#include "orderacceptedmsg.h"
 
 #include <utilities.h>
 
@@ -11,7 +11,7 @@ namespace Responses
 
 using namespace DTO;
 
-OrderId::OrderId(Types::OrderIdType orderId) : _orderId(orderId)
+OrderAccepted::OrderAccepted(Types::OrderIdType orderId) : _orderId(orderId)
 {
     if(_orderId <= 0)
     {
@@ -21,17 +21,17 @@ OrderId::OrderId(Types::OrderIdType orderId) : _orderId(orderId)
     }
 }
 
-Types::Message::MessageLengthType OrderId::length() const
+Types::Message::MessageLengthType OrderAccepted::length() const
 {
     return sizeof(_orderId);
 }
 
-Types::Message::MessageType OrderId::type() const
+Types::Message::MessageType OrderAccepted::type() const
 {
     return Types::Message::MessageType::RESPONSE_ORDER_ID;
 }
 
-void OrderId::send(QIODevice* connection)
+void OrderAccepted::send(QIODevice* connection)
 {
     // Domyślnie BigEndian.
     QDataStream out(connection);
