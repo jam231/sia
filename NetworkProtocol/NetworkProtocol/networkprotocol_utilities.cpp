@@ -51,9 +51,9 @@ std::shared_ptr<Request> fromStream(QDataStream& stream)
     case REQUEST_CANCEL_ORDER:
         request = new CancelOrder(serialized_request);
         break;
-    case REQUEST_COMPANY_STATUS:
-        request = new CompanyStatus(serialized_request);
-        break;
+    //case REQUEST_COMPANY_STATUS:
+    //    request = new CompanyStatus(serialized_request);
+    //    break;
     //case REQUEST_SESSION_STATUS:
     //    request = new SessionStatus(serialized_request);
     //    break;
@@ -91,7 +91,7 @@ Message::MessageLengthType getLength(QIODevice* data)
 Message::MessageLengthType readLength(QDataStream& stream)
 {
     Message::MessageLengthType request_length = getLength(stream.device());
-    if(request_length < stream.device()->bytesAvailable())
+    if(request_length > stream.device()->bytesAvailable())
     {
         GLOBAL_LOG_TRACE(QString("Request is incomplete. Request supposed length: %1"\
                           " Available bytes in stream %2.")

@@ -16,7 +16,7 @@ namespace Requests
  *  <message_length : 2><message_type : 1><stock_id : 4>
  *
  *  where
- *      message_type         = MessageType::REQUEST_UNSUBSCRIBE_STOCK
+ *      message_type         = MessageType::REQUEST_UNSUBSCRIBE_STOCK (0x1C)
  */
 class NETWORKPROTOCOLSHARED_EXPORT UnsubscribeStock : public Request
 {

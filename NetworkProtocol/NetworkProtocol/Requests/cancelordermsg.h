@@ -15,8 +15,9 @@ namespace Requests
  *  <message_length : 2><message_type : 1><order_id : 4>
  *
  *  where
- *      message_type         = MessageType::REQUEST_CANCEL_ORDER
- */class NETWORKPROTOCOLSHARED_EXPORT CancelOrder : public Request
+ *      message_type         = MessageType::REQUEST_CANCEL_ORDER (0x23)
+ */
+class NETWORKPROTOCOLSHARED_EXPORT CancelOrder : public Request
 {
     DTO::Types::OrderIdType _orderId;
 

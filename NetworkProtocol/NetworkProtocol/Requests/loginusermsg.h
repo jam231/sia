@@ -12,10 +12,10 @@ namespace Requests
  *  This message is for requesting log in.
  *
  *  Message format:
- *  <message_length : 2><message_type : 1><user_id : 4><password_str_length : 2><password_str : password_str_length>
+ *  <message_length : 2><message_type : 1><user_id : 4><pswd_utf8_bytes_length : 2><pswd_utf8_bytes : pswd_utf8_bytes_length>
  *
  *  where
- *      message_type         = MessageType::REQUEST_REGISTER_USER
+ *      message_type         = MessageType::REQUEST_LOGIN_USER (0x4)
  */
 class NETWORKPROTOCOLSHARED_EXPORT LoginUser : public Request
 {

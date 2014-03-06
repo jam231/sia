@@ -9,13 +9,13 @@ namespace Requests
 /*
  *  Request :: GetMyStocks
  *
- *  This message is for requesting list of owned stock.
+ *  This message is for requesting list of owned stocks.
  *
  *  Message format:
- *  <message_length : 2><message_type : 1><stock_id : 4>
+ *  <message_length : 2><message_type : 1>
  *
  *  where
- *      message_type         = MessageType::REQUEST_GET_MY_STOCKS
+ *      message_type         = MessageType::REQUEST_GET_MY_STOCKS (0x1D)
  */
 class NETWORKPROTOCOLSHARED_EXPORT GetMyStocks : public Request
 {

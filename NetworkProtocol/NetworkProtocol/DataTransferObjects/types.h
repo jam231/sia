@@ -147,8 +147,6 @@ enum MessageType : MessageTypeType
     RESPONSE_FAILURE,
     REQUEST_LOGIN_USER,
 
-    // niezalogowany wykonac akcje wymagajaca zalogowania.
-
 
     /* 20-39: akcje i zlecenia */
 
@@ -191,8 +189,7 @@ enum MessageType : MessageTypeType
 
     // Te sa w zawieszeniu, czekaja na implementacje lub zmiane --jam231
 
-    RESPONSE_SESSION_OPEN,
-    RESPONSE_SESSION_CLOSED,
+    RESPONSE_SESSION_STATUS,
     REQUEST_SESSION_STATUS,
 
     /* 50-99 */

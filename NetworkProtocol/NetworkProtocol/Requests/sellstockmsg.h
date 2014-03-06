@@ -15,7 +15,7 @@ namespace Requests
  *  <message_length : 2><message_type : 1><stock_id : 4><amount : 4><price : 4>
  *
  *  where
- *      message_type         = MessageType::REQUEST_SELL_STOCK_ORDER
+ *      message_type         = MessageType::REQUEST_SELL_STOCK_ORDER (0x14)
  */
 class NETWORKPROTOCOLSHARED_EXPORT SellStock : public Request
 {

@@ -15,7 +15,7 @@ namespace Requests
  *  <message_length : 2><message_type : 1><stock_id : 4>
  *
  *  where
- *      message_type         = MessageType::REQUEST_SUBSCRIBE_STOCK
+ *      message_type         = MessageType::REQUEST_SUBSCRIBE_STOCK (0x1B)
  */
 class NETWORKPROTOCOLSHARED_EXPORT SubscribeStock : public Request
 {

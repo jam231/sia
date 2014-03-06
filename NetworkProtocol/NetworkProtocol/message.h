@@ -10,7 +10,9 @@ namespace NetworkProtocol {
 class NETWORKPROTOCOLSHARED_EXPORT Message
 {  
 public:
-    // Length of the message in BYTES
+    /*
+     * Length of the *whole* message in BYTES (byte == 8 bits).
+     */
     virtual DTO::Types::Message::MessageLengthType length() const = 0;
     virtual DTO::Types::Message::MessageType type() const = 0;
 

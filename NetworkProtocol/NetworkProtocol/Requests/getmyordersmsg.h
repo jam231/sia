@@ -15,7 +15,7 @@ namespace Requests
  *  <message_length : 2><message_type : 1>
  *
  *  where
- *      message_type         = MessageType::REQUEST_GET_MY_ORDERS
+ *      message_type         = MessageType::REQUEST_GET_MY_ORDERS (0x1F)
  */
 class NETWORKPROTOCOLSHARED_EXPORT GetMyOrders : public Request
 {
