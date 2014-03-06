@@ -1,6 +1,6 @@
 #ifndef ORDERIDMSG_TEST_H
 #define ORDERIDMSG_TEST_H
 
-#include "../NetworkProtocol/Responses/orderidmsg.h"
+#include "Responses/orderacceptedmsg.h"
 
 #endif // ORDERIDMSG_TEST_H

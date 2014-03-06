@@ -1,6 +1,6 @@
 #ifndef SHOWUSERSTOCKSMSG_TEST_H
 #define SHOWUSERSTOCKSMSG_TEST_H
 
-#include "../NetworkProtocol/Responses/showuserstocksmsg.h"
+#include "Responses/listofstocksmsg.h"
 
 #endif // SHOWUSERSTOCKSMSG_TEST_H

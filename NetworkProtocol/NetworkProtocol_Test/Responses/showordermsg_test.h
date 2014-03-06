@@ -1,6 +1,6 @@
 #ifndef SHOWORDERMSG_TEST_H
 #define SHOWORDERMSG_TEST_H
 
-#include "../NetworkProtocol/Responses/showordermsg.h"
+#include "Responses/shownewordermsg.h"
 
 #endif // SHOWORDERMSG_TEST_H
