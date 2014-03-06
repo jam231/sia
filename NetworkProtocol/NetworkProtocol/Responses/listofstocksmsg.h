@@ -11,7 +11,7 @@ namespace NetworkProtocol
 namespace Responses
 {
 /*
- *  Responses :: ShowUserStocks
+ *  Responses :: ListOfStocks
  *
  *  This message is for sending user information about stocks he owns.
  *
@@ -20,15 +20,15 @@ namespace Responses
  *  <message_length : 2><message_type : 1><stock_count : 2>(<stock_id : 4><amount : 4>)^stock_count
  *
  *  where
- *       message_type       = MessageType::RESPONSE_STOCK_INFO
+ *       message_type       = MessageType::RESPONSE_LIST_OF_STOCKS
  */
-class NETWORKPROTOCOLSHARED_EXPORT ShowUserStocks : public Response
+class NETWORKPROTOCOLSHARED_EXPORT ListOfStocks : public Response
 {
     QVector<QPair<DTO::Types::StockIdType, DTO::Types::AmountType> > _stocks;
 
 public:
 
-    ShowUserStocks();
+    ListOfStocks();
 
     DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;

@@ -1,4 +1,4 @@
-#include "showuserstocksmsg.h"
+#include "listofstocksmsg.h"
 
 namespace NetworkProtocol
 {
@@ -7,17 +7,17 @@ namespace Responses
 
 using namespace DTO;
 
-ShowUserStocks::ShowUserStocks()
+ListOfStocks::ListOfStocks()
 {
 }
 
 
-Types::Message::MessageType ShowUserStocks::type() const
+Types::Message::MessageType ListOfStocks::type() const
 {
-    return Types::Message::MessageType::RESPONSE_SHOW_USER_STOCKS;
+    return Types::Message::MessageType::RESPONSE_LIST_OF_STOCKS;
 }
 
-void ShowUserStocks::send(QIODevice* connection)
+void ListOfStocks::send(QIODevice* connection)
 {
     // Domyślnie BigEndian
     QDataStream out(connection);
@@ -30,14 +30,14 @@ void ShowUserStocks::send(QIODevice* connection)
     }
 }
 
-Types::Message::MessageLengthType ShowUserStocks::length() const
+Types::Message::MessageLengthType ListOfStocks::length() const
 {
     return sizeof(Types::Message::MessageType) +
            sizeof(Types::Message::MessageLengthType) +
            _stocks.size() * (sizeof(Types::StockIdType) + sizeof(Types::AmountType));
 }
 
-void ShowUserStocks::addStock(Types::StockIdType stockId, Types::AmountType amount)
+void ListOfStocks::addStock(Types::StockIdType stockId, Types::AmountType amount)
 {
     _stocks.push_back(qMakePair(stockId, amount));
 }

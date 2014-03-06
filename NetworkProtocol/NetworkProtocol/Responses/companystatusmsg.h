@@ -8,7 +8,7 @@ namespace NetworkProtocol
 namespace Responses
 {
 /*
- *  Responses :: ShowCompanyStatus
+ *  Responses :: CompanyStatus
  *
  *  This message is for sending information about status of company with companyId.
  *
@@ -16,14 +16,14 @@ namespace Responses
  *  <message_length : 2><message_type : 1><company_id : 4><company_status : 1>
  *
  *  where
- *      message_type         = MessageType::RESPONSE_SHOW_COMPANY_STATUS;
+ *      message_type         = MessageType::RESPONSE_COMPANY_STATUS;
  */
-class NETWORKPROTOCOLSHARED_EXPORT ShowCompanyStatus : public Response
+class NETWORKPROTOCOLSHARED_EXPORT CompanyStatus : public Response
 {
         DTO::Types::CompanyIdType _companyId;
         DTO::Types::Company::CompanyStatusType _status;
 public:
-    ShowCompanyStatus(DTO::Types::CompanyIdType companyId,
+    CompanyStatus(DTO::Types::CompanyIdType companyId,
                   DTO::Types::Company::CompanyStatusType status);
 
     DTO::Types::Message::MessageLengthType length() const;

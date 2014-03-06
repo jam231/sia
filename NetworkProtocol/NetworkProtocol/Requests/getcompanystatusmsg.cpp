@@ -1,4 +1,4 @@
-#include "companystatusmsg.h"
+#include "getcompanystatusmsg.h"
 
 #include "networkprotocol_utilities.h"
 
@@ -9,7 +9,7 @@ namespace Requests
 
 using namespace DTO;
 
-CompanyStatus::CompanyStatus(QDataStream& serialized_request)
+GetCompanyStatus::GetCompanyStatus(QDataStream& serialized_request)
 {
     if(serialized_request.device()->bytesAvailable() < sizeof(_companyId))
     {
@@ -32,17 +32,17 @@ CompanyStatus::CompanyStatus(QDataStream& serialized_request)
 }
 
 
-Types::Message::MessageType CompanyStatus::type() const
+Types::Message::MessageType GetCompanyStatus::type() const
 {
-    return Types::Message::MessageType::REQUEST_COMPANY_STATUS;
+    return Types::Message::MessageType::REQUEST_GET_COMPANY_STATUS;
 }
 
-Types::CompanyIdType CompanyStatus::getCompanyId() const
+Types::CompanyIdType GetCompanyStatus::getCompanyId() const
 {
     return _companyId;
 }
 
-Types::Message::MessageLengthType CompanyStatus::length() const
+Types::Message::MessageLengthType GetCompanyStatus::length() const
 {
     return sizeof(_companyId);
 }

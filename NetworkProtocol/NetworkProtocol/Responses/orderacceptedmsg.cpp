@@ -28,7 +28,7 @@ Types::Message::MessageLengthType OrderAccepted::length() const
 
 Types::Message::MessageType OrderAccepted::type() const
 {
-    return Types::Message::MessageType::RESPONSE_ORDER_ID;
+    return Types::Message::MessageType::RESPONSE_ORDER_ACCEPTED;
 }
 
 void OrderAccepted::send(QIODevice* connection)

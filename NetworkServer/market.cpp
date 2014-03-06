@@ -6,11 +6,11 @@
 #include <Responses/registerusersuccessmsg.h>
 #include <Responses/okmsg.h>
 #include <Responses/failuremsg.h>
-#include <Responses/showuserstocksmsg.h>
-#include <Responses/showordermsg.h>
-#include <Responses/showuserordersmsg.h>
+#include <Responses/listofstocksmsg.h>
+#include <Responses/shownewordermsg.h>
+#include <Responses/listofordersmsg.h>
 #include <Responses/stockinfomsg.h>
-#include <Responses/orderidmsg.h>
+#include <Responses/orderacceptedmsg.h>
 #include <Responses/buytransactionmsg.h>
 #include <Responses/selltransactionmsg.h>
 #include <Responses/transactionchangemsg.h>
@@ -237,7 +237,7 @@ void Market::startSession()
 
     QSqlQuery query(_database);
     query.prepare("SELECT rozpocznij_sesje();");
-    ShowUserStocks msg;
+    ListOfStocks msg;
     query.setForwardOnly(true);
 
     _database.transaction();
@@ -600,7 +600,7 @@ void Market::getMyStocks(Types::UserIdType userId)
 
      _database.commit();
 
-     ShowUserStocks msg;
+     ListOfStocks msg;
      while (query.next())
          if(query.value(0).isValid() && query.value(1).isValid())
                 msg.addStock(Types::StockIdType(query.value(0).toInt()), Types::AmountType(query.value(1).toInt()));
@@ -631,7 +631,7 @@ void Market::getMyOrders(Types::UserIdType userId)
 
      _database.commit();
 
-     ShowUserOrders msg;
+     ListOfOrders msg;
      while (query.next())
      {
          if(query.value(0).isValid() && query.value(1).isValid() &&
@@ -656,7 +656,7 @@ void Market::getStockInfo(Types::UserIdType userId, Types::StockIdType stockId)
     qDebug() << "[Market] Użytkownik o id =" << userId
               << "prosi o szczegoly zasobu o id=" << stockId;    
 
-    ShowStockInfo msg(stockId, _cachedBestBuyOrders[stockId], _cachedBestSellOrders[stockId], _cachedLastTransaction[stockId]);
+    StockInfo msg(stockId, _cachedBestBuyOrders[stockId], _cachedBestSellOrders[stockId], _cachedLastTransaction[stockId]);
     _server->send(msg, userId);
 }
 

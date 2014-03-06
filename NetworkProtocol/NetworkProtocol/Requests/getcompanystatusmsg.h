@@ -7,7 +7,7 @@ namespace NetworkProtocol {
 namespace Requests
 {
 /*
- *  Request :: CompanyStatus
+ *  Request :: GetCompanyStatus
  *
  *  This message is for requesting company status.
  *
@@ -15,14 +15,14 @@ namespace Requests
  *  <message_length : 2><message_type : 1><company_id : 4>
  *
  *  where
- *      message_type         = MessageType::REQUEST_COMPANY_STATUS
+ *      message_type         = MessageType::REQUEST_GET_COMPANY_STATUS
  */
-class NETWORKPROTOCOLSHARED_EXPORT CompanyStatus : public Request
+class NETWORKPROTOCOLSHARED_EXPORT GetCompanyStatus : public Request
 {
     DTO::Types::CompanyIdType _companyId;
 
 public:
-    CompanyStatus(QDataStream&);
+    GetCompanyStatus(QDataStream&);
 
     DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;

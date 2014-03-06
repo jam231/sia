@@ -11,7 +11,8 @@ ShowBestOrder::ShowBestOrder(Types::Order::OrderType type, Types::StockIdType st
                      Types::AmountType amount, Types::PriceType price)
     : _bestOrder(BestOrder(type, stockId, amount, price))
 {
-    // No need to check the validity of the arguments - ShowBestOrder constructor delegates it to
+    // No need to check the validity of the arguments -
+    // ShowBestOrder constructor delegates it to
     // constructor of BestOrder.
 }
 

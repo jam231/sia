@@ -7,6 +7,16 @@
 
 namespace NetworkProtocol {
 
+
+/*
+ *  Abstract class Message
+ *
+ *  Base for all messages (responses & requests).
+ *
+ *  Every message has the following format:
+ *  <message_length : 2><message_type : 1><body : message_length>
+ *
+ */
 class NETWORKPROTOCOLSHARED_EXPORT Message
 {  
 public:

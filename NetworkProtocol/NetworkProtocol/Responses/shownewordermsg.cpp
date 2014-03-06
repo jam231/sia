@@ -1,4 +1,4 @@
-#include "showordermsg.h"
+#include "shownewordermsg.h"
 
 namespace NetworkProtocol
 {
@@ -21,7 +21,7 @@ ShowNewOrder::ShowNewOrder(Order order) : _order(order)
 
 Types::Message::MessageType ShowNewOrder::type() const
 {
-    return Types::Message::MessageType::RESPONSE_SHOW_ORDER;
+    return Types::Message::MessageType::RESPONSE_SHOW_NEW_ORDER;
 }
 
 void ShowNewOrder::send(QIODevice* connection)

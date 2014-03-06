@@ -162,18 +162,18 @@ enum MessageType : MessageTypeType
 
 
     RESPONSE_SHOW_NEW_ORDER,                // Responses::ShowNewOrder
-    RESPONSE_SHOW_BEST_ORDER,               // NOT IMPLEMENTED
+    RESPONSE_SHOW_BEST_ORDER,               // Responses::ShowBestOrder
 
     REQUEST_SUBSCRIBE_STOCK,                // Requests::SubscribeStock
     REQUEST_UNSUBSCRIBE_STOCK,              // Requests::UnsubscribeStock
 
 
     REQUEST_GET_MY_STOCKS,                  // Requests::GetMyStocks
-    RESPONSE_SHOW_USER_STOCKS,              // Responses::ShowUserStocks
+    RESPONSE_LIST_OF_STOCKS,                // Responses::ListOfStocks
     REQUEST_GET_MY_ORDERS,                  // Requests::GetMyOrders
-    RESPONSE_SHOW_USER_ORDERS,              // Responses::ShowUserOrders
+    RESPONSE_LIST_OF_ORDERS,                // Responses::ListOfOrders
     REQUEST_GET_STOCK_INFO,                 // Requests::GetStockInfo
-    RESPONSE_SHOW_STOCK_INFO,               // Responses::ShowStockInfo
+    RESPONSE_STOCK_INFO,                    // Responses::StockInfo
     REQUEST_CANCEL_ORDER,                   // Requests::CancelOrder
 
     RESPONSE_ORDER_ACCEPTED,                // Responses::OrderAccepted
@@ -182,14 +182,14 @@ enum MessageType : MessageTypeType
 
     // Implemented but not used.
 
-    REQUEST_COMPANY_STATUS = 0x28,          // Requests::CompanyStatus
-    RESPONSE_SHOW_COMPANY_STATUS,           // Response::ShowCompanyStatus
+    REQUEST_GET_COMPANY_STATUS = 0x28,      // Requests::GetCompanyStatus
+    RESPONSE_COMPANY_STATUS,                // Response::CompanyStatus
 
 
     // Not implemented
-
+    REQUEST_GET_SESSION_STATUS,
     RESPONSE_SESSION_STATUS,
-    REQUEST_SESSION_STATUS,
+
 
     /* 50-99 */
 

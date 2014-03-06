@@ -16,7 +16,7 @@ namespace NetworkProtocol
 namespace Responses
 {
 /*
- *  Responses :: ShowUserOrders
+ *  Responses :: ListOfOrders
  *
  *  This message is for sending user information about his pending orders.
  *
@@ -24,15 +24,15 @@ namespace Responses
  *  <message_length : 2><message_type : 1><orders_count : 2><order : 17>^order_count
  *
  *  where
- *      message_type    = MessageType::RESPONSE_SHOW_USER_ORDERS
+ *      message_type    = MessageType::RESPONSE_LIST_OF_ORDERS
  *      <order : 17>    = <order_id : 4><order_type : 1><stock_id : 4><amount : 4><price : 4>
  */
-class NETWORKPROTOCOLSHARED_EXPORT  ShowUserOrders : public Response
+class NETWORKPROTOCOLSHARED_EXPORT  ListOfOrders : public Response
 {    
     QVector<std::shared_ptr<DTO::Order> > _orders;
 
 public:
-    ShowUserOrders();
+    ListOfOrders();
 
     DTO::Types::Message::MessageType type() const;
 

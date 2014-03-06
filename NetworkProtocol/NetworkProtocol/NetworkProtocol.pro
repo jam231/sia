@@ -12,9 +12,6 @@ DEFINES += NETWORKPROTOCOL_LIBRARY
 
 SOURCES += \
     Responses/transactionchangemsg.cpp \
-    Responses/showuserstocksmsg.cpp \
-    Responses/showuserordersmsg.cpp \
-    Responses/showordermsg.cpp \
     Responses/showbestordermsg.cpp \
     Responses/selltransactionmsg.cpp \
     Responses/response.cpp \
@@ -35,13 +32,16 @@ SOURCES += \
     Requests/getstockinfomsg.cpp \
     Requests/getmystocksmsg.cpp \
     Requests/getmyordersmsg.cpp \
-    Requests/companystatusmsg.cpp \
     Requests/cancelordermsg.cpp \
     Requests/buystockmsg.cpp \
-    Responses/showcompanystatusmsg.cpp \
     networkprotocol_utilities.cpp \
     Responses/orderacceptedmsg.cpp \
-    Responses/showstockinfomsg.cpp
+    Responses/shownewordermsg.cpp \
+    Responses/listofstocksmsg.cpp \
+    Responses/stockinfomsg.cpp \
+    Responses/listofordersmsg.cpp \
+    Requests/getcompanystatusmsg.cpp \
+    Responses/companystatusmsg.cpp
 
 
 
@@ -50,9 +50,6 @@ HEADERS += \
     networkprotocol_global.h \
     message.h \
     Responses/transactionchangemsg.h \
-    Responses/showuserstocksmsg.h \
-    Responses/showuserordersmsg.h \
-    Responses/showordermsg.h \
     Responses/showbestordermsg.h \
     Responses/selltransactionmsg.h \
     Responses/response.h \
@@ -73,13 +70,16 @@ HEADERS += \
     Requests/getstockinfomsg.h \
     Requests/getmystocksmsg.h \
     Requests/getmyordersmsg.h \
-    Requests/companystatusmsg.h \
     Requests/cancelordermsg.h \
     Requests/buystockmsg.h \
-    Responses/showcompanystatusmsg.h \
     networkprotocol_utilities.h \
     Responses/orderacceptedmsg.h \
-    Responses/showstockinfomsg.h
+    Responses/shownewordermsg.h \
+    Responses/listofstocksmsg.h \
+    Responses/stockinfomsg.h \
+    Responses/listofordersmsg.h \
+    Requests/getcompanystatusmsg.h \
+    Responses/companystatusmsg.h
 
 
 unix:!symbian {

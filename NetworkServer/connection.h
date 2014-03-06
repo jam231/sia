@@ -2,7 +2,7 @@
 #define CONNECTION_H
 
 #include <Responses/response.h>
-#include <Responses/showordermsg.h>
+#include <Responses/shownewordermsg.h>
 
 
 #include "utilities.h"

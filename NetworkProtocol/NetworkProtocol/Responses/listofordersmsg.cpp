@@ -1,4 +1,4 @@
-#include "showuserordersmsg.h"
+#include "listofordersmsg.h"
 
 namespace NetworkProtocol
 {
@@ -7,11 +7,11 @@ namespace Responses
 
 using namespace DTO;
 
-ShowUserOrders::ShowUserOrders()
+ListOfOrders::ListOfOrders()
 {
 }
 
-Types::Message::MessageLengthType ShowUserOrders::length() const
+Types::Message::MessageLengthType ListOfOrders::length() const
 {
     Types::Message::MessageLengthType order_length_in_bytes = 0;
     if(_orders.size() > 0)
@@ -23,12 +23,12 @@ Types::Message::MessageLengthType ShowUserOrders::length() const
            sizeof(Types::Message::MessageLengthType) + _orders.size() * order_length_in_bytes;
 }
 
-Types::Message::MessageType ShowUserOrders::type() const
+Types::Message::MessageType ListOfOrders::type() const
 {
-    return Types::Message::MessageType::RESPONSE_SHOW_USER_ORDERS;
+    return Types::Message::MessageType::RESPONSE_LIST_OF_ORDERS;
 }
 
-void ShowUserOrders::send(QIODevice* connection)
+void ListOfOrders::send(QIODevice* connection)
 {
     // Domyślnie BigEndian
     QDataStream out(connection);
@@ -45,7 +45,7 @@ void ShowUserOrders::send(QIODevice* connection)
     }
 }
 
-void ShowUserOrders::addOrder(Types::OrderIdType orderId, Types::Order::OrderType _orderType,
+void ListOfOrders::addOrder(Types::OrderIdType orderId, Types::Order::OrderType _orderType,
                               Types::StockIdType stockId, Types::AmountType amount,
                               Types::PriceType price)
 {
@@ -53,7 +53,7 @@ void ShowUserOrders::addOrder(Types::OrderIdType orderId, Types::Order::OrderTyp
                           new Order(orderId, _orderType, stockId, amount, price)));
 }
 
-void ShowUserOrders::addOrder(std::shared_ptr<Order> order)
+void ListOfOrders::addOrder(std::shared_ptr<Order> order)
 {
     _orders.push_back(order);
 }

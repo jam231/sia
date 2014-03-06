@@ -6,7 +6,7 @@
 
 #include "Requests/cancelordermsg.h"
 #include "Requests/buystockmsg.h"
-#include "Requests/companystatusmsg.h"
+#include "Requests/getcompanystatusmsg.h"
 #include "Requests/getmyordersmsg.h"
 #include "Requests/getmystocksmsg.h"
 #include "Requests/getstockinfomsg.h"

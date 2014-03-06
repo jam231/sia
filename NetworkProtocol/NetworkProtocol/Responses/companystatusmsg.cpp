@@ -1,4 +1,4 @@
-#include "showcompanystatusmsg.h"
+#include "companystatusmsg.h"
 
 #include <utilities.h>
 
@@ -11,7 +11,7 @@ namespace Responses
 
 using namespace DTO;
 
-ShowCompanyStatus::ShowCompanyStatus(Types::CompanyIdType companyId,
+CompanyStatus::CompanyStatus(Types::CompanyIdType companyId,
                              Types::Company::CompanyStatusType status)
     : _companyId(companyId), _status(status)
 {
@@ -23,12 +23,12 @@ ShowCompanyStatus::ShowCompanyStatus(Types::CompanyIdType companyId,
     }
 }
 
-Types::Message::MessageType ShowCompanyStatus::type() const
+Types::Message::MessageType CompanyStatus::type() const
 {
-    return Types::Message::MessageType::RESPONSE_SHOW_COMPANY_STATUS;
+    return Types::Message::MessageType::RESPONSE_COMPANY_STATUS;
 }
 
-void ShowCompanyStatus::send(QIODevice *connection)
+void CompanyStatus::send(QIODevice *connection)
 {
     QDataStream out(connection);
 
@@ -37,7 +37,7 @@ void ShowCompanyStatus::send(QIODevice *connection)
         << _status;
 }
 
-Types::Message::MessageLengthType ShowCompanyStatus::length() const
+Types::Message::MessageLengthType CompanyStatus::length() const
 {
     return sizeof(Types::Message::MessageType) +
             sizeof(_companyId) + sizeof(_status);
