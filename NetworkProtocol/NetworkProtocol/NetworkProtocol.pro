@@ -42,7 +42,8 @@ SOURCES += \
     Responses/companystatusmsg.cpp \
     Responses/orderrealizationmsg.cpp \
     Responses/ordercompletedmsg.cpp \
-    message.cpp
+    message.cpp \
+    Responses/shownobestorder.cpp
 
 
 
@@ -80,7 +81,8 @@ HEADERS += \
     Responses/companystatusmsg.h \
     Responses/orderrealizationmsg.h \
     Responses/lasttransactionmsg.h \
-    Responses/ordercompletedmsg.h
+    Responses/ordercompletedmsg.h \
+    Responses/shownobestorder.h
 
 
 unix:!symbian {

@@ -20,7 +20,8 @@ protected:
     Types::Order::OrderType _orderType;
     Types::StockIdType _stockId;
 public:
-    BestOrder(Types::Order::OrderType, Types::StockIdType, Types::AmountType, Types::PriceType);
+    BestOrder(Types::Order::OrderType, Types::StockIdType,
+              Types::AmountType, Types::PriceType);
     Types::AmountType getAmount() const;
     Types::PriceType getPrice() const;
     Types::Order::OrderType getOrderType() const;

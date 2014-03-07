@@ -178,6 +178,7 @@ enum MessageType : MessageTypeType
 
     RESPONSE_ORDER_ACCEPTED,                // Responses::OrderAccepted
 
+    RESPONSE_SHOW_NO_BEST_ORDER,            // Response::ShowNoBestOrder
     /* 40-49: session, company  */
 
     // Implemented but not used.
