@@ -39,7 +39,7 @@ void CompanyStatus::send(QIODevice *connection)
 
 Types::Message::MessageLengthType CompanyStatus::length() const
 {
-    return sizeof(Types::Message::MessageType) +
+    return  Response::length() +
             sizeof(_companyId) + sizeof(_status);
 }
 

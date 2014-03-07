@@ -10,11 +10,10 @@
 #include <Responses/shownewordermsg.h>
 #include <Responses/listofordersmsg.h>
 #include <Responses/stockinfomsg.h>
+#include <Responses/lasttransactionmsg.h>
 #include <Responses/orderacceptedmsg.h>
-#include <Responses/buytransactionmsg.h>
-#include <Responses/selltransactionmsg.h>
-#include <Responses/transactionchangemsg.h>
-
+#include <Responses/ordercompletedmsg.h>
+#include <Responses/orderrealizationmsg.h>
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
@@ -26,7 +25,9 @@
 
 const QString Market::BUY_TRANSACTIONS_CHANNEL = "ch_zlecenia_kupna";
 const QString Market::SELL_TRANSACTIONS_CHANNEL = "ch_zlecenia_sprzedazy";
-const QString Market::CHANGE_CHANNEL = "ch_zmiana";
+// It's used for notyfing server about some new transaction. Server updates
+// his _cachedLastTransaction and broadcast it to whomever it may concern.
+const QString Market::TRANSACTION_CHANNEL = "ch_zmiana";
 
 using namespace NetworkProtocol;
 using namespace NetworkProtocol::Responses;
@@ -67,7 +68,7 @@ Market::Market(const ConfigManager<>& config, QObject* parent)
 
     _database.driver()->subscribeToNotification(BUY_TRANSACTIONS_CHANNEL);
     _database.driver()->subscribeToNotification(SELL_TRANSACTIONS_CHANNEL);
-    _database.driver()->subscribeToNotification(CHANGE_CHANNEL);
+    _database.driver()->subscribeToNotification(TRANSACTION_CHANNEL);
 
     qDebug() << "[Market] Ustanowiono połączenie z bazą danych.";
 
@@ -180,7 +181,8 @@ void Market::registerNewUser(Connection* connection, QString password)
 
 }
 
-void Market::loginUser(Connection* connection, Types::UserIdType userId, QString password)
+void Market::loginUser(Connection* connection, Types::UserIdType userId,
+                       QString password)
 {
     qDebug() << "[Market] Wyszukiwanie użytkownika o id =" << userId
              << "w bazie...";
@@ -286,7 +288,7 @@ void Market::notificationHandler(const QString& channelName, QSqlDriver::Notific
             Types::AmountType amount = Types::AmountType(data[1].toInt());
             Types::UserIdType userId = Types::UserIdType(data[2].toInt());
 
-            BuyTransaction msg(orderId, amount);
+            OrderRealization msg(orderId, amount);
             _server->send(msg, userId);
         }
         else
@@ -304,7 +306,7 @@ void Market::notificationHandler(const QString& channelName, QSqlDriver::Notific
             Types::AmountType amount = Types::AmountType(data[1].toInt());
             Types::UserIdType userId = Types::UserIdType(data[2].toInt());
 
-            SellTransaction msg(orderId, amount);
+            OrderRealization msg(orderId, amount);
             _server->send(msg, userId);
         }
         else
@@ -312,7 +314,7 @@ void Market::notificationHandler(const QString& channelName, QSqlDriver::Notific
                      << "powinnien zawierac 3 argumenty, a zawiera"
                      << data.size();
     }
-    else if(CHANGE_CHANNEL == channelName)
+    else if(TRANSACTION_CHANNEL == channelName)
     {
         QStringList data = payload.toString().split('|');
         if(data.size() == 4)
@@ -322,23 +324,26 @@ void Market::notificationHandler(const QString& channelName, QSqlDriver::Notific
             Types::PriceType price = Types::PriceType(data[2].toInt());
             QString date = data[3];
 
-            TransactionChange msg(stockId, amount, price, date);
+            Responses::LastTransaction msg(stockId, amount, price, date);
             _server->send(msg);
 
-            _cachedLastTransaction[stockId] = std::shared_ptr<LastTransaction>(new LastTransaction(date, amount, price));
+            _cachedLastTransaction[stockId] = std::shared_ptr<DTO::LastTransaction>(
+                                                new DTO::LastTransaction(amount, price, date));
 
             changeCachedBestBuyOrders(stockId);
             // TODO: Jak już gdzieś wspomniałem być może
             //       dałoby się to zrobić optymalniej.
             if(_cachedBestBuyOrders.contains(stockId))
             {
-                ShowBestOrder sg(Types::Order::OrderType::BUY, stockId, _cachedBestBuyOrders[stockId]->getAmount(),
-                                 _cachedBestBuyOrders[stockId]->getPrice());
+                ShowBestOrder msg(Types::Order::OrderType::BUY, stockId,
+                                  _cachedBestBuyOrders[stockId]->getAmount(),
+                                  _cachedBestBuyOrders[stockId]->getPrice());
                 _server->send(msg);
             }
             else
             {
-                ShowBestOrder sg(Types::Order::OrderType::BUY, stockId, 0, 0);
+                /// TODO: create (maybe) message NoBestOrder.
+                ShowBestOrder msg(Types::Order::OrderType::BUY, stockId, 0, 0);
                 _server->send(msg);
             }
 
@@ -348,18 +353,20 @@ void Market::notificationHandler(const QString& channelName, QSqlDriver::Notific
             if(_cachedBestSellOrders.contains(stockId))
             {
                 ShowBestOrder msg(Types::Order::OrderType::SELL, stockId,
-                                  _cachedBestSellOrders[stockId]->getAmount(), _cachedBestSellOrders[stockId]->getPrice());
+                                  _cachedBestSellOrders[stockId]->getAmount(),
+                                  _cachedBestSellOrders[stockId]->getPrice());
 
                 _server->send(msg);
             }
             else
             {
+                /// TODO: create (maybe) message NoBestOrder.
                 ShowBestOrder msg(Types::Order::OrderType::SELL, stockId, 0, 0);
                 _server->send(msg);
             }
         }
         else
-            qDebug() << "[Market] " << CHANGE_CHANNEL
+            qDebug() << "[Market] " << TRANSACTION_CHANNEL
                      << "powinnien zawierac 4 argumenty, a zawiera"
                      << data.size();
     }
@@ -423,7 +430,8 @@ void Market::sellStock(Types::UserIdType userId, Types::StockIdType stockId,
         if(_cachedBestSellOrders[stockId] != lastBestOrder)
         {
             ShowBestOrder msg(Types::Order::OrderType::SELL, stockId,
-                              _cachedBestSellOrders[stockId]->getAmount(), _cachedBestSellOrders[stockId]->getPrice());
+                              _cachedBestSellOrders[stockId]->getAmount(),
+                              _cachedBestSellOrders[stockId]->getPrice());
             _server->send(msg);
         }
     }
@@ -472,10 +480,9 @@ void Market::buyStock(Types::UserIdType userId, Types::StockIdType stockId,
          }
          else
          {
-             /// TODO:
-             ///    Investigate what that code below does.
+
              qDebug() << "[Market] Błąd nadania id dla zlecenia kupna";
-             OrderAccepted msg(-1);
+             Failure msg(Types::Failure::INVALID_MESSAGE_BODY);
              _server->send(msg, userId);
          }
 
@@ -490,8 +497,9 @@ void Market::buyStock(Types::UserIdType userId, Types::StockIdType stockId,
          // if changed then send!]
          if(_cachedBestBuyOrders[stockId] != lastBestOrder)
          {
-             ShowBestOrder msg(Types::Order::OrderType::BUY, stockId, _cachedBestBuyOrders[stockId]->getAmount(),
-                              _cachedBestBuyOrders[stockId]->getPrice());
+             ShowBestOrder msg(Types::Order::OrderType::BUY, stockId,
+                               _cachedBestBuyOrders[stockId]->getAmount(),
+                               _cachedBestBuyOrders[stockId]->getPrice());
              _server->send(msg);
          }
      }
@@ -603,7 +611,8 @@ void Market::getMyStocks(Types::UserIdType userId)
      ListOfStocks msg;
      while (query.next())
          if(query.value(0).isValid() && query.value(1).isValid())
-                msg.addStock(Types::StockIdType(query.value(0).toInt()), Types::AmountType(query.value(1).toInt()));
+                msg.addStock(Types::StockIdType(query.value(0).toInt()),
+                             Types::AmountType(query.value(1).toInt()));
          else
              qDebug() << "[Market] W getMyStocks"
                       << "zwrócony rekord nie ma dwóch pol.";
@@ -656,7 +665,9 @@ void Market::getStockInfo(Types::UserIdType userId, Types::StockIdType stockId)
     qDebug() << "[Market] Użytkownik o id =" << userId
               << "prosi o szczegoly zasobu o id=" << stockId;    
 
-    StockInfo msg(stockId, _cachedBestBuyOrders[stockId], _cachedBestSellOrders[stockId], _cachedLastTransaction[stockId]);
+    StockInfo msg(stockId, _cachedBestBuyOrders[stockId],
+                           _cachedBestSellOrders[stockId],
+                           _cachedLastTransaction[stockId]);
     _server->send(msg, userId);
 }
 

@@ -22,11 +22,13 @@ StockInfo::StockInfo (Types::StockIdType stockId,
 {
     if(stockId.value <= 0)
     {
-        GLOBAL_LOG_TRACE(QString("Invalid argument: stockId(%1) <= 0").arg(_stockId.value));
+        GLOBAL_LOG_TRACE(QString("Invalid argument: stockId(%1) <= 0")
+                         .arg(_stockId.value));
         throw std::invalid_argument("stockId <= 0.");
     }
     if(_bestBuyOrder == nullptr ||
-       (_bestBuyOrder->getOrderType() == Order::BUY && _bestBuyOrder->getStockId() == _stockId))
+       (_bestBuyOrder->getOrderType() == Order::BUY &&
+        _bestBuyOrder->getStockId() == _stockId))
     {
         GLOBAL_LOG_TRACE(QString("Best buy order is invalid: wrong stock id (should be %1 is %2) or order type(%3).")
                   .arg(_stockId.value).arg(_bestBuyOrder->getStockId().value)
@@ -34,7 +36,8 @@ StockInfo::StockInfo (Types::StockIdType stockId,
         throw std::invalid_argument("Best buy order is invalid: wrong stock Id or order type.");
     }
     if(_bestSellOrder == nullptr ||
-       (_bestSellOrder->getOrderType() == Order::SELL && _bestSellOrder->getStockId() == _stockId))
+       (_bestSellOrder->getOrderType() == Order::SELL &&
+        _bestSellOrder->getStockId() == _stockId))
     {
         GLOBAL_LOG_TRACE(QString("Best sell order is invalid: wrong stock id (should be %1 is %2) or order type(%3).")
                   .arg(_stockId.value).arg(_bestSellOrder->getStockId().value)
@@ -116,8 +119,9 @@ void StockInfo::send(QIODevice* connection)
 Types::Message::MessageLengthType StockInfo::length() const
 {
 
-    return  sizeof(Types::Message::MessageType) + sizeof(_stockId) +
-            getSerializedLength(_bestBuyOrder.get()) + getSerializedLength(_bestSellOrder.get()) +
+    return  Response::length()  + sizeof(_stockId) +
+            getSerializedLength(_bestBuyOrder.get()) +
+            getSerializedLength(_bestSellOrder.get()) +
             getSerializedLength(_lastTransaction.get());
 }
 

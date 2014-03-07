@@ -23,7 +23,7 @@ RegisterUserSuccess::RegisterUserSuccess(Types::UserIdType userId)
 
 Types::Message::MessageLengthType RegisterUserSuccess::length() const
 { 
-    return sizeof(_userId);
+    return Response::length() + sizeof(_userId);
 }
 
 Types::Message::MessageType RegisterUserSuccess::type() const

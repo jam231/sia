@@ -1,5 +1,5 @@
-#ifndef BESTORDERMSG_H
-#define BESTORDERMSG_H
+#ifndef SHOWBESTORDERMSG_H
+#define SHOWBESTORDERMSG_H
 
 #include "response.h"
 #include "DataTransferObjects/bestorder.h"
@@ -38,4 +38,4 @@ public:
 
 }
 }
-#endif // BESTORDERMSG_H
+#endif // SHOWBESTORDERMSG_H

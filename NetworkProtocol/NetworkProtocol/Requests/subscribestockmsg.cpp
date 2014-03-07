@@ -41,7 +41,8 @@ Types::StockIdType SubscribeStock::getStockId() const
 
 Types::Message::MessageLengthType SubscribeStock::length() const
 {
-    return sizeof(_stockId);
+    return Request::length() +
+           sizeof(_stockId);
 }
 
 

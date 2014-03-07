@@ -25,7 +25,7 @@ Types::Message::MessageType GetMyStocks::type() const
 
 DTO::Types::Message::MessageLengthType GetMyStocks::length() const
 {
-    return 0;
+    return Request::length();
 }
 
 

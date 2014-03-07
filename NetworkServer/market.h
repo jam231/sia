@@ -37,7 +37,7 @@ class Market : public QObject
 
     static const QString BUY_TRANSACTIONS_CHANNEL;// = "ch_zlecenia_kupna";
     static const QString SELL_TRANSACTIONS_CHANNEL;// = "ch_zlecenia_sprzedazy";
-    static const QString CHANGE_CHANNEL;// = "ch_zmiana";
+    static const QString TRANSACTION_CHANNEL;// = "ch_zmiana";
 
     Server* _server;
     QSqlDatabase _database;

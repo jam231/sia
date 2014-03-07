@@ -65,7 +65,8 @@ QString LoginUser::getUserPassword() const
 
 Types::Message::MessageLengthType LoginUser::length() const
 {
-    return sizeof(Types::Message::MessageLengthType) + _password.toUtf8().size();
+    return Request::length() +
+           sizeof(Types::Message::MessageLengthType) + _password.toUtf8().size();
 }
 
 

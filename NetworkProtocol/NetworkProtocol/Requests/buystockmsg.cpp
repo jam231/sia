@@ -57,7 +57,8 @@ Types::StockIdType BuyStock::getStockId() const
 
 Types::Message::MessageLengthType BuyStock::length() const
 {
-    return sizeof(_stockId) + sizeof(_price)  + sizeof(_amount);
+    return Request::length() + sizeof(_stockId) +
+           sizeof(_price)  + sizeof(_amount);
 }
 
 }

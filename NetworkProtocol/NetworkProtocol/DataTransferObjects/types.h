@@ -154,11 +154,11 @@ enum MessageType : MessageTypeType
     REQUEST_BUY_STOCK_ORDER,                // Requests::BuyStock
 
 
-    RESPONSE_BUY_TRANSACTION,               // Responses::BuyTransaction
-    RESPONSE_SELL_TRANSACTION,              // Responses::SellTransaction
+    RESPONSE_ORDER_COMPLETED,               // Responses::OrderCompleted
+    RESPONSE_ORDER_REALIZATION,             // Responses::OrderRealization
 
 
-    RESPONSE_TRANSACTION_CHANGE,            // Responses::TransactionChange
+    RESPONSE_LAST_TRANSACTION,              // Responses::LastTransaction
 
 
     RESPONSE_SHOW_NEW_ORDER,                // Responses::ShowNewOrder

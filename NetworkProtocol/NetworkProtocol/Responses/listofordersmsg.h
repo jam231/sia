@@ -1,5 +1,5 @@
-#ifndef SHOWUSERORDERSMSG_H
-#define SHOWUSERORDERSMSG_H
+#ifndef LISTOFORDERSMSG_H
+#define LISTOFORDERSMSG_H
 
 
 #include "response.h"
@@ -50,4 +50,4 @@ public:
 
 }
 }
-#endif // SHOWUSERORDERSMSG_H
+#endif // LISTOFORDERSMSG_H

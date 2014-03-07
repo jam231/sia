@@ -71,7 +71,7 @@ void LastTransactionTest::creation_valid()
 
     try
     {
-        LastTransaction last_transaction(date_time_str, amount, price);
+        LastTransaction last_transaction(amount, price, date_time_str);
         QDateTime date = QDateTime::fromString(last_transaction.getDateTime());
         QVERIFY2(date.isValid(),                            "DateTime is corruped.");
         QVERIFY2(last_transaction.getPrice()      == price, "Stock id is corrupted.");
@@ -97,7 +97,7 @@ void LastTransactionTest::creation_invalid()
 
     try
     {
-        LastTransaction last_transaction(date_time_str, amount, price);
+        LastTransaction last_transaction(amount, price, date_time_str);
         QFAIL("std::invalid_argument should have been thrown.");
     }
     catch(std::invalid_argument&)
@@ -123,7 +123,7 @@ void LastTransactionTest::toStream_valid()
 
     try
     {
-        LastTransaction last_transaction(date_time_str, amount, price);
+        LastTransaction last_transaction(amount, price, date_time_str);
         QByteArray buffer;
         QDataStream stream(&buffer, QIODevice::ReadWrite);
 
@@ -193,9 +193,9 @@ void LastTransactionTest::fromStream_valid()
         assert(stream.byteOrder() == QDataStream::BigEndian);
 
         Message::MessageLengthType date_time_str_length = date_time_str.toUtf8().size();
+        stream << amount << price;
         stream << date_time_str_length;
         stream.writeRawData(date_time_str.toUtf8(), date_time_str_length);
-        stream << amount << price;
         // get ready for reading.
         stream.device()->reset();
 
@@ -251,9 +251,9 @@ void LastTransactionTest::fromStream_invalid()
         assert(stream.byteOrder() == QDataStream::BigEndian);
 
         Message::MessageLengthType date_time_str_length = date_time_str.toUtf8().size();
+        stream << amount << price;
         stream << date_time_str_length;
         stream.writeRawData(date_time_str.toUtf8(), date_time_str_length);
-        stream << amount << price;
         // get ready for reading.
         stream.device()->reset();
 
@@ -292,7 +292,7 @@ void LastTransactionTest::lengthSerialized()
     QFETCH(AmountType, amount);
     QFETCH(PriceType, price);
 
-    LastTransaction last_transaction(date_time_str, amount, price);
+    LastTransaction last_transaction(amount, price, date_time_str);
 
     Types::Message::MessageLengthType date_time_str_length = date_time_str.toUtf8().size();
     Message::MessageLengthType sum_of_sizeofs = sizeof(date_time_str_length) +

@@ -1,5 +1,5 @@
-#ifndef ORDERIDMSG_H
-#define ORDERIDMSG_H
+#ifndef ORDERACCEPTEDMSG_H
+#define ORDERACCEPTEDMSG_H
 
 #include "response.h"
 
@@ -35,4 +35,4 @@ public:
 
 }
 }
-#endif // ORDERIDMSG_H
+#endif // ORDERACCEPTEDMSG_H

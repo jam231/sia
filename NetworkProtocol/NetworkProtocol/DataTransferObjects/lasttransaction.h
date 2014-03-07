@@ -19,7 +19,7 @@ class NETWORKPROTOCOLSHARED_EXPORT LastTransaction
     DTO::Types::PriceType _price;
 
 public:
-    LastTransaction(QString dateTime, DTO::Types::AmountType, DTO::Types::PriceType);
+    LastTransaction(DTO::Types::AmountType, DTO::Types::PriceType, QString dateTime);
 
     QString getDateTime() const;
     DTO::Types::AmountType getAmount() const;

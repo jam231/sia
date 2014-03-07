@@ -1,5 +1,5 @@
-#ifndef SHOWUSERSTOCKSMSG_H
-#define SHOWUSERSTOCKSMSG_H
+#ifndef LISTOFSTOCKSMSG_H
+#define LISTOFSTOCKSMSG_H
 
 #include "response.h"
 
@@ -40,4 +40,4 @@ public:
 
 }
 }
-#endif // SHOWUSERSTOCKSMSG_H
+#endif // LISTOFSTOCKSMSG_H

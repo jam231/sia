@@ -19,8 +19,7 @@ Types::Message::MessageLengthType ListOfOrders::length() const
         order_length_in_bytes = _orders.first()->lengthSerialized();
     }
 
-    return sizeof(Types::Message::MessageType) +
-           sizeof(Types::Message::MessageLengthType) + _orders.size() * order_length_in_bytes;
+    return Response::length() + _orders.size() * order_length_in_bytes;
 }
 
 Types::Message::MessageType ListOfOrders::type() const
@@ -45,12 +44,15 @@ void ListOfOrders::send(QIODevice* connection)
     }
 }
 
-void ListOfOrders::addOrder(Types::OrderIdType orderId, Types::Order::OrderType _orderType,
-                              Types::StockIdType stockId, Types::AmountType amount,
-                              Types::PriceType price)
+void ListOfOrders::addOrder(Types::OrderIdType orderId,
+                            Types::Order::OrderType _orderType,
+                            Types::StockIdType stockId,
+                            Types::AmountType amount,
+                            Types::PriceType price)
 {
     _orders.push_back(std::shared_ptr<Order>(
-                          new Order(orderId, _orderType, stockId, amount, price)));
+                          new Order(orderId, _orderType, stockId,
+                                    amount, price)));
 }
 
 void ListOfOrders::addOrder(std::shared_ptr<Order> order)

@@ -24,7 +24,7 @@ Types::Message::MessageType GetMyOrders::type() const
 
 Types::Message::MessageLengthType GetMyOrders::length() const
 {
-    return 0;
+    return Request::length();
 }
 
 

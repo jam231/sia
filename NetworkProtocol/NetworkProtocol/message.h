@@ -22,8 +22,11 @@ class NETWORKPROTOCOLSHARED_EXPORT Message
 public:
     /*
      * Length of the *whole* message in BYTES (byte == 8 bits).
+     * For naked message it is the length of header in bytes.
+     * (Currently =3)
+     *
      */
-    virtual DTO::Types::Message::MessageLengthType length() const = 0;
+    virtual DTO::Types::Message::MessageLengthType length() const;
     virtual DTO::Types::Message::MessageType type() const = 0;
 
     virtual ~Message() {}

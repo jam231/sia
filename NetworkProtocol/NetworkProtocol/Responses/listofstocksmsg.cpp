@@ -32,9 +32,8 @@ void ListOfStocks::send(QIODevice* connection)
 
 Types::Message::MessageLengthType ListOfStocks::length() const
 {
-    return sizeof(Types::Message::MessageType) +
-           sizeof(Types::Message::MessageLengthType) +
-           _stocks.size() * (sizeof(Types::StockIdType) + sizeof(Types::AmountType));
+    return Response::length() + _stocks.size() * (sizeof(Types::StockIdType) +
+                                                  sizeof(Types::AmountType));
 }
 
 void ListOfStocks::addStock(Types::StockIdType stockId, Types::AmountType amount)

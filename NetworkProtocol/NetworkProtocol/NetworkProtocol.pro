@@ -11,14 +11,12 @@ TEMPLATE = lib
 DEFINES += NETWORKPROTOCOL_LIBRARY
 
 SOURCES += \
-    Responses/transactionchangemsg.cpp \
+    Responses/lasttransactionmsg.cpp \
     Responses/showbestordermsg.cpp \
-    Responses/selltransactionmsg.cpp \
     Responses/response.cpp \
     Responses/registerusersuccessmsg.cpp \
     Responses/okmsg.cpp \
     Responses/failuremsg.cpp \
-    Responses/buytransactionmsg.cpp \
     DataTransferObjects/types.cpp \
     DataTransferObjects/order.cpp \
     DataTransferObjects/lasttransaction.cpp \
@@ -41,7 +39,10 @@ SOURCES += \
     Responses/stockinfomsg.cpp \
     Responses/listofordersmsg.cpp \
     Requests/getcompanystatusmsg.cpp \
-    Responses/companystatusmsg.cpp
+    Responses/companystatusmsg.cpp \
+    Responses/orderrealizationmsg.cpp \
+    Responses/ordercompletedmsg.cpp \
+    message.cpp
 
 
 
@@ -49,14 +50,11 @@ SOURCES += \
 HEADERS += \
     networkprotocol_global.h \
     message.h \
-    Responses/transactionchangemsg.h \
     Responses/showbestordermsg.h \
-    Responses/selltransactionmsg.h \
     Responses/response.h \
     Responses/registerusersuccessmsg.h \
     Responses/okmsg.h \
     Responses/failuremsg.h \
-    Responses/buytransactionmsg.h \
     DataTransferObjects/types.h \
     DataTransferObjects/order.h \
     DataTransferObjects/lasttransaction.h \
@@ -79,7 +77,10 @@ HEADERS += \
     Responses/stockinfomsg.h \
     Responses/listofordersmsg.h \
     Requests/getcompanystatusmsg.h \
-    Responses/companystatusmsg.h
+    Responses/companystatusmsg.h \
+    Responses/orderrealizationmsg.h \
+    Responses/lasttransactionmsg.h \
+    Responses/ordercompletedmsg.h
 
 
 unix:!symbian {

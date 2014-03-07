@@ -57,7 +57,8 @@ DTO::Types::StockIdType SellStock::getStockId() const
 
 DTO::Types::Message::MessageLengthType SellStock::length() const
 {
-    return sizeof(_stockId) + sizeof(_price) + sizeof(_amount);
+    return Request::length() +
+           sizeof(_stockId) + sizeof(_price) + sizeof(_amount);
 }
 
 

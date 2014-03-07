@@ -44,7 +44,7 @@ DTO::Types::StockIdType GetStockInfo::getStockId() const
 
 Types::Message::MessageLengthType GetStockInfo::length() const
 {
-    return sizeof(_stockId);
+    return Request::length() + sizeof(_stockId);
 }
 
 

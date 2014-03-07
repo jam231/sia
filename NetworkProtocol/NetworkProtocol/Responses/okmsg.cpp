@@ -26,7 +26,7 @@ void Ok::send(QIODevice* connection)
 
 Types::Message::MessageLengthType Ok::length() const
 {
-    return 0;
+    return Response::length();
 }
 
 

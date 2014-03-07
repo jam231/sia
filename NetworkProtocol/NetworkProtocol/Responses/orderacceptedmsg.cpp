@@ -23,7 +23,7 @@ OrderAccepted::OrderAccepted(Types::OrderIdType orderId) : _orderId(orderId)
 
 Types::Message::MessageLengthType OrderAccepted::length() const
 {
-    return sizeof(_orderId);
+    return Response::length() + sizeof(_orderId);
 }
 
 Types::Message::MessageType OrderAccepted::type() const

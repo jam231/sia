@@ -1,5 +1,5 @@
-#ifndef OkMSG_H
-#define OkMSG_H
+#ifndef OKMSG_H
+#define OKMSG_H
 
 
 #include "response.h"
@@ -34,4 +34,4 @@ public:
 
 }
 }
-#endif // OkMSG_H
+#endif // OKMSG_H

@@ -29,8 +29,8 @@ Types::Message::MessageLengthType LastTransaction::lengthSerialized() const
             _dateTime.toUtf8().size() + sizeof(_amount) + sizeof(_price);
 }
 
-LastTransaction::LastTransaction(QString dateTime, Types::AmountType amount,
-                                 Types::PriceType price)
+LastTransaction::LastTransaction(Types::AmountType amount, Types::PriceType price,
+                                 QString dateTime)
     : _dateTime(dateTime), _amount(amount), _price(price)
 {
     if(_amount <= 0 || _price <= 0)
@@ -49,8 +49,7 @@ QDataStream &operator<<(QDataStream& stream, const LastTransaction& lastTransact
 
     stream << lastTransaction._amount
            << lastTransaction._price
-           << static_cast<Types::Message::MessageLengthType>(lastTransaction._dateTime
-                                                             .toUtf8().size());
+           << static_cast<Types::Message::MessageLengthType>(dateTime.size());
     stream.device()->write(dateTime);
     return stream;
 }
@@ -60,32 +59,33 @@ LastTransaction LastTransaction::fromStream(QDataStream& stream)
     Types::Message::MessageLengthType date_length;
     Types::AmountType amount;
     Types::PriceType price;
-
-    if(stream.device()->bytesAvailable() <= sizeof(date_length))
+    if(sizeof(date_length) + sizeof(amount) +
+                             sizeof(price) > stream.device()->bytesAvailable())
     {
-        GLOBAL_LOG_TRACE(QString("Wrong number of bytes in the stream to read"\
+        GLOBAL_LOG_TRACE(QString("Not enough bytes in the stream to read"\
                           " LastTransaction. Should be >%1 is %2")
-                  .arg(sizeof(date_length))
-                  .arg(stream.device()->bytesAvailable()));
-        throw std::invalid_argument("Not enough bytes in the stream to read"\
-                                    " LastTransaction.");
-    }
-    stream >> date_length;
-
-    if(date_length + sizeof(amount) + sizeof(price) > stream.device()->bytesAvailable())
-    {
-        GLOBAL_LOG_TRACE(QString("Wrong number of bytes in the stream to read"\
-                          " LastTransaction. Should be %1 is %2")
                   .arg(date_length + sizeof(amount) + sizeof(price))
                   .arg(stream.device()->bytesAvailable()));
         throw std::invalid_argument("Not enough bytes in the stream to read"\
                                     " LastTransaction.");
     }
+    stream >> amount >> price >> date_length;
+    if(stream.device()->bytesAvailable() == sizeof(date_length))
+    {
+        GLOBAL_LOG_TRACE(QString("Wrong number of bytes in the stream to read"\
+                          " LastTransaction. Should be %1 is %2")
+                  .arg(date_length)
+                  .arg(stream.device()->bytesAvailable()));
+        throw std::invalid_argument("Wrong number of bytes in the stream to read"\
+                                    " LastTransaction.");
+    }
+
+
     QByteArray buffer;
     buffer.resize(date_length);
     stream.readRawData(buffer.data(), date_length);
-    stream >> amount >> price;
-    return LastTransaction(QString::fromUtf8(buffer), amount, price);
+
+    return LastTransaction(amount, price, QString::fromUtf8(buffer));
 }
 
 }

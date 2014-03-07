@@ -41,7 +41,8 @@ Types::StockIdType UnsubscribeStock::getStockId() const
 
 Types::Message::MessageLengthType UnsubscribeStock::length() const
 {
-    return sizeof(_stockId);
+    return Request::length() +
+           sizeof(_stockId);
 }
 
 }

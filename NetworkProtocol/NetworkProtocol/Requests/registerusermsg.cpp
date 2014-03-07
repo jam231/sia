@@ -58,7 +58,8 @@ QString RegisterUser::getPassword() const
 
 DTO::Types::Message::MessageLengthType RegisterUser::length() const
 {
-    return sizeof(Types::Message::MessageLengthType) + _password.toUtf8().size();
+    return Request::length() +
+           sizeof(Types::Message::MessageLengthType) + _password.toUtf8().size();
 }
 
 }

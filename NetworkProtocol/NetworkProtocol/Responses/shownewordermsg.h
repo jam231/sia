@@ -1,5 +1,5 @@
-#ifndef SHOWORDERMSG_H
-#define SHOWORDERMSG_H
+#ifndef SHOWNEWORDERMSG_H
+#define SHOWNEWORDERMSG_H
 
 #include "response.h"
 
@@ -42,4 +42,4 @@ public:
 
 }
 }
-#endif // SHOWORDERMSG_H
+#endif // SHOWNEWORDERMSG_H
