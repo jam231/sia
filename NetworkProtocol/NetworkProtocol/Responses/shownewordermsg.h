@@ -9,6 +9,11 @@ namespace NetworkProtocol
 {
 namespace Responses
 {
+
+/// TODO:
+///     This message seems to be unencessary.
+///     Investigate its usage.
+
 /*
  *  Responses :: ShowNewOrder
  *
@@ -19,7 +24,7 @@ namespace Responses
  *
  *  where
  *      message_type    = MessageType::RESPONSE_SHOW_NEW_ORDER (0x19)
- *      <order : 17>    = <order_id : 4><order_type : 1><stock_id : 4><amount : 4><price : 4>
+ *      <order : 17>    = <order_type : 1><stock_id : 4><amount : 4><price : 4>
  */
 class NETWORKPROTOCOLSHARED_EXPORT ShowNewOrder : public Response
 {

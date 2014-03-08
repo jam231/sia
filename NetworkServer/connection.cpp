@@ -204,7 +204,7 @@ bool Connection::processMessage()
     if(!isUserAssigned())
     {
         qDebug() << "\t\t[Connection] Nierozpoznano użytkownika.";
-        Failure response(Types::Failure::NOT_LOGGED);
+        Failure response(Types::Failure::NOT_AUTHORIZED);
         send(response);
         return true;
     }

@@ -93,12 +93,12 @@ namespace Failure
 typedef quint8 FailureTypeType;
 enum FailureType : FailureTypeType
 {
-    BAD_USERID_OR_PASSWORD,
-    NOT_LOGGED,
+    BAD_USERID_OR_PASSWORD = 0x0,
+    NOT_AUTHORIZED,
     ALREADY_LOGGED,
-    RESOURCE_NOT_FOUND,             // When user requests order for nonexistent stock, or wants to cancel order
+    RESOURCE_NOT_AVAILABLE,         // When user requests order for nonexistent stock, or wants to cancel order
                                     // he doesn't have.
-    INSUFFICENT_FUNDS,              // When user requests BUY order he can't afford
+    INSUFFICIENT_FUNDS,             // When user requests BUY order he can't afford
                                     // or SELL order for stock he doesn't have (or have too litle) -- (Red Alert wtf!)
     MALFORMED_MESSAGE,              // Lengths don't match
     INVALID_MESSAGE_BODY,           // Contents are well-formed, but violate constraints
@@ -112,7 +112,7 @@ namespace Order
 typedef quint8 OrderTypeType;
 enum OrderType : OrderTypeType
 {
-    UNDEFINED = 0,
+    UNDEFINED = 0x0,
     BUY,
     SELL
 };
@@ -125,7 +125,7 @@ namespace Company
     typedef quint8 CompanyStatusTypeType;
     enum CompanyStatusType : CompanyStatusTypeType
     {
-        UNDEFINED = 0,
+        UNDEFINED = 0x0,
         ACTIVE,
         FROZEN
     };

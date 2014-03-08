@@ -13,7 +13,7 @@ ShowNewOrder::ShowNewOrder(Types::OrderIdType orderId,
                            Types::AmountType amount, Types::PriceType price)
     : _order(orderId, orderType, stockId, amount, price)
 {
-    // No need to validate the arguments - ShowOrder constructor delegates it to
+    // No need to validate the arguments - ShowNewOrder constructor delegates it to
     // constructor of Order.
 }
 
