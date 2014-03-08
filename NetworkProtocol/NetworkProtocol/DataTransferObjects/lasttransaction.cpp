@@ -83,7 +83,7 @@ LastTransaction LastTransaction::fromStream(std::shared_ptr<AbstractLogger> logg
                                     " LastTransaction.");
     }
     stream >> amount >> price >> date_length;
-    if(stream.device()->bytesAvailable() != sizeof(date_length))
+    if(stream.device()->bytesAvailable() != date_length)
     {
         LOG_TRACE(logger,
                   QString("Wrong number of bytes in the stream to read"\
