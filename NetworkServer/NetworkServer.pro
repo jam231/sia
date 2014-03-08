@@ -1,4 +1,4 @@
-QMAKE_CXXFLAGS += -std=c++0x -Wall -Wextra -Wundef \
+QMAKE_CXXFLAGS += -std=c++11 -Wall -Wextra -Wundef \
                   -Wpointer-arith
 
 QT += sql \
