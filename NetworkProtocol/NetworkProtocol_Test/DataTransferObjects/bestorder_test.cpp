@@ -66,7 +66,7 @@ void BestOrderTest::generate_invalid_data()
     }
     for(int i = 1; i < 60; i += 10)
     {
-        QTest::newRow("SELL best order") << OrderType::SELL << StockIdType(-i)
+        QTest::newRow("SELL best order") << OrderType::SELL << StockIdType(0)
                                          << AmountType(i) << PriceType(i);
     }
     for(int i = 1; i < 60; i += 10)
