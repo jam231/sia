@@ -15,10 +15,10 @@ namespace DTO
 class NETWORKPROTOCOLSHARED_EXPORT BestOrder
 {
 protected:
-    Types::AmountType _amount;
-    Types::PriceType _price;
     Types::Order::OrderType _orderType;
     Types::StockIdType _stockId;
+    Types::AmountType _amount;
+    Types::PriceType _price;
 public:
     BestOrder(Types::Order::OrderType, Types::StockIdType,
               Types::AmountType, Types::PriceType);

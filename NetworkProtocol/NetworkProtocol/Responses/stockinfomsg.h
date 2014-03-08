@@ -34,10 +34,10 @@ namespace Responses
 class NETWORKPROTOCOLSHARED_EXPORT StockInfo : public Response
 {
 protected:
+    DTO::Types::StockIdType _stockId;
     std::shared_ptr<DTO::BestOrder> _bestBuyOrder;
     std::shared_ptr<DTO::BestOrder> _bestSellOrder;
     std::shared_ptr<DTO::LastTransaction> _lastTransaction;
-    DTO::Types::StockIdType _stockId;
 
     void send(DTO::BestOrder*, QDataStream&);
     void send(DTO::LastTransaction*, QDataStream&);
