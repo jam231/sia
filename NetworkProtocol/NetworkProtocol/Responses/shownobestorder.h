@@ -3,6 +3,10 @@
 
 #include "response.h"
 
+#include "utilities.h"
+
+#include <memory>
+
 namespace NetworkProtocol
 {
 namespace Responses
@@ -24,6 +28,8 @@ class NETWORKPROTOCOLSHARED_EXPORT ShowNoBestOrder : public Response
     DTO::Types::Order::OrderType _orderType;
     DTO::Types::StockIdType _stockId;
 public:
+    ShowNoBestOrder(std::shared_ptr<AbstractLogger>,
+                    DTO::Types::Order::OrderType, DTO::Types::StockIdType);
     ShowNoBestOrder(DTO::Types::Order::OrderType, DTO::Types::StockIdType);
 
     DTO::Types::Message::MessageLengthType length() const;

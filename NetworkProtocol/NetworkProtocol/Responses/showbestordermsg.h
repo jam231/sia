@@ -4,6 +4,10 @@
 #include "response.h"
 #include "DataTransferObjects/bestorder.h"
 
+#include "utilities.h"
+
+#include <memory>
+
 namespace NetworkProtocol
 {
 namespace Responses
@@ -25,6 +29,9 @@ class NETWORKPROTOCOLSHARED_EXPORT ShowBestOrder : public Response
 {
     DTO::BestOrder _bestOrder;
 public:
+    ShowBestOrder(std::shared_ptr<AbstractLogger>,
+                  DTO::Types::Order::OrderType, DTO::Types::StockIdType,
+                  DTO::Types::AmountType, DTO::Types::PriceType);
     ShowBestOrder(DTO::Types::Order::OrderType, DTO::Types::StockIdType,
                   DTO::Types::AmountType, DTO::Types::PriceType);
     ShowBestOrder(DTO::BestOrder);

@@ -3,6 +3,10 @@
 
 #include "response.h"
 
+#include "utilities.h"
+
+#include <memory>
+
 namespace NetworkProtocol
 {
 namespace Responses
@@ -24,7 +28,9 @@ class NETWORKPROTOCOLSHARED_EXPORT RegisterUserSuccess : public Response
     DTO::Types::UserIdType _userId;
 
 public:
-    RegisterUserSuccess(DTO::Types::UserIdType userId);
+    RegisterUserSuccess(std::shared_ptr<AbstractLogger>,
+                        DTO::Types::UserIdType);
+    RegisterUserSuccess(DTO::Types::UserIdType);
 
     DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;

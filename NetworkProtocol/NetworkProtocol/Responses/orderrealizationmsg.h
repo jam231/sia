@@ -3,6 +3,10 @@
 
 #include "response.h"
 
+#include "utilities.h"
+
+#include <memory>
+
 namespace NetworkProtocol
 {
 namespace Responses
@@ -25,7 +29,10 @@ class NETWORKPROTOCOLSHARED_EXPORT OrderRealization : public Response
     DTO::Types::AmountType _amount;
 
 public:
-    OrderRealization(DTO::Types::OrderIdType orderId, DTO::Types::AmountType amount);
+
+    OrderRealization(std::shared_ptr<AbstractLogger>,
+                     DTO::Types::OrderIdType, DTO::Types::AmountType);
+    OrderRealization(DTO::Types::OrderIdType, DTO::Types::AmountType);
 
     DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;

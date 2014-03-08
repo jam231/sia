@@ -11,19 +11,33 @@ namespace Responses
 using namespace DTO::Types;
 
 LastTransaction::LastTransaction(StockIdType stockId, AmountType amount,
+                                  PriceType price, QString dateTime)
+    : LastTransaction(std::move(GlobalUtilities::getLogger()), stockId, amount,
+                      price, dateTime)
+{}
+
+LastTransaction::LastTransaction(std::shared_ptr<AbstractLogger> logger,
+                                 StockIdType stockId, AmountType amount,
                                  PriceType price, QString dateTime)
-    : LastTransaction(stockId, DTO::LastTransaction(amount, price, dateTime))
+    : LastTransaction(std::move(logger), stockId,
+                      DTO::LastTransaction(std::move(logger), amount, price, dateTime))
 {
 }
-
 LastTransaction::LastTransaction(StockIdType stockId,
+                                 DTO::LastTransaction last_transaction)
+    : LastTransaction(std::move(GlobalUtilities::getLogger()), stockId, last_transaction)
+{}
+LastTransaction::LastTransaction(std::shared_ptr<AbstractLogger> logger,
+                                 StockIdType stockId,
                                  DTO::LastTransaction last_transaction)
     : _stockId(stockId), _lastTransaction(last_transaction)
 {
     if(_stockId <= 0)
     {
-        GLOBAL_LOG_TRACE(QString("Invalid arguments: stockId(%1) <= 0")
-                         .arg(_stockId.value));
+        LOG_TRACE(logger,
+                  QString("Invalid arguments: stockId(%1) <= 0")
+                  .arg(_stockId.value));
+
         throw std::invalid_argument("stockId <= 0.");
     }
 }

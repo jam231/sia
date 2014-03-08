@@ -11,7 +11,16 @@ ShowNewOrder::ShowNewOrder(Types::OrderIdType orderId,
                            Types::Order::OrderType orderType,
                            Types::StockIdType stockId,
                            Types::AmountType amount, Types::PriceType price)
-    : _order(orderId, orderType, stockId, amount, price)
+    : ShowNewOrder(std::move(GlobalUtilities::getLogger()), orderId, orderType,
+                   stockId, amount, price)
+{}
+
+ShowNewOrder::ShowNewOrder(std::shared_ptr<AbstractLogger> logger,
+                           Types::OrderIdType orderId,
+                           Types::Order::OrderType orderType,
+                           Types::StockIdType stockId,
+                           Types::AmountType amount, Types::PriceType price)
+    : _order(std::move(logger), orderId, orderType, stockId, amount, price)
 {
     // No need to validate the arguments - ShowNewOrder constructor delegates it to
     // constructor of Order.

@@ -3,6 +3,10 @@
 
 #include "response.h"
 
+#include "utilities.h"
+
+#include <memory>
+
 namespace NetworkProtocol
 {
 namespace Responses
@@ -23,8 +27,12 @@ class NETWORKPROTOCOLSHARED_EXPORT CompanyStatus : public Response
         DTO::Types::CompanyIdType _companyId;
         DTO::Types::Company::CompanyStatusType _status;
 public:
-    CompanyStatus(DTO::Types::CompanyIdType companyId,
-                  DTO::Types::Company::CompanyStatusType status);
+    CompanyStatus(std::shared_ptr<AbstractLogger>,
+                  DTO::Types::CompanyIdType,
+                  DTO::Types::Company::CompanyStatusType);
+
+    CompanyStatus(DTO::Types::CompanyIdType,
+                  DTO::Types::Company::CompanyStatusType);
 
     DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;

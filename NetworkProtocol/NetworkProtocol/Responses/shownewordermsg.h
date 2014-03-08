@@ -5,6 +5,10 @@
 
 #include "DataTransferObjects/order.h"
 
+#include "utilities.h"
+
+#include <memory>
+
 namespace NetworkProtocol
 {
 namespace Responses
@@ -31,9 +35,15 @@ class NETWORKPROTOCOLSHARED_EXPORT ShowNewOrder : public Response
     DTO::Order _order;
 
 public:
+    ShowNewOrder(std::shared_ptr<AbstractLogger>,
+                 DTO::Types::OrderIdType, DTO::Types::Order::OrderType,
+                 DTO::Types::StockIdType, DTO::Types::AmountType,
+                 DTO::Types::PriceType);
+
     ShowNewOrder(DTO::Types::OrderIdType, DTO::Types::Order::OrderType,
                  DTO::Types::StockIdType, DTO::Types::AmountType,
                  DTO::Types::PriceType);
+
     ShowNewOrder(DTO::Order order);
 
     DTO::Types::Message::MessageLengthType length() const;

@@ -9,6 +9,9 @@
 #include <QVector>
 #include <QPair>
 
+
+#include "utilities.h"
+
 #include <memory>
 
 namespace NetworkProtocol

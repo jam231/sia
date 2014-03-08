@@ -3,6 +3,9 @@
 
 #include "response.h"
 
+#include "utilities.h"
+
+#include <memory>
 
 namespace NetworkProtocol
 {
@@ -25,7 +28,8 @@ class NETWORKPROTOCOLSHARED_EXPORT OrderCompleted : public Response
     DTO::Types::OrderIdType _orderId;
 
 public:
-    OrderCompleted(DTO::Types::OrderIdType orderId);
+    OrderCompleted(std::shared_ptr<AbstractLogger>, DTO::Types::OrderIdType);
+    OrderCompleted(DTO::Types::OrderIdType);
 
     DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;

@@ -5,8 +5,9 @@
 #include "DataTransferObjects/lasttransaction.h"
 #include "DataTransferObjects/bestorder.h"
 
-#include <memory>
+#include "utilities.h"
 
+#include <memory>
 
 namespace NetworkProtocol
 {
@@ -45,13 +46,17 @@ protected:
     DTO::Types::Message::MessageLengthType getSerializedLength(DTO::BestOrder*) const;
     DTO::Types::Message::MessageLengthType getSerializedLength(DTO::LastTransaction*) const;
 public:
+    StockInfo(std::shared_ptr<AbstractLogger>, DTO::Types::StockIdType stockId,
+              std::shared_ptr<DTO::BestOrder> bestBuyOrder = nullptr,
+              std::shared_ptr<DTO::BestOrder> bestSellOrder = nullptr,
+              std::shared_ptr<DTO::LastTransaction> lastTransaction = nullptr);
     StockInfo(DTO::Types::StockIdType stockId,
               std::shared_ptr<DTO::BestOrder> bestBuyOrder = nullptr,
               std::shared_ptr<DTO::BestOrder> bestSellOrder = nullptr,
               std::shared_ptr<DTO::LastTransaction> lastTransaction = nullptr);
 
     DTO::Types::Message::MessageLengthType length() const;
-    // MessageType::RESPONSE_STOCK_INFO
+
     DTO::Types::Message::MessageType type() const;
 
     void send(QIODevice* connection);

@@ -11,12 +11,18 @@ namespace Responses
 using namespace DTO;
 
 OrderCompleted::OrderCompleted(Types::OrderIdType orderId)
+    : OrderCompleted(std::move(GlobalUtilities::getLogger()), orderId)
+{}
+
+OrderCompleted::OrderCompleted(std::shared_ptr<AbstractLogger> logger,
+                               Types::OrderIdType orderId)
     : _orderId(orderId)
 {
 
     if(_orderId <= 0)
     {
-        GLOBAL_LOG_TRACE(QString("Invalid arguments: orderId(%1) <= 0.")
+        LOG_TRACE(logger,
+                  QString("Invalid arguments: orderId(%1) <= 0.")
                   .arg(_orderId.value));
         throw std::invalid_argument("orderId <= 0.");
     }

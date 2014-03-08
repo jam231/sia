@@ -12,13 +12,21 @@ using namespace DTO;
 
 OrderRealization::OrderRealization(Types::OrderIdType orderId,
                                    Types::AmountType amount)
+    : OrderRealization(std::move(GlobalUtilities::getLogger()), orderId, amount)
+{}
+
+OrderRealization::OrderRealization(std::shared_ptr<AbstractLogger> logger,
+                                   Types::OrderIdType orderId,
+                                   Types::AmountType amount)
     : _orderId(orderId), _amount(amount)
 {
 
     if(_orderId <= 0 || _amount <= 0)
     {
-        GLOBAL_LOG_TRACE(QString("Invalid arguments: orderId(%1) <= 0 || amount(%2) <= 0 ")
+        LOG_TRACE(logger,
+                  QString("Invalid arguments: orderId(%1) <= 0 || amount(%2) <= 0 ")
                   .arg(_orderId.value).arg(_amount.value));
+
         throw std::invalid_argument("One of orderId, amount is <= 0.");
     }
 }

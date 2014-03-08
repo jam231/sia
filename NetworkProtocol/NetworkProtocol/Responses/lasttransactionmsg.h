@@ -5,6 +5,10 @@
 #include "DataTransferObjects/lasttransaction.h"
 
 
+#include "utilities.h"
+
+#include <memory>
+
 namespace NetworkProtocol
 {
 namespace Responses
@@ -28,6 +32,11 @@ class NETWORKPROTOCOLSHARED_EXPORT LastTransaction : public Response
     DTO::LastTransaction    _lastTransaction;
 
 public:
+    LastTransaction(std::shared_ptr<AbstractLogger> logger,
+                    DTO::Types::StockIdType, DTO::Types::AmountType,
+                    DTO::Types::PriceType, QString);
+    LastTransaction(std::shared_ptr<AbstractLogger> logger,
+                    DTO::Types::StockIdType, DTO::LastTransaction);
     LastTransaction(DTO::Types::StockIdType, DTO::Types::AmountType,
                     DTO::Types::PriceType, QString);
     LastTransaction(DTO::Types::StockIdType, DTO::LastTransaction);
