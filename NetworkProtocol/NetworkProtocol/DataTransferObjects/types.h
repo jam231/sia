@@ -65,12 +65,12 @@ struct ContainerType
     bool operator>(const ValueType) const;
 };
 
-typedef ContainerType<BasicTypeName::OrderId> OrderIdType;
-typedef ContainerType<BasicTypeName::StockId> StockIdType;
-typedef ContainerType<BasicTypeName::UserId> UserIdType;
-typedef ContainerType<BasicTypeName::CompanyId> CompanyIdType;
-typedef ContainerType<BasicTypeName::Amount> AmountType;
-typedef ContainerType<BasicTypeName::Price> PriceType;
+typedef ContainerType<BasicTypeName::OrderId, quint32> OrderIdType;
+typedef ContainerType<BasicTypeName::StockId, quint32> StockIdType;
+typedef ContainerType<BasicTypeName::UserId, quint32> UserIdType;
+typedef ContainerType<BasicTypeName::CompanyId, quint32> CompanyIdType;
+typedef ContainerType<BasicTypeName::Amount, quint32> AmountType;
+typedef ContainerType<BasicTypeName::Price, quint32> PriceType;
 
 template<BasicTypeName TypeName, typename ValueType, ValueType defaultValue>
 inline uint qHash(const ContainerType<TypeName, ValueType, defaultValue>& key, uint seed = 0) Q_DECL_NOTHROW
@@ -90,7 +90,7 @@ QDebug &operator>>(QDebug& stream, ContainerType<TypeName,ValueType,defaultType>
 
 namespace Failure
 {
-typedef qint8 FailureTypeType;
+typedef quint8 FailureTypeType;
 enum FailureType : FailureTypeType
 {
     BAD_USERID_OR_PASSWORD,
@@ -109,7 +109,7 @@ enum FailureType : FailureTypeType
 // Force separation
 namespace Order
 {
-typedef qint8 OrderTypeType;
+typedef quint8 OrderTypeType;
 enum OrderType : OrderTypeType
 {
     UNDEFINED = 0,
@@ -122,7 +122,7 @@ NETWORKPROTOCOLSHARED_EXPORT OrderType toOrderType(OrderTypeType);
 
 namespace Company
 {
-    typedef qint8 CompanyStatusTypeType;
+    typedef quint8 CompanyStatusTypeType;
     enum CompanyStatusType : CompanyStatusTypeType
     {
         UNDEFINED = 0,
@@ -135,8 +135,8 @@ namespace Company
 // Force separation
 namespace Message
 {
-typedef qint16 MessageLengthType;
-typedef qint8 MessageTypeType;
+typedef quint16 MessageLengthType;
+typedef quint8 MessageTypeType;
 enum MessageType : MessageTypeType
 {
     /*0-19: login, register, etc. */
