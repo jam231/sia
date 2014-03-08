@@ -3,6 +3,10 @@
 
 #include <QDataStream>
 
+#include <memory>
+
+#include <utilities.h>
+
 #include "networkprotocol_global.h"
 
 #include "types.h"
@@ -22,8 +26,12 @@ private:
     Types::AmountType _amount;
     Types::PriceType _price;
 public:
+    Order(std::shared_ptr<AbstractLogger>, Types::OrderIdType,
+          Types::Order::OrderType, Types::StockIdType, Types::AmountType,
+          Types::PriceType);
     Order(Types::OrderIdType, Types::Order::OrderType, Types::StockIdType,
           Types::AmountType, Types::PriceType);
+
 
     Types::OrderIdType getOrderId() const;
     Types::Order::OrderType getOrderType() const;
@@ -35,6 +43,7 @@ public:
 
     friend QDataStream &operator<<(QDataStream& stream, const Order& order);
 
+    static Order fromStream(std::shared_ptr<AbstractLogger>, QDataStream&);
     static Order fromStream(QDataStream&);
 };
 

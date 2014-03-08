@@ -3,6 +3,10 @@
 
 #include <QDataStream>
 
+#include <memory>
+
+#include <utilities.h>
+
 #include "networkprotocol_global.h"
 
 #include "types.h"
@@ -19,6 +23,8 @@ class NETWORKPROTOCOLSHARED_EXPORT LastTransaction
     DTO::Types::PriceType _price;
 
 public:
+    LastTransaction(std::shared_ptr<AbstractLogger>,
+                    DTO::Types::AmountType, DTO::Types::PriceType, QString dateTime);
     LastTransaction(DTO::Types::AmountType, DTO::Types::PriceType, QString dateTime);
 
     QString getDateTime() const;
@@ -29,6 +35,7 @@ public:
 
     friend QDataStream &operator<<(QDataStream& stream, const LastTransaction&);
 
+    static LastTransaction fromStream(std::shared_ptr<AbstractLogger>, QDataStream&);
     static LastTransaction fromStream(QDataStream&);
 };
 

@@ -3,9 +3,14 @@
 
 #include <QDataStream>
 
-#include "networkprotocol_global.h"
+#include <memory>
 
+#include <utilities.h>
+
+#include "networkprotocol_global.h"
 #include "types.h"
+
+
 
 namespace NetworkProtocol
 {
@@ -20,6 +25,9 @@ protected:
     Types::AmountType _amount;
     Types::PriceType _price;
 public:
+    BestOrder(std::shared_ptr<AbstractLogger>,
+              Types::Order::OrderType, Types::StockIdType,
+              Types::AmountType, Types::PriceType);
     BestOrder(Types::Order::OrderType, Types::StockIdType,
               Types::AmountType, Types::PriceType);
     Types::AmountType getAmount() const;
@@ -31,6 +39,7 @@ public:
 
     friend QDataStream &operator<<(QDataStream& stream, const BestOrder& bestOrder);
 
+    static BestOrder fromStream(std::shared_ptr<AbstractLogger>, QDataStream&);
     static BestOrder fromStream(QDataStream&);
 };
 
