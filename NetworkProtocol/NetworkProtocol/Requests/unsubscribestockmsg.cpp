@@ -15,7 +15,7 @@ UnsubscribeStock::UnsubscribeStock(QDataStream& serialized_request)
 UnsubscribeStock::UnsubscribeStock(std::shared_ptr<AbstractLogger> logger,
                                    QDataStream& serialized_request)
 {
-    if(serialized_request.device()->bytesAvailable() == sizeof(_stockId))
+    if(serialized_request.device()->bytesAvailable() != sizeof(_stockId))
     {
         LOG_TRACE(logger,
                   QString("Malformed request: Wrong number of bytes in "\

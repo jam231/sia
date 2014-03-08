@@ -21,7 +21,7 @@ SellStock::SellStock(std::shared_ptr<AbstractLogger> logger,
     serialized_request >> _stockId;
     serialized_request >> _amount;
     serialized_request >> _price;
-    if(serialized_request.device()->bytesAvailable() == sizeof(_stockId) +
+    if(serialized_request.device()->bytesAvailable() != sizeof(_stockId) +
                                                         sizeof(_amount) + sizeof(_price))
     {
         LOG_TRACE(logger,
