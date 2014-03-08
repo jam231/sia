@@ -24,7 +24,7 @@ namespace Responses
  *  <message_length : 2><message_type : 1><orders_count : 2><order : 17>^order_count
  *
  *  where
- *      message_type    = MessageType::RESPONSE_LIST_OF_ORDERS
+ *      message_type    = MessageType::RESPONSE_LIST_OF_ORDERS (0x20)
  *      <order : 17>    = <order_id : 4><order_type : 1><stock_id : 4><amount : 4><price : 4>
  */
 class NETWORKPROTOCOLSHARED_EXPORT  ListOfOrders : public Response

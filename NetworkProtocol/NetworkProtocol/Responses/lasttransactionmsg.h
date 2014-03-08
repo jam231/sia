@@ -19,7 +19,7 @@ namespace Responses
  *  <message_length : 2><message_type : 1><stock_id : 4><amount : 4><price : 4><date_time_str_length : 2><date_time_str : date_time_str_length>
  *
  *  where
- *      message_type              = MessageType::RESPONSE_LAST_TRANSACTION
+ *      message_type              = MessageType::RESPONSE_LAST_TRANSACTION (0x18)
  */
 class NETWORKPROTOCOLSHARED_EXPORT LastTransaction : public Response
 {

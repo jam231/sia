@@ -17,7 +17,7 @@ namespace Responses
  *  <message_length : 2><message_type : 1><order_type : 1><stock_id : 4>
  *
  *  where
- *      message_type         = MessageType::RESPONSE_SHOW_NO_BEST_ORDER
+ *      message_type         = MessageType::RESPONSE_SHOW_NO_BEST_ORDER (0x25)
  */
 class NETWORKPROTOCOLSHARED_EXPORT ShowNoBestOrder : public Response
 {

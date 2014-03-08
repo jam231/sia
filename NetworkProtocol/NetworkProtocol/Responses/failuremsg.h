@@ -18,7 +18,7 @@ namespace Responses
  *  <message_length : 2><message_type : 1><failure_type : 1>
  *
  *  where
- *      message_type         = Message::RESPONSE_FAILURE;
+ *      message_type         = Message::RESPONSE_FAILURE (0x3)
  */
 class NETWORKPROTOCOLSHARED_EXPORT Failure : public Response
 {

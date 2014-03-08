@@ -15,7 +15,7 @@ namespace Requests
  *  <message_length : 2><message_type : 1><company_id : 4>
  *
  *  where
- *      message_type         = MessageType::REQUEST_GET_COMPANY_STATUS
+ *      message_type         = MessageType::REQUEST_GET_COMPANY_STATUS (0x28)
  */
 class NETWORKPROTOCOLSHARED_EXPORT GetCompanyStatus : public Request
 {

@@ -20,7 +20,7 @@ namespace Responses
  *  <message_length : 2><message_type : 1><stock_count : 2>(<stock_id : 4><amount : 4>)^stock_count
  *
  *  where
- *       message_type       = MessageType::RESPONSE_LIST_OF_STOCKS
+ *       message_type       = MessageType::RESPONSE_LIST_OF_STOCKS (0x1E)
  */
 class NETWORKPROTOCOLSHARED_EXPORT ListOfStocks : public Response
 {

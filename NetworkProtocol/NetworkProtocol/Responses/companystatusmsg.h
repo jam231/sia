@@ -16,7 +16,7 @@ namespace Responses
  *  <message_length : 2><message_type : 1><company_id : 4><company_status : 1>
  *
  *  where
- *      message_type         = MessageType::RESPONSE_COMPANY_STATUS;
+ *      message_type         = MessageType::RESPONSE_COMPANY_STATUS (0x29)
  */
 class NETWORKPROTOCOLSHARED_EXPORT CompanyStatus : public Response
 {

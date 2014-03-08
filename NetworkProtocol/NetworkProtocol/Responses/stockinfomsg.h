@@ -21,7 +21,7 @@ namespace Responses
  *  <message_length : 2><message_type : 1><stock_id : 4> <best_buy_offer : ?><best_sell_offer : ?><last_transaction : ?>
  *
  *  where
- *      message_type                                      = MessageType::RESPONSE_STOCK_INFO
+ *      message_type                                      = MessageType::RESPONSE_STOCK_INFO (0x22)
  *      <best_buy_offer : ?>  when no best buy offer      = <0 : 4>
  *      <best_buy_offer : ?>  otherwise                   = <amount : 4><price : 4>
  *      <best_sell_offer : ?> when no best sell offer     = <0 : 4>

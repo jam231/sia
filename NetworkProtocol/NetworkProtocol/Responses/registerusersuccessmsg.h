@@ -17,7 +17,7 @@ namespace Responses
  *  <message_length : 2><message_type : 1><user_id : 4>
  *
  *  where
- *      message_type         = MessageType::RESPONSE_REGISTER_USER_SUCCESS
+ *      message_type         = MessageType::RESPONSE_REGISTER_USER_SUCCESS (0x1)
  */
 class NETWORKPROTOCOLSHARED_EXPORT RegisterUserSuccess : public Response
 {

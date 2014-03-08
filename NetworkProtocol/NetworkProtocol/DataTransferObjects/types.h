@@ -188,6 +188,7 @@ enum MessageType : MessageTypeType
 
 
     // Not implemented
+
     REQUEST_GET_SESSION_STATUS,
     RESPONSE_SESSION_STATUS,
 

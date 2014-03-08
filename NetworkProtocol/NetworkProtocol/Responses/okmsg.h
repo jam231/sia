@@ -17,7 +17,7 @@ namespace Responses
  *  <message_length : 2><message_type : 1>
  *
  *  where
- *      message_type         = Message::RESPONSE_OK;
+ *      message_type         = Message::RESPONSE_OK (0x2)
  */
 class NETWORKPROTOCOLSHARED_EXPORT Ok : public Response
 {

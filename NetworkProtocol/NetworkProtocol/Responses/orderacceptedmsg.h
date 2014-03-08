@@ -17,7 +17,7 @@ namespace Responses
  *  <message_length : 2><message_type : 1><order_id : 4>
  *
  *  where
- *      message_type         = MessageType::RESPONSE_ORDER_ACCEPTED;
+ *      message_type         = MessageType::RESPONSE_ORDER_ACCEPTED (0x24)
  */
 class NETWORKPROTOCOLSHARED_EXPORT OrderAccepted : public Response
 {

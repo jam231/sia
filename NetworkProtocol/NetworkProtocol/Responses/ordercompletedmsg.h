@@ -18,7 +18,7 @@ namespace Responses
  *  <message_length : 2><message_type : 1><order_id : 4>
  *
  *  where
- *      message_type         = MessageType::RESPONSE_ORDER_COMPLETED
+ *      message_type         = MessageType::RESPONSE_ORDER_COMPLETED (0x16)
  */
 class NETWORKPROTOCOLSHARED_EXPORT OrderCompleted : public Response
 {

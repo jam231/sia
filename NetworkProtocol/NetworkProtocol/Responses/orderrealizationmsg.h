@@ -10,14 +10,14 @@ namespace Responses
 /*
  *  Responses :: OrderRealization
  *
- *  This message is for notyfing user about (semi or full) realization
+ *  This message is for notyfing user about (partial or full) realization
  *  of one of his orders.
  *
  *  Message format:
  *  <message_length : 2><message_type : 1><order_id : 4><amount : 4>
  *
  *  where
- *      message_type         = MessageType::RESPONSE_ORDER_REALIZATION
+ *      message_type         = MessageType::RESPONSE_ORDER_REALIZATION (0x17)
  */
 class NETWORKPROTOCOLSHARED_EXPORT OrderRealization : public Response
 {
