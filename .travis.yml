@@ -6,10 +6,8 @@ before_install:
   - yes | sudo apt-add-repository ppa:ubuntu-sdk-team/ppa
   - yes | sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
   - sudo apt-get update -qq
+  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 50
   - sudo apt-get install -qq zlib1g-dev qtdeclarative5-dev qtbase5-dev qtchooser
-  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
-  - $CC -v
 script: qtchooser -run-tool=qmake -qt=qt5 && sudo make install && make check
 services:
   - postgresql
