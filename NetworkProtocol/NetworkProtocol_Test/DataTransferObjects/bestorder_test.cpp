@@ -51,18 +51,18 @@ void BestOrderTest::generate_invalid_data()
 
     for(int i = 0; i < 60; i += 10)
     {
-        QTest::newRow("BUY best order") << OrderType::BUY << StockIdType(-i)
+        QTest::newRow("BUY best order") << OrderType::BUY << StockIdType(0)
                                        << AmountType(i) << PriceType(i);
     }
     for(int i = 0; i < 60; i += 10)
     {
         QTest::newRow("BUY best order") << OrderType::BUY << StockIdType(i % 20)
-                                        << AmountType(-i) << PriceType(i);
+                                        << AmountType(0) << PriceType(i);
     }
     for(int i = 0; i < 60; i += 10)
     {
         QTest::newRow("BUY best order") << OrderType::BUY << StockIdType(i % 10)
-                                        << AmountType(i) << PriceType(-i);
+                                        << AmountType(i) << PriceType(0);
     }
     for(int i = 1; i < 60; i += 10)
     {
@@ -72,12 +72,12 @@ void BestOrderTest::generate_invalid_data()
     for(int i = 1; i < 60; i += 10)
     {
         QTest::newRow("SELL best order") << OrderType::SELL << StockIdType(i % 20)
-                                         << AmountType(-i) << PriceType(i);
+                                         << AmountType(0) << PriceType(i);
     }
     for(int i = 1; i < 60; i += 10)
     {
         QTest::newRow("SELL best order") << OrderType::SELL << StockIdType(i % 10)
-                                         << AmountType(i) << PriceType(-i);
+                                         << AmountType(i) << PriceType(0);
     }
 }
 

@@ -58,51 +58,51 @@ void OrderTest::generate_invalid_data()
 
     for(int i = 0; i < 60; i += 10)
     {
-        QTest::newRow("BUY order") << OrderIdType(-i)     << OrderType::BUY
+        QTest::newRow("BUY order") << OrderIdType(0)     << OrderType::BUY
                                    << StockIdType(i % 20) << AmountType(i)
                                    << PriceType(i);
     }
     for(int i = 0; i < 60; i += 10)
     {
         QTest::newRow("BUY order") << OrderIdType(i % 20) << OrderType::BUY
-                                   << StockIdType(-i)     << AmountType(i)
+                                   << StockIdType(0)     << AmountType(i)
                                    << PriceType(i);
     }
     for(int i = 0; i < 60; i += 10)
     {
         QTest::newRow("BUY order") << OrderIdType(i % 20) << OrderType::BUY
-                                   << StockIdType(i % 20) << AmountType(-i)
+                                   << StockIdType(i % 20) << AmountType(0)
                                    << PriceType(i);
     }
     for(int i = 0; i < 60; i += 10)
     {
         QTest::newRow("BUY order") << OrderIdType(i % 20) << OrderType::BUY
                                    << StockIdType(i % 10) << AmountType(i)
-                                   << PriceType(-i);
+                                   << PriceType(0);
     }
     for(int i = 1; i < 60; i += 10)
     {
-        QTest::newRow("SELL order") << OrderIdType(-i)     << OrderType::SELL
+        QTest::newRow("SELL order") << OrderIdType(0)     << OrderType::SELL
                                     << StockIdType(i % 20) << AmountType(i)
                                     << PriceType(i);
     }
     for(int i = 1; i < 60; i += 10)
     {
         QTest::newRow("SELL order") << OrderIdType(i % 20) << OrderType::SELL
-                                    << StockIdType(-i)     << AmountType(i)
+                                    << StockIdType(0)     << AmountType(i)
                                     << PriceType(i);
     }
     for(int i = 1; i < 60; i += 10)
     {
         QTest::newRow("SELL order") << OrderIdType(i % 20) << OrderType::SELL
-                                    << StockIdType(i % 20) << AmountType(-i)
+                                    << StockIdType(i % 20) << AmountType(0)
                                     << PriceType(i);
     }
     for(int i = 1; i < 60; i += 10)
     {
         QTest::newRow("SELL order") << OrderIdType(i % 20) << OrderType::SELL
                                     << StockIdType(i % 10) << AmountType(i)
-                                    << PriceType(-i);
+                                    << PriceType(0);
     }
 }
 

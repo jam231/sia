@@ -46,7 +46,7 @@ void LastTransactionTest::generate_invalid_data()
     {
         QString date_time_str = QDateTime::currentDateTime()
                                         .addDays(-((i / 10000) + 1)).toString();
-        QTest::newRow("invalid data") << date_time_str << AmountType(-i)
+        QTest::newRow("invalid data") << date_time_str << AmountType(0)
                                       << PriceType(i);
     }
     for(int i = 0; i < 60; i += 10)
@@ -54,7 +54,7 @@ void LastTransactionTest::generate_invalid_data()
         QString date_time_str = QDateTime::currentDateTime()
                                         .addDays(-((i / 10000) + 1)).toString();
         QTest::newRow("invalid data") << date_time_str << AmountType(i)
-                                      << PriceType(-i);
+                                      << PriceType(0);
     }
 }
 
