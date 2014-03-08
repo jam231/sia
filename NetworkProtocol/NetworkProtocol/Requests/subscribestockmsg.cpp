@@ -9,11 +9,17 @@ namespace Requests
 
 using namespace DTO;
 
-SubscribeStock::SubscribeStock (QDataStream& serialized_request)
+SubscribeStock::SubscribeStock(QDataStream& serialized_request)
+    : SubscribeStock(std::move(GlobalUtilities::getLogger()), serialized_request)
+{}
+
+SubscribeStock::SubscribeStock(std::shared_ptr<AbstractLogger> logger,
+                               QDataStream& serialized_request)
 {
     if(serialized_request.device()->bytesAvailable() == sizeof(_stockId))
     {
-        GLOBAL_LOG_TRACE(QString("Malformed request: Wrong number of bytes in "\
+        LOG_TRACE(logger,
+                  QString("Malformed request: Wrong number of bytes in "\
                           "serialized_request to read stock id. Is %1 should be %2.")
                   .arg(serialized_request.device()->bytesAvailable())
                   .arg(sizeof(_stockId)));
@@ -23,7 +29,8 @@ SubscribeStock::SubscribeStock (QDataStream& serialized_request)
     serialized_request >> _stockId;
     if(_stockId <= 0)
     {
-        GLOBAL_LOG_TRACE(QString("Invalid request body: stockId(%1) <= 0")
+        LOG_TRACE(logger,
+                  QString("Invalid request body: stockId(%1) <= 0")
                   .arg(_stockId.value));
         throw InvalidRequestBody("stockId <= 0.");
     }

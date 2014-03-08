@@ -2,8 +2,6 @@
 
 #include "networkprotocol_utilities.h"
 
-#include <QDebug>
-
 namespace NetworkProtocol
 {
 namespace Requests
@@ -11,14 +9,21 @@ namespace Requests
 
 using namespace DTO;
 
-CancelOrder::CancelOrder(QDataStream &serialized_request)
+CancelOrder::CancelOrder(QDataStream& serialized_request)
+    : CancelOrder(std::move(GlobalUtilities::getLogger()), serialized_request)
+{}
+
+CancelOrder::CancelOrder(std::shared_ptr<AbstractLogger> logger,
+                         QDataStream& serialized_request)
 {
     if(serialized_request.device()->bytesAvailable() < sizeof(_orderId))
     {
-        GLOBAL_LOG_TRACE(QString("Malformed request: Not enough bytes in serialized_request"\
+        LOG_TRACE(logger,
+                  QString("Malformed request: Not enough bytes in serialized_request"\
                           " to order id. Is %1 should be >%2.")
                   .arg(serialized_request.device()->bytesAvailable())
                   .arg(sizeof(_orderId)));
+
         throw MalformedRequest("Not enough bytes in serialized_request to read"\
                                " order id.");
     }
@@ -27,8 +32,9 @@ CancelOrder::CancelOrder(QDataStream &serialized_request)
 
     if(_orderId <= 0)
     {
-        GLOBAL_LOG_TRACE(QString("Invalid order id. orderId(%1) <= 0.")
-                  .arg(_orderId.value));
+        LOG_TRACE(logger, QString("Invalid order id. orderId(%1) <= 0.")
+                          .arg(_orderId.value));
+
         throw InvalidRequestBody("order id <= 0.");
     }
 }

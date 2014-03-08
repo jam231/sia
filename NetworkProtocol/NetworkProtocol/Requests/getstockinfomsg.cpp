@@ -10,14 +10,21 @@ namespace Requests
 
 using namespace DTO;
 
-GetStockInfo::GetStockInfo(QDataStream &serialized_request)
+GetStockInfo::GetStockInfo(QDataStream& serialized_request)
+    : GetStockInfo(std::move(GlobalUtilities::getLogger()), serialized_request)
+{}
+
+GetStockInfo::GetStockInfo(std::shared_ptr<AbstractLogger> logger,
+                           QDataStream &serialized_request)
 {
     if(serialized_request.device()->bytesAvailable() < sizeof(_stockId))
     {
-        GLOBAL_LOG_TRACE(QString("Malformed request: Not enough bytes in serialized_request"\
-                          " to stock id. Is %1 should be >%2.")
-                  .arg(serialized_request.device()->bytesAvailable())
-                  .arg(sizeof(_stockId)));
+        LOG_TRACE(logger,
+                         QString("Malformed request: Not enough bytes in "\
+                                 "serialized_request to stock id. Is %1 should be >%2.")
+                        .arg(serialized_request.device()->bytesAvailable())
+                        .arg(sizeof(_stockId)));
+
         throw MalformedRequest("Not enough bytes in serialized_request to read"\
                                " stock id.");
     }
@@ -26,8 +33,9 @@ GetStockInfo::GetStockInfo(QDataStream &serialized_request)
 
     if(_stockId <= 0)
     {
-        GLOBAL_LOG_TRACE(QString("Invalid stock id. stockId(%1) <= 0.")
-                  .arg(_stockId.value));
+        LOG_TRACE(logger, QString("Invalid stock id. stockId(%1) <= 0.")
+                          .arg(_stockId.value));
+
         throw InvalidRequestBody("stock id <= 0.");
     }
 }

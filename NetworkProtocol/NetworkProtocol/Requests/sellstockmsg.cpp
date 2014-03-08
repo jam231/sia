@@ -11,6 +11,12 @@ namespace Requests
 using namespace DTO;
 
 SellStock::SellStock(QDataStream& serialized_request)
+    : SellStock(std::move(GlobalUtilities::getLogger()), serialized_request)
+{}
+
+
+SellStock::SellStock(std::shared_ptr<AbstractLogger> logger,
+                     QDataStream& serialized_request)
 {
     serialized_request >> _stockId;
     serialized_request >> _amount;
@@ -18,7 +24,8 @@ SellStock::SellStock(QDataStream& serialized_request)
     if(serialized_request.device()->bytesAvailable() == sizeof(_stockId) +
                                                         sizeof(_amount) + sizeof(_price))
     {
-        GLOBAL_LOG_TRACE(QString("Malformed request: Not enough bytes in serialized_request"\
+        LOG_TRACE(logger,
+                  QString("Malformed request: Not enough bytes in serialized_request"\
                           " to read stock id, amount and price. Is %1 should be >%2.")
                   .arg(serialized_request.device()->bytesAvailable())
                   .arg(sizeof(_stockId) + sizeof(_amount) + sizeof(_price)));
@@ -27,9 +34,12 @@ SellStock::SellStock(QDataStream& serialized_request)
     }
     if(_stockId <= 0 || _amount <= 0 || _price <= 0)
     {
-        GLOBAL_LOG_TRACE(QString("Invalid request body: stockId(%1) <= 0 || amount(%2) <= 0 "\
+        LOG_TRACE(logger,
+                  QString("Invalid request body: stockId(%1) <= 0 || amount(%2) <= 0 "\
                           "|| price <= 0.")
-                  .arg(_stockId.value).arg(_amount.value).arg(_price.value));
+                  .arg(_stockId.value).arg(_amount.value)
+                  .arg(_price.value));
+
         throw InvalidRequestBody("One of stockId, amount, price is <= 0.");
     }
 }

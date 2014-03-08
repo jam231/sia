@@ -71,21 +71,29 @@ public:
 
 
 
-
+NETWORKPROTOCOLSHARED_EXPORT std::shared_ptr<Request> fromStream(std::shared_ptr<AbstractLogger>,
+                                                                 QDataStream&);
 NETWORKPROTOCOLSHARED_EXPORT std::shared_ptr<Request> FromStream(QDataStream&);
 // Gets request length (IT DOESN'T MODIFY STREAM!) from stream.
 NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageLengthType getLength(QIODevice*);
+NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageLengthType getLength(std::shared_ptr<AbstractLogger>,
+                                                                              QIODevice*);
 // Gets request length and discards sizeof(Message::MessageLengthType) bytes from stream.
 NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageLengthType readLength(QDataStream&);
+NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageLengthType readLength(std::shared_ptr<AbstractLogger>,
+                                                                               QDataStream&);
 /*
  * Gets request type and discards sizeof(Message::MessageType) bytes from stream.
  * If there isn't enough bytes in the stream it returns MESSAGE_UNDEFINED.
  */
 NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageType readType_NoEx(QDataStream&);
+NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageType readType_NoEx(std::shared_ptr<AbstractLogger>,
+                                                                            QDataStream&);
 // Does the same as readType, but throw InvalidRequestType on either MESSAGE_UNDEFINED
 // or not enough bytes.
 NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageType readType(QDataStream&);
-
+NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageType readType(std::shared_ptr<AbstractLogger>,
+                                                                       QDataStream&);
 
 }
 }

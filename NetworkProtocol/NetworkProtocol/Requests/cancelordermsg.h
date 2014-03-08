@@ -3,6 +3,10 @@
 
 #include "request.h"
 
+#include "utilities.h"
+
+#include <memory>
+
 namespace NetworkProtocol {
 namespace Requests
 {
@@ -22,6 +26,7 @@ class NETWORKPROTOCOLSHARED_EXPORT CancelOrder : public Request
     DTO::Types::OrderIdType _orderId;
 
 public:
+    CancelOrder(std::shared_ptr<AbstractLogger>, QDataStream&);
     CancelOrder(QDataStream&);
 
     DTO::Types::Message::MessageLengthType length() const;

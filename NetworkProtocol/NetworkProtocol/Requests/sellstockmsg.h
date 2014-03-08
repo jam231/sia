@@ -3,6 +3,10 @@
 
 #include "request.h"
 
+#include "utilities.h"
+
+#include <memory>
+
 namespace NetworkProtocol {
 namespace Requests
 {
@@ -25,6 +29,7 @@ class NETWORKPROTOCOLSHARED_EXPORT SellStock : public Request
 
 
 public:
+    SellStock(std::shared_ptr<AbstractLogger>, QDataStream&);
     SellStock(QDataStream&);
 
     DTO::Types::StockIdType getStockId() const;

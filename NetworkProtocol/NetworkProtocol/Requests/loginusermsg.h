@@ -3,6 +3,10 @@
 
 #include "request.h"
 
+#include "utilities.h"
+
+#include <memory>
+
 namespace NetworkProtocol {
 namespace Requests
 {
@@ -23,6 +27,7 @@ class NETWORKPROTOCOLSHARED_EXPORT LoginUser : public Request
     QString _password;
 
 public:
+    LoginUser(std::shared_ptr<AbstractLogger>, QDataStream&);
     LoginUser(QDataStream&);
 
     DTO::Types::Message::MessageLengthType length() const;

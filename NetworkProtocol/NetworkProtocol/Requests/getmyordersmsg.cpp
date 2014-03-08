@@ -9,6 +9,11 @@ namespace Requests
 {
 
 using namespace DTO;
+
+GetMyOrders::GetMyOrders(std::shared_ptr<AbstractLogger>, QDataStream &)
+{
+}
+
 GetMyOrders::GetMyOrders()
 {
 }

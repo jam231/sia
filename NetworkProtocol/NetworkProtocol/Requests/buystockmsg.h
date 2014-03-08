@@ -3,6 +3,10 @@
 
 #include "request.h"
 
+#include "utilities.h"
+
+#include <memory>
+
 namespace NetworkProtocol {
 namespace Requests
 {
@@ -24,6 +28,7 @@ class NETWORKPROTOCOLSHARED_EXPORT BuyStock : public Request
     DTO::Types::PriceType _price;
 
 public:
+    BuyStock(std::shared_ptr<AbstractLogger>, QDataStream&);
     BuyStock(QDataStream&);
 
     DTO::Types::Message::MessageType type() const;

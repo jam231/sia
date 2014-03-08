@@ -3,6 +3,10 @@
 
 #include "request.h"
 
+#include "utilities.h"
+
+#include <memory>
+
 namespace NetworkProtocol {
 namespace Requests
 {
@@ -20,6 +24,7 @@ namespace Requests
 class NETWORKPROTOCOLSHARED_EXPORT GetMyOrders : public Request
 {
 public:
+    GetMyOrders(std::shared_ptr<AbstractLogger>, QDataStream&);
     GetMyOrders(QDataStream&);
     GetMyOrders();
 

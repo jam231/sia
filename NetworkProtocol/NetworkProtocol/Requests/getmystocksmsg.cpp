@@ -10,6 +10,10 @@ namespace Requests
 
 using namespace DTO;
 
+GetMyStocks::GetMyStocks(std::shared_ptr<AbstractLogger>, QDataStream &)
+{
+}
+
 GetMyStocks::GetMyStocks()
 {
 }

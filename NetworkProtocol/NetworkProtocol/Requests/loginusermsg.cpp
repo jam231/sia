@@ -9,25 +9,34 @@ namespace Requests
 
 using namespace DTO;
 
-LoginUser::LoginUser(QDataStream &serialized_request)
+LoginUser::LoginUser(QDataStream& serialized_request)
+    : LoginUser(std::move(GlobalUtilities::getLogger()), serialized_request)
+{}
+
+LoginUser::LoginUser(std::shared_ptr<AbstractLogger> logger,
+                     QDataStream &serialized_request)
 {
     Types::Message::MessageLengthType password_length;
     if(serialized_request.device()->bytesAvailable() < sizeof(password_length) +
                                                        sizeof(_userId))
     {
-        GLOBAL_LOG_TRACE(QString("Malformed request: Not enough bytes in serialized_request"\
+        LOG_TRACE(logger,
+                  QString("Malformed request: Not enough bytes in serialized_request"\
                           " to read userId and password length. Is %1 should be >%2.")
                   .arg(serialized_request.device()->bytesAvailable())
                   .arg(sizeof(password_length) + sizeof(_userId)));
+
         throw MalformedRequest("Not enough bytes in serialized_request to read"\
                                    " user id and password length.");
     }
 
     serialized_request >> _userId;
     serialized_request >> password_length;
+
     if(password_length <= 4 || _userId <= 0)
     {
-        GLOBAL_LOG_TRACE(QString("Invalid password length or userId. "\
+        LOG_TRACE(logger,
+                  QString("Invalid password length or userId. "\
                           "password length(%1) <= 4 || _userId(%2) <= 0.")
                   .arg(password_length)
                   .arg(_userId.value));
@@ -35,7 +44,8 @@ LoginUser::LoginUser(QDataStream &serialized_request)
     }
     if(serialized_request.device()->bytesAvailable() != password_length)
     {
-        GLOBAL_LOG_TRACE(QString("Invalid request body: Wrong number of bytes in stream."\
+        LOG_TRACE(logger,
+                  QString("Invalid request body: Wrong number of bytes in stream."\
                           " Is %1 should be %2.")
                   .arg(serialized_request.device()->bytesAvailable())
                   .arg(password_length));

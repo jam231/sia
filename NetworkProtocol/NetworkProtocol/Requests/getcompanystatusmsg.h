@@ -3,6 +3,10 @@
 
 #include "request.h"
 
+#include "utilities.h"
+
+#include <memory>
+
 namespace NetworkProtocol {
 namespace Requests
 {
@@ -22,6 +26,7 @@ class NETWORKPROTOCOLSHARED_EXPORT GetCompanyStatus : public Request
     DTO::Types::CompanyIdType _companyId;
 
 public:
+    GetCompanyStatus(std::shared_ptr<AbstractLogger>, QDataStream&);
     GetCompanyStatus(QDataStream&);
 
     DTO::Types::Message::MessageLengthType length() const;

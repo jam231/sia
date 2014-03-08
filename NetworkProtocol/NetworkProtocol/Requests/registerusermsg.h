@@ -5,6 +5,10 @@
 
 #include <QString>
 
+#include "utilities.h"
+
+#include <memory>
+
 namespace NetworkProtocol {
 namespace Requests
 {
@@ -23,6 +27,7 @@ class NETWORKPROTOCOLSHARED_EXPORT RegisterUser : public Request
 {
     QString _password;
 public:
+    RegisterUser(std::shared_ptr<AbstractLogger>, QDataStream&);
     RegisterUser(QDataStream&);
 
     DTO::Types::Message::MessageLengthType length() const;

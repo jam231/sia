@@ -3,6 +3,10 @@
 
 #include "request.h"
 
+#include "utilities.h"
+
+#include <memory>
+
 namespace NetworkProtocol {
 namespace Requests
 {
@@ -23,6 +27,7 @@ class NETWORKPROTOCOLSHARED_EXPORT UnsubscribeStock : public Request
     DTO::Types::StockIdType _stockId;
 
 public:
+    UnsubscribeStock(std::shared_ptr<AbstractLogger>, QDataStream&);
     UnsubscribeStock(QDataStream&);
 
     DTO::Types::Message::MessageLengthType length() const;
