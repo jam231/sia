@@ -14,7 +14,6 @@ before_install:
   - sudo ln -s /usr/bin/g++-4.8 /usr/bin/g++
   - gcc -v
   - g++ -v
-  - cpp -v
 script: qtchooser -run-tool=qmake -qt=qt5 && sudo make install && make check
 services:
   - postgresql
