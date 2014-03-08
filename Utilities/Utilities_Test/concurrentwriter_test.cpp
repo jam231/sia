@@ -37,11 +37,13 @@ void ConcurrentWriterTest::generate_data_for_rapidWriter(qint32 entry_length, qi
             for(int k = 0; k < data_set_size; k++)
             {
                 // Format "<sequence of one letter><space><number>"
-                data_load << (QString(entry_length, static_cast<char>('A' + writer_no)) + " " + QString::number(k));
+                data_load << (QString(entry_length, static_cast<QChar>('A' + writer_no)) +
+                              " " + QString::number(k));
             }
             writers_data_loads << data_load;
         }
-        for(int workers_count= 1; workers_count < std::min(writers_count, max_worker_count); workers_count += worker_count_step)
+        for(int workers_count= 1; workers_count < std::min(writers_count, max_worker_count);
+            workers_count += worker_count_step)
         {
             QTest::newRow(qPrintable(QString("Rapid write with %1 writers and %2 worker threads. Each writer writes %3 "\
                                              "entries each ~%4 characters long (overall ~%5 characters written).")
@@ -120,7 +122,9 @@ void ConcurrentWriterTest::rapidWrite()
         QVERIFY2(result[i] == should_be_string[i],
                  qPrintable(QString("Write order has been violated. Mismatch on position %1."\
                                     " Is %2 should be %3.")
-                            .arg(QString::number(i)).arg(result[i]).arg(should_be_string[i])));
+                            .arg(QString::number(i))
+                            .arg(result[i])
+                            .arg(should_be_string[i])));
     }
 }
 

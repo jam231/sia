@@ -29,7 +29,8 @@ void BufferedWriterTest::write_data()
     // For small dataset
     for(int i = 1; i < 12; i++)
     {
-        QTest::newRow(qPrintable(QString("Writer with buffer size = %1. Entries written: %2.").arg(i).arg(data_load.size())))
+        QTest::newRow(qPrintable(QString("Writer with buffer size = %1. Entries written: %2.")
+                                 .arg(i).arg(data_load.size())))
                 // Write request to underlying buffer is issued when the there is new write request
                 // but the buffer is full.
                 << i << data_load << i << (data_load.size() - 1) / i;
@@ -40,21 +41,24 @@ void BufferedWriterTest::write_data()
     // Generate huge data_set
     for(int i = 0; i < 1024 * 4; i++)
     {
-        data_load << QString(i+1, 'a') << " ";
+        data_load << QString(i + 1, 'a') << " ";
     }
 
     int buffer_size = 1;
-    QTest::newRow(qPrintable(QString("Writer with buffer size = %1. Entries written: %2.").arg(buffer_size).arg(data_load.size())))
+    QTest::newRow(qPrintable(QString("Writer with buffer size = %1. Entries written: %2.")
+                             .arg(buffer_size).arg(data_load.size())))
             << buffer_size << data_load << buffer_size << (data_load.size() - 1) / buffer_size;
 
     // For large dataset
     for(int i = 1; i < 15; i++)
     {
         buffer_size = 1 << i;
-        QTest::newRow(qPrintable(QString("Writer with buffer size = %1. Entries written: %2.").arg(buffer_size).arg(data_load.size())))
+        QTest::newRow(qPrintable(QString("Writer with buffer size = %1. Entries written: %2.")
+                                 .arg(buffer_size).arg(data_load.size())))
                 << buffer_size << data_load << buffer_size << (data_load.size() - 1) / buffer_size;
         buffer_size += 1;
-        QTest::newRow(qPrintable(QString("Writer with buffer size = %1. Entries written: %2.").arg(buffer_size).arg(data_load.size())))
+        QTest::newRow(qPrintable(QString("Writer with buffer size = %1. Entries written: %2.")
+                                 .arg(buffer_size).arg(data_load.size())))
                 << buffer_size << data_load << buffer_size << (data_load.size() - 1) / buffer_size;
     }
 
@@ -102,7 +106,8 @@ void BufferedWriterTest::write()
     {
         QVERIFY2(mock_writers_buffer->at(i) == output[i],
                  qPrintable(QString("Incorrect message passed to the next writer."\
-                                    "Should be %1 is %2").arg(mock_writers_buffer->at(i)).arg(output[i])));
+                                    "Should be %1 is %2")
+                            .arg(mock_writers_buffer->at(i)).arg(output[i])));
     }
 
 }
@@ -128,7 +133,8 @@ void BufferedWriterTest::flush_data()
                                  .arg(buffer_size).arg(data_load.size())))
                 // Write request to underlying buffer is issued when the there is new write request
                 // but the buffer is full.
-                << buffer_size << data_load << buffer_size << (data_load.size() - 1) / buffer_size << left_in_buffer;
+                << buffer_size << data_load << buffer_size
+                << (data_load.size() - 1) / buffer_size << left_in_buffer;
     }
 
     data_load.clear();
@@ -142,8 +148,10 @@ void BufferedWriterTest::flush_data()
     int buffer_size = 1;
     int left_in_buffer = data_load.size() - ((data_load.size() - 1) / buffer_size) * buffer_size;
 
-    QTest::newRow(qPrintable(QString("Writer with buffer size = %1. Entries written: %2.").arg(buffer_size).arg(data_load.size())))
-            << buffer_size << data_load << buffer_size << (data_load.size() - 1) / buffer_size << left_in_buffer;
+    QTest::newRow(qPrintable(QString("Writer with buffer size = %1. Entries written: %2.")
+                             .arg(buffer_size).arg(data_load.size())))
+            << buffer_size << data_load << buffer_size
+            << (data_load.size() - 1) / buffer_size << left_in_buffer;
 
     // For large dataset
     for(int i = 1; i < 15; i++)
@@ -151,7 +159,8 @@ void BufferedWriterTest::flush_data()
         buffer_size = 1 << i;
         left_in_buffer = data_load.size() - ((data_load.size() - 1) / buffer_size) * buffer_size;
 
-        QTest::newRow(qPrintable(QString("Writer with buffer size = %1. Entries written: %2.").arg(buffer_size).arg(data_load.size())))
+        QTest::newRow(qPrintable(QString("Writer with buffer size = %1. Entries written: %2.")
+                                 .arg(buffer_size).arg(data_load.size())))
                 << buffer_size << data_load << buffer_size << (data_load.size() - 1) / buffer_size
                 << left_in_buffer;
 
@@ -159,9 +168,10 @@ void BufferedWriterTest::flush_data()
         buffer_size += 1;
         left_in_buffer = data_load.size() - ((data_load.size() - 1) / buffer_size) * buffer_size;
 
-        QTest::newRow(qPrintable(QString("Writer with buffer size = %1. Entries written: %2.").arg(buffer_size).arg(data_load.size())))
-                << buffer_size << data_load << buffer_size << (data_load.size() - 1) / buffer_size
-                << left_in_buffer;
+        QTest::newRow(qPrintable(QString("Writer with buffer size = %1. Entries written: %2.")
+                                 .arg(buffer_size).arg(data_load.size())))
+                << buffer_size << data_load << buffer_size
+                << (data_load.size() - 1) / buffer_size << left_in_buffer;
     }
 }
 
