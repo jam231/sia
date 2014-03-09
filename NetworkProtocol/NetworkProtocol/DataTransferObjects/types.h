@@ -24,7 +24,7 @@ enum class BasicTypeName
     UserId
 };
 
-template<BasicTypeName TypeName, typename ValueType = qint32, ValueType defaultValue = ValueType{}>
+template<BasicTypeName TypeName, typename ValueType = quint32, ValueType defaultValue = ValueType{}>
 struct ContainerType
 
 {
@@ -93,7 +93,8 @@ namespace Failure
 typedef quint8 FailureTypeType;
 enum FailureType : FailureTypeType
 {
-    BAD_USERID_OR_PASSWORD = 0x0,
+    UNDEFINED              = 0x0,
+    BAD_USERID_OR_PASSWORD,
     NOT_AUTHORIZED,
     ALREADY_LOGGED,
     RESOURCE_NOT_AVAILABLE,         // When user requests order for nonexistent stock, or wants to cancel order
@@ -104,6 +105,8 @@ enum FailureType : FailureTypeType
     INVALID_MESSAGE_BODY,           // Contents are well-formed, but violate constraints
     UNRECOGNIZED_MESSAGE            // Message type is not defined.
 };
+
+NETWORKPROTOCOLSHARED_EXPORT FailureType toFailureType(FailureTypeType);
 }
 
 // Force separation
@@ -329,6 +332,8 @@ bool ContainerType<TypeName, ValueType, defaultValue>::operator<(const ValueType
 NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator>>(QDataStream& stream, Types::Message::MessageType&);
 NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator>>(QDataStream& stream, Types::Order::OrderType&);
 NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator>>(QDataStream& stream, Types::Company::CompanyStatusType&);
+NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator>>(QDataStream& stream, Types::Failure::FailureType&);
+NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator<<(QDataStream& stream, const Types::Failure::FailureType&);
 NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator<<(QDataStream& stream, const Types::Message::MessageType&);
 NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator<<(QDataStream& stream, const Types::Order::OrderType&);
 NETWORKPROTOCOLSHARED_EXPORT QDataStream &operator<<(QDataStream& stream, const Types::Company::CompanyStatusType&);

@@ -20,7 +20,7 @@ QDataStream &operator>>(QDataStream& stream, Types::Order::OrderType& orderType)
 
 QDataStream &operator<<(QDataStream& stream, const Types::Message::MessageType& messageType)
 {
-    stream << static_cast<Types::Message::MessageType>(messageType);
+    stream << static_cast<Types::Message::MessageTypeType>(messageType);
     return stream;
 }
 
@@ -34,15 +34,29 @@ QDataStream &operator>>(QDataStream& stream, Types::Message::MessageType& messag
 
 QDataStream &operator<<(QDataStream& stream, const Types::Company::CompanyStatusType& companyStatus)
 {
-    stream << static_cast<Types::Company::CompanyStatusType>(companyStatus);
+    stream << static_cast<Types::Company::CompanyStatusTypeType>(companyStatus);
     return stream;
 }
 
 QDataStream &operator>>(QDataStream& stream, Types::Company::CompanyStatusType& companyStatus)
 {
-    Types::Company::CompanyStatusType companyStatusTypeType;
+    Types::Company::CompanyStatusTypeType companyStatusTypeType;
     stream >> companyStatusTypeType;
     companyStatus = Types::Company::toCompanyStatusType(companyStatusTypeType);
+    return stream;
+}
+
+QDataStream &operator<<(QDataStream& stream, const Types::Failure::FailureType& failureType)
+{
+    stream << static_cast<Types::Failure::FailureTypeType>(failureType);
+    return stream;
+}
+
+QDataStream &operator>>(QDataStream& stream, Types::Failure::FailureType& failureType)
+{
+    Types::Failure::FailureTypeType failureTypeType;
+    stream >> failureTypeType;
+    failureType = Types::Failure::toFailureType(failureTypeType);
     return stream;
 }
 
@@ -60,6 +74,26 @@ CompanyStatusType toCompanyStatusType(CompanyStatusTypeType type)
     case ACTIVE: return ACTIVE;
     case FROZEN: return FROZEN;
     default:     return UNDEFINED;
+    };
+}
+}
+
+namespace Failure
+{
+
+FailureType toFailureType(FailureTypeType type)
+{
+    switch(type)
+    {
+    case BAD_USERID_OR_PASSWORD : return BAD_USERID_OR_PASSWORD;
+    case NOT_AUTHORIZED         : return NOT_AUTHORIZED;
+    case ALREADY_LOGGED         : return ALREADY_LOGGED;
+    case RESOURCE_NOT_AVAILABLE : return RESOURCE_NOT_AVAILABLE;
+    case INSUFFICIENT_FUNDS     : return INSUFFICIENT_FUNDS;
+    case MALFORMED_MESSAGE      : return MALFORMED_MESSAGE;
+    case INVALID_MESSAGE_BODY   : return INVALID_MESSAGE_BODY;
+    case UNRECOGNIZED_MESSAGE   : return UNRECOGNIZED_MESSAGE;
+    default                     : return UNDEFINED;
     };
 }
 }
@@ -83,9 +117,9 @@ OrderType toOrderType(OrderTypeType type)
 
 namespace Message
 {
-MessageType toMessageType(MessageTypeType msgId)
+MessageType toMessageType(MessageTypeType type)
 {
-    switch(msgId)
+    switch(type)
     {
     case REQUEST_REGISTER_USER : return REQUEST_REGISTER_USER;
     case REQUEST_LOGIN_USER : return REQUEST_LOGIN_USER;
