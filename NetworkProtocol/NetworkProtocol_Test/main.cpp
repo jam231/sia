@@ -6,6 +6,8 @@
 #include <Responses/failuremsg_test.h>
 #include <Responses/okmsg_test.h>
 #include <Responses/registerusersuccessmsg_test.h>
+#include <Responses/lasttransactionmsg_test.h>
+
 /// TODO:
 ///
 /// - tests for responses
@@ -41,10 +43,12 @@ int main(int argc, char *argv[])
     FailureTest                 failure_test;
     OkTest                      ok_test;
     RegisterUserSuccessTest     register_user_success_test;
+    LastTransactionResponseTest last_transaction_response_test;
 
     result |= QTest::qExec(&failure_test, argc, argv);
     result |= QTest::qExec(&ok_test, argc, argv);
     result |= QTest::qExec(&register_user_success_test, argc, argv);
+    result |= QTest::qExec(&last_transaction_response_test, argc, argv);
 
     return result;
 }

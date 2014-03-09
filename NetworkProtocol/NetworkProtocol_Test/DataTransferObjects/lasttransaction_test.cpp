@@ -73,10 +73,9 @@ void LastTransactionTest::creation_valid()
     try
     {
         LastTransaction last_transaction(amount, price, date_time_str);
-        QDateTime date = QDateTime::fromString(last_transaction.getDateTime());
-        QVERIFY2(date.isValid(),                            "DateTime is corruped.");
-        QVERIFY2(last_transaction.getPrice()      == price, "Stock id is corrupted.");
-        QVERIFY2(last_transaction.getAmount()     == amount,"Amount is corrupted.");
+        QVERIFY2(last_transaction.getDateTime() == date_time_str,   "DateTime is corruped.");
+        QVERIFY2(last_transaction.getPrice()      == price,         "Stock id is corrupted.");
+        QVERIFY2(last_transaction.getAmount()     == amount,        "Amount is corrupted.");
     }
     catch(...)
     {
