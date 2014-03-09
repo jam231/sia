@@ -61,6 +61,14 @@ Message::MessageType LastTransaction::type() const
     return DTO::Types::Message::MessageType::RESPONSE_LAST_TRANSACTION;
 }
 
+DTO::LastTransaction LastTransaction::getLastTransaction() const
+{
+    return _lastTransaction;
+}
+DTO::Types::StockIdType LastTransaction::getStockId() const
+{
+    return _stockId;
+}
 
 }
 }

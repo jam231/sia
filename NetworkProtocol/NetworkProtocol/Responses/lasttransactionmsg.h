@@ -41,6 +41,9 @@ public:
                     DTO::Types::PriceType, QString);
     LastTransaction(DTO::Types::StockIdType, DTO::LastTransaction);
 
+    DTO::LastTransaction getLastTransaction() const;
+    DTO::Types::StockIdType getStockId() const;
+
     DTO::Types::Message::MessageLengthType length() const;
     DTO::Types::Message::MessageType type() const;
 
