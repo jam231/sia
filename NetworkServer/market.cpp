@@ -288,7 +288,7 @@ void Market::notificationHandler(const QString& channelName, QSqlDriver::Notific
             Types::AmountType amount = Types::AmountType(data[1].toInt());
             Types::UserIdType userId = Types::UserIdType(data[2].toInt());
 
-            OrderRealization msg(orderId, amount);
+            OrderRealization msg(orderId, amount, 1234567);
             _server->send(msg, userId);
         }
         else
@@ -306,7 +306,7 @@ void Market::notificationHandler(const QString& channelName, QSqlDriver::Notific
             Types::AmountType amount = Types::AmountType(data[1].toInt());
             Types::UserIdType userId = Types::UserIdType(data[2].toInt());
 
-            OrderRealization msg(orderId, amount);
+            OrderRealization msg(orderId, amount, 1234567);
             _server->send(msg, userId);
         }
         else
