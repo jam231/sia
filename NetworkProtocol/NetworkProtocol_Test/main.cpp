@@ -1,7 +1,11 @@
 
-#include "DataTransferObjects/bestorder_test.h"
-#include "DataTransferObjects/lasttransaction_test.h"
-#include "DataTransferObjects/order_test.h"
+#include <DataTransferObjects/bestorder_test.h>
+#include <DataTransferObjects/lasttransaction_test.h>
+#include <DataTransferObjects/order_test.h>
+
+#include <Responses/failuremsg_test.h>
+#include <Responses/okmsg_test.h>
+#include <Responses/registerusersuccessmsg_test.h>
 /// TODO:
 ///
 /// - tests for responses
@@ -24,13 +28,23 @@ int main(int argc, char *argv[])
 {
     bool result = 0;
 
+    //              DTO
     BestOrderTest       bestOrder_test;
     LastTransactionTest lastTransaction_test;
     OrderTest           order_test;
+
     result |= QTest::qExec(&bestOrder_test, argc, argv);
     result |= QTest::qExec(&lastTransaction_test, argc, argv);
     result |= QTest::qExec(&order_test, argc, argv);
 
+    // Responses
+    FailureTest                 failure_test;
+    OkTest                      ok_test;
+    RegisterUserSuccessTest     register_user_success_test;
+
+    result |= QTest::qExec(&failure_test, argc, argv);
+    result |= QTest::qExec(&ok_test, argc, argv);
+    result |= QTest::qExec(&register_user_success_test, argc, argv);
 
     return result;
 }
