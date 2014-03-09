@@ -1,7 +1,6 @@
 #ifndef ORDER_TEST_H
 #define ORDER_TEST_H
 
-#include <DataTransferObjects/order.h>
 
 #include <QtTest>
 

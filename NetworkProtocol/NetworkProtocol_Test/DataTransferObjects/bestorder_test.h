@@ -1,8 +1,6 @@
 #ifndef BESTORDER_TEST_H
 #define BESTORDER_TEST_H
 
-#include "DataTransferObjects/bestorder.h"
-
 #include <QtTest>
 
 class BestOrderTest : public QObject

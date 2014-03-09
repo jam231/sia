@@ -1,6 +1,7 @@
 #include "order_test.h"
 
 #include <DataTransferObjects/types.h>
+#include <DataTransferObjects/order.h>
 
 #include <utilities.h>
 

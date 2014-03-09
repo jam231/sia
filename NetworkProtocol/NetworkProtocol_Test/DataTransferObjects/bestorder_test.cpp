@@ -1,6 +1,7 @@
 #include "bestorder_test.h"
 
 #include <DataTransferObjects/types.h>
+#include <DataTransferObjects/bestorder.h>
 
 #include <utilities.h>
 
@@ -150,13 +151,16 @@ void BestOrderTest::toStream_valid()
     try
     {
         BestOrder best_order(order_type, stock_id, amount, price);
+
         QByteArray buffer;
         QDataStream stream(&buffer, QIODevice::ReadWrite);
 
         assert(stream.byteOrder() == QDataStream::BigEndian);
 
         stream << best_order;
+
         stream.device()->reset();
+
         qint32 should_be_bytes = sizeof(order_type) + sizeof(stock_id) +
                                  sizeof(amount) + sizeof(price);
 
@@ -165,28 +169,29 @@ void BestOrderTest::toStream_valid()
                                     "(supposedly) written. Should be %1 is %2.")
                             .arg(should_be_bytes).arg(stream.device()->size())));
 
-        OrderType   should_be_order_type;
-        StockIdType should_be_stock_id;
-        AmountType  should_be_amount;
-        PriceType   should_be_price;
-        stream >> should_be_order_type >> should_be_stock_id
-               >> should_be_amount >> should_be_price;
+        OrderType   is_order_type;
+        StockIdType is_stock_id;
+        AmountType  is_amount;
+        PriceType   is_price;
 
-        QVERIFY2(should_be_order_type == order_type,
+        stream >> is_order_type >> is_stock_id
+               >> is_amount >> is_price;
+
+        QVERIFY2(is_order_type == order_type,
                  qPrintable(QString("Order type doesn't match. Is %1 should be %2")
-                            .arg(should_be_order_type)
+                            .arg(is_order_type)
                             .arg(order_type)));
-        QVERIFY2(should_be_stock_id == stock_id,
+        QVERIFY2(is_stock_id == stock_id,
                  qPrintable(QString("Stock id doesn't match. Is %1 should be %2")
-                            .arg(should_be_stock_id.value)
+                            .arg(is_stock_id.value)
                             .arg(stock_id.value)));
-        QVERIFY2(should_be_amount == amount,
+        QVERIFY2(is_amount == amount,
                  qPrintable(QString("Amount doesn't match. Is %1 should be %2")
-                            .arg(should_be_amount.value)
+                            .arg(is_amount.value)
                             .arg(amount.value)));
-        QVERIFY2(should_be_price == price,
+        QVERIFY2(is_price == price,
                  qPrintable(QString("Price doesn't match. Is %1 should be %2")
-                            .arg(should_be_price.value)
+                            .arg(is_price.value)
                             .arg(price.value)));
     }
     catch(...)

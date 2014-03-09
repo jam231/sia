@@ -1,6 +1,7 @@
 #include "lasttransaction_test.h"
 
 #include <DataTransferObjects/types.h>
+#include <DataTransferObjects/lasttransaction.h>
 
 #include <utilities.h>
 

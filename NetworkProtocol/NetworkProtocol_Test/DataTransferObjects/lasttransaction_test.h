@@ -1,7 +1,6 @@
 #ifndef LASTTRANSACTION_TEST_H
 #define LASTTRANSACTION_TEST_H
 
-#include <DataTransferObjects/lasttransaction.h>
 
 #include <QtTest>
 
