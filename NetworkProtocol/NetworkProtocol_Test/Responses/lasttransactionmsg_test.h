@@ -25,8 +25,8 @@ private Q_SLOTS:
     void creation_invalid_data();
     void creation_invalid();
 
-    void constant_length_data();
-    void constant_length();
+    void length_data();
+    void length();
 
     void send_data();
     void send();

@@ -128,12 +128,12 @@ void LastTransactionResponseTest::creation_invalid()
 }
 
 
-void LastTransactionResponseTest::constant_length_data()
+void LastTransactionResponseTest::length_data()
 {
     generate_valid_data();
 }
 
-void LastTransactionResponseTest::constant_length()
+void LastTransactionResponseTest::length()
 {
     QFETCH(StockIdType, stock_id);
     QFETCH(AmountType, amount);
