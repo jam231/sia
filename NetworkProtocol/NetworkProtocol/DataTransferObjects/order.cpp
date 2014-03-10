@@ -87,10 +87,12 @@ Order Order::fromStream(std::shared_ptr<AbstractLogger> logger,
     Types::AmountType amount;
     Types::PriceType price;
 
+
     if(sizeof(order_id) + sizeof(order_type) +
        sizeof(stock_id) + sizeof(amount) +
                           sizeof(price) != stream.device()->bytesAvailable())
     {
+
         LOG_TRACE(logger,
                   QString("Not enough bytes in the stream to read"\
                           " BestOrder. Should be >%1 is %2")

@@ -19,7 +19,8 @@ Types::Message::MessageLengthType ListOfOrders::length() const
         order_length_in_bytes = _orders.first()->lengthSerialized();
     }
 
-    return Response::length() + _orders.size() * order_length_in_bytes;
+    return Response::length() + sizeof(Types::Message::MessageLengthType) +
+            _orders.size() * order_length_in_bytes;
 }
 
 Types::Message::MessageType ListOfOrders::type() const

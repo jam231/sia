@@ -39,7 +39,8 @@ SOURCES += \
     Responses/registerusersuccessmsg_test.cpp \
     Responses/showbestordermsg_test.cpp \
     Responses/showuserstocksmsg_test.cpp \
-    Responses/lasttransactionmsg_test.cpp
+    Responses/lasttransactionmsg_test.cpp \
+    Responses/listofordersmsg_test.cpp
 
 HEADERS += \
     DataTransferObjects/order_test.h \
@@ -66,7 +67,8 @@ HEADERS += \
     Responses/okmsg_test.h \
     Responses/registerusersuccessmsg_test.h \
     Responses/showbestordermsg_test.h \
-    Responses/lasttransactionmsg_test.h
+    Responses/lasttransactionmsg_test.h \
+    Responses/listofordersmsg_test.h
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../NetworkProtocol/release/ -lNetworkProtocol
