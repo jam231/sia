@@ -10,6 +10,12 @@
 
 #include <writer.h>
 
+#define LOG_INFO(logger, message)       LOG(logger->info, message)
+#define LOG_DEBUG(logger, message)      LOG(logger->debug, message)
+#define LOG_ERROR(logger, message)      LOG(logger->error, message)
+#define LOG_WARNING(logger, message)    LOG(logger->warning, message)
+#define LOG_TRACE(logger, message)      LOG(logger->trace, message)
+
 #define LOG(call, message) call(message,__FILE__,__PRETTY_FUNCTION__,__LINE__)
 
 

@@ -5,12 +5,6 @@
 
 
 
-#define LOG_INFO(logger, message)       LOG(logger->info, message)
-#define LOG_DEBUG(logger, message)      LOG(logger->debug, message)
-#define LOG_ERROR(logger, message)      LOG(logger->error, message)
-#define LOG_WARNING(logger, message)    LOG(logger->warning, message)
-#define LOG_TRACE(logger, message)      LOG(logger->trace, message)
-
 #define GLOBAL_LOG_INFO(message)    LOG_INFO(GlobalUtilities::getLogger(), message)
 #define GLOBAL_LOG_DEBUG(message)   LOG_DEBUG(GlobalUtilities::getLogger(), message)
 #define GLOBAL_LOG_ERROR(message)   LOG_ERROR(GlobalUtilities::getLogger(), message)
