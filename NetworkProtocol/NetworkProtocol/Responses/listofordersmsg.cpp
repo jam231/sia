@@ -50,14 +50,14 @@ void ListOfOrders::addOrder(Types::OrderIdType orderId,
                             Types::AmountType amount,
                             Types::PriceType price)
 {
-    _orders.push_back(std::shared_ptr<Order>(
+    _orders.push_back(std::move(std::shared_ptr<Order>(
                           new Order(orderId, _orderType, stockId,
-                                    amount, price)));
+                                    amount, price))));
 }
 
 void ListOfOrders::addOrder(std::shared_ptr<Order> order)
 {
-    _orders.push_back(order);
+    _orders.push_back(std::move(order));
 }
 
 
