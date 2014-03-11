@@ -148,6 +148,7 @@ void ListOfStocksTest::send()
         {
         	StockIdType stock_id;
         	AmountType  amount;
+            stream >> stock_id >> amount;
             is_list_of_stocks << MyLittle2 { stock_id, amount};
 		}
         QVERIFY2(is_length == should_be_bytes,
