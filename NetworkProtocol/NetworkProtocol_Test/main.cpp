@@ -9,6 +9,7 @@
 #include <Responses/lasttransactionmsg_test.h>
 #include <Responses/listofordersmsg_test.h>
 #include <Responses/listofstocksmsg_test.h>
+#include <Responses/orderacceptedmsg_test.h>
 
 
 /// TODO:
@@ -49,7 +50,7 @@ int main(int argc, char *argv[])
     LastTransactionResponseTest last_transaction_response_test;
     ListOfOrdersTest            list_of_orders_test;
     ListOfStocksTest            list_of_stocks_test;
-
+    OrderAcceptedTest           order_accepted_test;
 
     result |= QTest::qExec(&failure_test, argc, argv);
     result |= QTest::qExec(&ok_test, argc, argv);
@@ -57,6 +58,8 @@ int main(int argc, char *argv[])
     result |= QTest::qExec(&last_transaction_response_test, argc, argv);
     result |= QTest::qExec(&list_of_orders_test, argc, argv);
     result |= QTest::qExec(&list_of_stocks_test, argc, argv);
+    result |= QTest::qExec(&order_accepted_test, argc, argv);
+
 
     return result;
 }

@@ -1,6 +1,6 @@
-#include "registerusersuccessmsg_test.h"
+#include "orderacceptedmsg_test.h"
 
-#include <Responses/registerusersuccessmsg.h>
+#include <Responses/orderacceptedmsg.h>
 
 #include <utilities.h>
 
@@ -8,47 +8,46 @@
 #include <memory>
 #include <assert.h>
 
-using namespace NetworkProtocol::DTO;
 using namespace NetworkProtocol;
+using namespace NetworkProtocol::DTO;
 using namespace Types;
-using namespace Order;
-
-Q_DECLARE_METATYPE(UserIdType)
 
 
-void RegisterUserSuccessTest::initTestCase()
+Q_DECLARE_METATYPE(OrderIdType)
+
+
+void OrderAcceptedTest::initTestCase()
 {
     GlobalUtilities::setLogger(move(std::shared_ptr<AbstractLogger>(
-                                        make_logger(LoggingLevel::Off))));
+                                    make_logger(LoggingLevel::Off))));
 }
 
-void RegisterUserSuccessTest::generate_valid_data()
+void OrderAcceptedTest::generate_valid_data()
 {
-    QTest::addColumn<UserIdType>("user_id");
-
-
+    QTest::addColumn<OrderIdType>("order_id");
     for(long long i = 2; i <= 32; i += 2)
     {
-        UserIdType user_id = UserIdType((static_cast<long long>(1) << i) - 1);
-        QTest::newRow(qPrintable(QString("user id = 2 ^ %1 - 1= %2")
-                                 .arg(i).arg(user_id.value)))
-                << user_id;
+        OrderIdType order_id = OrderIdType((static_cast<long long>(1) << i) - 1);
+        QTest::newRow(qPrintable(QString("order id = 2 ^ %1 - 1= %2")
+                                 .arg(i)
+                                 .arg(order_id.value)))
+                << order_id;
     }
 }
 
-void RegisterUserSuccessTest::creation_invalid_data()
+void OrderAcceptedTest::creation_invalid_data()
 {
-    QTest::addColumn<UserIdType>("user_id");
-    QTest::newRow("user id = 0") << UserIdType(0);
+    QTest::addColumn<OrderIdType>("order_id");
+    QTest::newRow("order id = 0") << OrderIdType(0);
 }
 
-void RegisterUserSuccessTest::creation_invalid()
+void OrderAcceptedTest::creation_invalid()
 {
-    QFETCH(UserIdType, user_id);
+    QFETCH(OrderIdType, order_id);
 
     try
     {
-        Responses::RegisterUserSuccess success(user_id);
+        Responses::OrderAccepted order_accepted(order_id);
 
         QFAIL("std::invalid_argument should have been thrown.");
     }
@@ -62,20 +61,21 @@ void RegisterUserSuccessTest::creation_invalid()
     }
 }
 
-void RegisterUserSuccessTest::creation_valid_data()
+void OrderAcceptedTest::creation_valid_data()
 {
     generate_valid_data();
 }
 
-void RegisterUserSuccessTest::creation_valid()
+void OrderAcceptedTest::creation_valid()
 {
-    QFETCH(UserIdType, user_id);
+    QFETCH(OrderIdType, order_id);
 
     try
     {
-        Responses::RegisterUserSuccess success(user_id);
+        Responses::OrderAccepted order_accepted(order_id);
 
-        QVERIFY2(success.getUserId()  == user_id,  "User id is corrupted.");
+        QVERIFY2(order_accepted.getOrderId()  == order_id,
+                 "Order id is corrupted.");
     }
     catch(...)
     {
@@ -83,33 +83,33 @@ void RegisterUserSuccessTest::creation_valid()
     }
 }
 
-void RegisterUserSuccessTest::constant_length_data()
+void OrderAcceptedTest::constant_length_data()
 {
     generate_valid_data();
 }
 
-void RegisterUserSuccessTest::constant_length()
+void OrderAcceptedTest::constant_length()
 {
-    QFETCH(UserIdType, user_id);
+    QFETCH(OrderIdType, order_id);
 
     try
     {
-        Responses::RegisterUserSuccess success(user_id);
+        Responses::OrderAccepted order_accepted(order_id);
 
         Message::MessageLengthType should_be_message_length =
                                                    sizeof(Message::MessageLengthType) +
                                                    sizeof(Message::MessageType) +
-                                                   sizeof(UserIdType);
+                                                   sizeof(OrderIdType);
 
-        QVERIFY2(success.length() == should_be_message_length,
+        QVERIFY2(order_accepted.length() == should_be_message_length,
                  qPrintable(QString("Message length is incorrect. Should be %1 is %2.")
                             .arg(should_be_message_length)
-                            .arg(success.length())));
-        QVERIFY2(success.length() == 7,
+                            .arg(order_accepted.length())));
+        QVERIFY2(order_accepted.length() == 7,
                  qPrintable(QString("Message length doesn't match specification."\
                                     "Should be %1 is %2.")
                             .arg(7)
-                            .arg(success.length())));
+                            .arg(order_accepted.length())));
     }
     catch(...)
     {
@@ -117,31 +117,31 @@ void RegisterUserSuccessTest::constant_length()
     }
 }
 
-void RegisterUserSuccessTest::send_data()
+void OrderAcceptedTest::send_data()
 {
     generate_valid_data();
 }
 
-void RegisterUserSuccessTest::send()
+void OrderAcceptedTest::send()
 {
-    QFETCH(UserIdType, user_id);
+    QFETCH(OrderIdType, order_id);
 
     try
     {
-        Responses::RegisterUserSuccess success(user_id);
+        Responses::OrderAccepted order_accepted(order_id);
 
         QByteArray buffer;
         QDataStream stream(&buffer, QIODevice::ReadWrite);
 
         assert(stream.byteOrder() == QDataStream::BigEndian);
 
-        success.send(stream.device());
+        order_accepted.send(stream.device());
 
         stream.device()->reset();
 
         Message::MessageLengthType should_be_bytes = sizeof(Message::MessageLengthType) +
                                                      sizeof(Message::MessageType) +
-                                                     sizeof(UserIdType);
+                                                     sizeof(OrderIdType);
 
         QVERIFY2(stream.device()->size() == should_be_bytes,
                  qPrintable(QString("Bytes saved in device doesn't equal to "\
@@ -157,26 +157,26 @@ void RegisterUserSuccessTest::send()
 
         Message::MessageLengthType is_length;
         Message::MessageType       is_type;
-        UserIdType                 is_user_id;
+        OrderIdType                is_order_id;
 
-        stream >> is_length >> is_type >> is_user_id;
+        stream >> is_length >> is_type >> is_order_id;
 
         QVERIFY2(is_length == should_be_bytes,
                  qPrintable(QString("Message length doesn't match. Is %1 should be %2.")
                             .arg(is_length)
                             .arg(should_be_bytes)));
 
-        assert (Message::RESPONSE_REGISTER_USER_SUCCESS == 0x1);
+        assert (Message::RESPONSE_ORDER_ACCEPTED == 0x24);
 
-       QVERIFY2(is_type == Message::RESPONSE_REGISTER_USER_SUCCESS,
+                QVERIFY2(is_type == Message::RESPONSE_ORDER_ACCEPTED,
                  qPrintable(QString("Message type doesn't match. Is %1 should be %2.")
                             .arg(is_type)
-                            .arg(Message::RESPONSE_REGISTER_USER_SUCCESS)));
+                            .arg(Message::RESPONSE_ORDER_ACCEPTED)));
 
-        QVERIFY2(is_user_id == user_id,
+        QVERIFY2(is_order_id == order_id,
                  qPrintable(QString("User id doesn't match. Is %1 should be %2.")
-                            .arg(is_user_id.value)
-                            .arg(user_id.value)));
+                            .arg(is_order_id.value)
+                            .arg(order_id.value)));
 
     }
     catch(...)

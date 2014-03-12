@@ -12,6 +12,7 @@ class RegisterUserSuccessTest : public QObject
 
     void generate_valid_data();
     void generate_invalid_data();
+
 private Q_SLOTS:
 
     void initTestCase();
