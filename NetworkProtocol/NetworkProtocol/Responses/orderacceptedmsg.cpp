@@ -48,6 +48,11 @@ void OrderAccepted::send(QIODevice* connection)
 }
 
 
+Types::OrderIdType OrderAccepted::getOrderId() const
+{
+    return _orderId;
+}
+
 
 }
 }
