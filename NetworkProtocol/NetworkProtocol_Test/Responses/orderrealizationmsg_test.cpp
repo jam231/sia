@@ -35,7 +35,7 @@ void OrderRealizationTest::generate_valid_data()
         AmountType amount    = AmountType((static_cast<long long>(1) << i) - 1);
         PriceType price      = PriceType((static_cast<long long>(1) << i) - 1);
 
-        QTest::newRow(qPrintable(QString("values = 2 ^ %1 - 1= %2")
+        QTest::newRow(qPrintable(QString("values = 2 ^ %1 - 1= %1")
                                  .arg(i)))
                 << order_id << amount << price;
     }
