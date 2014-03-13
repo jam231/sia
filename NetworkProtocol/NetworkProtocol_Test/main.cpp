@@ -12,7 +12,7 @@
 #include <Responses/orderacceptedmsg_test.h>
 #include <Responses/orderrealizationmsg_test.h>
 #include <Responses/ordercompletedmsg_test.h>
-
+#include <Responses/showbestordermsg_test.h>
 
 /// TODO:
 ///
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
     result |= QTest::qExec(&bestOrder_test, argc, argv);
     result |= QTest::qExec(&lastTransaction_test, argc, argv);
-    //result |= QTest::qExec(&order_test, argc, argv);
+    result |= QTest::qExec(&order_test, argc, argv);
 
     // Responses
     FailureTest                 failure_test;
@@ -55,6 +55,7 @@ int main(int argc, char *argv[])
     OrderAcceptedTest           order_accepted_test;
     OrderRealizationTest        order_realization_test;
     OrderCompletedTest          order_completed_test;
+    ShowBestOrderTest           show_best_order_test;
 
     result |= QTest::qExec(&failure_test, argc, argv);
     result |= QTest::qExec(&ok_test, argc, argv);
@@ -65,6 +66,7 @@ int main(int argc, char *argv[])
     result |= QTest::qExec(&order_accepted_test, argc, argv);
     result |= QTest::qExec(&order_realization_test, argc, argv);
     result |= QTest::qExec(&order_completed_test, argc, argv);
+    result |= QTest::qExec(&show_best_order_test, argc, argv);
 
 
     return result;
