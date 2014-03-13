@@ -51,5 +51,15 @@ void ShowNoBestOrder::send(QIODevice *connection)
     out << _orderType << _stockId;
 }
 
+Types::Order::OrderType ShowNoBestOrder::getOrderType() const
+{
+    return _orderType;
+}
+
+Types::StockIdType ShowNoBestOrder::getStockId() const
+{
+    return _stockId;
+}
+
 }
 }
