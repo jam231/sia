@@ -31,14 +31,12 @@ SOURCES += \
     Requests/cancelordermsg_test.cpp \
     Requests/buystockmsg_test.cpp \
     Responses/stockinfomsg_test.cpp \
-    Responses/showuserordersmsg_test.cpp \
     Responses/showordermsg_test.cpp \
     Responses/response_test.cpp \
     Responses/failuremsg_test.cpp \
     Responses/okmsg_test.cpp \
     Responses/registerusersuccessmsg_test.cpp \
     Responses/showbestordermsg_test.cpp \
-    Responses/showuserstocksmsg_test.cpp \
     Responses/lasttransactionmsg_test.cpp \
     Responses/listofordersmsg_test.cpp \
     Responses/listofstocksmsg_test.cpp \
@@ -63,8 +61,6 @@ HEADERS += \
     Requests/cancelordermsg_test.h \
     Requests/buystockmsg_test.h \
     Responses/stockinfomsg_test.h \
-    Responses/showuserstocksmsg_test.h \
-    Responses/showuserordersmsg_test.h \
     Responses/showordermsg_test.h \
     Responses/response_test.h \
     Responses/failuremsg_test.h \

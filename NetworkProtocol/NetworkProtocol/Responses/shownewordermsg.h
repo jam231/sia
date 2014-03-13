@@ -28,7 +28,7 @@ namespace Responses
  *
  *  where
  *      message_type    = MessageType::RESPONSE_SHOW_NEW_ORDER (0x19)
- *      <order : 17>    = <order_type : 1><stock_id : 4><amount : 4><price : 4>
+ *      <order : 13>    = <order_type : 1><stock_id : 4><amount : 4><price : 4>
  */
 class NETWORKPROTOCOLSHARED_EXPORT ShowNewOrder : public Response
 {
