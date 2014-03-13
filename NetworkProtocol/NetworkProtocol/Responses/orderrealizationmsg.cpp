@@ -52,7 +52,21 @@ Types::Message::MessageType OrderRealization::type() const
 
 Types::Message::MessageLengthType OrderRealization::length() const
 {
-    return Response::length() + sizeof(_orderId) + sizeof(_amount) + sizeof(_price);
+    return Response::length() + sizeof(_orderId) +
+            sizeof(_amount) + sizeof(_price);
+}
+
+Types::OrderIdType OrderRealization::getOrderId() const
+{
+    return _orderId;
+}
+Types::AmountType OrderRealization::getAmount() const
+{
+    return _amount;
+}
+Types::PriceType OrderRealization::getPrice() const
+{
+    return _price;
 }
 
 

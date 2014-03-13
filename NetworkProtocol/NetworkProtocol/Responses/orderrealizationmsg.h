@@ -42,6 +42,10 @@ public:
 
 
     void send(QIODevice *connection);
+
+    DTO::Types::OrderIdType getOrderId() const;
+    DTO::Types::AmountType getAmount() const;
+    DTO::Types::PriceType getPrice() const;
 };
 
 }
