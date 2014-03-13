@@ -49,5 +49,10 @@ void ShowBestOrder::send(QIODevice *connection)
     out << _bestOrder;
 }
 
+BestOrder ShowBestOrder::getBestOrder() const
+{
+    return _bestOrder;
+}
+
 }
 }
