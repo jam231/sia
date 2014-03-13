@@ -46,6 +46,10 @@ Types::Message::MessageLengthType OrderCompleted::length() const
     return Response::length() + sizeof(_orderId);
 }
 
+Types::OrderIdType OrderCompleted::getOrderId() const
+{
+    return _orderId;
+}
 
 }
 }
