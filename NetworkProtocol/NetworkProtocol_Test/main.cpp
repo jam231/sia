@@ -11,6 +11,8 @@
 #include <Responses/listofstocksmsg_test.h>
 #include <Responses/orderacceptedmsg_test.h>
 #include <Responses/orderrealizationmsg_test.h>
+#include <Responses/ordercompletedmsg_test.h>
+
 
 /// TODO:
 ///
@@ -52,6 +54,7 @@ int main(int argc, char *argv[])
     ListOfStocksTest            list_of_stocks_test;
     OrderAcceptedTest           order_accepted_test;
     OrderRealizationTest        order_realization_test;
+    OrderCompletedTest          order_completed_test;
 
     result |= QTest::qExec(&failure_test, argc, argv);
     result |= QTest::qExec(&ok_test, argc, argv);
@@ -61,6 +64,7 @@ int main(int argc, char *argv[])
     result |= QTest::qExec(&list_of_stocks_test, argc, argv);
     result |= QTest::qExec(&order_accepted_test, argc, argv);
     result |= QTest::qExec(&order_realization_test, argc, argv);
+    result |= QTest::qExec(&order_completed_test, argc, argv);
 
 
     return result;
