@@ -20,7 +20,7 @@
 /// TODO:
 ///
 /// - tests for responses
-/// - tests for requests
+/// - tests for Requests::StockInfo
 ///
 
 /*
