@@ -14,6 +14,7 @@
 #include <Responses/ordercompletedmsg_test.h>
 #include <Responses/showbestordermsg_test.h>
 #include <Responses/shownewordermsg_test.h>
+#include <Responses/shownobestordermsg_test.h>
 
 
 /// TODO:
@@ -59,6 +60,8 @@ int main(int argc, char *argv[])
     OrderCompletedTest          order_completed_test;
     ShowBestOrderTest           show_best_order_test;
     ShowNewOrderTest            show_new_order_test;
+    ShowNoBestOrderTest         show_no_best_order_test;
+
 
     result |= QTest::qExec(&failure_test, argc, argv);
     result |= QTest::qExec(&ok_test, argc, argv);
@@ -71,7 +74,7 @@ int main(int argc, char *argv[])
     result |= QTest::qExec(&order_completed_test, argc, argv);
     result |= QTest::qExec(&show_best_order_test, argc, argv);
     result |= QTest::qExec(&show_new_order_test, argc, argv);
-
+    result |= QTest::qExec(&show_no_best_order_test, argc, argv);
 
     return result;
 }

@@ -42,7 +42,8 @@ SOURCES += \
     Responses/orderacceptedmsg_test.cpp \
     Responses/orderrealizationmsg_test.cpp \
     Responses/ordercompletedmsg_test.cpp \
-    Responses/shownewordermsg_test.cpp
+    Responses/shownewordermsg_test.cpp \
+    Responses/shownobestordermsg_test.cpp
 
 HEADERS += \
     DataTransferObjects/order_test.h \
@@ -72,7 +73,8 @@ HEADERS += \
     Responses/orderacceptedmsg_test.h \
     Responses/orderrealizationmsg_test.h \
     Responses/ordercompletedmsg_test.h \
-    Responses/shownewordermsg_test.h
+    Responses/shownewordermsg_test.h \
+    Responses/shownobestordermsg_test.h
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../NetworkProtocol/release/ -lNetworkProtocol
