@@ -27,7 +27,6 @@ SOURCES += \
     Requests/getstockinfomsg_test.cpp \
     Requests/getmystocksmsg_test.cpp \
     Requests/getmyordersmsg_test.cpp \
-    Requests/companystatusmsg_test.cpp \
     Requests/cancelordermsg_test.cpp \
     Requests/buystockmsg_test.cpp \
     Responses/stockinfomsg_test.cpp \
@@ -43,7 +42,8 @@ SOURCES += \
     Responses/orderrealizationmsg_test.cpp \
     Responses/ordercompletedmsg_test.cpp \
     Responses/shownewordermsg_test.cpp \
-    Responses/shownobestordermsg_test.cpp
+    Responses/shownobestordermsg_test.cpp \
+    networkprotocol_utilities_test.cpp
 
 HEADERS += \
     DataTransferObjects/order_test.h \
@@ -58,7 +58,6 @@ HEADERS += \
     Requests/getstockinfomsg_test.h \
     Requests/getmystocksmsg_test.h \
     Requests/getmyordersmsg_test.h \
-    Requests/companystatusmsg_test.h \
     Requests/cancelordermsg_test.h \
     Requests/buystockmsg_test.h \
     Responses/stockinfomsg_test.h \
@@ -74,7 +73,8 @@ HEADERS += \
     Responses/orderrealizationmsg_test.h \
     Responses/ordercompletedmsg_test.h \
     Responses/shownewordermsg_test.h \
-    Responses/shownobestordermsg_test.h
+    Responses/shownobestordermsg_test.h \
+    networkprotocol_utilities_test.h
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../NetworkProtocol/release/ -lNetworkProtocol

@@ -73,7 +73,7 @@ public:
 
 NETWORKPROTOCOLSHARED_EXPORT std::shared_ptr<Request> fromStream(std::shared_ptr<AbstractLogger>,
                                                                  QDataStream&);
-NETWORKPROTOCOLSHARED_EXPORT std::shared_ptr<Request> FromStream(QDataStream&);
+NETWORKPROTOCOLSHARED_EXPORT std::shared_ptr<Request> fromStream(QDataStream&);
 // Gets request length (IT DOESN'T MODIFY STREAM!) from stream.
 NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageLengthType getLength(QIODevice*);
 NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageLengthType getLength(std::shared_ptr<AbstractLogger>,
