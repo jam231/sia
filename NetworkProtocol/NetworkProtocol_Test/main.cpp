@@ -15,12 +15,11 @@
 #include <Responses/showbestordermsg_test.h>
 #include <Responses/shownewordermsg_test.h>
 #include <Responses/shownobestordermsg_test.h>
-
+#include <Responses/stockinfomsg_test.h>
 
 /// TODO:
 ///
 /// - tests for responses
-/// - tests for Requests::StockInfo
 ///
 
 /*
@@ -61,7 +60,7 @@ int main(int argc, char *argv[])
     ShowBestOrderTest           show_best_order_test;
     ShowNewOrderTest            show_new_order_test;
     ShowNoBestOrderTest         show_no_best_order_test;
-
+    StockInfoTest               stock_info_test;
 
     result |= QTest::qExec(&failure_test, argc, argv);
     result |= QTest::qExec(&ok_test, argc, argv);
@@ -75,6 +74,8 @@ int main(int argc, char *argv[])
     result |= QTest::qExec(&show_best_order_test, argc, argv);
     result |= QTest::qExec(&show_new_order_test, argc, argv);
     result |= QTest::qExec(&show_no_best_order_test, argc, argv);
+    result |= QTest::qExec(&stock_info_test, argc, argv);
+
 
     return result;
 }
