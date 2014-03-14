@@ -34,7 +34,6 @@ RegisterUser::RegisterUser(std::shared_ptr<AbstractLogger> logger,
     {
         LOG_TRACE(logger,
                   QString("Invalid password length. Is %1 should be > 4.")
-                  .arg(serialized_request.device()->bytesAvailable())
                   .arg(password_length));
 
         throw InvalidRequestBody("Password is <= 4.");

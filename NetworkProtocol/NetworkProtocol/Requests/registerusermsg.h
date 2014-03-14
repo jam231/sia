@@ -21,7 +21,7 @@ namespace Requests
  *  <message_length : 2><message_type : 1><pswd_utf8_bytes_length : 2><pswd_utf8_bytes : pswd_utf8_bytes_length>
  *
  *  where
- *      message_type         = MessageType::REQUEST_REGISTER_USER
+ *      message_type         = MessageType::REQUEST_REGISTER_USER (0x0)
  */
 class NETWORKPROTOCOLSHARED_EXPORT RegisterUser : public Request
 {
