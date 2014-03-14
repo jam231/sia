@@ -40,7 +40,7 @@ LoginUser::LoginUser(std::shared_ptr<AbstractLogger> logger,
                           "password length(%1) <= 4 || _userId(%2) <= 0.")
                   .arg(password_length)
                   .arg(_userId.value));
-        throw InvalidRequestBody("Password <= 4 or user id <= 0.");
+        throw InvalidRequestBody("Password length <= 4 or user id <= 0.");
     }
     if(serialized_request.device()->bytesAvailable() != password_length)
     {
@@ -75,7 +75,7 @@ QString LoginUser::getUserPassword() const
 
 Types::Message::MessageLengthType LoginUser::length() const
 {
-    return Request::length() +
+    return Request::length() + sizeof(_userId) +
            sizeof(Types::Message::MessageLengthType) + _password.toUtf8().size();
 }
 
