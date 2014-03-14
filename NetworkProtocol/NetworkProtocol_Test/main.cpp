@@ -19,7 +19,7 @@
 
 
 #include <Requests/buystockmsg_test.h>
-
+#include <Requests/sellstockmsg_test.h>
 /// TODO:
 ///
 /// - tests for responses
@@ -81,9 +81,12 @@ int main(int argc, char *argv[])
 
     // Requests
     BuyStockTest                buy_stock_test;
+    SellStockTest               sell_stock_test;
 
 
     result |= QTest::qExec(&buy_stock_test, argc, argv);
+    result |= QTest::qExec(&sell_stock_test, argc, argv);
+
 
     return result;
 }
