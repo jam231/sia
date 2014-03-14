@@ -28,7 +28,7 @@ namespace Responses
  *      <best_sell_offer : ?> when no best sell offer     = <0 : 4>
  *      <best_sell_offer : ?> otherwise                   = <amount : 4><price : 4>
  *      <last_transaction : ?>  when no last transaction  = <0 : 4>
- *      <last_transaction : ?>  otherwise                 = <price : 4><data_time_str_length : 2><date_time_str : data_time_str_length>
+ *      <last_transaction : ?>  otherwise                 = <amount : 4><price : 4><data_time_str_length : 2><date_time_str : data_time_str_length>
  *
  *  0 value is a safe choice for guard value, i.e. amount or price cannot be equal to 0.
  */
@@ -60,6 +60,12 @@ public:
     DTO::Types::Message::MessageType type() const;
 
     void send(QIODevice* connection);
+
+    DTO::Types::StockIdType getStockId() const;
+    std::shared_ptr<DTO::BestOrder> getBestBuyOrder() const;
+    std::shared_ptr<DTO::BestOrder> getBestSellOrder() const;
+    std::shared_ptr<DTO::LastTransaction> getLastTransaction() const;
+
 };
 
 }

@@ -37,25 +37,33 @@ StockInfo::StockInfo(std::shared_ptr<AbstractLogger> logger,
                          .arg(_stockId.value));
         throw std::invalid_argument("stockId <= 0.");
     }
-    if(_bestBuyOrder == nullptr ||
-       (_bestBuyOrder->getOrderType() == Order::BUY &&
-        _bestBuyOrder->getStockId() == _stockId))
+    // Constract
+    if(_bestBuyOrder &&
+       (_bestBuyOrder->getOrderType() != Order::BUY ||
+        _bestBuyOrder->getStockId() != _stockId))
     {
         LOG_TRACE(logger,
-                  QString("Best buy order is invalid: wrong stock id (should be %1 is %2) or order type(%3).")
-                  .arg(_stockId.value).arg(_bestBuyOrder->getStockId().value)
+                  QString("Best buy order is invalid: wrong stock id "\
+                          "(should be %1 is %2) or order type(%3).")
+                  .arg(_stockId.value)
+                  .arg(_bestBuyOrder->getStockId().value)
                   .arg(_bestBuyOrder->getOrderType()));
-        throw std::invalid_argument("Best buy order is invalid: wrong stock Id or order type.");
+        throw std::invalid_argument("Best buy order is invalid: wrong stock Id "\
+                                    "or order type.");
     }
-    if(_bestSellOrder == nullptr ||
-       (_bestSellOrder->getOrderType() == Order::SELL &&
-        _bestSellOrder->getStockId() == _stockId))
+    // Constract
+    if(_bestSellOrder &&
+       (_bestSellOrder->getOrderType() != Order::SELL ||
+        _bestSellOrder->getStockId() != _stockId))
     {
         LOG_TRACE(logger,
-                  QString("Best sell order is invalid: wrong stock id (should be %1 is %2) or order type(%3).")
-                  .arg(_stockId.value).arg(_bestSellOrder->getStockId().value)
+                  QString("Best sell order is invalid: wrong stock id "\
+                          "(should be %1 is %2) or order type(%3).")
+                  .arg(_stockId.value)
+                  .arg(_bestSellOrder->getStockId().value)
                   .arg(_bestSellOrder->getOrderType()));
-        throw std::invalid_argument("Best sell order is invalid: wrong stock Id or order type.");
+        throw std::invalid_argument("Best sell order is invalid: wrong stock Id "\
+                                    "or order type.");
     }
 }
 
@@ -79,10 +87,7 @@ void StockInfo::send(LastTransaction* lastTransaction, QDataStream& out)
     }
     else
     {
-        QByteArray dateTime = lastTransaction->getDateTime().toUtf8();
-        out << lastTransaction->getPrice()
-            << static_cast<Types::Message::MessageLengthType>(dateTime.size());
-        out.device()->write(dateTime);
+        out << *lastTransaction;
     }
 }
 
@@ -98,7 +103,8 @@ Message::MessageLengthType StockInfo::getSerializedLength(DTO::BestOrder* best_o
     }
 }
 
-Message::MessageLengthType StockInfo::getSerializedLength(DTO::LastTransaction* last_transaction) const
+Message::MessageLengthType StockInfo::getSerializedLength(
+        DTO::LastTransaction* last_transaction) const
 {
     if(last_transaction == nullptr)
     {
@@ -106,9 +112,7 @@ Message::MessageLengthType StockInfo::getSerializedLength(DTO::LastTransaction* 
     }
     else
     {
-        return  sizeof(PriceType) +
-                sizeof(Types::Message::MessageLengthType) +
-                last_transaction->getDateTime().toUtf8().size();
+        return  last_transaction->lengthSerialized();
     }
 }
 
@@ -138,6 +142,25 @@ Types::Message::MessageLengthType StockInfo::length() const
             getSerializedLength(_lastTransaction.get());
 }
 
+std::shared_ptr<LastTransaction> StockInfo::getLastTransaction() const
+{
+    return  _lastTransaction;
+}
+
+std::shared_ptr<BestOrder> StockInfo::getBestBuyOrder() const
+{
+    return  _bestBuyOrder;
+}
+
+std::shared_ptr<BestOrder> StockInfo::getBestSellOrder() const
+{
+    return  _bestSellOrder;
+}
+
+StockIdType StockInfo::getStockId() const
+{
+    return _stockId;
+}
 
 }
 }

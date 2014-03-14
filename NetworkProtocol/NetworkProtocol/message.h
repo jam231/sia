@@ -3,7 +3,6 @@
 
 #include "networkprotocol_global.h"
 #include "DataTransferObjects/types.h"
-#include <QString>
 
 namespace NetworkProtocol {
 
