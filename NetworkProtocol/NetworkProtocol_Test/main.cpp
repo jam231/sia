@@ -17,6 +17,9 @@
 #include <Responses/shownobestordermsg_test.h>
 #include <Responses/stockinfomsg_test.h>
 
+
+#include <Requests/buystockmsg_test.h>
+
 /// TODO:
 ///
 /// - tests for responses
@@ -76,6 +79,11 @@ int main(int argc, char *argv[])
     result |= QTest::qExec(&show_no_best_order_test, argc, argv);
     result |= QTest::qExec(&stock_info_test, argc, argv);
 
+    // Requests
+    BuyStockTest                buy_stock_test;
+
+
+    result |= QTest::qExec(&buy_stock_test, argc, argv);
 
     return result;
 }

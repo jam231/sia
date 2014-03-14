@@ -198,7 +198,7 @@ void OrderRealizationTest::send()
 
         assert (Message::RESPONSE_ORDER_REALIZATION == 0x17);
 
-                QVERIFY2(is_type == Message::RESPONSE_ORDER_REALIZATION,
+        QVERIFY2(is_type == Message::RESPONSE_ORDER_REALIZATION,
                  qPrintable(QString("Message type doesn't match. Is %1 should be %2.")
                             .arg(is_type)
                             .arg(Message::RESPONSE_ORDER_REALIZATION)));
