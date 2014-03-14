@@ -23,9 +23,12 @@
 #include <Requests/cancelordermsg_test.h>
 #include <Requests/getmyordersmsg_test.h>
 #include <Requests/getmystocksmsg_test.h>
+#include <Requests/subscribestockmsg_test.h>
+#include <Requests/unsubscribestockmsg_test.h>
+
 /// TODO:
 ///
-/// - tests for requests
+/// - tests for requests (GetStockInfo, LoginUser, RegisterUser)
 ///
 
 /*
@@ -88,12 +91,16 @@ int main(int argc, char *argv[])
     CancelOrderTest             cancel_order_test;
     GetMyOrdersTest             get_my_orders_test;
     GetMyStocksTest             get_my_stocks_test;
+    SubscribeStockTest          subscribe_stock_test;
+    UnsubscribeStockTest        unsubscribe_stock_test;
 
     result |= QTest::qExec(&buy_stock_test, argc, argv);
     result |= QTest::qExec(&sell_stock_test, argc, argv);
     result |= QTest::qExec(&cancel_order_test, argc, argv);
     result |= QTest::qExec(&get_my_orders_test, argc, argv);
     result |= QTest::qExec(&get_my_stocks_test, argc, argv);
+    result |= QTest::qExec(&subscribe_stock_test, argc, argv);
+    result |= QTest::qExec(&unsubscribe_stock_test, argc, argv);
 
 
     return result;

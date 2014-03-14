@@ -1,1 +1,155 @@
 #include "unsubscribestockmsg_test.h"
+
+#include <Requests/unsubscribestockmsg.h>
+#include <networkprotocol_utilities.h>
+
+#include <utilities.h>
+
+#include <stdexcept>
+#include <memory>
+#include <assert.h>
+
+using namespace NetworkProtocol;
+using namespace NetworkProtocol::DTO;
+using namespace Types;
+
+Q_DECLARE_METATYPE(QByteArray)
+
+Q_DECLARE_METATYPE(StockIdType)
+
+void UnsubscribeStockTest::initTestCase()
+{
+    GlobalUtilities::setLogger(move(std::shared_ptr<AbstractLogger>(
+                                    make_logger(LoggingLevel::Off))));
+}
+
+void UnsubscribeStockTest::from_valid_data()
+{
+    QTest::addColumn<StockIdType>("stock_id");
+
+    for(long long i = 2; i <= 32; i += 2)
+    {
+        StockIdType stock_id = StockIdType((static_cast<long long>(1) << i) - 1);
+
+        QTest::newRow(qPrintable(QString("stock id = 2 ^ %1 - 1")
+                                 .arg(i)))
+                << stock_id;
+    }
+}
+
+void UnsubscribeStockTest::from_valid()
+{
+    QFETCH(StockIdType, stock_id);
+    try
+    {
+        QByteArray buffer;
+        QDataStream stream(&buffer, QIODevice::ReadWrite);
+
+        assert(stream.byteOrder() == QDataStream::BigEndian);
+
+        Message::MessageLengthType length =
+                sizeof(Message::MessageLengthType) + sizeof(Message::MessageType) +
+                sizeof(stock_id);
+
+        assert (length == 7);
+        assert (Message::REQUEST_UNSUBSCRIBE_STOCK == 0x1C);
+
+        stream << stock_id;
+
+        stream.device()->reset();
+
+        Requests::UnsubscribeStock unsubscribe_stock(stream);
+
+        QVERIFY2(unsubscribe_stock.length() == length,
+                 qPrintable(QString("Length is incorrect. Is %1 should be %2.")
+                            .arg(unsubscribe_stock.length())
+                            .arg(length)));
+
+        QVERIFY2(unsubscribe_stock.getStockId() == stock_id,
+                 qPrintable(QString("Stock id doesn't match. Is %1 should be %2.")
+                            .arg(unsubscribe_stock.getStockId().value)
+                            .arg(stock_id.value)));
+
+    }
+    catch(Requests::InvalidRequest& e)
+    {
+        QFAIL(qPrintable(QString("Caught %1").arg(e.what())));
+    }
+    catch(...)
+    {
+        QFAIL("Unkown exception has been thrown.");
+    }
+}
+
+void UnsubscribeStockTest::from_invalid_body_data()
+{
+    QTest::addColumn<QByteArray>("byte_array");
+
+    QByteArray buffer;
+    QDataStream stream(&buffer, QIODevice::ReadWrite);
+    assert(stream.byteOrder() == QDataStream::BigEndian);
+
+
+    stream << StockIdType(0);
+    stream.device()->reset();
+
+    Message::MessageLengthType should_be_length = sizeof(StockIdType);
+
+    assert(stream.device()->bytesAvailable() == should_be_length);
+
+    QTest::newRow("Invalid data") << buffer;
+}
+
+void UnsubscribeStockTest::from_invalid_body()
+{
+    QFETCH(QByteArray, byte_array);
+
+    try
+    {
+        QDataStream stream(&byte_array, QIODevice::ReadOnly);
+        Requests::UnsubscribeStock unsubscribe_stock(stream);
+    }
+    catch(Requests::InvalidRequestBody&)
+    {
+        return;
+    }
+    catch(...)
+    {
+        QFAIL("Wrong exception has been thrown.");
+    }
+}
+
+void UnsubscribeStockTest::from_malformed_data()
+{
+    QTest::addColumn<QByteArray>("byte_array");
+
+    typedef quint32 underlying_type;
+
+    assert(sizeof(StockIdType) == sizeof(underlying_type));
+
+    QByteArray buffer;
+    QDataStream stream(&buffer, QIODevice::ReadWrite);
+    assert(stream.byteOrder() == QDataStream::BigEndian);
+
+    assert(stream.device()->bytesAvailable() == 0 * sizeof(underlying_type));
+    QTest::newRow("Invalid data") << buffer;
+}
+
+void UnsubscribeStockTest::from_malformed()
+{
+    QFETCH(QByteArray, byte_array);
+
+    try
+    {
+        QDataStream stream(&byte_array, QIODevice::ReadOnly);
+        Requests::UnsubscribeStock unsubscribe_stock(stream);
+    }
+    catch(Requests::MalformedRequest&)
+    {
+        return;
+    }
+    catch(...)
+    {
+        QFAIL("Wrong exception has been thrown.");
+    }
+}
