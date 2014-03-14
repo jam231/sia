@@ -20,9 +20,11 @@
 
 #include <Requests/buystockmsg_test.h>
 #include <Requests/sellstockmsg_test.h>
+#include <Requests/cancelordermsg_test.h>
+
 /// TODO:
 ///
-/// - tests for responses
+/// - tests for requests
 ///
 
 /*
@@ -82,11 +84,11 @@ int main(int argc, char *argv[])
     // Requests
     BuyStockTest                buy_stock_test;
     SellStockTest               sell_stock_test;
-
+    CancelOrderTest             cancel_order_test;
 
     result |= QTest::qExec(&buy_stock_test, argc, argv);
     result |= QTest::qExec(&sell_stock_test, argc, argv);
-
+    result |= QTest::qExec(&cancel_order_test, argc, argv);
 
     return result;
 }
