@@ -27,11 +27,7 @@
 #include <Requests/subscribestockmsg_test.h>
 #include <Requests/unsubscribestockmsg_test.h>
 #include <Requests/loginusermsg_test.h>
-
-/// TODO:
-///
-/// - tests for requests (LoginUser, RegisterUser)
-///
+#include <Requests/registerusermsg_test.h>
 
 /*
  *
@@ -97,6 +93,7 @@ int main(int argc, char *argv[])
     SubscribeStockTest          subscribe_stock_test;
     UnsubscribeStockTest        unsubscribe_stock_test;
     LoginUserTest               login_user_test;
+    RegisterUserTest            register_user_test;
 
     result |= QTest::qExec(&buy_stock_test, argc, argv);
     result |= QTest::qExec(&sell_stock_test, argc, argv);
@@ -107,6 +104,7 @@ int main(int argc, char *argv[])
     result |= QTest::qExec(&subscribe_stock_test, argc, argv);
     result |= QTest::qExec(&unsubscribe_stock_test, argc, argv);
     result |= QTest::qExec(&login_user_test, argc, argv);
+    result |= QTest::qExec(&register_user_test, argc, argv);
 
 
     return result;

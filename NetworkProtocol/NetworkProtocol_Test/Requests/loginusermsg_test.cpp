@@ -9,6 +9,8 @@
 #include <memory>
 #include <assert.h>
 
+#include <cmath>
+
 using namespace NetworkProtocol;
 using namespace NetworkProtocol::DTO;
 using namespace Types;
@@ -141,8 +143,6 @@ void LoginUserTest::from_invalid_body()
         QFAIL("Wrong exception has been thrown.");
     }
 }
-
-#include <cmath>
 
 
 void LoginUserTest::from_malformed_data()
