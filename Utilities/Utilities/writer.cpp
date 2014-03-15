@@ -25,8 +25,6 @@ AbstractWriter& operator<<(AbstractWriter& writer, const T& v)
 }
 
 
-/// TODO: Destructors seem not to be called on delete.
-/// TODO: Investigate why StdInWriter don't work when using stream.
 StdInWriter::StdInWriter()
 {
     stream = new QTextStream(stdout);
@@ -42,7 +40,19 @@ StdInWriter::~StdInWriter()
    delete stream;
 }
 
+QDebugWriter::QDebugWriter()
+{
+}
 
+void QDebugWriter::write(QString data)
+{
+    qDebug() << data;
+}
+
+QDebugWriter::~QDebugWriter()
+{
+
+}
 
 FileWriter::FileWriter(QString file_name)
 {

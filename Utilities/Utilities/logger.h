@@ -6,7 +6,7 @@
 #include <QDateTime>
 
 #include <memory>
-
+#include <assert.h>
 
 #include <writer.h>
 
@@ -158,9 +158,8 @@ public:
 
 
 AbstractLogger *make_logger(LoggingLevel level,
-                            std::shared_ptr<AbstractWriter> writer =
-                                std::shared_ptr<AbstractWriter>(new DummyWriter()));
+                            std::shared_ptr<AbstractWriter> writer);
 
-
+AbstractLogger *make_logger(LoggingLevel level);
 
 #endif // LOGGER_H

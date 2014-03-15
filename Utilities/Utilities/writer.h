@@ -53,6 +53,15 @@ public:
     virtual ~StdInWriter();
 };
 
+class QDebugWriter : public AbstractWriter
+{
+public:
+    QDebugWriter();
+    // Not thread-safe
+    void write(QString data);
+    virtual ~QDebugWriter();
+};
+
 /*
  *
  *  When buffer_size <= 2 then factual buffer size will be 1

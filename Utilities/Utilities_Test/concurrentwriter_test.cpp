@@ -42,6 +42,9 @@ void ConcurrentWriterTest::generate_data_for_rapidWriter(qint32 entry_length, qi
             }
             writers_data_loads << data_load;
         }
+
+        assert(writers_data_loads.size() == writers_count);
+
         for(int workers_count= 1; workers_count < std::min(writers_count, max_worker_count);
             workers_count += worker_count_step)
         {
@@ -103,7 +106,7 @@ void ConcurrentWriterTest::rapidWrite()
     QThreadPool::globalInstance()->setMaxThreadCount(old_maxThreadCount);
 
     // It's stable so if [(a,a,..., 5), ..., (a,a, ..., 3)] in mock_writers_buffer
-    // then after sorting relative order of that two elemenets will be preserved (=> failure ;-) )
+    // then after sorting by relative order of that two elemenets will be preserved (=> failure ;-) )
     std::stable_sort(mock_writers_buffer->begin(), mock_writers_buffer->end(),
                      [] (QString s1, QString s2) {return s1[0] < s2[0];});
     QStringList serial_write;
@@ -123,8 +126,8 @@ void ConcurrentWriterTest::rapidWrite()
                  qPrintable(QString("Write order has been violated. Mismatch on position %1."\
                                     " Is %2 should be %3.")
                             .arg(QString::number(i))
-                            .arg(result[i])
-                            .arg(should_be_string[i])));
+                            .arg(result)
+                            .arg(should_be_string)));
     }
 }
 

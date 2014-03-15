@@ -9,7 +9,9 @@ void GlobalUtilities::setLogger(std::shared_ptr<AbstractLogger> logger)
 {
 
     if(!logger)
+    {
         throw std::invalid_argument("GlobalUtilities::setLogger(logger) with logger == nullptr.");
+    }
     _logger.swap(logger);
 }
 
