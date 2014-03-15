@@ -29,6 +29,8 @@
 #include <Requests/loginusermsg_test.h>
 #include <Requests/registerusermsg_test.h>
 
+#include <networkprotocol_utilities_test.h>
+
 /*
  *
  *  About methodology
@@ -106,6 +108,10 @@ int main(int argc, char *argv[])
     result |= QTest::qExec(&login_user_test, argc, argv);
     result |= QTest::qExec(&register_user_test, argc, argv);
 
+
+    NetworkProtocolUtilitiesTest  network_protocol_utils;
+
+    result |= QTest::qExec(&network_protocol_utils, argc, argv);
 
     return result;
 }

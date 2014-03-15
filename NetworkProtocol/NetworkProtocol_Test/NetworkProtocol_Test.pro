@@ -21,7 +21,6 @@ SOURCES += \
     Requests/unsubscribestockmsg_test.cpp \
     Requests/subscribestockmsg_test.cpp \
     Requests/sellstockmsg_test.cpp \
-    Requests/request_test.cpp \
     Requests/registerusermsg_test.cpp \
     Requests/loginusermsg_test.cpp \
     Requests/getstockinfomsg_test.cpp \
@@ -30,7 +29,6 @@ SOURCES += \
     Requests/cancelordermsg_test.cpp \
     Requests/buystockmsg_test.cpp \
     Responses/stockinfomsg_test.cpp \
-    Responses/response_test.cpp \
     Responses/failuremsg_test.cpp \
     Responses/okmsg_test.cpp \
     Responses/registerusersuccessmsg_test.cpp \
@@ -52,7 +50,6 @@ HEADERS += \
     Requests/unsubscribestockmsg_test.h \
     Requests/subscribestockmsg_test.h \
     Requests/sellstockmsg_test.h \
-    Requests/request_test.h \
     Requests/registerusermsg_test.h \
     Requests/loginusermsg_test.h \
     Requests/getstockinfomsg_test.h \
@@ -61,7 +58,6 @@ HEADERS += \
     Requests/cancelordermsg_test.h \
     Requests/buystockmsg_test.h \
     Responses/stockinfomsg_test.h \
-    Responses/response_test.h \
     Responses/failuremsg_test.h \
     Responses/okmsg_test.h \
     Responses/registerusersuccessmsg_test.h \
