@@ -29,7 +29,7 @@ std::shared_ptr<Request> fromStream(std::shared_ptr<AbstractLogger> logger,
         throw MalformedRequest("length < sizeof(Message::MessageType)");
     }
     Message::MessageType       type   = readType(logger, stream);
-
+    length -= 1;
     // Read length bytes even if request is malformed.
     QDataStream serialized_request_body(stream.device()->read(length));
     Request* request;
