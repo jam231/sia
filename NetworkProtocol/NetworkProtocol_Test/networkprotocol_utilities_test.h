@@ -53,11 +53,11 @@ private Q_SLOTS:
     void readType_NoEx_invalid();
 
     void fromStream_valid_data();
-    void fromStream_invalid_data();
+    void fromStream_invalid_incomplete_data();
 
 
     void fromStream_valid();
-    void fromStream_invalid();
+    void fromStream_invalid_incomplete();
 };
 
 
