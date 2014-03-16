@@ -11,7 +11,7 @@ MockWriter::MockWriter(const std::shared_ptr<QStringList>& buffer) : buffer(buff
 }
 
 
-void MockWriter::write(QString data)
+void MockWriter::write(const QString &data)
 {
     *buffer << data;
 }

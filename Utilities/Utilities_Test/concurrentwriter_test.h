@@ -16,10 +16,10 @@ class ConcurrentWriterTest : public QObject
     std::unique_ptr<MockWriter> _mock_writer;
 
     static const qint32 SHORT_STRING_LENGTH = 5,
-                        LONG_STRING_LENGTH  = 100,
+                        LONG_STRING_LENGTH  = 20,
             // How many strings data_load for a worker contain.
                         SMALL_DATA_SET_SIZE = 100,
-                        LARGE_DATA_SET_SIZE = 10000;
+                        LARGE_DATA_SET_SIZE = 400;
 
     Q_OBJECT
 

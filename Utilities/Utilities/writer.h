@@ -12,7 +12,7 @@
 class AbstractWriter
 {
 public:
-    virtual void write(QString data) = 0;
+    virtual void write(const QString&) = 0;
     virtual ~AbstractWriter() {}
 };
 
@@ -26,7 +26,7 @@ AbstractWriter& operator<<(AbstractWriter&, const T&);
 class DummyWriter : public AbstractWriter
 {
 public:
-    void write(QString) {}
+    void write(const QString&) {}
 };
 
 class FileWriter : public AbstractWriter
@@ -37,7 +37,7 @@ public:
 
     FileWriter(QString file_name);
     // Not thread-safe
-    void write(QString data);
+    void write(const QString& data);
     void flush();
 
     virtual ~FileWriter();
@@ -49,7 +49,7 @@ class StdInWriter : public AbstractWriter
 public:
     StdInWriter();
     // Not thread-safe
-    void write(QString data);
+    void write(const QString &data);
     virtual ~StdInWriter();
 };
 
@@ -58,7 +58,7 @@ class QDebugWriter : public AbstractWriter
 public:
     QDebugWriter();
     // Not thread-safe
-    void write(QString data);
+    void write(const QString &data);
     virtual ~QDebugWriter();
 };
 
@@ -79,7 +79,7 @@ public:
     BufferedWriter(std::shared_ptr<AbstractWriter> writer, qint32 buffer_size=1024);
 
     // Not thread-safe
-    void write(QString data);
+    void write(const QString &data);
 
     void flush();
 
@@ -87,18 +87,25 @@ public:
     virtual ~BufferedWriter();
 };
 
-
-class ConcurrentWriter : public AbstractWriter
+class ThreadSafeWriter : public AbstractWriter
 {
-    QMutex _lock;
+       QMutex _lock;
+       std::shared_ptr<AbstractWriter> _writer;
+public:
+       ThreadSafeWriter(std::shared_ptr<AbstractWriter> writer);
+       // Thread-safe
+       void write(const QString &data);
+};
+
+class AsyncWriter : public AbstractWriter
+{
+
     std::shared_ptr<AbstractWriter> _writer;
     QFuture<void> _previous_task;
 public:
-
-    // Writer's write must be thread-safe !!!
-    ConcurrentWriter(std::shared_ptr<AbstractWriter> writer);
-    // Thread-safe
-    void write(QString data);
+    AsyncWriter(std::shared_ptr<AbstractWriter> writer);
+    // Not thread-safe
+       void write(const QString &data);
 };
 
 #endif // WRITER_H

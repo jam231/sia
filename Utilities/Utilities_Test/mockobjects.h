@@ -14,7 +14,7 @@ public:
     std::shared_ptr<QStringList> buffer;
     MockWriter();
     MockWriter(const std::shared_ptr<QStringList>& buffer);
-    void write(QString);
+    void write(const QString &);
 };
 
 #endif // MOCKOBJECTS_H

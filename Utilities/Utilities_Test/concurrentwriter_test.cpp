@@ -85,10 +85,14 @@ void ConcurrentWriterTest::rapidWrite()
     QThreadPool::globalInstance()->setMaxThreadCount(worker_threads_count);
 
     std::shared_ptr<QStringList> mock_writers_buffer(_mock_writer->buffer);
-    ConcurrentWriter writer(move(_mock_writer));
-
+    std::shared_ptr<AbstractWriter> writer = shared_ptr<AbstractWriter>(
+                new ThreadSafeWriter(move(_mock_writer)));
+    /*
+    std::shared_ptr<AbstractWriter> writer = shared_ptr<AbstractWriter>(
+            new ThreadSafeWriter(async_writer));
+    */
     QFutureSynchronizer<void> future_synchronizer;
-    //QBENCHMARK {
+
     // Write
     assert(writers_count == writers_work_loads.size());
     for(int writer_index = 0; writer_index < writers_count; writer_index++)
@@ -97,12 +101,13 @@ void ConcurrentWriterTest::rapidWrite()
                                         {
                                             for(int i = 0; i < load.size(); i++)
                                             {
-                                                writer.write(load[i]);
+                                                writer->write(load[i]);
                                             }
                                         }, writers_work_loads[writer_index]));
     }
-    //}
+
     future_synchronizer.waitForFinished();
+
     QThreadPool::globalInstance()->setMaxThreadCount(old_maxThreadCount);
 
     // It's stable so if [(a,a,..., 5), ..., (a,a, ..., 3)] in mock_writers_buffer
@@ -124,8 +129,10 @@ void ConcurrentWriterTest::rapidWrite()
     {
         QVERIFY2(result[i] == should_be_string[i],
                  qPrintable(QString("Write order has been violated. Mismatch on position %1."\
-                                    " Is %2 should be %3.")
+                                    " Is %2 should be %3.\n %4 \n \t VS \n %5 \n")
                             .arg(QString::number(i))
+                            .arg(result)
+                            .arg(should_be_string)
                             .arg(result)
                             .arg(should_be_string)));
     }

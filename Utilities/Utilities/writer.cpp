@@ -30,7 +30,7 @@ StdInWriter::StdInWriter()
     stream = new QTextStream(stdout);
 }
 
-void StdInWriter::write(QString data)
+void StdInWriter::write(const QString &data)
 {
     (*stream) << data;
 }
@@ -44,7 +44,7 @@ QDebugWriter::QDebugWriter()
 {
 }
 
-void QDebugWriter::write(QString data)
+void QDebugWriter::write(const QString &data)
 {
     qDebug() << data;
 }
@@ -65,7 +65,7 @@ FileWriter::FileWriter(QString file_name)
     stream.setDevice(file.get());
 }
 
-void FileWriter::write(QString data)
+void FileWriter::write(const QString &data)
 {
     stream << data;
 }
@@ -96,7 +96,7 @@ BufferedWriter::BufferedWriter(shared_ptr<AbstractWriter> writer, qint32 buffer_
 }
 
 
-void BufferedWriter::write(QString data)
+void BufferedWriter::write(const QString &data)
 {
     if(_message_queue.size() >= _buffer_size)
     {
@@ -121,25 +121,37 @@ BufferedWriter::~BufferedWriter()
     flush();
 }
 
-
-
-
-ConcurrentWriter::ConcurrentWriter(shared_ptr<AbstractWriter> writer)
+ThreadSafeWriter::ThreadSafeWriter(shared_ptr<AbstractWriter> writer)
     : _writer(move(writer))
 {
     if(!_writer)
     {
-        throw std::invalid_argument("ConcurrentWriter(writer): writer can't be null.");
+        throw std::invalid_argument("ThreadSafeWriter(writer): writer can't be null.");
     }
 }
 
-void ConcurrentWriter::write(QString data)
+void ThreadSafeWriter::write(const QString& data)
+{
+    _lock.lock();
+    _writer->write(data);
+    _lock.unlock();
+}
+
+AsyncWriter::AsyncWriter(shared_ptr<AbstractWriter> writer)
+    : _writer(move(writer))
+{
+    if(!_writer)
+    {
+        throw std::invalid_argument("AsyncWriter(writer): writer can't be null.");
+    }
+}
+
+void AsyncWriter::write(const QString &data)
 {
     /* It is unacceptable to allow writing new batch
      * of messages when previous write request isn't finished.
      */
-    _lock.lock();
-        _previous_task.waitForFinished();
-        _previous_task = QtConcurrent::run(_writer.get(), &AbstractWriter::write, data);
-    _lock.unlock();
+    _previous_task.waitForFinished();
+    _previous_task = QtConcurrent::run(_writer.get(), &AbstractWriter::write, data);
+
 }
