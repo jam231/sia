@@ -144,7 +144,7 @@ void NetworkProtocolUtilitiesTest::readLength_invalid()
 
     try
     {
-        Message::MessageLengthType is_length = Requests::readLength(stream);
+        Requests::readLength(stream);
 
         QFAIL("IncompleteRequest exception should have been thrown.");
     }
@@ -474,7 +474,6 @@ void NetworkProtocolUtilitiesTest::fromStream_invalid_incomplete_data()
 
     // Incomplete requests
 
-    QTest::addColumn<Message::MessageType>("message_type");
     QTest::addColumn<QByteArray>("binary_data");
 
     QString password = "abcde";
@@ -485,8 +484,8 @@ void NetworkProtocolUtilitiesTest::fromStream_invalid_incomplete_data()
             << Message::REQUEST_REGISTER_USER
             << static_cast<Message::MessageLengthType>(password.toUtf8().size() + 1);
     stream1.writeRawData(password.toUtf8().data(), password.toUtf8().size());
-    QTest::newRow("REQUEST_REGISTER_USER") << Message::REQUEST_REGISTER_USER
-                                           << buffer1;
+    QTest::newRow("REQUEST_REGISTER_USER")
+            << buffer1;
 
     QByteArray buffer2;
     QDataStream stream2(&buffer2, QIODevice::ReadWrite);
@@ -496,7 +495,6 @@ void NetworkProtocolUtilitiesTest::fromStream_invalid_incomplete_data()
            << static_cast<Message::MessageLengthType>(password.toUtf8().size() + 1);
     stream1.writeRawData(password.toUtf8().data(), password.toUtf8().size());
     QTest::newRow("REQUEST_LOGIN_USER")
-            << Message::REQUEST_LOGIN_USER
             << buffer2;
 
     QByteArray buffer3;
@@ -505,7 +503,6 @@ void NetworkProtocolUtilitiesTest::fromStream_invalid_incomplete_data()
            << Message::REQUEST_SELL_STOCK_ORDER << StockIdType(1)
            << AmountType(1); // Missing price << PriceType(1);
     QTest::newRow("REQUEST_SELL_STOCK_ORDER")
-            << Message::REQUEST_SELL_STOCK_ORDER
             << buffer3;
 
     QByteArray buffer4;
@@ -514,7 +511,6 @@ void NetworkProtocolUtilitiesTest::fromStream_invalid_incomplete_data()
            << Message::REQUEST_BUY_STOCK_ORDER << StockIdType(1)
            << AmountType(1); // Missing price << PriceType(1);
     QTest::newRow("REQUEST_BUY_STOCK_ORDER")
-            << Message::REQUEST_BUY_STOCK_ORDER
             << buffer4;
 
     QByteArray buffer5;
@@ -522,7 +518,6 @@ void NetworkProtocolUtilitiesTest::fromStream_invalid_incomplete_data()
     stream5 << static_cast<Message::MessageLengthType>(7)
             << Message::REQUEST_SUBSCRIBE_STOCK << quint16(1); //<< StockIdType(1);
     QTest::newRow("REQUEST_SUBSCRIBE_STOCK")
-            << Message::REQUEST_SUBSCRIBE_STOCK
             << buffer5;
 
     QByteArray buffer6;
@@ -530,7 +525,6 @@ void NetworkProtocolUtilitiesTest::fromStream_invalid_incomplete_data()
     stream6 << static_cast<Message::MessageLengthType>(7)
            << Message::REQUEST_UNSUBSCRIBE_STOCK << quint16(1); //<< StockIdType(1);
     QTest::newRow("REQUEST_UNSUBSCRIBE_STOCK")
-            << Message::REQUEST_UNSUBSCRIBE_STOCK
             << buffer6;
 
     QByteArray buffer7;
@@ -538,7 +532,6 @@ void NetworkProtocolUtilitiesTest::fromStream_invalid_incomplete_data()
     stream7 << static_cast<Message::MessageLengthType>(3);
            //<< Message::REQUEST_GET_MY_STOCKS;
     QTest::newRow("REQUEST_GET_MY_STOCKS")
-            << Message::REQUEST_GET_MY_STOCKS
             << buffer7;
 
     QByteArray buffer8;
@@ -546,7 +539,6 @@ void NetworkProtocolUtilitiesTest::fromStream_invalid_incomplete_data()
     stream8 << static_cast<Message::MessageLengthType>(3);
            //<< Message::REQUEST_GET_MY_ORDERS;
     QTest::newRow("REQUEST_GET_MY_ORDERS")
-            << Message::REQUEST_GET_MY_ORDERS
             << buffer8;
 
     QByteArray buffer9;
@@ -554,7 +546,6 @@ void NetworkProtocolUtilitiesTest::fromStream_invalid_incomplete_data()
     stream9 << static_cast<Message::MessageLengthType>(7)
             << Message::REQUEST_GET_STOCK_INFO << quint16(1) << quint8(0); //<< StockIdType(1);
     QTest::newRow("REQUEST_GET_STOCK_INFO")
-            << Message::REQUEST_GET_STOCK_INFO
             << buffer9;
 
     QByteArray buffer10;
@@ -562,7 +553,6 @@ void NetworkProtocolUtilitiesTest::fromStream_invalid_incomplete_data()
     stream10 << static_cast<Message::MessageLengthType>(7)
            << Message::REQUEST_CANCEL_ORDER << quint8(0); //<< OrderIdType(1);
     QTest::newRow("REQUEST_CANCEL_ORDER")
-            << Message::REQUEST_CANCEL_ORDER
             << buffer10;
 }
 
@@ -604,7 +594,6 @@ void NetworkProtocolUtilitiesTest::fromStream_valid()
 void NetworkProtocolUtilitiesTest::fromStream_invalid_incomplete()
 {
 
-        QFETCH(Message::MessageType, message_type);
         QFETCH(QByteArray, binary_data);
 
 
@@ -629,6 +618,259 @@ void NetworkProtocolUtilitiesTest::fromStream_invalid_incomplete()
                                         "Is %1 should be %2.")
                                 .arg(stream.device()->bytesAvailable())
                                 .arg(length)));
+        }
+        catch(std::exception& e)
+        {
+            QFAIL(qPrintable(QString("Caught: %1").arg(e.what())));
+        }
+        catch(...)
+        {
+            QFAIL("Unknown exception has been thrown.");
+        }
+}
+
+void NetworkProtocolUtilitiesTest::fromStream_invalid_body_data()
+{
+
+    // Invalid request body
+
+    QTest::addColumn<QByteArray>("binary_data");
+
+    QString password = "abc";
+
+    QByteArray buffer1;
+    QDataStream stream1(&buffer1, QIODevice::ReadWrite);
+    stream1 << static_cast<Message::MessageLengthType>(2 + 1 + 2 + password.toUtf8().size())
+           << Message::REQUEST_REGISTER_USER
+           << static_cast<Message::MessageLengthType>(password.toUtf8().size());
+    stream1.writeRawData(password.toUtf8().data(), password.toUtf8().size());
+    QTest::newRow("REQUEST_REGISTER_USER")
+            << buffer1;
+
+    QByteArray buffer2;
+    QDataStream stream2(&buffer2, QIODevice::ReadWrite);
+    stream2 << static_cast<Message::MessageLengthType>(2 + 1 + 4 + 2 + password.toUtf8().size())
+           << Message::REQUEST_LOGIN_USER
+           << UserIdType(1)
+           << static_cast<Message::MessageLengthType>(password.toUtf8().size());
+    stream2.writeRawData(password.toUtf8().data(), password.toUtf8().size());
+    QTest::newRow("REQUEST_LOGIN_USER")
+            << buffer2;
+
+    QByteArray buffer2_2;
+    QDataStream stream2_2(&buffer2_2, QIODevice::ReadWrite);
+    stream2_2
+           << static_cast<Message::MessageLengthType>(2 + 1 + 4 + 2 + password.toUtf8().size())
+           << Message::REQUEST_LOGIN_USER
+           << UserIdType(0)
+           << static_cast<Message::MessageLengthType>(password.toUtf8().size());
+    stream2_2.writeRawData(password.toUtf8().data(), password.toUtf8().size());
+    QTest::newRow("REQUEST_LOGIN_USER")
+            << buffer2_2;
+
+    QByteArray buffer3;
+    QDataStream stream3(&buffer3, QIODevice::ReadWrite);
+    stream3 << static_cast<Message::MessageLengthType>(15)
+           << Message::REQUEST_SELL_STOCK_ORDER << StockIdType(0)
+           << AmountType(0) << PriceType(0);
+    QTest::newRow("REQUEST_SELL_STOCK_ORDER")
+            << buffer3;
+
+    QByteArray buffer4;
+    QDataStream stream4(&buffer4, QIODevice::ReadWrite);
+    stream4 << static_cast<Message::MessageLengthType>(15)
+           << Message::REQUEST_BUY_STOCK_ORDER << StockIdType(0)
+           << AmountType(0)
+           << PriceType(0);
+    QTest::newRow("REQUEST_BUY_STOCK_ORDER")
+            << buffer4;
+
+    QByteArray buffer5;
+    QDataStream stream5(&buffer5, QIODevice::ReadWrite);
+    stream5 << static_cast<Message::MessageLengthType>(7)
+           << Message::REQUEST_SUBSCRIBE_STOCK << StockIdType(0);
+    QTest::newRow("REQUEST_SUBSCRIBE_STOCK")
+            << buffer5;
+
+    QByteArray buffer6;
+    QDataStream stream6(&buffer6, QIODevice::ReadWrite);
+    stream6 << static_cast<Message::MessageLengthType>(7)
+           << Message::REQUEST_UNSUBSCRIBE_STOCK << StockIdType(0);
+    QTest::newRow("REQUEST_UNSUBSCRIBE_STOCK")
+            << buffer6;
+
+    QByteArray buffer7;
+    QDataStream stream7(&buffer7, QIODevice::ReadWrite);
+    stream7 << static_cast<Message::MessageLengthType>(3)
+            << Message::REQUEST_GET_MY_STOCKS;
+    QTest::newRow("REQUEST_GET_MY_STOCKS")
+            << buffer7;
+
+    QByteArray buffer8;
+    QDataStream stream8(&buffer8, QIODevice::ReadWrite);
+    stream8 << static_cast<Message::MessageLengthType>(3)
+           << Message::REQUEST_GET_MY_ORDERS;
+    QTest::newRow("REQUEST_GET_MY_ORDERS")
+            << buffer8;
+
+    QByteArray buffer9;
+    QDataStream stream9(&buffer9, QIODevice::ReadWrite);
+    stream9 << static_cast<Message::MessageLengthType>(7)
+           << Message::REQUEST_GET_STOCK_INFO << StockIdType(0);
+    QTest::newRow("REQUEST_GET_STOCK_INFO")
+            << buffer9;
+
+    QByteArray buffer10;
+    QDataStream stream10(&buffer10, QIODevice::ReadWrite);
+    stream10 << static_cast<Message::MessageLengthType>(7)
+           << Message::REQUEST_CANCEL_ORDER << OrderIdType(0);
+    QTest::newRow("REQUEST_CANCEL_ORDER")
+            << buffer10;
+}
+
+void NetworkProtocolUtilitiesTest::fromStream_invalid_body()
+{
+
+        QFETCH(QByteArray, binary_data);
+
+        QDataStream stream(&binary_data, QIODevice::ReadOnly);
+
+
+        stream.device()->reset();
+        try
+        {
+            auto request = fromStream(/*std::shared_ptr<AbstractLogger>(
+                                          make_logger(LoggingLevel::Trace,
+                                                      std::shared_ptr<AbstractWriter>(new QDebugWriter()))),
+                                          */stream);
+
+        }
+        catch(InvalidRequestBody&)
+        {
+            QVERIFY2(stream.device()->bytesAvailable() == 0,
+                     qPrintable(QString("Incorrect number of bytes left in stream. "\
+                                        "Is %1 should be %2.")
+                                .arg(stream.device()->bytesAvailable())
+                                .arg(0)));
+        }
+        catch(std::exception& e)
+        {
+            QFAIL(qPrintable(QString("Caught: %1").arg(e.what())));
+        }
+        catch(...)
+        {
+            QFAIL("Unknown exception has been thrown.");
+        }
+}
+
+void NetworkProtocolUtilitiesTest::fromStream_malformed_data()
+{
+
+    // Invalid request body
+
+    QTest::addColumn<QByteArray>("binary_data");
+    QTest::addColumn<Message::MessageLengthType>("data_size_left");
+
+    QString password = "abcde";
+
+    QByteArray buffer1;
+    QDataStream stream1(&buffer1, QIODevice::ReadWrite);
+    stream1 << static_cast<Message::MessageLengthType>(2 + 1 + 2 + password.toUtf8().size())
+           << Message::REQUEST_REGISTER_USER
+           << static_cast<Message::MessageLengthType>(password.toUtf8().size() + 1);
+    stream1.writeRawData(password.toUtf8().data(), password.toUtf8().size());
+    QTest::newRow("REQUEST_REGISTER_USER")
+            << buffer1
+            << static_cast<Message::MessageLengthType>(0);
+
+    QByteArray buffer2;
+    QDataStream stream2(&buffer2, QIODevice::ReadWrite);
+    stream2 << static_cast<Message::MessageLengthType>(2 + 1 + 4 + 2 + password.toUtf8().size())
+           << Message::REQUEST_LOGIN_USER
+           << UserIdType(1)
+           << static_cast<Message::MessageLengthType>(password.toUtf8().size() + 1);
+    stream2.writeRawData(password.toUtf8().data(), password.toUtf8().size());
+    QTest::newRow("REQUEST_LOGIN_USER")
+            << buffer2
+            << static_cast<Message::MessageLengthType>(0);
+
+    QByteArray buffer3;
+    QDataStream stream3(&buffer3, QIODevice::ReadWrite);
+    stream3 << static_cast<Message::MessageLengthType>(13)
+           << Message::REQUEST_SELL_STOCK_ORDER << StockIdType(1)
+           << AmountType(1) << PriceType(1);
+    QTest::newRow("REQUEST_SELL_STOCK_ORDER")
+            << buffer3
+            << static_cast<Message::MessageLengthType>(2);
+
+    QByteArray buffer4;
+    QDataStream stream4(&buffer4, QIODevice::ReadWrite);
+    stream4 << static_cast<Message::MessageLengthType>(11)
+           << Message::REQUEST_BUY_STOCK_ORDER << StockIdType(1)
+           << AmountType(1)
+           << PriceType(1);
+    QTest::newRow("REQUEST_BUY_STOCK_ORDER")
+            << buffer4
+            << static_cast<Message::MessageLengthType>(4);
+
+    QByteArray buffer5;
+    QDataStream stream5(&buffer5, QIODevice::ReadWrite);
+    stream5 << static_cast<Message::MessageLengthType>(5)
+           << Message::REQUEST_SUBSCRIBE_STOCK << StockIdType(1);
+    QTest::newRow("REQUEST_SUBSCRIBE_STOCK")
+            << buffer5
+            << static_cast<Message::MessageLengthType>(2);
+
+    QByteArray buffer6;
+    QDataStream stream6(&buffer6, QIODevice::ReadWrite);
+    stream6 << static_cast<Message::MessageLengthType>(4)
+           << Message::REQUEST_UNSUBSCRIBE_STOCK << StockIdType(1);
+    QTest::newRow("REQUEST_UNSUBSCRIBE_STOCK")
+            << buffer6
+            << static_cast<Message::MessageLengthType>(3);
+
+    QByteArray buffer9;
+    QDataStream stream9(&buffer9, QIODevice::ReadWrite);
+    stream9 << static_cast<Message::MessageLengthType>(4)
+           << Message::REQUEST_GET_STOCK_INFO << StockIdType(2);
+    QTest::newRow("REQUEST_GET_STOCK_INFO")
+            << buffer9
+            << static_cast<Message::MessageLengthType>(3);
+
+    QByteArray buffer10;
+    QDataStream stream10(&buffer10, QIODevice::ReadWrite);
+    stream10 << static_cast<Message::MessageLengthType>(4)
+           << Message::REQUEST_CANCEL_ORDER << OrderIdType(1);
+    QTest::newRow("REQUEST_CANCEL_ORDER")
+            << buffer10
+            << static_cast<Message::MessageLengthType>(3);
+
+}
+
+void NetworkProtocolUtilitiesTest::fromStream_malformed()
+{
+
+        QFETCH(QByteArray, binary_data);
+        QFETCH(Message::MessageLengthType, data_size_left);
+
+        QDataStream stream(&binary_data, QIODevice::ReadOnly);
+
+        stream.device()->reset();
+        try
+        {
+            fromStream(std::shared_ptr<AbstractLogger>(
+                                          make_logger(LoggingLevel::Trace,
+                                                      std::shared_ptr<AbstractWriter>(new QDebugWriter()))),
+                                          stream);
+
+        }
+        catch(MalformedRequest&)
+        {
+            QVERIFY2(stream.device()->bytesAvailable() == data_size_left,
+                     qPrintable(QString("Incorrect number of bytes left in stream. "\
+                                        "Is %1 should be %2.")
+                                .arg(stream.device()->bytesAvailable())
+                                .arg(data_size_left)));
         }
         catch(std::exception& e)
         {

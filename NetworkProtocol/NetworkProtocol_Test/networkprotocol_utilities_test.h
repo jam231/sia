@@ -58,6 +58,12 @@ private Q_SLOTS:
 
     void fromStream_valid();
     void fromStream_invalid_incomplete();
+
+    void fromStream_invalid_body_data();
+    void fromStream_invalid_body();
+
+    void fromStream_malformed_data();
+    void fromStream_malformed();
 };
 
 
