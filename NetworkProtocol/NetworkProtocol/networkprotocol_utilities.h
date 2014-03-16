@@ -78,10 +78,18 @@ NETWORKPROTOCOLSHARED_EXPORT std::shared_ptr<Request> fromStream(QDataStream&);
 NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageLengthType getLength(QIODevice*);
 NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageLengthType getLength(std::shared_ptr<AbstractLogger>,
                                                                               QIODevice*);
+
+
 // Gets request length and discards sizeof(Message::MessageLengthType) bytes from stream.
 NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageLengthType readLength(QDataStream&);
 NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageLengthType readLength(std::shared_ptr<AbstractLogger>,
                                                                                QDataStream&);
+
+// Similar to readLength, but before discarding any bytes from stream it checks
+// if there are at least request_length bytes in stream. If not then it throws RequestIncomplete exception.
+NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageLengthType tryReadLength(
+                                         std::shared_ptr<AbstractLogger>, QDataStream&);
+
 /*
  * Gets request type and discards sizeof(Message::MessageType) bytes from stream.
  * If there isn't enough bytes in the stream it returns MESSAGE_UNDEFINED.

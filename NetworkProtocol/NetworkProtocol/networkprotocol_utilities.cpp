@@ -20,20 +20,13 @@ std::shared_ptr<Request> fromStream(std::shared_ptr<AbstractLogger> logger,
                                     QDataStream& stream)
 {
 
-    Message::MessageLengthType length = readLength(logger, stream);
-    if(length > stream.device()->bytesAvailable())
+    Message::MessageLengthType length = tryReadLength(logger, stream);
+
+    length -= 2;
+
+    if(length < sizeof(Message::MessageType))
     {
-        LOG_TRACE(logger,
-                  QString("Request is incomplete. Request supposed length: %1"\
-                          " Available bytes in stream %2.")
-                  .arg(length)
-                  .arg(stream.device()->bytesAvailable()));
-        throw IncompleteRequest(length);
-    }
-    // Message is at leat 3 bytes long, if it's shorter then discard it.
-    if(length < 3)
-    {
-        throw MalformedRequest("Length < 3");
+        throw MalformedRequest("length < sizeof(Message::MessageType)");
     }
     Message::MessageType       type   = readType(logger, stream);
 
@@ -74,10 +67,10 @@ std::shared_ptr<Request> fromStream(std::shared_ptr<AbstractLogger> logger,
         request = new CancelOrder(std::move(logger), serialized_request_body);
         break;
     //case REQUEST_COMPANY_STATUS:
-    //    request = new CompanyStatus(serialized_request);
+    //    request = new CompanyStatus(std::move(logger), serialized_request_body);
     //    break;
     //case REQUEST_SESSION_STATUS:
-    //    request = new SessionStatus(serialized_request);
+    //    request = new SessionStatus(std::move(logger), serialized_request_body);
     //    break;
     default:
         LOG_ERROR(logger, QString("Invalid type(%1). This shouldn't happpen.")
@@ -119,6 +112,35 @@ Message::MessageLengthType getLength(std::shared_ptr<AbstractLogger> logger,
     return message_length;
 }
 
+
+Message::MessageLengthType tryReadLength(std::shared_ptr<AbstractLogger> logger,
+                                         QDataStream& stream)
+{
+    Message::MessageLengthType request_length = getLength(logger,
+                                                          stream.device());
+    if(request_length == 0)
+    {
+       LOG_TRACE(logger,
+                  QString("Request is incomplete. Request should be at least %1 bytes"
+                          " Available bytes in stream %2.")
+                  .arg(sizeof(request_length))
+                  .arg(stream.device()->bytesAvailable()));
+        throw IncompleteRequest(sizeof(request_length));
+    }
+    if(request_length > stream.device()->bytesAvailable())
+    {
+        LOG_TRACE(logger,
+                  QString("Request is incomplete. Supposed request length: %1."\
+                          " Available bytes in stream %2.")
+                  .arg(request_length)
+                  .arg(stream.device()->bytesAvailable()));
+        throw IncompleteRequest(request_length);
+    }
+    stream.skipRawData(sizeof(request_length));
+    return request_length;
+}
+
+
 Message::MessageLengthType readLength(QDataStream& stream)
 {
     return readLength(std::move(GlobalUtilities::getLogger()), stream);
@@ -137,7 +159,7 @@ Message::MessageLengthType readLength(std::shared_ptr<AbstractLogger> logger,
                   .arg(sizeof(request_length))
                   .arg(stream.device()->bytesAvailable()));
         throw IncompleteRequest(sizeof(request_length));
-    }
+    }  
 
     stream.skipRawData(sizeof(request_length));
     return request_length;
