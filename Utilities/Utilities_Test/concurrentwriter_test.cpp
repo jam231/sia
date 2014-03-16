@@ -131,10 +131,8 @@ void ConcurrentWriterTest::rapidWrite()
                  qPrintable(QString("Write order has been violated. Mismatch on position %1."\
                                     " Is %2 should be %3.\n %4 \n \t VS \n %5 \n")
                             .arg(QString::number(i))
-                            .arg(result)
-                            .arg(should_be_string)
-                            .arg(result)
-                            .arg(should_be_string)));
+                            .arg(result[i]).arg(should_be_string[i])
+                            .arg(result).arg(should_be_string)));
     }
 }
 
