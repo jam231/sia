@@ -858,10 +858,10 @@ void NetworkProtocolUtilitiesTest::fromStream_malformed()
         stream.device()->reset();
         try
         {
-            fromStream(std::shared_ptr<AbstractLogger>(
-                                          make_logger(LoggingLevel::Trace,
+            fromStream(/*std::shared_ptr<AbstractLogger>(
+                                         make_logger(LoggingLevel::Trace,
                                                       std::shared_ptr<AbstractWriter>(new QDebugWriter()))),
-                                          stream);
+                                          */stream);
 
         }
         catch(MalformedRequest&)
