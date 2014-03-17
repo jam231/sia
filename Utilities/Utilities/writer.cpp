@@ -84,6 +84,33 @@ FileWriter::~FileWriter()
 
 using namespace std;
 
+UnboundedBufferWriter::UnboundedBufferWriter(shared_ptr<AbstractWriter> writer)
+        : _writer(move(writer))
+{
+    if(!_writer)
+    {
+        throw std::invalid_argument("UnboundedBufferWriter (writer): writer can't be null.");
+    }
+}
+
+void UnboundedBufferWriter::write(const QString &data)
+{
+    _message_queue << data;
+}
+
+void UnboundedBufferWriter::flush()
+{
+    if(!_message_queue.empty())
+    {
+        _writer->write(_message_queue.join(""));
+        _message_queue.clear();
+    }
+}
+
+UnboundedBufferWriter::~UnboundedBufferWriter()
+{
+    flush();
+}
 
 
 BufferedWriter::BufferedWriter(shared_ptr<AbstractWriter> writer, qint32 buffer_size)

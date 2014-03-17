@@ -134,27 +134,40 @@ public:
     std::shared_ptr<AbstractLogger> createLoggingSession();
 };
 
-
 /*
- *  class TransactionalLoggerFactory : AbstractLoggerFactory
- *  {
- *      LoggingLevel _level;
- *      std::shared_ptr<AbstractWriter> _writer;
- *  public:
- *      SimpleLoggerFactory(LoggingLevel level, std::shared_ptr<AbstractWriter> writer);
- *      std::shared_ptr<AbstractLogger> createLoggingSession()
+ * Usage:
+ *
+ *      void method_1(std::shared_ptr<AbstractLogger> logger, int a, int b)
  *      {
- *          std::shared_ptr<AbstractWriter> writer = new UnboundedBufferedWriter(_writer);
- *          std::shared<AbstractLogger> logger = make_logger(_level, writer);
- *          // Ideally we should output transaction log as:
- *          // <------- START LOG TRANSACTION ------->
- *          //  ..........entries.........
- *          //  ..........entries.........
- *          //  ..........entries.........
- *          // <------- END LOG TRANSACTION ------->
+ *          int c = a + b;
+ *          LOG_TRACE(logger, QString("a(%1) + b(%c) = returned(%3).")
+ *                            .arg(a).arg(b).arg(c));
+ *          return c;
  *      }
- *  };
+ *      void some_method()
+ *      {
+ *          auto logger = loggerFactory.createLoggingSession();
+ *          LOG_INFO(logger, "First entry.");
+ *
+ *          int n = method_1(logger, 1,2);
+ *          LOG_DEBUG(logger, QString("method_1 returned %1").arg(n));
+ *
+ *          // some_method ends here - logger (i.e. shared_ptr) lifecycle ends
+ *          // so all logs are now written to the next writer.
+ *      }
+ *
  */
+class TransactionalLoggerFactory : AbstractLoggerFactory
+{
+    LoggingLevel _level;
+    std::shared_ptr<AbstractWriter> _writer;
+public:
+    TransactionalLoggerFactory(LoggingLevel level,
+                               std::shared_ptr<AbstractWriter> writer);
+
+    std::shared_ptr<AbstractLogger> createLoggingSession();
+};
+
 
 
 AbstractLogger *make_logger(LoggingLevel level,

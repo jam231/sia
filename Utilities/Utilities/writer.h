@@ -87,6 +87,22 @@ public:
     virtual ~BufferedWriter();
 };
 
+class UnboundedBufferWriter : public AbstractWriter
+{
+    std::shared_ptr<AbstractWriter> _writer;
+    QStringList _message_queue;
+public:
+    UnboundedBufferWriter(std::shared_ptr<AbstractWriter> writer);
+
+    // Not thread-safe
+    void write(const QString &data);
+
+    void flush();
+
+    // Writes all remaining messages before destruction.
+    virtual ~UnboundedBufferWriter();
+};
+
 class ThreadSafeWriter : public AbstractWriter
 {
        QMutex _lock;

@@ -108,3 +108,23 @@ shared_ptr<AbstractLogger> SimpleLoggerFactory::createLoggingSession()
 {
     return shared_ptr<AbstractLogger>(make_logger(_level, move(_writer)));
 }
+
+
+TransactionalLoggerFactory::TransactionalLoggerFactory(LoggingLevel level,
+                                                       std::shared_ptr<AbstractWriter> writer)
+    : _level(level), _writer(std::move(writer))
+{
+    if(!_writer)
+    {
+        throw std::invalid_argument("TransactionalLoggerFactory(writer): writer can't be null.");
+    }
+}
+
+std::shared_ptr<AbstractLogger> TransactionalLoggerFactory::createLoggingSession()
+{
+    auto writer = std::shared_ptr<AbstractWriter>(
+                                            new UnboundedBufferWriter(_writer));
+    auto logger = std::shared_ptr<AbstractLogger>(make_logger(_level, writer));
+
+    return logger;
+}
