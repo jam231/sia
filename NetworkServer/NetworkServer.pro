@@ -9,15 +9,15 @@ INCLUDEPATH += \
     Utils
 
 HEADERS += \
-    server.h \
-    market.h \
-    connection.h \
+    #server.h \
+    #market.h \
+    #connection.h \
     Utils/utils.h
 
 SOURCES += \
-    server.cpp \
-    market.cpp \
-    connection.cpp \
+    #server.cpp \
+    #market.cpp \
+    #connection.cpp \
     main.cpp
 
 

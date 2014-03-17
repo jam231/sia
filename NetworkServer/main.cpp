@@ -32,7 +32,7 @@ int main(int argv, char **args)
         ConfigManager<> config(configFilePath);
 
 
-        Market market(config);
+        //Market market(config);
 
         return app.exec();
 
