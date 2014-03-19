@@ -12,13 +12,30 @@ HEADERS += \
     #server.h \
     #market.h \
     #connection.h \
-    Utils/utils.h
+    Utils/utils.h \
+    DataStorage/datahub.h \
+    DataStorage/datastorage.h \
+    Servers/tradingserver.h \
+    Servers/loginserver.h \
+    master.h \
+    Utils/scheduling.h \
+    Servers/eventserver.h \
+    Servers/connections.h
 
 SOURCES += \
     #server.cpp \
     #market.cpp \
     #connection.cpp \
-    main.cpp
+    main.cpp \
+    DataStorage/datahub.cpp \
+    DataStorage/datastorage.cpp \
+    Servers/tradingserver.cpp \
+    Servers/loginserver.cpp \
+    Servers/eventserver.cpp \
+    master.cpp \
+    Utils/scheduling.cpp \
+    Servers/connections.cpp \
+    Utils/utils.cpp
 
 
 OTHER_FILES += \
