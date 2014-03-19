@@ -185,7 +185,12 @@ public:
     QString operator[](const QString& key) const;
     qint32 intAt(const QString&) const;
     bool contains(const QString&) const;
+
+    QHash<QString, QString> asQHash() const;
+
 };
+
+typedef ConfigManager<> IniConfigManager;
 
 
 #endif // CONFIGMANAGER_H

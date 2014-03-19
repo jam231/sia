@@ -157,7 +157,7 @@ public:
  *      }
  *
  */
-class TransactionalLoggerFactory : AbstractLoggerFactory
+class TransactionalLoggerFactory : public AbstractLoggerFactory
 {
     LoggingLevel _level;
     std::shared_ptr<AbstractWriter> _writer;

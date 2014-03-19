@@ -38,3 +38,15 @@ bool ConfigManager<>::contains(const QString& key) const
 {
     return _container.contains(key.toLower());
 }
+
+template<>
+QHash<QString, QString> ConfigManager<>::asQHash() const
+{
+    QHash<QString, QString> hash;
+
+    for(auto it = _container.begin(); it != _container.end(); it++)
+    {
+        hash[*it] = _container[*it];
+    }
+    return hash;
+}
