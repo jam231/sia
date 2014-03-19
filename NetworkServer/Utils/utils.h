@@ -10,7 +10,7 @@
 
 #include <DataTransferObjects/types.h>
 
-
+#include <QTcpSocket>
 
 class InvalidPasswordError : public std::exception
 {
@@ -21,28 +21,16 @@ public:
     }
 };
 
-
-template<typename L, typename R>
-struct Either
+class TcpConnectionError : public std::exception
 {
-    bool isLeft;
-    L left;
-    R right;
-};
-
-template<typename T>
-struct Maybe
-{
-    Maybe() : isNothing(true), value(T()) {}
-    Maybe(T val) : isNothing(false), value(val) {}
-    bool isNothing;
-    T value;
-    operator bool() const
+    virtual const char* what() const throw()
     {
-        return !isNothing;
+        return "Tcp connection error.";
     }
 };
 
+
+QTcpSocket* make_qTcpSocket(int socket_descriptor);
 
 
 
