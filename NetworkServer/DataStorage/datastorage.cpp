@@ -25,37 +25,37 @@ PostgresDataStorageFactory::PostgresDataStorageFactory(shared_ptr<AbstractLogger
     }
     auto logger = _loggerFactory->createLoggingSession();
 
-    if(!config.contains("username"))
+    if(!config.contains("database username"))
     {
-        LOG_TRACE(logger, "key: username not found in config.");
-        throw invalid_argument("key: username not found in config.");
+        LOG_TRACE(logger, "key: 'database username' not found in config.");
+        throw invalid_argument("key: 'database username' not found in config.");
     }
-    if(!config.contains("password"))
+    if(!config.contains("database password"))
     {
-        LOG_TRACE(logger, "key: password not found in config.");
-        throw invalid_argument("key: password not found in config.");
+        LOG_TRACE(logger, "key: 'database password' not found in config.");
+        throw invalid_argument("key: 'database password' not found in config.");
     }
-    if(!config.contains("host"))
+    if(!config.contains("database host"))
     {
-        LOG_TRACE(logger, "key: host not found in config.");
-        throw invalid_argument("key: host not found in config.");
+        LOG_TRACE(logger, "key: 'database host' not found in config.");
+        throw invalid_argument("key: 'database host' not found in config.");
     }
-    if(!config.contains("port"))
+    if(!config.contains("database port"))
     {
-        LOG_TRACE(logger, "key: port not found in config.");
-        throw invalid_argument("key: port not found in config.");
+        LOG_TRACE(logger, "key: 'database port' not found in config.");
+        throw invalid_argument("key: 'database port' not found in config.");
     }
-    if(!config.contains("name"))
+    if(!config.contains("database name"))
     {
-        LOG_TRACE(logger, "key: name not found in config.");
-        throw invalid_argument("key: name not found in config.");
+        LOG_TRACE(logger, "key: 'database name' not found in config.");
+        throw invalid_argument("key: 'database name' not found in config.");
     }
 
 
-    _config["username"] = config["username"];
-    _config["password"] = config["password"];
-    _config["host"] = config["host"];
-    _config["port"] = config["port"];
+    _config["username"] = config["database username"];
+    _config["password"] = config["database password"];
+    _config["host"] = config["database host"];
+    _config["port"] = config["database port"];
 
     bool port_to_int;
     _config["port"].toInt(&port_to_int);
@@ -66,7 +66,7 @@ PostgresDataStorageFactory::PostgresDataStorageFactory(shared_ptr<AbstractLogger
                   "\"port\"] = ").arg(_config["port"]));
         throw invalid_argument("Error while converting port to int.");
     }
-    _config["name"] = config["name"];
+    _config["name"] = config["database name"];
 }
 
 std::shared_ptr<AbstractDataSession> PostgresDataStorageFactory::openSession()
@@ -84,7 +84,7 @@ std::shared_ptr<AbstractDataSession> PostgresDataStorageFactory::openSession()
     _handle->setPassword(_config["password"]);
     _handle->setPort( _config["port"].toInt());
 
-    LOG_TRACE(logger, QString("Opening postgres connection to %1:%2.")
+    LOG_DEBUG(logger, QString("Opening postgres connection to %1:%2.")
               .arg(_config["host"]).arg(_config["port"]));
 
     if(!_handle->open())
