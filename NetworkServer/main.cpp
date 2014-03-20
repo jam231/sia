@@ -20,9 +20,9 @@ int main(int argv, char **args)
     QCoreApplication app(argv, args);
 
     auto log_writer = shared_ptr<AbstractWriter>(new ThreadSafeWriter(
-                                        shared_ptr<AbstractWriter>(
-                                            new FileWriter(QDate::currentDate()
-                                                   .toString() + ".log"))));
+                                                     shared_ptr<AbstractWriter>(new QDebugWriter()
+                                            /*(new FileWriter(QDate::currentDate()
+                                                   .toString() + ".log")*/)));
 
     auto local_logger = shared_ptr<AbstractLogger>(
                             make_logger(LoggingLevel::Trace, log_writer));
@@ -44,14 +44,14 @@ int main(int argv, char **args)
 
         auto postgre_data_factory = shared_ptr<AbstractDataStorageFactory>(
                     new PostgresDataStorageFactory(logger_factory, settings));
-
+/*
         auto data_factory = shared_ptr<AbstractDataStorageFactory>(
                     new PooledDataStorageFactory(logger_factory,
                                                  move(postgre_data_factory),
                                                  10));
-
+*/
         MasterServer* master = new MasterServer(logger_factory,
-                                                data_factory,
+                                                postgre_data_factory,
                                                 settings);
         master->setAutoDelete(false);
 
@@ -69,7 +69,7 @@ int main(int argv, char **args)
 
     }catch(const exception& e)
     {
-        LOG_ERROR(local_logger, QString("Caught: ").arg(e.what()));
+        LOG_ERROR(local_logger, QString("Caught: %1").arg(e.what()));
         return 1;
     }
     catch(...)
