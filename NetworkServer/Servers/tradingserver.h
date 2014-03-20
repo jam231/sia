@@ -37,7 +37,6 @@ class TradingServer : public QObject, public QRunnable
     Q_OBJECT
 
     QEventLoop _event_loop;
-    // I need thread safety 1!!!
     QHash<NetworkProtocol::DTO::Types::UserIdType,
           std::shared_ptr<UserConnection> > _userConnections;
 
@@ -45,8 +44,8 @@ class TradingServer : public QObject, public QRunnable
     std::shared_ptr<AbstractDataStorageFactory> _dataStorageFactory;
 
 public:
-    TradingServer(std::shared_ptr<AbstractLoggerFactory> logger_factory,
-                  std::shared_ptr<AbstractDataStorageFactory> datastorage_factory);
+    TradingServer(std::shared_ptr<AbstractLoggerFactory> loggerFactory,
+                  std::shared_ptr<AbstractDataStorageFactory> datastorageFactory);
 
     void run();
 

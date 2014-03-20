@@ -13,9 +13,9 @@ using namespace std;
 
 /*                     Trading server implementation                    */
 
-TradingServer::TradingServer(std::shared_ptr<AbstractLoggerFactory> logger_factory,
-                             std::shared_ptr<AbstractDataStorageFactory> datastorage_factory)
-    : _loggerFactory(logger_factory), _dataStorageFactory(datastorage_factory)
+TradingServer::TradingServer(std::shared_ptr<AbstractLoggerFactory> loggerFactory,
+                             std::shared_ptr<AbstractDataStorageFactory> datastorageFactory)
+    : _loggerFactory(loggerFactory), _dataStorageFactory(datastorageFactory)
 {
 
     if(!_loggerFactory)

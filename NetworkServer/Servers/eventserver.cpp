@@ -16,7 +16,6 @@ EventServer::EventServer(shared_ptr<AbstractDataStorageFactory> dataFactory,
 }
 
 void EventServer::run()
-
 {
     LOG_INFO(_loggerFactory->createLoggingSession(),
              "Starting new Event Server.");

@@ -4,11 +4,18 @@
 
 #include <cassert>
 
+using namespace NetworkProtocol;
+using namespace DTO;
+using namespace Types;
 using namespace std;
 
-LoginServer::LoginServer(std::shared_ptr<AbstractLoggerFactory> logger_factory,
-                         const QHash<QString, QString> &config)
-    : _loggerFactory(logger_factory)
+
+LoginServer::LoginServer(shared_ptr<AbstractLoggerFactory> loggerFactory,
+                         shared_ptr<AbstractDataStorageFactory> dataFactory,
+                         const QHash<QString, QString> &config,
+                         shared_ptr<SharedSet<UserIdType> > online_users)
+    : _loggerFactory(loggerFactory),  _dataFactory(dataFactory),
+      _online_users(move(online_users))
 {
 
     if(!_loggerFactory)
@@ -18,19 +25,31 @@ LoginServer::LoginServer(std::shared_ptr<AbstractLoggerFactory> logger_factory,
 
     auto logger = _loggerFactory->createLoggingSession();
 
-    if(!config.contains("port"))
+    if(!_dataFactory)
     {
-        LOG_TRACE(logger, "key: port not found in config.");
-        throw invalid_argument("key: port not found in config.");
+        LOG_TRACE(logger, "data factory cannot be nullptr.");
+        throw invalid_argument("data factory cannot be nullptr.");
+    }
+
+    if(!_online_users)
+    {
+        LOG_TRACE(logger, "online users storage cannot be nullptr.");
+        throw invalid_argument("online users storage cannot be nullptr.");
+    }
+
+    if(!config.contains("server port"))
+    {
+        LOG_TRACE(logger, "key: 'server port' not found in config.");
+        throw invalid_argument("key: 'server port' not found in config.");
     }
 
     bool port_to_int;
-    _port = config["port"].toInt(&port_to_int);
+    _port = config["server port"].toInt(&port_to_int);
 
     if(!port_to_int)
     {
         LOG_TRACE(logger, QString("Cannot convert port to int. config["\
-                  "\"port\"] = ").arg(config["port"]));
+                  "\"server port\"] = ").arg(config["server port"]));
         throw invalid_argument("Error while converting port to int.");
     }
 
@@ -42,10 +61,10 @@ void LoginServer::setupTcpServer()
 
     LOG_INFO(logger, QString("Starting tcp server on port %1.").arg(_port));
 
-    _server = unique_ptr<QTcpServer>(new QTcpServer(this));
+    _server = unique_ptr<QTcpServer>(new QTcpServer());
 
     connect(_server.get(), SIGNAL(newConnection()),
-            this,     SLOT(addNewConnection()));
+            this,     SLOT(newConnection()));
 
     if(!_server->listen(QHostAddress::Any, _port))
     {
@@ -86,9 +105,8 @@ void LoginServer::newConnection()
 
 void LoginServer::run()
 {
-    LOG_INFO(_loggerFactory->createLoggingSession(),
-             "Starting new Login Server.");
-   setupTcpServer();
+    LOG_INFO(_loggerFactory->createLoggingSession(), "Starting new Login Server.");
+    setupTcpServer();
 
    _event_loop.exec();
 }
