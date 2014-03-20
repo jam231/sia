@@ -46,7 +46,7 @@ QHash<QString, QString> ConfigManager<>::asQHash() const
 
     for(auto it = _container.begin(); it != _container.end(); it++)
     {
-        hash[*it] = _container[*it];
+        hash[it.key()] = it.value();
     }
     return hash;
 }
