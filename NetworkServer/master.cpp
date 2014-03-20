@@ -2,6 +2,9 @@
 
 #include <stdexcept>
 
+using namespace NetworkProtocol;
+using namespace DTO;
+using namespace Types;
 
 using namespace std;
 
@@ -28,7 +31,7 @@ MasterServer::MasterServer(std::shared_ptr<AbstractLoggerFactory> loggerFactory,
         LOG_TRACE(logger, "key: 'trading servers' not found in config.");
         throw invalid_argument("key: 'trading servers' not found in config.");
     }
-    _config["trading servers"] = config["trading servers"];
+    _config = config;
 
     bool trading_servers_to_int;
     int trading_servers_count = _config["trading servers"].toInt(&trading_servers_to_int);
@@ -46,9 +49,10 @@ MasterServer::MasterServer(std::shared_ptr<AbstractLoggerFactory> loggerFactory,
         throw invalid_argument("Trading servers count <= 0.");
     }
 
-}
+    _online_users.reset(new SharedSet<UserIdType>());
 
-void MasterServer::run()
+}
+void MasterServer::setupServers()
 {
     auto logger = _loggerFactory->createLoggingSession();
 
@@ -56,10 +60,10 @@ void MasterServer::run()
 
     int trading_servers_count = _config["trading servers"].toInt();
 
-    LOG_INFO(logger, QString("Setting max thread count of trading server thread pool"\
-                     " to %1.").arg(trading_servers_count));
+    LOG_INFO(logger, QString("Setting max thread count of thread pool"\
+                     " to %1.").arg(trading_servers_count + 1));
 
-    _thread_pool.setMaxThreadCount(trading_servers_count);
+    _thread_pool.setMaxThreadCount(trading_servers_count + 1);
 
     LOG_INFO(logger, QString("Spining up %1 trading servers").arg(trading_servers_count));
 
@@ -73,4 +77,15 @@ void MasterServer::run()
     }
 
     LOG_INFO(logger, "Trading servers are running...");
+    LOG_INFO(logger, "Setting up login server...");
+
+    _login_server.reset(new LoginServer(_loggerFactory, _dataFactory,
+                                        _config, _online_users));
+    _thread_pool.start(_login_server.get());
+}
+
+void MasterServer::run()
+{
+    setupServers();
+    _eventLoop.exec();
 }

@@ -11,6 +11,7 @@
 #include <utility>
 
 #include <Utils/scheduling.h>
+#include <Utils/utils.h>
 
 #include <QHash>
 
@@ -23,13 +24,19 @@ class MasterServer : public QObject, public QRunnable
 
     QHash<QString, QString> _config;
 
-    QSet<NetworkProtocol::DTO::Types::UserIdType> _users_online;
+    std::shared_ptr<SharedSet<NetworkProtocol::DTO::Types::UserIdType> > _online_users;
 
     std::vector<std::unique_ptr<TradingServer> > _trading_server_pool;
+    QThreadPool _thread_pool;
+
+    std::unique_ptr<LoginServer> _login_server;
 
     std::unique_ptr<Balancer<UserConnection*, std::unique_ptr<TradingServer> > > _user_balancer;
 
-    QThreadPool _thread_pool;
+    QEventLoop _eventLoop;
+
+protected:
+    void setupServers();
 public:
     MasterServer(std::shared_ptr<AbstractLoggerFactory> loggerFactory,
                  std::shared_ptr<AbstractDataStorageFactory> dataFactory,
@@ -38,7 +45,9 @@ public:
     void run();
 public slots:
 
-    void distributeUser(UserConnection*);
+    void distributeUser(std::shared_ptr<UserConnection>);
 };
+
+
 
 #endif // MASTER_H
