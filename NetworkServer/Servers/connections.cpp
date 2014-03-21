@@ -2,7 +2,11 @@
 
 #include "Utils/utils.h"
 
+#include <../NetworkProtocol/networkprotocol_utilities.h>
+
 #include <QThread>
+
+#include <stdexcept>
 
 using namespace NetworkProtocol;
 using namespace DTO;
@@ -11,14 +15,14 @@ using namespace Types;
 using namespace std;
 
 
-Connection::Connection(int socket_descriptor)
+Connection::Connection(shared_ptr<AbstractLoggerFactory> loggerFactory,
+                       shared_ptr<QTcpSocket> socket)
+    :   _loggerFactory(loggerFactory)
 {
-    _id = socket_descriptor;
-    _socket = shared_ptr<QTcpSocket>(make_qTcpSocket(socket_descriptor));
-    configureConnections();
-}
-Connection::Connection(shared_ptr<QTcpSocket> socket)
-{
+    if(!_loggerFactory)
+    {
+        throw std::invalid_argument("logger factory cannot be nullptr.");
+    }
     _socket = move(socket);
     _id = _socket->socketDescriptor();
     _socket->disconnect();
@@ -29,7 +33,8 @@ void Connection::configureConnections() const
 {
     connect(_socket.get(),  SIGNAL(disconnected()),
             this,           SLOT(disconnected()));
-
+    connect(_socket.get(),  SIGNAL(readyRead()),
+            this,           SLOT(readyRead()));
 }
 
 void Connection::disconnected()
@@ -38,6 +43,26 @@ void Connection::disconnected()
     emit disconnected(_id);
 }
 
+void Connection::readyRead()
+{
+    auto logger = _loggerFactory->createLoggingSession();
+    if(!_socket->isValid())
+    {
+        LOG_WARNING(logger, QString("Connection with id = %1 has invalid socket: %2. "\
+                                    "Commencing socket destruction.")
+                            .arg(_id).arg(_socket->errorString()));
+        disconnected();
+    }
+    else
+    {
+        emit readyRead(_id);
+    }
+}
+
+int Connection::getId() const
+{
+    return _id;
+}
 Connection::~Connection()
 {
 }
@@ -49,8 +74,9 @@ std::shared_ptr<QTcpSocket> Connection::getSocket()
 }
 
 
-UserConnection::UserConnection(UserIdType userId, shared_ptr<QTcpSocket> socket)
-    : _userId(userId)
+UserConnection::UserConnection(shared_ptr<AbstractLoggerFactory> loggerFactory,
+                               UserIdType userId, shared_ptr<QTcpSocket> socket)
+    : _userId(userId), _loggerFactory(loggerFactory)
 {
     _socket = move(socket);
     _id = _socket->socketDescriptor();
@@ -62,4 +88,5 @@ UserIdType UserConnection::getUserId() const
 {
     return _userId;
 }
+
 
