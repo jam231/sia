@@ -16,13 +16,14 @@
 
 #include <DataStorage/datastorage.h>
 
-
+#include <../NetworkProtocol/Requests/loginusermsg.h>
+#include <../NetworkProtocol/Requests/registerusermsg.h>
 
 /*
  * Established connections and then handles only register and login requests.
  *
  */
-class LoginServer : public QObject, public QRunnable
+class LoginServer : public QThread
 {    
     Q_OBJECT
 protected:
@@ -40,20 +41,25 @@ protected:
     int _port;
     std::shared_ptr<SharedSet<NetworkProtocol::DTO::Types::UserIdType> > _online_users;
 
-
     void setupTcpServer();
+
+    void handleRequest(std::shared_ptr<AbstractLogger>, NetworkProtocol::Requests::LoginUser*, int);
+    void handleRequest(std::shared_ptr<AbstractLogger>, NetworkProtocol::Requests::RegisterUser*, int);
+    void handleRequest(std::shared_ptr<AbstractLogger>, NetworkProtocol::Requests::Request*, int);
+
 public:
     LoginServer(std::shared_ptr<AbstractLoggerFactory> loggerFactory,
                 std::shared_ptr<AbstractDataStorageFactory> dataFactory,
                 const QHash<QString, QString> &config,
                 std::shared_ptr<SharedSet<NetworkProtocol::DTO::Types::UserIdType> > online_users);
     ~LoginServer();
-
-    void run();
+protected:
+    virtual void run();
 
 public slots:
     void newConnection();
     void removeConnection(int id);
+    void processMessageFrom(int id);
 signals:
     void newUser(std::shared_ptr<UserConnection>);
 };
