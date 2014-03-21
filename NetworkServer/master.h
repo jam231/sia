@@ -27,13 +27,15 @@ class MasterServer : public QObject, public QRunnable
     std::shared_ptr<SharedSet<NetworkProtocol::DTO::Types::UserIdType> > _online_users;
 
     std::vector<std::unique_ptr<TradingServer> > _trading_server_pool;
-    QThreadPool _thread_pool;
+    // Problems: QObject: Cannot create children for a parent that is in a different thread. etc.
+    //QThreadPool _thread_pool;
+
+    std::vector<std::unique_ptr<QThread> > _thread_pool;
 
     std::unique_ptr<LoginServer> _login_server;
 
     std::unique_ptr<Balancer<UserConnection*, std::unique_ptr<TradingServer> > > _user_balancer;
 
-    QEventLoop _eventLoop;
 
 protected:
     void setupServers();

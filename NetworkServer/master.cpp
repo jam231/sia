@@ -60,20 +60,19 @@ void MasterServer::setupServers()
 
     int trading_servers_count = _config["trading servers"].toInt();
 
-    LOG_INFO(logger, QString("Setting max thread count of thread pool"\
-                     " to %1.").arg(trading_servers_count + 1));
-
-    _thread_pool.setMaxThreadCount(trading_servers_count + 1);
-
     LOG_INFO(logger, QString("Spining up %1 trading servers").arg(trading_servers_count));
 
     for(int i = 0; i < trading_servers_count; i++)
     {
         auto server = unique_ptr<TradingServer>(new TradingServer(_loggerFactory,
                                                                   _dataFactory));
-        server->setAutoDelete(false);
+
+        auto thread = unique_ptr<QThread>(new QThread());
+        server->moveToThread(thread.get());
+        thread->start();
+        thread->setPriority(QThread::HighPriority);
+        _thread_pool.push_back(move(thread));
         _trading_server_pool.push_back(move(server));
-        _thread_pool.start(server.get(), QThread::NormalPriority);
     }
 
     LOG_INFO(logger, "Trading servers are running...");
@@ -81,12 +80,14 @@ void MasterServer::setupServers()
 
     _login_server.reset(new LoginServer(_loggerFactory, _dataFactory,
                                         _config, _online_users));
-    _thread_pool.start(_login_server.get());
+
+    _login_server->start();
+    _login_server->setPriority(QThread::NormalPriority);
 }
 
 void MasterServer::run()
 {
-    QEventLoop eventLoop;
+    QEventLoop loop;
     setupServers();
-    eventLoop.exec();
+    loop.exec();
 }
