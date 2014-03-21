@@ -5,6 +5,7 @@ QTcpSocket* make_qTcpSocket(int socket_descriptor)
 {
     auto qsocket = new QTcpSocket();
     qsocket->setSocketDescriptor(socket_descriptor);
+    qsocket->setSocketOption(QAbstractSocket::SocketOption::KeepAliveOption, 1);
 
     //from http://stackoverflow.com/questions/10445122/qtcpsocket-state-always-connected-even-unplugging-ethernet-wire
 

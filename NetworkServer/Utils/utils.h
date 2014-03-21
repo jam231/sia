@@ -12,6 +12,7 @@
 
 #include <DataTransferObjects/types.h>
 
+#include <QTcpServer>
 #include <QTcpSocket>
 
 
@@ -35,6 +36,21 @@ class TcpConnectionError : public std::exception
 
 
 QTcpSocket* make_qTcpSocket(int socket_descriptor);
+
+
+
+class TcpServer : public QTcpServer
+{
+
+protected:
+    virtual void incomingConnection(qintptr handle)
+    {
+        auto new_connection = new QTcpSocket();
+        new_connection->setSocketDescriptor(handle);
+        new_connection->setSocketOption(QAbstractSocket::SocketOption::KeepAliveOption, 1);
+        addPendingConnection(new_connection);
+    }
+};
 
 
 
