@@ -52,7 +52,8 @@ void TradingServer::addUserConnection(std::shared_ptr<UserConnection> connection
         auto user_connection = std::shared_ptr<UserConnection>(
                     // Copy object - connection probably came across thread so its
                     // state is invalid.
-                    new UserConnection(user_id, connection->getSocket()));
+                    new UserConnection(_loggerFactory,
+                                       user_id, connection->getSocket()));
         // connect() user_connection with this
         _userConnections.insert(user_id, move(user_connection));
 

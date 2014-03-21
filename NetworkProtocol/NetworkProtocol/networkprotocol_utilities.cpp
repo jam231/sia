@@ -112,20 +112,33 @@ Message::MessageLengthType getLength(std::shared_ptr<AbstractLogger> logger,
     return message_length;
 }
 
+/// TODO:
+///
+///         Refactor !!
 
 Message::MessageLengthType tryReadLength(std::shared_ptr<AbstractLogger> logger,
                                          QDataStream& stream)
 {
     Message::MessageLengthType request_length = getLength(logger,
                                                           stream.device());
-    if(request_length == 0)
+    LOG_TRACE(logger, QString("Request length %1. Bytes available: %2")
+                      .arg(request_length)
+                      .arg(stream.device()->bytesAvailable()));
+    if(request_length == 0 && stream.device()->bytesAvailable() < sizeof(Message::MessageLengthType))
     {
-       LOG_TRACE(logger,
+        LOG_TRACE(logger,
                   QString("Request is incomplete. Request should be at least %1 bytes"
                           " Available bytes in stream %2.")
                   .arg(sizeof(request_length))
                   .arg(stream.device()->bytesAvailable()));
         throw IncompleteRequest(sizeof(request_length));
+    }
+    if(request_length < sizeof(Message::MessageLengthType) &&
+            stream.device()->bytesAvailable() >= sizeof(Message::MessageLengthType))
+    {
+        stream.skipRawData(stream.device()->bytesAvailable());
+        throw MalformedRequest(QString("Malformed request with length = %1.")
+                               .arg(request_length).toStdString());
     }
     if(request_length > stream.device()->bytesAvailable())
     {
