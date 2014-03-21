@@ -34,9 +34,10 @@ TradingServer::TradingServer(std::shared_ptr<AbstractLoggerFactory> loggerFactor
 
 void TradingServer::run()
 {
+    QEventLoop eventLoop;
     LOG_INFO(_loggerFactory->createLoggingSession(),
              "Starting new Trading Server...");
-    _event_loop.exec();
+    eventLoop.exec();
 }
 
 /// TODO: Refactor code below
@@ -51,7 +52,7 @@ void TradingServer::addUserConnection(std::shared_ptr<UserConnection> connection
         auto user_connection = std::shared_ptr<UserConnection>(
                     // Copy object - connection probably came across thread so its
                     // state is invalid.
-                    new UserConnection(user_id, connection->getSocket()->socketDescriptor()));
+                    new UserConnection(user_id, connection->getSocket()));
         // connect() user_connection with this
         _userConnections.insert(user_id, move(user_connection));
 

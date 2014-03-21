@@ -17,8 +17,9 @@ EventServer::EventServer(shared_ptr<AbstractDataStorageFactory> dataFactory,
 
 void EventServer::run()
 {
+    QEventLoop eventLoop;
     LOG_INFO(_loggerFactory->createLoggingSession(),
              "Starting new Event Server.");
-    _eventLoop.exec();
+    eventLoop.exec();
 }
 

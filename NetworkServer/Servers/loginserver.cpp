@@ -61,7 +61,7 @@ void LoginServer::setupTcpServer()
 
     LOG_INFO(logger, QString("Starting tcp server on port %1.").arg(_port));
 
-    _server = unique_ptr<QTcpServer>(new QTcpServer());
+    _server = unique_ptr<TcpServer>(new TcpServer());
 
     connect(_server.get(), SIGNAL(newConnection()),
             this,     SLOT(newConnection()));
@@ -75,40 +75,57 @@ void LoginServer::setupTcpServer()
     LOG_INFO(logger, QString("Tcp server listening on port %1.").arg(_port));
 }
 
+// http://qt-project.org/doc/note_revisions/33/54/view
+
 void LoginServer::newConnection()
 {
     auto logger = _loggerFactory->createLoggingSession();
 
-    QTcpSocket* socket = _server->nextPendingConnection();
+    auto socket = shared_ptr<QTcpSocket>(_server->nextPendingConnection());
+
     LOG_INFO(logger, QString("New connection: %1:%2")
                         .arg(socket->peerAddress().toString())
                         .arg(socket->peerPort()));
-
+    //socket->setParent(this);
     int socket_descriptor = socket->socketDescriptor();
-
-    auto connection = shared_ptr<Connection>(new Connection(socket_descriptor));
-    delete socket;
-
-    assert(!connections.contains(connection->getSocket()->socketDescriptor()));
-
-    LOG_TRACE(logger, QString("Inserting new connection to connection pool"\
+    assert(!connections.contains(socket_descriptor));
+    if(!connections.contains(socket_descriptor))
+    {
+        auto connection = shared_ptr<Connection>(new Connection(socket));
+        /*
+         *  http://stackoverflow.com/questions/10711246/move-to-thread-causes-issue
+         *  socket->moveToThread(connection->thread());
+         *
+         */
+        LOG_TRACE(logger, QString("Inserting new connection to connection pool"\
                               "with key = %1")
-                      .arg(connection->getSocket()->socketDescriptor()));
-    connections.insert(connection->getSocket()->socketDescriptor(), move(connection));
+                          .arg(connection->getSocket()->socketDescriptor()));
+        connections.insert(connection->getSocket()->socketDescriptor(), move(connection));
 
 
-/* socket_descriptor is connection key.
-    connect(newConnection, SIGNAL(disconnected(int)),
-              this,        SLOT(disconnect(int)));
-*/
+        connect(connection.get(),  SIGNAL(disconnected(int)),
+                this,              SLOT(removeConnection(int)));
+
+    }
+}
+
+void LoginServer::removeConnection(int id)
+{
+    auto logger = _loggerFactory->createLoggingSession();
+
+    LOG_INFO(logger, QString("Removing connection with id = %1").arg(id));
+    connections.remove(id);
 }
 
 void LoginServer::run()
 {
+
+    //this->moveToThread(QThread::currentThread());
+    QEventLoop event_loop;
     LOG_INFO(_loggerFactory->createLoggingSession(), "Starting new Login Server.");
     setupTcpServer();
 
-   _event_loop.exec();
+    event_loop.exec();
 }
 
 LoginServer::~LoginServer()

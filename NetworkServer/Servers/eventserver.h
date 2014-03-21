@@ -22,8 +22,6 @@
 /// STUB
 class EventServer : public QObject, public QRunnable
 {
-    QEventLoop _eventLoop;
-
     std::shared_ptr<AbstractDataStorageFactory> _dataFactory;
     std::shared_ptr<AbstractLoggerFactory> _loggerFactory;
 

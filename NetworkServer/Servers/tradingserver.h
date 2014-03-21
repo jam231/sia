@@ -35,8 +35,6 @@
 class TradingServer : public QObject, public QRunnable
 {
     Q_OBJECT
-
-    QEventLoop _event_loop;
     QHash<NetworkProtocol::DTO::Types::UserIdType,
           std::shared_ptr<UserConnection> > _userConnections;
 

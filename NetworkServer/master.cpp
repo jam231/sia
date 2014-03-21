@@ -86,6 +86,7 @@ void MasterServer::setupServers()
 
 void MasterServer::run()
 {
+    QEventLoop eventLoop;
     setupServers();
-    _eventLoop.exec();
+    eventLoop.exec();
 }

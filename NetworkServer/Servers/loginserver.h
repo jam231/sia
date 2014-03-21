@@ -16,6 +16,8 @@
 
 #include <DataStorage/datastorage.h>
 
+
+
 /*
  * Established connections and then handles only register and login requests.
  *
@@ -25,13 +27,15 @@ class LoginServer : public QObject, public QRunnable
     Q_OBJECT
 protected:
 
-    QEventLoop _event_loop;
     std::shared_ptr<AbstractLoggerFactory> _loggerFactory;
     std::shared_ptr<AbstractDataStorageFactory> _dataFactory;
 
+    // socket's descriptor is the key
+    // BEWARE: http://social.msdn.microsoft.com/Forums/en-US/ab2d4f74-feeb-4677-b655-84650796884c/winsock2-how-unique-are-socket-descriptors?forum=vcgeneral
+
     QHash<int, std::shared_ptr<Connection> > connections;
 
-    std::unique_ptr<QTcpServer> _server;
+    std::unique_ptr<TcpServer> _server;
 
     int _port;
     std::shared_ptr<SharedSet<NetworkProtocol::DTO::Types::UserIdType> > _online_users;
@@ -49,7 +53,7 @@ public:
 
 public slots:
     void newConnection();
-
+    void removeConnection(int id);
 signals:
     void newUser(std::shared_ptr<UserConnection>);
 };
