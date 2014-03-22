@@ -103,7 +103,8 @@ enum FailureType : FailureTypeType
                                     // or SELL order for stock he doesn't have (or have too litle) -- (Red Alert wtf!)
     MALFORMED_MESSAGE,              // Lengths don't match
     INVALID_MESSAGE_BODY,           // Contents are well-formed, but violate constraints
-    UNRECOGNIZED_MESSAGE            // Message type is not defined.
+    UNRECOGNIZED_MESSAGE,            // Message type is not defined.
+    REQUEST_DROPPED
 };
 
 NETWORKPROTOCOLSHARED_EXPORT FailureType toFailureType(FailureTypeType);
