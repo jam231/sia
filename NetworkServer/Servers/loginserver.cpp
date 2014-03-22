@@ -5,7 +5,8 @@
 
 #include "../NetworkProtocol/Responses/failuremsg.h"
 #include <../NetworkProtocol/networkprotocol_utilities.h>
-
+#include <../NetworkProtocol/Responses/registerusersuccessmsg.h>
+#include <../NetworkProtocol/Responses/okmsg.h>
 
 #include <cassert>
 
@@ -148,8 +149,10 @@ void LoginServer::processMessageFrom(int id)
     {
         while(1)
         {
-            auto request = Requests::fromStream(logger, stream);
-            switch(request->type())
+            try{
+
+                auto request = Requests::fromStream(logger, stream);
+                switch(request->type())
             {
                 case Message::REQUEST_LOGIN_USER:
                 {
@@ -165,28 +168,46 @@ void LoginServer::processMessageFrom(int id)
                     handleRequest(logger, request.get(), id);
                 break;
             }
-            requests_per_second++;
+                requests_per_second++;
+            }
+            catch(Requests::MalformedRequest& e)
+            {
+                LOG_TRACE(logger, QString("Malformed request: %1").arg(e.what()));
+                auto response = Responses::Failure(Failure::MALFORMED_MESSAGE);
+                response.send(socket.get());
+            }
+            catch(Requests::InvalidRequestType& e)
+            {
+                LOG_TRACE(logger, QString("Invalid request type: %1").arg(e.what()));
+                auto response = Responses::Failure(Failure::UNRECOGNIZED_MESSAGE);
+                response.send(socket.get());
+            }
+            catch(Requests::InvalidRequestBody& e)
+            {
+                LOG_TRACE(logger, QString("Invalid request body: %1").arg(e.what()));
+                auto response = Responses::Failure(Failure::INVALID_MESSAGE_BODY);
+                response.send(socket.get());
+            }
+            catch(DatastoreError& e)
+            {
+                LOG_WARNING(logger, QString("Database error %1").arg(e.what()));
+                auto response = Responses::Failure(Failure::REQUEST_DROPPED);
+                response.send(socket.get());
+            }
         }
     }
     catch(Requests::IncompleteRequest& e)
     {
         LOG_TRACE(logger, QString("Request not yet ready: %1").arg(e.what()));
     }
-    catch(Requests::MalformedRequest& e)
-    {
-        LOG_TRACE(logger, QString("Malformed request: %1").arg(e.what()));
-    }
-    catch(Requests::InvalidRequest& e)
-    {
-        /// TODO:
-        ///     This is too general.
-        LOG_TRACE(logger, QString("Invalid request: %1").arg(e.what()));
-    }
     catch(...)
     {
-        LOG_WARNING(logger, QString("Connection with id = %1 has thrown "\
+        LOG_ERROR(logger, QString("Connection with id = %1 has thrown "\
                                     "unknown exception").arg(id));
+        auto response = Responses::Failure(Failure::REQUEST_DROPPED);
+        response.send(socket.get());
     }
+
     auto delay = (QDateTime::currentMSecsSinceEpoch() - timestamp);
     LOG_INFO(logger, QString("Requests per second: %1")
              .arg(requests_per_second * 100 / (delay == 0 ? 1 : delay)));
@@ -207,12 +228,26 @@ void LoginServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
 }
 
 void LoginServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
-                                Requests::RegisterUser*, int id)
+                                Requests::RegisterUser* request, int id)
 {
     auto source = connections[id];
 
     LOG_DEBUG(logger, QString("Connection with id = %1 issues register request.")
               .arg(source->getId()));
+
+    auto session = _dataFactory->openSession();
+    Failure::FailureType status = Failure::NO_FAILURE;
+    auto user_id = session->registerAccount(request->getPassword(), &status);
+    if(status != Failure::NO_FAILURE)
+    {
+        auto response = Responses::Failure(status);
+        response.send(source->getSocket().get());
+    }
+    else
+    {
+        auto response = Responses::RegisterUserSuccess(logger, user_id);
+        response.send(source->getSocket().get());
+    }
 }
 
 
