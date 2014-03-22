@@ -93,7 +93,7 @@ FailureType toFailureType(FailureTypeType type)
     case MALFORMED_MESSAGE      : return MALFORMED_MESSAGE;
     case INVALID_MESSAGE_BODY   : return INVALID_MESSAGE_BODY;
     case UNRECOGNIZED_MESSAGE   : return UNRECOGNIZED_MESSAGE;
-    default                     : return UNDEFINED;
+    default                     : return NO_FAILURE;
     };
 }
 }

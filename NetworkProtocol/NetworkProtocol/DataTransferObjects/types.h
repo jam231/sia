@@ -93,7 +93,7 @@ namespace Failure
 typedef quint8 FailureTypeType;
 enum FailureType : FailureTypeType
 {
-    UNDEFINED              = 0x0,
+    NO_FAILURE              = 0x0,
     BAD_USERID_OR_PASSWORD,
     NOT_AUTHORIZED,
     ALREADY_LOGGED,
