@@ -37,6 +37,7 @@ protected:
     QHash<int, std::shared_ptr<Connection> > connections;
 
     std::unique_ptr<TcpServer> _server;
+    QThread* _owningThread;
 
     int _port;
     std::shared_ptr<SharedSet<NetworkProtocol::DTO::Types::UserIdType> > _online_users;
@@ -51,7 +52,8 @@ public:
     LoginServer(std::shared_ptr<AbstractLoggerFactory> loggerFactory,
                 std::shared_ptr<AbstractDataStorageFactory> dataFactory,
                 const QHash<QString, QString> &config,
-                std::shared_ptr<SharedSet<NetworkProtocol::DTO::Types::UserIdType> > online_users);
+                std::shared_ptr<SharedSet<NetworkProtocol::DTO::Types::UserIdType> > online_users,
+                QThread *owningThread = nullptr);
     ~LoginServer();
 protected:
     virtual void run();

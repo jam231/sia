@@ -21,10 +21,15 @@ using namespace std;
 LoginServer::LoginServer(shared_ptr<AbstractLoggerFactory> loggerFactory,
                          shared_ptr<AbstractDataStorageFactory> dataFactory,
                          const QHash<QString, QString> &config,
-                         shared_ptr<SharedSet<UserIdType> > online_users)
+                         shared_ptr<SharedSet<UserIdType> > online_users,
+                         QThread* owningThread)
     : _loggerFactory(loggerFactory),  _dataFactory(dataFactory),
-      _online_users(move(online_users))
+      _online_users(move(online_users)), _owningThread(owningThread)
 {
+    if(_owningThread == nullptr)
+    {
+        _owningThread = this;
+    }
     // Bradley Hughes, I'm doing it right.
     moveToThread(this);
     if(!_loggerFactory)
@@ -71,6 +76,7 @@ void LoginServer::setupTcpServer()
     LOG_INFO(logger, QString("Starting tcp server on port %1.").arg(_port));
 
     _server = unique_ptr<TcpServer>(new TcpServer());
+    _server->moveToThread(this);
     connect(_server.get(), SIGNAL(newConnection()),
             this,     SLOT(newConnection()));
 
@@ -90,6 +96,7 @@ void LoginServer::newConnection()
     auto logger = _loggerFactory->createLoggingSession();
 
     auto socket = shared_ptr<QTcpSocket>(_server->nextPendingConnection());
+    socket->moveToThread(this);
     //assert(this->thread() == socket->thread());
     LOG_INFO(logger, QString("New connection: %1:%2")
                         .arg(socket->peerAddress().toString())
@@ -108,14 +115,16 @@ void LoginServer::newConnection()
         LOG_TRACE(logger, QString("Inserting new connection to connection pool"\
                               "with key = %1")
                           .arg(connection->getSocket()->socketDescriptor()));
-        LOG_INFO(logger, QString("Active connections: %1").arg(connections.size()));
         connections.insert(connection->getSocket()->socketDescriptor(), move(connection));
+
+        LOG_INFO(logger, QString("Active connections: %1").arg(connections.size()));
 
 
         connect(connection.get(),  SIGNAL(disconnected(int)),
                 this,              SLOT(removeConnection(int)));
         connect(connection.get(), SIGNAL(readyRead(int)),
                 this,             SLOT(processMessageFrom(int)));
+        //processMessageFrom(socket_descriptor);
     }
 }
 
@@ -211,9 +220,54 @@ void LoginServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
                                 Requests::LoginUser* request, int id)
 {
     auto source = connections[id];
-    LOG_DEBUG(logger, QString("Connection with id = %1 issues register request "\
+    LOG_DEBUG(logger, QString("Connection with id = %1 issues login request "\
                               "for user id = %2.")
               .arg(source->getId()).arg(request->getUserId().value));
+
+    auto user_id = request->getUserId();
+    // // Check if password and id match
+    // auto session = _dataFactory->openSession()
+    // Types::FailureType status;
+    // session->loginUser(user_id, request->getPassword(), &status);
+    // if(status == Failure::NO_FAILURE)
+    // {
+    //      //
+    //
+    // }
+    // else
+    // {
+    //   auto response = Responses::Failure(Failure::BAD_USERID_OR_PASSWORD);
+    //   response.send(source->getSocket().get());
+    // }
+    bool added = _online_users->add(user_id);
+    if(!added)
+    {
+        LOG_TRACE(logger, QString("User with id = %1 is alread online.")
+                  .arg(user_id.value));
+        auto response = Responses::Failure(Failure::ALREADY_LOGGED);
+        response.send(source->getSocket().get());
+    }
+    else
+    {
+        LOG_TRACE(logger, QString("User id = %1 added.").arg(user_id.value));
+
+        // Should moveToThread socket
+        // Also remember that moveToThread should be called from thread
+        // you move object from (! coupling alert !)
+        //source->getSocket()->setParent(0);
+        //source->getSocket()->moveToThread(_owningThread);
+        //LOG_TRACE(logger, QString("Threads match %1")
+        //          .arg(source->getSocket()->thread() == this));
+        auto user = shared_ptr<UserConnection>(new UserConnection(_loggerFactory, user_id,
+                                                                  source->getSocket()));
+
+        //user->getSocket()->moveToThread(_owningThread);
+
+        //connections.remove(id);
+
+        //emit newUser(move(user));
+    }
+
 }
 
 
@@ -231,7 +285,7 @@ void LoginServer::run()
     //this->moveToThread(QThread::currentThread());
     LOG_INFO(_loggerFactory->createLoggingSession(), "Starting new Login Server.");
     setupTcpServer();
-    QThread::run();
+    exec();
 }
 
 LoginServer::~LoginServer()
