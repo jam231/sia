@@ -17,8 +17,10 @@
 
 #include <vector>
 
-class MasterServer : public QObject, public QRunnable
+class MasterServer : public QThread
 {
+    Q_OBJECT
+
     std::shared_ptr<AbstractLoggerFactory> _loggerFactory;
     std::shared_ptr<AbstractDataStorageFactory> _dataFactory;
 
@@ -26,28 +28,31 @@ class MasterServer : public QObject, public QRunnable
 
     std::shared_ptr<SharedSet<NetworkProtocol::DTO::Types::UserIdType> > _online_users;
 
-    std::vector<std::unique_ptr<TradingServer> > _trading_server_pool;
+    std::vector<std::shared_ptr<TradingServer> > _trading_server_pool;
     // Problems: QObject: Cannot create children for a parent that is in a different thread. etc.
     //QThreadPool _thread_pool;
 
-    std::vector<std::unique_ptr<QThread> > _thread_pool;
+    std::shared_ptr<LoginServer> _login_server;
 
-    std::unique_ptr<LoginServer> _login_server;
-
-    std::unique_ptr<Balancer<UserConnection*, std::unique_ptr<TradingServer> > > _user_balancer;
+    std::shared_ptr<BalancingStrategy<std::shared_ptr<TradingServer>,
+                                      std::vector<std::shared_ptr<TradingServer> > > > _balancing_strategy;
 
 
 protected:
     void setupServers();
+    virtual void run();
+
 public:
     MasterServer(std::shared_ptr<AbstractLoggerFactory> loggerFactory,
                  std::shared_ptr<AbstractDataStorageFactory> dataFactory,
                  const QHash<QString, QString>& config);
 
-    void run();
 public slots:
 
     void distributeUser(std::shared_ptr<UserConnection>);
+
+signals:
+    void userConnection(std::shared_ptr<UserConnection>);
 };
 
 

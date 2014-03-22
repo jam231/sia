@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 
+#include <cassert>
+
 using namespace NetworkProtocol;
 using namespace DTO;
 using namespace Types;
@@ -14,6 +16,8 @@ MasterServer::MasterServer(std::shared_ptr<AbstractLoggerFactory> loggerFactory,
                            const QHash<QString, QString> &config)
     : _loggerFactory(move(loggerFactory)), _dataFactory(move(dataFactory))
 {
+    // Bradley Hughes, I'm doing it right.
+    moveToThread(this);
     if(!_loggerFactory)
     {
         throw invalid_argument("loggerFactory cannot be nullptr.");
@@ -49,7 +53,7 @@ MasterServer::MasterServer(std::shared_ptr<AbstractLoggerFactory> loggerFactory,
         throw invalid_argument("Trading servers count <= 0.");
     }
 
-    _online_users.reset(new SharedSet<UserIdType>());
+
 
 }
 void MasterServer::setupServers()
@@ -64,30 +68,48 @@ void MasterServer::setupServers()
 
     for(int i = 0; i < trading_servers_count; i++)
     {
-        auto server = unique_ptr<TradingServer>(new TradingServer(_loggerFactory,
-                                                                  _dataFactory));
-
-        auto thread = unique_ptr<QThread>(new QThread());
-        server->moveToThread(thread.get());
-        thread->start();
-        thread->setPriority(QThread::HighPriority);
-        _thread_pool.push_back(move(thread));
-        _trading_server_pool.push_back(move(server));
+        auto tradinig_server = shared_ptr<TradingServer>(new TradingServer(_loggerFactory,
+                                                                           _dataFactory,
+                                                                           _online_users));
+        tradinig_server->start();
+        tradinig_server->setPriority(QThread::HighPriority);
+        _trading_server_pool.push_back(move(tradinig_server));
     }
+
+    auto balancing_strategy = new RoundRobin<shared_ptr<TradingServer>,
+                                             vector<shared_ptr<TradingServer> > >(_trading_server_pool);
+    _balancing_strategy.reset(balancing_strategy);
+    _online_users.reset(new SharedSet<UserIdType>());
 
     LOG_INFO(logger, "Trading servers are running...");
     LOG_INFO(logger, "Setting up login server...");
 
     _login_server.reset(new LoginServer(_loggerFactory, _dataFactory,
-                                        _config, _online_users));
+                                        _config, _online_users, this));
 
     _login_server->start();
     _login_server->setPriority(QThread::NormalPriority);
 }
 
+void MasterServer::distributeUser(std::shared_ptr<UserConnection> user)
+{
+    assert(_online_users->contains(user->getUserId()));
+
+    auto target = _balancing_strategy->choose();
+    user->moveToThread(target.get());
+    user->getSocket()->moveToThread(target.get());
+
+    connect(this, SIGNAL(userConnection(shared_ptr<UserConnection>)),
+            target.get(), SLOT(addUserConnection(shared_ptr<UserConnection>)));
+
+    emit userConnection(move(user));
+
+    disconnect(this, SIGNAL(userConnection(shared_ptr<UserConnection>)),
+               target.get(), SLOT(addUserConnection(shared_ptr<UserConnection>)));
+}
+
 void MasterServer::run()
 {
-    QEventLoop loop;
     setupServers();
-    loop.exec();
+    QThread::run();
 }
