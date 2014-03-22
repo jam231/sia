@@ -16,6 +16,7 @@
 
 #include "connections.h"
 
+#include <Utils/utils.h>
 
 
 /*
@@ -32,26 +33,28 @@
  *
  *
  */
-class TradingServer : public QObject, public QRunnable
+class TradingServer : public QThread
 {
     Q_OBJECT
     QHash<NetworkProtocol::DTO::Types::UserIdType,
           std::shared_ptr<UserConnection> > _userConnections;
+    std::shared_ptr<SharedSet<NetworkProtocol::DTO::Types::UserIdType> > _online_users;
 
     std::shared_ptr<AbstractLoggerFactory> _loggerFactory;
     std::shared_ptr<AbstractDataStorageFactory> _dataStorageFactory;
 
 public:
     TradingServer(std::shared_ptr<AbstractLoggerFactory> loggerFactory,
-                  std::shared_ptr<AbstractDataStorageFactory> datastorageFactory);
-
-    void run();
+                  std::shared_ptr<AbstractDataStorageFactory> datastorageFactory,
+                  std::shared_ptr<SharedSet<NetworkProtocol::DTO::Types::UserIdType> > );
+protected:
+    virtual void run();
 
 public slots:
 
-   void addUserConnection(std::shared_ptr<UserConnection> connection);
-
-
+   void addUserConnection(std::shared_ptr<UserConnection>);
+   void processMessageFrom(NetworkProtocol::DTO::Types::UserIdType);
+   void removeConnection(NetworkProtocol::DTO::Types::UserIdType);
 };
 
 
