@@ -25,35 +25,3 @@ QTcpSocket* make_qTcpSocket(int socket_descriptor)
     return qsocket;
 }
 
-
-template<class T>
-bool SharedSet<T>::add(const T& key)
-{
-    _lock.lock();
-    bool will_be_added = _set.contains(key);
-    if(!will_be_added)
-    {
-        _set.insert(key);
-    }
-    _lock.unlock();
-    return !will_be_added;
-}
-
-template<class T>
-bool SharedSet<T>::remove(const T& key)
-{
-    _lock.lock();
-    bool will_be_removed = _set.contains(key);
-    if(!will_be_removed)
-    {
-        _set.insert(key);
-    }
-    _lock.unlock();
-    return !will_be_removed;
-}
-
-template<class T>
-int SharedSet<T>::size() const
-{
-    return _set.size();
-}
