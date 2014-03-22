@@ -3,8 +3,16 @@
 #include <cassert>
 
 #include <QSqlError>
+#include <QSqlQuery>
+
 
 using namespace std;
+
+using namespace NetworkProtocol;
+using namespace DTO;
+using namespace Types;
+
+
 
 void AbstractDataSession::setLogger(shared_ptr<AbstractLogger> logger)
 {
@@ -196,6 +204,64 @@ PostgreDataSession::~PostgreDataSession()
     _handle->close();
 }
 
+UserIdType PostgreDataSession::registerAccount(const QString& password,
+                                               Types::Failure::FailureType* failed)
+{
+    QSqlQuery query(*_handle);
+
+    //*failed  = Types::Failure::NO_FAILURE;
+    //
+    query.prepare("SELECT nowy_uzytkownik(:password);");
+    query.bindValue(":password", password);
+    //
+    query.setForwardOnly(true);
+
+    _handle->transaction();
+    query.exec();
+    _handle->commit();
+
+    Types::UserIdType userId;
+
+    if(query.first())
+    {
+        userId = Types::UserIdType(query.value(0).toInt());
+    }
+    else
+    {
+        *failed = Types::Failure::INVALID_MESSAGE_BODY;
+    }
+    return userId;
+}
+
+void PostgreDataSession::loginUser(NetworkProtocol::DTO::Types::UserIdType userId,
+                                   const QString& password,
+                                   Types::Failure::FailureType* failed)
+{
+    QSqlQuery query(*_handle);
+    *failed  = Types::Failure::NO_FAILURE;
+    query.prepare("SELECT haslo FROM uzytkownik WHERE id_uz = :id ;");
+    query.bindValue(":id", userId.value);
+
+    query.setForwardOnly(true);
+
+    _handle->transaction();
+    query.exec();
+    _handle->commit();
+
+    //QString failReason;
+    if(query.first())
+    {
+        QString pswd = query.value(0).toString();
+        if(password != pswd)
+        {
+            *failed = Types::Failure::BAD_USERID_OR_PASSWORD;
+        }
+    }
+    else
+    {
+        *failed = Types::Failure::BAD_USERID_OR_PASSWORD;
+    }
+}
 
 PooledDataSession::PooledDataSession(shared_ptr<AbstractLogger> logger,
                                      shared_ptr<AbstractDataSession> session,
@@ -212,6 +278,17 @@ PooledDataSession::PooledDataSession(shared_ptr<AbstractLogger> logger,
     session->setLogger(move(logger));
 }
 
+void PooledDataSession::loginUser(UserIdType userId, const QString& password,
+                                  Failure::FailureType* fail)
+{
+    _session->loginUser(userId, password, fail);
+}
+
+UserIdType PooledDataSession::registerAccount(const QString &password,
+                                              Failure::FailureType *fail)
+{
+    return _session->registerAccount(password, fail);
+}
 
 PooledDataSession::~PooledDataSession()
 {

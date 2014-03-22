@@ -16,7 +16,7 @@ class DatastoreError : public std::exception
 };
 
 
-
+#include <../NetworkProtocol/DataTransferObjects/types.h>
 
 
 class AbstractDataSession
@@ -24,8 +24,12 @@ class AbstractDataSession
 protected:
     std::shared_ptr<AbstractLogger>                     _logger;
 public:
-    // Abstract commands
     void setLogger(std::shared_ptr<AbstractLogger> logger);
+    // Abstract commands
+    virtual NetworkProtocol::DTO::Types::UserIdType registerAccount(const QString& password,
+                                                                    NetworkProtocol::DTO::Types::Failure::FailureType*) = 0;
+    virtual void loginUser(NetworkProtocol::DTO::Types::UserIdType, const QString& password,
+                           NetworkProtocol::DTO::Types::Failure::FailureType*) = 0;
 };
 
 class AbstractDataStorageFactory
@@ -68,6 +72,12 @@ public:
     PooledDataSession(std::shared_ptr<AbstractLogger> logger,
                       std::shared_ptr<AbstractDataSession> session,
                       std::shared_ptr<PooledDataStorageFactory> owner);
+
+    NetworkProtocol::DTO::Types::UserIdType registerAccount(const QString& password,
+                                                            NetworkProtocol::DTO::Types::Failure::FailureType*);
+    void loginUser(NetworkProtocol::DTO::Types::UserIdType, const QString& password,
+                           NetworkProtocol::DTO::Types::Failure::FailureType*);
+
     ~PooledDataSession();
 };
 
@@ -95,6 +105,11 @@ protected:
 public:
     PostgreDataSession(std::shared_ptr<AbstractLogger> logger,
                        std::unique_ptr<QSqlDatabase> handle);
+
+    NetworkProtocol::DTO::Types::UserIdType registerAccount(const QString& password,
+                                                            NetworkProtocol::DTO::Types::Failure::FailureType*);
+    void loginUser(NetworkProtocol::DTO::Types::UserIdType, const QString& password,
+                           NetworkProtocol::DTO::Types::Failure::FailureType*);
 
     ~PostgreDataSession();
 
