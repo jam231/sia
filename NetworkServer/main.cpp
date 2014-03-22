@@ -32,7 +32,7 @@ int main(int argv, char **args)
                             make_logger(LoggingLevel::Trace, log_writer));
 
     auto logger_factory = shared_ptr<AbstractLoggerFactory>(
-                        new TransactionalLoggerFactory(LoggingLevel::Info,
+                        new TransactionalLoggerFactory(LoggingLevel::Trace,
                                                   shared_ptr<AbstractWriter>(
                                                       move(log_writer))));
 
@@ -54,12 +54,11 @@ int main(int argv, char **args)
                                                  move(postgre_data_factory),
                                                  10));
 */
-        MasterServer* master = new MasterServer(logger_factory,
-                                                postgre_data_factory,
-                                                settings);
-        master->setAutoDelete(false);
-
-        QThreadPool::globalInstance()->start(master, QThread::NormalPriority);
+        auto master = unique_ptr<MasterServer>(new MasterServer(logger_factory,
+                                                    postgre_data_factory,
+                                                    settings));
+        master->start();
+        master->setPriority(QThread::HighPriority);
         /*
          * EventServer events(factory, settings);
          * events.setAutoDelete(false);
