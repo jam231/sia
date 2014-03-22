@@ -57,7 +57,7 @@ signals:
 /// STUB
 class UserConnection : public Connection
 {
-
+    Q_OBJECT
 
     NetworkProtocol::DTO::Types::UserIdType _userId;
     std::shared_ptr<AbstractLoggerFactory> _loggerFactory;
@@ -68,6 +68,12 @@ public:
                    std::shared_ptr<QTcpSocket>);
 
     NetworkProtocol::DTO::Types::UserIdType getUserId() const;
+public slots:
+    void disconnected();
+    void readyRead();
+signals:
+    void disconnected(NetworkProtocol::DTO::Types::UserIdType);
+    void readyRead(NetworkProtocol::DTO::Types::UserIdType);
 };
 
 #endif // CONNECTIONS_H

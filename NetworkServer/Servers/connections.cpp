@@ -89,4 +89,25 @@ UserIdType UserConnection::getUserId() const
     return _userId;
 }
 
+void UserConnection::disconnected()
+{
+    _socket->disconnect();
+    emit disconnected(_userId);
+}
+
+void UserConnection::readyRead()
+{
+    auto logger = _loggerFactory->createLoggingSession();
+    if(!_socket->isValid())
+    {
+        LOG_WARNING(logger, QString("UserConnection with id = %1 has invalid socket: %2. "\
+                                    "Commencing socket destruction.")
+                            .arg(_userId.value).arg(_socket->errorString()));
+        disconnected();
+    }
+    else
+    {
+        emit readyRead(_userId);
+    }
+}
 
