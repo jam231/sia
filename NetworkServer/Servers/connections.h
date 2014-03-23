@@ -19,27 +19,24 @@ class Connection : public QObject
 protected:
 
     std::shared_ptr<AbstractLoggerFactory> _loggerFactory;
-    std::shared_ptr<QTcpSocket> _socket;
+    QTcpSocket* _socket;
 
     qint64 _last_message;
     int _id;
 
     Connection() {}
-    void configureConnections() const;
 public:
+    void configureConnections() const;
     Connection(std::shared_ptr<AbstractLoggerFactory>,
-               std::shared_ptr<QTcpSocket>);
+               QTcpSocket*);
 
     virtual ~Connection();
-/*
-    void send(Responses::Response*)
-    {
-
-    }
-*/
-    std::shared_ptr<QTcpSocket> getSocket();
+    void send(NetworkProtocol::Responses::Response*);
+    QTcpSocket* getSocket();
     int getId() const;
 
+protected slots:
+    void error(QAbstractSocket::SocketError);
 public slots:
     void disconnected();
     void readyRead();
@@ -49,12 +46,6 @@ signals:
 };
 
 
-
-
-
-
-
-/// STUB
 class UserConnection : public Connection
 {
     Q_OBJECT
@@ -65,12 +56,14 @@ class UserConnection : public Connection
 public:
     UserConnection(std::shared_ptr<AbstractLoggerFactory>,
                    NetworkProtocol::DTO::Types::UserIdType,
-                   std::shared_ptr<QTcpSocket>);
+                   QTcpSocket*);
 
     NetworkProtocol::DTO::Types::UserIdType getUserId() const;
+
 public slots:
     void disconnected();
     void readyRead();
+
 signals:
     void disconnected(NetworkProtocol::DTO::Types::UserIdType);
     void readyRead(NetworkProtocol::DTO::Types::UserIdType);

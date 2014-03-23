@@ -16,14 +16,15 @@ using namespace std;
 
 
 Connection::Connection(shared_ptr<AbstractLoggerFactory> loggerFactory,
-                       shared_ptr<QTcpSocket> socket)
+                       QTcpSocket* socket)
     :   _loggerFactory(loggerFactory)
 {
     if(!_loggerFactory)
     {
         throw std::invalid_argument("logger factory cannot be nullptr.");
     }
-    _socket = move(socket);
+    _socket = socket;
+    _socket->setParent(this);
     _id = _socket->socketDescriptor();
     _socket->disconnect();
     configureConnections();
@@ -31,15 +32,24 @@ Connection::Connection(shared_ptr<AbstractLoggerFactory> loggerFactory,
 
 void Connection::configureConnections() const
 {
-    connect(_socket.get(),  SIGNAL(disconnected()),
+    connect(_socket,  SIGNAL(disconnected()),
             this,           SLOT(disconnected()));
-    connect(_socket.get(),  SIGNAL(readyRead()),
+    connect(_socket,  SIGNAL(readyRead()),
             this,           SLOT(readyRead()));
+    connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)),
+            this,      SLOT(error(QAbstractSocket::SocketError)));
+
+}
+
+void Connection::send(Responses::Response* response)
+{
+    response->send(_socket);
 }
 
 void Connection::disconnected()
 {
     _socket->disconnect();
+    _socket->deleteLater();
     emit disconnected(_id);
 }
 
@@ -67,18 +77,25 @@ Connection::~Connection()
 {
 }
 
+void Connection::error(QAbstractSocket::SocketError err)
+{
+    auto logger = _loggerFactory->createLoggingSession();
+    LOG_WARNING(logger, QString("Socket error: %1").arg(err));
+    disconnected();
+}
 
-std::shared_ptr<QTcpSocket> Connection::getSocket()
+QTcpSocket* Connection::getSocket()
 {
     return _socket;
 }
 
 
 UserConnection::UserConnection(shared_ptr<AbstractLoggerFactory> loggerFactory,
-                               UserIdType userId, shared_ptr<QTcpSocket> socket)
+                               UserIdType userId, QTcpSocket *socket)
     : _userId(userId), _loggerFactory(loggerFactory)
 {
-    _socket = move(socket);
+    _socket = socket;
+    _socket->setParent(this);
     _id = _socket->socketDescriptor();
     _socket->disconnect();
     configureConnections();
@@ -92,6 +109,7 @@ UserIdType UserConnection::getUserId() const
 void UserConnection::disconnected()
 {
     _socket->disconnect();
+    _socket->deleteLater();
     emit disconnected(_userId);
 }
 
