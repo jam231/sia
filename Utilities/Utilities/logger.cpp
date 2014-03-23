@@ -106,7 +106,7 @@ SimpleLoggerFactory::SimpleLoggerFactory(LoggingLevel level,
 
 shared_ptr<AbstractLogger> SimpleLoggerFactory::createLoggingSession()
 {
-    return shared_ptr<AbstractLogger>(make_logger(_level, move(_writer)));
+    return shared_ptr<AbstractLogger>(make_logger(_level, (_writer)));
 }
 
 

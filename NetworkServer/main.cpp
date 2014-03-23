@@ -19,11 +19,9 @@ int main(int argv, char **args)
 {
     QCoreApplication app(argv, args);
 
-    auto file_writer = shared_ptr<AbstractWriter>(new QDebugWriter);/*new FileWriter(QDate::currentDate()
+    auto file_writer = shared_ptr<AbstractWriter>(new QDebugWriter());/*new FileWriter(QDate::currentDate()
                                                              .toString() + ".log"));*/
-    auto buffered_writer = shared_ptr<AbstractWriter>(new BufferedWriter(move(file_writer),
-                                                                              2));
-    auto composed_writer = new ThreadSafeWriter(move(buffered_writer));
+    auto composed_writer = new ThreadSafeWriter(move(file_writer));
 
 
     auto log_writer = shared_ptr<AbstractWriter>(composed_writer);
@@ -32,9 +30,9 @@ int main(int argv, char **args)
                             make_logger(LoggingLevel::Trace, log_writer));
 
     auto logger_factory = shared_ptr<AbstractLoggerFactory>(
-                        new TransactionalLoggerFactory(LoggingLevel::Trace,
+                        new SimpleLoggerFactory(LoggingLevel::Trace,
                                                   shared_ptr<AbstractWriter>(
-                                                      move(log_writer))));
+                                                      log_writer)));
 
 
     LOG_INFO(local_logger, "Start.");
