@@ -63,6 +63,6 @@ public slots:
     void removeConnection(int id);
     void processMessageFrom(int id);
 signals:
-    void newUser(std::shared_ptr<UserConnection>);
+    void newUser(UserConnection*);
 };
 #endif // LOGINSERVER_H
