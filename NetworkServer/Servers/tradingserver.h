@@ -10,6 +10,8 @@
 
 #include <../NetworkProtocol/DataTransferObjects/types.h>
 
+#include <../NetworkProtocol/Requests/request.h>
+
 #include <../Utilities/logger.h>
 
 #include <DataStorage/datastorage.h>
@@ -49,10 +51,11 @@ public:
                   std::shared_ptr<SharedSet<NetworkProtocol::DTO::Types::UserIdType> > );
 protected:
     virtual void run();
-
+public:
+    void handleRequest(std::shared_ptr<AbstractLogger>, NetworkProtocol::Requests::Request*,
+                       NetworkProtocol::DTO::Types::UserIdType);
 public slots:
-
-   void addUserConnection(std::shared_ptr<UserConnection>);
+   void addUserConnection(UserConnection*);
    void processMessageFrom(NetworkProtocol::DTO::Types::UserIdType);
    void removeConnection(NetworkProtocol::DTO::Types::UserIdType);
 };
