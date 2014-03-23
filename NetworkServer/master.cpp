@@ -64,7 +64,7 @@ void MasterServer::setupServers()
 
     int trading_servers_count = _config["trading servers"].toInt();
 
-    LOG_INFO(logger, QString("Spining up %1 trading servers").arg(trading_servers_count));
+    LOG_INFO(logger, QString("Spinning up %1 trading servers").arg(trading_servers_count));
 
     for(int i = 0; i < trading_servers_count; i++)
     {
@@ -81,31 +81,39 @@ void MasterServer::setupServers()
     _balancing_strategy.reset(balancing_strategy);
     _online_users.reset(new SharedSet<UserIdType>());
 
-    LOG_INFO(logger, "Trading servers are running...");
     LOG_INFO(logger, "Setting up login server...");
 
     _login_server.reset(new LoginServer(_loggerFactory, _dataFactory,
                                         _config, _online_users, this));
 
     _login_server->start();
+    connect(_login_server.get(), SIGNAL(newUser(UserConnection*)),
+            this,                SLOT(distributeUser(UserConnection*)));
     _login_server->setPriority(QThread::NormalPriority);
 }
 
-void MasterServer::distributeUser(std::shared_ptr<UserConnection> user)
+void MasterServer::distributeUser(UserConnection *user)
 {
+    auto logger = _loggerFactory->createLoggingSession();
+    LOG_DEBUG(logger, QString("Distributing user with id = %1")
+                      .arg(user->getUserId().value));
     assert(_online_users->contains(user->getUserId()));
 
     auto target = _balancing_strategy->choose();
+    assert(user->thread() == this);
+    assert(user->getSocket()->thread() == this);
+    assert(user->getSocket()->parent() == user);
+    assert(user->parent() == 0);
+
     user->moveToThread(target.get());
-    user->getSocket()->moveToThread(target.get());
 
-    connect(this, SIGNAL(userConnection(shared_ptr<UserConnection>)),
-            target.get(), SLOT(addUserConnection(shared_ptr<UserConnection>)));
+    connect(this, SIGNAL(userConnection(UserConnection*)),
+            target.get(), SLOT(addUserConnection(UserConnection*)));
 
-    emit userConnection(move(user));
+    emit userConnection(user);
 
-    disconnect(this, SIGNAL(userConnection(shared_ptr<UserConnection>)),
-               target.get(), SLOT(addUserConnection(shared_ptr<UserConnection>)));
+    disconnect(this, SIGNAL(userConnection(UserConnection*)),
+               target.get(), SLOT(addUserConnection(UserConnection*)));
 }
 
 void MasterServer::run()

@@ -49,10 +49,10 @@ public:
 
 public slots:
 
-    void distributeUser(std::shared_ptr<UserConnection>);
+    void distributeUser(UserConnection*);
 
 signals:
-    void userConnection(std::shared_ptr<UserConnection>);
+    void userConnection(UserConnection*);
 };
 
 
