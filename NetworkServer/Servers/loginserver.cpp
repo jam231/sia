@@ -96,12 +96,11 @@ void LoginServer::newConnection()
     auto logger = _loggerFactory->createLoggingSession();
 
     auto socket = _server->nextPendingConnection();
-    //assert(this->thread() == socket->thread());
     LOG_INFO(logger, QString("New connection: %1:%2")
                         .arg(socket->peerAddress().toString())
                         .arg(socket->peerPort()));
     int socket_descriptor = socket->socketDescriptor();
-    assert(!connections.contains(socket_descriptor));
+
     if(!connections.contains(socket_descriptor))
     {
         auto connection = shared_ptr<Connection>(new Connection(_loggerFactory, socket));
@@ -112,17 +111,22 @@ void LoginServer::newConnection()
          */
         LOG_TRACE(logger, QString("Inserting new connection to connection pool"\
                               "with key = %1")
-                          .arg(connection->getSocket()->socketDescriptor()));
-        connections.insert(connection->getSocket()->socketDescriptor(), connection);
+                          .arg(socket_descriptor));
+        connections.insert(socket_descriptor, connection);
 
-        LOG_INFO(logger, QString("Active connections: %1").arg(connections.size()));
+        LOG_INFO(logger, QString("Active connections: %1")
+                         .arg(connections.size()));
 
 
         connect(connection.get(),  SIGNAL(disconnected(int)),
                 this,              SLOT(removeConnection(int)));
         connect(connection.get(), SIGNAL(readyRead(int)),
                 this,             SLOT(processMessageFrom(int)));
-        //processMessageFrom(socket_descriptor);
+        processMessageFrom(socket_descriptor);
+    }
+    else
+    {
+        socket->deleteLater();
     }
 }
 
@@ -132,14 +136,12 @@ void LoginServer::processMessageFrom(int id)
 
     LOG_TRACE(logger, QString("Reading from socket with id = %1.").arg(id));
 
-    auto connection = connections[id];
-    auto socket = connection->getSocket();
+    auto source = connections[id];
+    auto socket = source->getSocket();
 
     LOG_TRACE(logger, QString("Bytes available: %1").arg(socket->bytesAvailable()));
 
     QDataStream stream(socket);
-    int requests_per_second = 0;
-    qint64 timestamp = QDateTime::currentMSecsSinceEpoch();
     try
     {
         // Previous request might moved current connection out, e.g. to trading server.
@@ -166,31 +168,30 @@ void LoginServer::processMessageFrom(int id)
                     handleRequest(logger, request.get(), id);
                 break;
             }
-                requests_per_second++;
             }
             catch(Requests::MalformedRequest& e)
             {
                 LOG_TRACE(logger, QString("Malformed request: %1").arg(e.what()));
                 auto response = Responses::Failure(Failure::MALFORMED_MESSAGE);
-                response.send(socket);
+                source->send(&response);
             }
             catch(Requests::InvalidRequestType& e)
             {
                 LOG_TRACE(logger, QString("Invalid request type: %1").arg(e.what()));
                 auto response = Responses::Failure(Failure::UNRECOGNIZED_MESSAGE);
-                response.send(socket);
+                source->send(&response);
             }
             catch(Requests::InvalidRequestBody& e)
             {
                 LOG_TRACE(logger, QString("Invalid request body: %1").arg(e.what()));
                 auto response = Responses::Failure(Failure::INVALID_MESSAGE_BODY);
-                response.send(socket);
+                source->send(&response);
             }
             catch(DatastoreError& e)
             {
                 LOG_WARNING(logger, QString("Database error %1").arg(e.what()));
                 auto response = Responses::Failure(Failure::REQUEST_DROPPED);
-                response.send(socket);
+                source->send(&response);
             }
         }
     }
@@ -203,17 +204,13 @@ void LoginServer::processMessageFrom(int id)
         LOG_ERROR(logger, QString("Connection with id = %1 has thrown "\
                                     "unknown exception").arg(id));
         auto response = Responses::Failure(Failure::REQUEST_DROPPED);
-        response.send(socket);
+        source->send(&response);
     }
-
-    auto delay = (QDateTime::currentMSecsSinceEpoch() - timestamp);
-    LOG_INFO(logger, QString("Requests per second: %1")
-             .arg(requests_per_second * 100 / (delay == 0 ? 1 : delay)));
 }
 
 
 
-void LoginServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
+void LoginServer::handleRequest(shared_ptr<AbstractLogger> logger,
                                 Requests::Request* request, int id)
 {
     auto source = connections[id];
@@ -222,7 +219,7 @@ void LoginServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
              .arg(request->type()));
 
     auto response = Responses::Failure(Failure::NOT_AUTHORIZED);
-    response.send(source->getSocket());
+    source->send(&response);
 }
 
 void LoginServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
@@ -235,21 +232,22 @@ void LoginServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
 
     auto session = _dataFactory->openSession();
     Failure::FailureType status = Failure::NO_FAILURE;
+
     auto user_id = session->registerAccount(request->getPassword(), &status);
     if(status != Failure::NO_FAILURE)
     {
         auto response = Responses::Failure(status);
-        response.send(source->getSocket());
+        source->send(&response);
     }
     else
     {
         auto response = Responses::RegisterUserSuccess(logger, user_id);
-        response.send(source->getSocket());
+        source->send(&response);
     }
 }
 
 
-void LoginServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
+void LoginServer::handleRequest(shared_ptr<AbstractLogger> logger,
                                 Requests::LoginUser* request, int id)
 {
     auto source = connections[id];
@@ -258,55 +256,59 @@ void LoginServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
               .arg(source->getId()).arg(request->getUserId().value));
 
     auto user_id = request->getUserId();
-    // // Check if password and id match
-    // auto session = _dataFactory->openSession()
-    // Types::FailureType status;
-    // session->loginUser(user_id, request->getPassword(), &status);
-    // if(status == Failure::NO_FAILURE)
-    // {
-    //      //
-    //
-    // }
-    // else
-    // {
-    //   auto response = Responses::Failure(Failure::BAD_USERID_OR_PASSWORD);
-    //   response.send(source->getSocket().get());
-    // }
-    bool added = _online_users->add(user_id);
-    if(!added)
+    auto session = _dataFactory->openSession();
+
+    Failure::FailureType status = Failure::NO_FAILURE;
+    session->loginUser(user_id, request->getUserPassword(), &status);
+
+    if(status == Failure::NO_FAILURE)
     {
-        LOG_TRACE(logger, QString("User with id = %1 is alread online.")
-                  .arg(user_id.value));
-        auto response = Responses::Failure(Failure::ALREADY_LOGGED);
-        response.send(source->getSocket());
+        auto response = Responses::Failure(status);
+        source->send(&response);
     }
     else
     {
-        LOG_TRACE(logger, QString("User id = %1 added.").arg(user_id.value));
+        bool added = _online_users->add(user_id);
 
-        // Should moveToThread socket
-        // Also remember that moveToThread should be called from thread
-        // you move object from (! coupling alert !)
-        //source->getSocket()->setParent(0);
-        //source->getSocket()->moveToThread(_owningThread);
-        //LOG_TRACE(logger, QString("Threads match %1")
-        //          .arg(source->getSocket()->thread() == this));
-        auto user = new UserConnection(_loggerFactory, user_id,
-                                       source->getSocket());
-        user->getSocket()->disconnect();
-        user->disconnect();
-        assert(user->thread() == this);
-        assert(user->getSocket()->thread() == this);
-        assert(user->getSocket()->parent() == user);
-        assert(user->parent() == 0);
-        user->moveToThread(_owningThread);
-        //user->getSocket()->moveToThread(_owningThread);
+        if(!added)
+        {
+            LOG_TRACE(logger, QString("User with id = %1 is alread online.")
+                      .arg(user_id.value));
+            auto response = Responses::Failure(Failure::ALREADY_LOGGED);
+            source->send(&response);
+        }
+        else
+        {
+            LOG_TRACE(logger, QString("User id = %1 added.").arg(user_id.value));
 
-        connections.remove(id);
+            // Should moveToThread socket
+            // Also remember that moveToThread should be called from thread
+            // you move object from (! coupling alert !)
+            //source->getSocket()->setParent(0);
+            //source->getSocket()->moveToThread(_owningThread);
+            //LOG_TRACE(logger, QString("Threads match %1")
+            //          .arg(source->getSocket()->thread() == this));
+            auto user = new UserConnection(_loggerFactory, user_id,
+                                           source->getSocket());
+            user->getSocket()->disconnect();
+            user->disconnect();
 
-        emit newUser(user);
-   }
+            assert(user->thread() == this);
+            assert(user->getSocket()->thread() == this);
+            assert(user->getSocket()->parent() == user);
+            assert(user->parent() == 0);
 
+            // UserConnection is a parent of underlying socket
+            // (see constructor definition) and as such, user->moveToThread
+            // also moves the socket.
+            user->moveToThread(_owningThread);
+
+            connections.remove(id);
+            // The Ok response is sent only when user is successfuly moved to trading server.
+            // The response is sent by TradingServer.
+            emit newUser(user);
+        }
+    }
 }
 
 
