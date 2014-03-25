@@ -74,10 +74,10 @@ std::shared_ptr<AbstractDataSession> PostgresDataStorageFactory::openSession()
     auto logger = _loggerFactory->createLoggingSession();
 
     int suffix = sessions_created.fetchAndAddOrdered(1);
-    unique_ptr<QSqlDatabase> _handle = unique_ptr<QSqlDatabase>(new QSqlDatabase());
-    _handle->addDatabase("QPSQL", QString("Rynki finansowe %1")
-                         .arg(suffix).toLatin1());
-
+    unique_ptr<QSqlDatabase> _handle = unique_ptr<QSqlDatabase>(
+                    new QSqlDatabase(QSqlDatabase::addDatabase("QPSQL",
+                                                               QString("Rynki finansowe %1")
+                                                                    .arg(suffix).toLatin1())));
     _handle->setHostName(_config["host"]);
     _handle->setDatabaseName(_config["name"]);
     _handle->setUserName(_config["username"]);
