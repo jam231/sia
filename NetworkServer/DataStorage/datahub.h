@@ -4,10 +4,10 @@
 #include <QObject>
 #include <QRunnable>
 #include <QSqlDriver>
+#include <QSqlDatabase>
 #include <QEventLoop>
 
-#include "datastorage.h"
-
+//#include "datastorage.h"
 #include <logger.h>
 
 #include <../NetworkProtocol/DataTransferObjects/types.h>
