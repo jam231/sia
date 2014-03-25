@@ -50,6 +50,7 @@ public:
               std::shared_ptr<DTO::BestOrder> bestBuyOrder = nullptr,
               std::shared_ptr<DTO::BestOrder> bestSellOrder = nullptr,
               std::shared_ptr<DTO::LastTransaction> lastTransaction = nullptr);
+
     StockInfo(DTO::Types::StockIdType stockId,
               std::shared_ptr<DTO::BestOrder> bestBuyOrder = nullptr,
               std::shared_ptr<DTO::BestOrder> bestSellOrder = nullptr,

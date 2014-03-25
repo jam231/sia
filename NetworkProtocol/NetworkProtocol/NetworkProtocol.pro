@@ -43,7 +43,9 @@ SOURCES += \
     Responses/orderrealizationmsg.cpp \
     Responses/ordercompletedmsg.cpp \
     message.cpp \
-    Responses/shownobestordermsg.cpp
+    Responses/shownobestordermsg.cpp \
+    DataTransferObjects/stockinfo.cpp \
+    DataTransferObjects/userstocks.cpp
 
 
 
@@ -82,7 +84,9 @@ HEADERS += \
     Responses/orderrealizationmsg.h \
     Responses/lasttransactionmsg.h \
     Responses/ordercompletedmsg.h \
-    Responses/shownobestordermsg.h
+    Responses/shownobestordermsg.h \
+    DataTransferObjects/stockinfo.h \
+    DataTransferObjects/userstocks.h
 
 
 unix:!symbian {
