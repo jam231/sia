@@ -6,8 +6,14 @@
 
 
 #include <../NetworkProtocol/Responses/failuremsg.h>
-#include <../NetworkProtocol/networkprotocol_utilities.h>
 #include <../NetworkProtocol/Responses/okmsg.h>
+
+#include <../NetworkProtocol/Responses/orderacceptedmsg.h>
+#include <../NetworkProtocol/Responses/listofordersmsg.h>
+#include <../NetworkProtocol/Responses/listofstocksmsg.h>
+
+#include <../NetworkProtocol/networkprotocol_utilities.h>
+
 
 using namespace NetworkProtocol;
 using namespace DTO;
@@ -48,8 +54,6 @@ void TradingServer::run()
     QThread::run();
 }
 
-/// TODO: Refactor code below
-///
 void TradingServer::addUserConnection(UserConnection *connection)
 {
     auto logger = _loggerFactory->createLoggingSession();
@@ -59,20 +63,22 @@ void TradingServer::addUserConnection(UserConnection *connection)
     connection->configureConnections();
     if(!_userConnections.contains(user_id))
     {
-        // connect() user_connection with this
         _userConnections.insert(user_id, move(user_connection));
         connect(user_connection.get(),  SIGNAL(disconnected(NetworkProtocol::DTO::Types::UserIdType)),
                 this,              SLOT(removeConnection(NetworkProtocol::DTO::Types::UserIdType)));
         connect(user_connection.get(), SIGNAL(readyRead(NetworkProtocol::DTO::Types::UserIdType)),
                 this,             SLOT(processMessageFrom(NetworkProtocol::DTO::Types::UserIdType)));
-        LOG_INFO(logger, QString("Added user with id = %1").arg(user_id.value));
+        LOG_INFO(logger, QString("Added user(%1)").arg(user_id.value));
+        LOG_INFO(logger, QString("Users online: %1").arg(_userConnections.size()));
+
         Responses::Ok confirm_login;
         user_connection->send(&confirm_login);
-        //processMessageFrom(user_id);
+
+        processMessageFrom(user_id);
     }
     else
     {
-        LOG_WARNING(logger, "User with id = %1 is already on logged on this"\
+        LOG_WARNING(logger, "User(%1) is already on logged on this"\
                     " trading server. This shouldn't happen.");
         user_connection->disconnected();
     }
@@ -82,19 +88,14 @@ void TradingServer::processMessageFrom(UserIdType userId)
 {
     auto logger = _loggerFactory->createLoggingSession();
 
-    LOG_TRACE(logger, QString("Reading from user ith id = %1.").arg(userId.value));
+    LOG_TRACE(logger, QString("Reading from user(%1).").arg(userId.value));
 
     assert( _userConnections.contains(userId));
 
-    auto connection = _userConnections[userId];
-    auto socket = connection->getSocket();
-
-    LOG_TRACE(logger, QString("Bytes available: %1")
-                      .arg(socket->bytesAvailable()));
+    auto source = _userConnections[userId];
+    auto socket = source->getSocket();
 
     QDataStream stream(socket);
-    int requests_per_second = 0;
-    qint64 timestamp = QDateTime::currentMSecsSinceEpoch();
     try
     {
         while(_userConnections.contains(userId))
@@ -104,47 +105,61 @@ void TradingServer::processMessageFrom(UserIdType userId)
             // Log transaction: request -> data access -> response
             auto logger = _loggerFactory->createLoggingSession();
             auto request = Requests::fromStream(logger, stream);
+
             switch(request->type())
             {
                 case Message::REQUEST_SELL_STOCK_ORDER:
                 {
-                    //handleRequest(logger, static_cast<Requests::LoginUser*>(request.get()), id);
+                    handleRequest(logger, static_cast<Requests::SellStock*>(request.get()),
+                                  userId);
                 }
                 break;
                 case Message::REQUEST_BUY_STOCK_ORDER:
                 {
-                    //handleRequest(logger, static_cast<Requests::RegisterUser*>(request.get()), id);
+                    handleRequest(logger, static_cast<Requests::BuyStock*>(request.get()),
+                                  userId);
+                }
+                break;
+                case Message::REQUEST_GET_MY_STOCKS:
+                {
+                    handleRequest(logger, static_cast<Requests::GetMyStocks*>(request.get()),
+                                  userId);
+                }
+                break;
+                case Message::REQUEST_GET_MY_ORDERS:
+                {
+                    handleRequest(logger, static_cast<Requests::GetMyStocks*>(request.get()),
+                                  userId);
                 }
                 break;
                 default:
                     handleRequest(logger, request.get(), userId);
                 break;
             }
-                requests_per_second++;
             }
             catch(Requests::MalformedRequest& e)
             {
                 LOG_TRACE(logger, QString("Malformed request: %1").arg(e.what()));
                 auto response = Responses::Failure(Failure::MALFORMED_MESSAGE);
-                response.send(socket);
+                source->send(&response);
             }
             catch(Requests::InvalidRequestType& e)
             {
                 LOG_TRACE(logger, QString("Invalid request type: %1").arg(e.what()));
                 auto response = Responses::Failure(Failure::UNRECOGNIZED_MESSAGE);
-                response.send(socket);
+                source->send(&response);
             }
             catch(Requests::InvalidRequestBody& e)
             {
                 LOG_TRACE(logger, QString("Invalid request body: %1").arg(e.what()));
                 auto response = Responses::Failure(Failure::INVALID_MESSAGE_BODY);
-                response.send(socket);
+                source->send(&response);
             }
             catch(DatastoreError& e)
             {
                 LOG_WARNING(logger, QString("Database error %1").arg(e.what()));
                 auto response = Responses::Failure(Failure::REQUEST_DROPPED);
-                response.send(socket);
+                source->send(&response);
             }
         }
     }
@@ -154,30 +169,147 @@ void TradingServer::processMessageFrom(UserIdType userId)
     }
     catch(...)
     {
-        LOG_ERROR(logger, QString("Connection with id = %1 has thrown "\
-                                    "unknown exception").arg(userId.value));
+        LOG_ERROR(logger, QString("Connection(%1) has thrown unknown exception")
+                          .arg(userId.value));
         auto response = Responses::Failure(Failure::REQUEST_DROPPED);
-        response.send(socket);
+        source->send(&response);
     }
-
-    auto delay = (QDateTime::currentMSecsSinceEpoch() - timestamp);
-    LOG_INFO(logger, QString("Requests per second: %1")
-             .arg(requests_per_second * 100 / (delay == 0 ? 1 : delay)));
 }
 
 void TradingServer::removeConnection(UserIdType userId)
 {
     auto logger = _loggerFactory->createLoggingSession();
 
-    LOG_INFO(logger, QString("Removing user connection with id = %1")
-                     .arg(userId.value));
+    LOG_INFO(logger, QString("Removing user connection(%1)").arg(userId.value));
+
     _userConnections.remove(userId);
     _online_users->remove(userId);
 }
 
+void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
+                                  Requests::BuyStock* request, UserIdType userId)
+{
+    LOG_DEBUG(logger, QString("User(%1) ordered buying %3 stock(%2) with limit %4.")
+              .arg(userId.value).arg(request->getStockId().value)
+              .arg(request->getAmount().value).arg(request->getPrice().value));
+
+    auto source = _userConnections[userId];
+    auto data_session = _dataStorageFactory->openSession();
+
+    Failure::FailureType status;
+    auto order_id = data_session->buyStock(userId, request->getStockId(),
+                                           request->getAmount(), request->getPrice(),
+                                           &status);
+    if(status == Failure::NO_FAILURE)
+    {
+        LOG_DEBUG(logger, QString("Order accepted: id = %1").arg(order_id.value));
+        auto response = Responses::OrderAccepted(order_id);
+        source->send(&response);
+    }
+    else
+    {
+        LOG_DEBUG(logger, QString("Sending failure: %1").arg(status));
+        auto response = Responses::Failure(status);
+        source->send(&response);
+    }
+}
 
 void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
-                                  Requests::Request* request, UserIdType userId)
+                                  Requests::SellStock* request, UserIdType userId)
+{
+    LOG_DEBUG(logger, QString("User(%1) ordered selling %3 stock(%2) with limit %4.")
+              .arg(userId.value).arg(request->getStockId().value)
+              .arg(request->getAmount().value).arg(request->getPrice().value));
+
+    auto source = _userConnections[userId];
+    auto data_session = _dataStorageFactory->openSession();
+
+    Failure::FailureType status;
+    auto order_id = data_session->buyStock(userId, request->getStockId(),
+                                           request->getAmount(), request->getPrice(),
+                                           &status);
+    if(status == Failure::NO_FAILURE)
+    {
+        LOG_DEBUG(logger, QString("Order accepted: id = %1").arg(order_id.value));
+        auto response = Responses::OrderAccepted(order_id);
+        source->send(&response);
+    }
+    else
+    {
+        LOG_DEBUG(logger, QString("Sending failure: %1").arg(status));
+        auto response = Responses::Failure(status);
+        source->send(&response);
+    }
+}
+
+void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
+                                  Requests::GetMyOrders* request,
+                                  UserIdType userId)
+{
+    LOG_DEBUG(logger, QString("User(%1) requested list of his orders.")
+                      .arg(userId.value));
+
+    auto source = _userConnections[userId];
+    auto data_session = _dataStorageFactory->openSession();
+
+    Failure::FailureType status;
+    auto user_orders = data_session->getUserOrders(userId, &status);
+    if(status == Failure::NO_FAILURE)
+    {
+        Responses::ListOfOrders response;
+        for(auto it = user_orders.begin(); it != user_orders.end(); it++)
+        {
+            response.addOrder(*it);
+        }
+
+        LOG_DEBUG(logger, QString("Sending list(%1) of orders to user(%2).")
+                          .arg(user_orders.size()).arg(userId.value));
+        source->send(&response);
+    }
+    else
+    {
+        LOG_WARNING(logger, QString("That shouldn't happen: %1").arg(status));
+        auto response = Responses::Failure(status);
+        source->send(&response);
+    }
+}
+
+void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
+                                  Requests::GetMyStocks* request,
+                                  UserIdType userId)
+{
+    LOG_DEBUG(logger, QString("User(%1) requested list of his stocks.")
+                      .arg(userId.value));
+
+    auto source = _userConnections[userId];
+    auto data_session = _dataStorageFactory->openSession();
+
+    Failure::FailureType status;
+    auto user_stocks = data_session->getUserStocks(userId, &status);
+    if(status == Failure::NO_FAILURE)
+    {
+        Responses::ListOfStocks response;
+        auto stocks = user_stocks.getUserStocks();
+        for(auto it = stocks->begin(); it != stocks->end(); it++)
+        {
+            response.addStock(it->first, it->second);
+        }
+
+        LOG_DEBUG(logger, QString("Sending list(%1) of stocks to user(%2).")
+                          .arg(stocks->size()).arg(userId.value));
+        source->send(&response);
+    }
+    else
+    {
+        LOG_WARNING(logger, QString("That shouldn't happen: %1").arg(status));
+        auto response = Responses::Failure(status);
+        source->send(&response);
+    }
+}
+
+void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
+                                  Requests::Request* request,
+                                  UserIdType userId)
 {
     auto source = _userConnections[userId];
 
@@ -185,5 +317,5 @@ void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
              .arg(request->type()));
 
     auto response = Responses::Failure(Failure::NOT_AUTHORIZED);
-    response.send(source->getSocket());
+    source->send(&response);
 }

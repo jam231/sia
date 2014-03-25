@@ -11,6 +11,10 @@
 #include <../NetworkProtocol/DataTransferObjects/types.h>
 
 #include <../NetworkProtocol/Requests/request.h>
+#include <../NetworkProtocol/Requests/buystockmsg.h>
+#include <../NetworkProtocol/Requests/sellstockmsg.h>
+#include <../NetworkProtocol/Requests/getmyordersmsg.h>
+#include <../NetworkProtocol/Requests/getmystocksmsg.h>
 
 #include <../Utilities/logger.h>
 
@@ -52,7 +56,20 @@ public:
 protected:
     virtual void run();
 public:
-    void handleRequest(std::shared_ptr<AbstractLogger>, NetworkProtocol::Requests::Request*,
+    void handleRequest(std::shared_ptr<AbstractLogger>,
+                       NetworkProtocol::Requests::BuyStock*,
+                       NetworkProtocol::DTO::Types::UserIdType);
+    void handleRequest(std::shared_ptr<AbstractLogger>,
+                       NetworkProtocol::Requests::SellStock*,
+                       NetworkProtocol::DTO::Types::UserIdType);
+    void handleRequest(std::shared_ptr<AbstractLogger>,
+                       NetworkProtocol::Requests::GetMyOrders*,
+                       NetworkProtocol::DTO::Types::UserIdType);
+    void handleRequest(std::shared_ptr<AbstractLogger>,
+                       NetworkProtocol::Requests::GetMyStocks*,
+                       NetworkProtocol::DTO::Types::UserIdType);
+    void handleRequest(std::shared_ptr<AbstractLogger>,
+                       NetworkProtocol::Requests::Request*,
                        NetworkProtocol::DTO::Types::UserIdType);
 public slots:
    void addUserConnection(UserConnection*);
