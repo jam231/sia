@@ -50,7 +50,7 @@ void BufferedWriterTest::write_data()
             << buffer_size << data_load << buffer_size << (data_load.size() - 1) / buffer_size;
 
     // For large dataset
-    for(int i = 1; i < 15; i++)
+    for(int i = 1; i < 15; i+=2)
     {
         buffer_size = 1 << i;
         QTest::newRow(qPrintable(QString("Writer with buffer size = %1. Entries written: %2.")

@@ -1,15 +1,14 @@
 #include <QCoreApplication>
 #include <QString>
 
-
-//#include "market.h"
-
 #include "master.h"
 
 #include <QDateTime>
 
 #include <configmanager.h>
 #include <logger.h>
+
+#include "DataStorage/postgresdatastorage.h"
 
 using namespace std;
 

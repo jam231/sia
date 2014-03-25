@@ -19,7 +19,7 @@ class ConcurrentWriterTest : public QObject
                         LONG_STRING_LENGTH  = 20,
             // How many strings data_load for a worker contain.
                         SMALL_DATA_SET_SIZE = 100,
-                        LARGE_DATA_SET_SIZE = 400;
+                        LARGE_DATA_SET_SIZE = 200;
 
     Q_OBJECT
 

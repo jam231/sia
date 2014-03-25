@@ -68,9 +68,9 @@ void ConcurrentWriterTest::rapidWrite_data()
 
 
     // For small dataset
-    generate_data_for_rapidWriter(SHORT_STRING_LENGTH, SMALL_DATA_SET_SIZE, 10, 3, 2, 1);
+    generate_data_for_rapidWriter(SHORT_STRING_LENGTH, SMALL_DATA_SET_SIZE, 8, 8, 2, 1);
     // For large dataset
-    generate_data_for_rapidWriter(LONG_STRING_LENGTH, LARGE_DATA_SET_SIZE, 10, 5, 2, 2);
+    generate_data_for_rapidWriter(LONG_STRING_LENGTH, LARGE_DATA_SET_SIZE, 8, 8, 2, 2);
 }
 
 
