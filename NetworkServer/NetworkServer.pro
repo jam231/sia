@@ -20,7 +20,8 @@ HEADERS += \
     master.h \
     Utils/scheduling.h \
     Servers/eventserver.h \
-    Servers/connections.h
+    Servers/connections.h \
+    DataStorage/postgresdatastorage.h
 
 SOURCES += \
     #server.cpp \
@@ -35,7 +36,8 @@ SOURCES += \
     master.cpp \
     Utils/scheduling.cpp \
     Servers/connections.cpp \
-    Utils/utils.cpp
+    Utils/utils.cpp \
+    DataStorage/postgresdatastorage.cpp
 
 
 OTHER_FILES += \
