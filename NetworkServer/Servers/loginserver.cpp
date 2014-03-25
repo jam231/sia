@@ -225,10 +225,9 @@ void LoginServer::handleRequest(shared_ptr<AbstractLogger> logger,
 void LoginServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
                                 Requests::RegisterUser* request, int id)
 {
+    LOG_DEBUG(logger, QString("Connection(%1) requested registration.")
+                      .arg(id));
     auto source = connections[id];
-
-    LOG_DEBUG(logger, QString("Connection with id = %1 issues register request.")
-              .arg(source->getId()));
 
     auto session = _dataFactory->openSession();
     Failure::FailureType status = Failure::NO_FAILURE;
@@ -236,11 +235,17 @@ void LoginServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
     auto user_id = session->registerAccount(request->getPassword(), &status);
     if(status != Failure::NO_FAILURE)
     {
+        LOG_DEBUG(logger, QString("Connection(%1) failed to register. Status: %2.")
+                  .arg(id).arg(status));
         auto response = Responses::Failure(status);
         source->send(&response);
     }
     else
     {
+        LOG_DEBUG(logger, QString("Connection(%1) registered successfully. "\
+                                  "New user_id = %2.")
+                          .arg(id).arg(user_id.value));
+
         auto response = Responses::RegisterUserSuccess(logger, user_id);
         source->send(&response);
     }
