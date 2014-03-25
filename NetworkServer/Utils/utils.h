@@ -2,13 +2,14 @@
 #define UTILITY_H
 
 #include <exception>
+#include <memory>
+#include <mutex>
 
 #include <QVector>
 #include <QPair>
 
 #include <QHash>
 #include <QSet>
-#include <QMutex>
 
 #include <DataTransferObjects/types.h>
 
@@ -59,14 +60,13 @@ class SharedSet
 {
 protected:
     QSet<T> _set;
-    QMutex _lock;
+    std::mutex _lock;
 public:
     bool add(const T& key);
     bool remove(const T& key);
     bool contains(const T& key);
     int size() const;
 };
-
 
 
 template<class T>
@@ -99,8 +99,9 @@ template<class T>
 bool SharedSet<T>::contains(const T &key)
 {
     _lock.lock();
-    return _set.contains(key);
+    bool result = _set.contains(key);
     _lock.unlock();
+    return result;
 }
 
 template<class T>

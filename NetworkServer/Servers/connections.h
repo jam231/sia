@@ -60,6 +60,9 @@ public:
 
     NetworkProtocol::DTO::Types::UserIdType getUserId() const;
 
+protected slots:
+    void error(QAbstractSocket::SocketError);
+
 public slots:
     void disconnected();
     void readyRead();

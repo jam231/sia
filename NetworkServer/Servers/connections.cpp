@@ -33,9 +33,9 @@ Connection::Connection(shared_ptr<AbstractLoggerFactory> loggerFactory,
 void Connection::configureConnections() const
 {
     connect(_socket,  SIGNAL(disconnected()),
-            this,           SLOT(disconnected()));
+            this,     SLOT(disconnected()));
     connect(_socket,  SIGNAL(readyRead()),
-            this,           SLOT(readyRead()));
+            this,     SLOT(readyRead()));
     connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)),
             this,      SLOT(error(QAbstractSocket::SocketError)));
 
@@ -105,6 +105,13 @@ UserConnection::UserConnection(shared_ptr<AbstractLoggerFactory> loggerFactory,
 UserIdType UserConnection::getUserId() const
 {
     return _userId;
+}
+
+void UserConnection::error(QAbstractSocket::SocketError err)
+{
+    auto logger = _loggerFactory->createLoggingSession();
+    LOG_WARNING(logger, QString("Socket error: %1").arg(err));
+    disconnected();
 }
 
 void UserConnection::disconnected()

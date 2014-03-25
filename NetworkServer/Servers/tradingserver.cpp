@@ -73,7 +73,7 @@ void TradingServer::addUserConnection(UserConnection *user_connection)
         Responses::Ok confirm_login;
         user_connection->send(&confirm_login);
 
-        processMessageFrom(user_id);
+        //processMessageFrom(user_id);
     }
     else
     {

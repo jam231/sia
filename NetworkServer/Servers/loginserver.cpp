@@ -25,7 +25,7 @@ LoginServer::LoginServer(shared_ptr<AbstractLoggerFactory> loggerFactory,
                          shared_ptr<SharedSet<UserIdType> > online_users,
                          QThread* owningThread)
     : _loggerFactory(loggerFactory),  _dataFactory(dataFactory),
-      _online_users(move(online_users)), _owningThread(owningThread)
+      _online_users(online_users), _owningThread(owningThread)
 {
     if(_owningThread == nullptr)
     {

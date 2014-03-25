@@ -66,6 +66,8 @@ void MasterServer::setupServers()
 
     LOG_INFO(logger, QString("Spinning up %1 trading servers").arg(trading_servers_count));
 
+    _online_users.reset(new SharedSet<UserIdType>());
+
     for(int i = 0; i < trading_servers_count; i++)
     {
         auto tradinig_server = shared_ptr<TradingServer>(new TradingServer(_loggerFactory,
@@ -79,7 +81,6 @@ void MasterServer::setupServers()
     auto balancing_strategy = new RoundRobin<shared_ptr<TradingServer>,
                                              vector<shared_ptr<TradingServer> > >(_trading_server_pool);
     _balancing_strategy.reset(balancing_strategy);
-    _online_users.reset(new SharedSet<UserIdType>());
 
     LOG_INFO(logger, "Setting up login server...");
 
