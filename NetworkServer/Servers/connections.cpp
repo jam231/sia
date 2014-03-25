@@ -49,6 +49,7 @@ void Connection::send(Responses::Response* response)
 void Connection::disconnected()
 {
     _socket->disconnect();
+    _socket->blockSignals(true);
     _socket->deleteLater();
     emit disconnected(_id);
 }

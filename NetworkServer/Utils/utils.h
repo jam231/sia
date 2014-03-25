@@ -63,7 +63,7 @@ protected:
 public:
     bool add(const T& key);
     bool remove(const T& key);
-    bool contains(const T& key) const;
+    bool contains(const T& key);
     int size() const;
 };
 
@@ -96,9 +96,11 @@ bool SharedSet<T>::remove(const T& key)
 }
 
 template<class T>
-bool SharedSet<T>::contains(const T &key) const
+bool SharedSet<T>::contains(const T &key)
 {
+    _lock.lock();
     return _set.contains(key);
+    _lock.unlock();
 }
 
 template<class T>

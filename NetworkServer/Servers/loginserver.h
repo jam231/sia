@@ -34,7 +34,7 @@ protected:
     // socket's descriptor is the key
     // BEWARE: http://social.msdn.microsoft.com/Forums/en-US/ab2d4f74-feeb-4677-b655-84650796884c/winsock2-how-unique-are-socket-descriptors?forum=vcgeneral
 
-    QHash<int, std::shared_ptr<Connection> > connections;
+    QHash<int, Connection* > connections;
 
     std::unique_ptr<TcpServer> _server;
     QThread* _owningThread;

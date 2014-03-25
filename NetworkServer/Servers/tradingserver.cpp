@@ -54,19 +54,18 @@ void TradingServer::run()
     QThread::run();
 }
 
-void TradingServer::addUserConnection(UserConnection *connection)
+void TradingServer::addUserConnection(UserConnection *user_connection)
 {
     auto logger = _loggerFactory->createLoggingSession();
-    auto user_connection = shared_ptr<UserConnection>(connection);
     auto user_id = user_connection->getUserId();
 
-    connection->configureConnections();
+    user_connection->configureConnections();
     if(!_userConnections.contains(user_id))
     {
-        _userConnections.insert(user_id, move(user_connection));
-        connect(user_connection.get(),  SIGNAL(disconnected(NetworkProtocol::DTO::Types::UserIdType)),
+        _userConnections.insert(user_id, user_connection);
+        connect(user_connection,  SIGNAL(disconnected(NetworkProtocol::DTO::Types::UserIdType)),
                 this,              SLOT(removeConnection(NetworkProtocol::DTO::Types::UserIdType)));
-        connect(user_connection.get(), SIGNAL(readyRead(NetworkProtocol::DTO::Types::UserIdType)),
+        connect(user_connection,  SIGNAL(readyRead(NetworkProtocol::DTO::Types::UserIdType)),
                 this,             SLOT(processMessageFrom(NetworkProtocol::DTO::Types::UserIdType)));
         LOG_INFO(logger, QString("Added user(%1)").arg(user_id.value));
         LOG_INFO(logger, QString("Users online: %1").arg(_userConnections.size()));
@@ -78,9 +77,12 @@ void TradingServer::addUserConnection(UserConnection *connection)
     }
     else
     {
-        LOG_WARNING(logger, "User(%1) is already on logged on this"\
-                    " trading server. This shouldn't happen.");
+        _online_users->remove(user_id);
+        LOG_WARNING(logger, QString("User(%1) is already on logged on this"\
+                                    " trading server. This shouldn't happen.")
+                            .arg(user_id.value));
         user_connection->disconnected();
+        user_connection->deleteLater();
     }
 }
 
@@ -181,9 +183,11 @@ void TradingServer::removeConnection(UserIdType userId)
     auto logger = _loggerFactory->createLoggingSession();
 
     LOG_INFO(logger, QString("Removing user connection(%1)").arg(userId.value));
-
+    auto connection = _userConnections[userId];
     _userConnections.remove(userId);
     _online_users->remove(userId);
+    connection->disconnect();
+    connection->deleteLater();
 }
 
 void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
@@ -243,7 +247,7 @@ void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
 }
 
 void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
-                                  Requests::GetMyOrders* request,
+                                  Requests::GetMyOrders*,
                                   UserIdType userId)
 {
     LOG_DEBUG(logger, QString("User(%1) requested list of his orders.")

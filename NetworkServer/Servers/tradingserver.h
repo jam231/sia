@@ -43,7 +43,7 @@ class TradingServer : public QThread
 {
     Q_OBJECT
     QHash<NetworkProtocol::DTO::Types::UserIdType,
-          std::shared_ptr<UserConnection> > _userConnections;
+          UserConnection* > _userConnections;
     std::shared_ptr<SharedSet<NetworkProtocol::DTO::Types::UserIdType> > _online_users;
 
     std::shared_ptr<AbstractLoggerFactory> _loggerFactory;

@@ -103,7 +103,7 @@ void LoginServer::newConnection()
 
     if(!connections.contains(socket_descriptor))
     {
-        auto connection = shared_ptr<Connection>(new Connection(_loggerFactory, socket));
+        auto connection = new Connection(_loggerFactory, socket);
         /*
          *  http://stackoverflow.com/questions/10711246/move-to-thread-causes-issue
          *  socket->moveToThread(connection->thread());
@@ -118,9 +118,9 @@ void LoginServer::newConnection()
                          .arg(connections.size()));
 
 
-        connect(connection.get(),  SIGNAL(disconnected(int)),
+        connect(connection,  SIGNAL(disconnected(int)),
                 this,              SLOT(removeConnection(int)));
-        connect(connection.get(), SIGNAL(readyRead(int)),
+        connect(connection, SIGNAL(readyRead(int)),
                 this,             SLOT(processMessageFrom(int)));
         processMessageFrom(socket_descriptor);
     }
@@ -237,6 +237,7 @@ void LoginServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
     {
         LOG_DEBUG(logger, QString("Connection(%1) failed to register. Status: %2.")
                   .arg(id).arg(status));
+
         auto response = Responses::Failure(status);
         source->send(&response);
     }
@@ -256,8 +257,8 @@ void LoginServer::handleRequest(shared_ptr<AbstractLogger> logger,
                                 Requests::LoginUser* request, int id)
 {
     auto source = connections[id];
-    LOG_DEBUG(logger, QString("Connection with id = %1 issues login request "\
-                              "for user id = %2.")
+    LOG_DEBUG(logger, QString("Connection(%1) issues login request "\
+                              "as user(%2).")
               .arg(source->getId()).arg(request->getUserId().value));
 
     auto user_id = request->getUserId();
@@ -266,8 +267,12 @@ void LoginServer::handleRequest(shared_ptr<AbstractLogger> logger,
     Failure::FailureType status = Failure::NO_FAILURE;
     session->loginUser(user_id, request->getUserPassword(), &status);
 
-    if(status == Failure::NO_FAILURE)
+    if(status != Failure::NO_FAILURE)
     {
+        LOG_DEBUG(logger, QString("Connection(%1) failed to login as user(%2). "\
+                                  "Status: %3.")
+                  .arg(id).arg(user_id.value).arg(status));
+
         auto response = Responses::Failure(status);
         source->send(&response);
     }
@@ -284,7 +289,8 @@ void LoginServer::handleRequest(shared_ptr<AbstractLogger> logger,
         }
         else
         {
-            LOG_TRACE(logger, QString("User id = %1 added.").arg(user_id.value));
+            LOG_TRACE(logger, QString("User(%1) added to online users set.")
+                              .arg(user_id.value));
 
             // Should moveToThread socket
             // Also remember that moveToThread should be called from thread
@@ -309,6 +315,7 @@ void LoginServer::handleRequest(shared_ptr<AbstractLogger> logger,
             user->moveToThread(_owningThread);
 
             connections.remove(id);
+            source->deleteLater();
             // The Ok response is sent only when user is successfuly moved to trading server.
             // The response is sent by TradingServer.
             emit newUser(user);
@@ -322,7 +329,9 @@ void LoginServer::removeConnection(int id)
     auto logger = _loggerFactory->createLoggingSession();
 
     LOG_INFO(logger, QString("Removing connection with id = %1").arg(id));
+    auto connection = connections[id];
     connections.remove(id);
+    connection->deleteLater();
 }
 
 void LoginServer::run()

@@ -95,11 +95,12 @@ void MasterServer::setupServers()
 void MasterServer::distributeUser(UserConnection *user)
 {
     auto logger = _loggerFactory->createLoggingSession();
-    LOG_DEBUG(logger, QString("Distributing user with id = %1")
+    LOG_DEBUG(logger, QString("Distributing user(%1)")
                       .arg(user->getUserId().value));
     assert(_online_users->contains(user->getUserId()));
 
     auto target = _balancing_strategy->choose();
+
     assert(user->thread() == this);
     assert(user->getSocket()->thread() == this);
     assert(user->getSocket()->parent() == user);
