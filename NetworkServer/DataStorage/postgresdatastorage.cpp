@@ -107,7 +107,7 @@ PostgreDataSession::PostgreDataSession(shared_ptr<AbstractLogger> logger,
                                        unique_ptr<QSqlDatabase> handle)
     : _handle(move(handle))
 {
-    setLogger(move(logger));
+    _logger.swap(logger);
 
     if(!_handle)
     {

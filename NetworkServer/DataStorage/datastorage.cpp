@@ -19,7 +19,8 @@ void AbstractDataSession::setLogger(shared_ptr<AbstractLogger> logger)
     {
         throw invalid_argument("logger cannot be a nullptr.");
     }
-    _logger.swap(logger);
+    _logger = logger;
+    LOG_TRACE(_logger, "Setting logger for session.");
 }
 
 
