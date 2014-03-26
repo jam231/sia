@@ -13,6 +13,7 @@
 #include <../NetworkProtocol/Requests/request.h>
 #include <../NetworkProtocol/Requests/buystockmsg.h>
 #include <../NetworkProtocol/Requests/sellstockmsg.h>
+#include <../NetworkProtocol/Requests/cancelordermsg.h>
 #include <../NetworkProtocol/Requests/getmyordersmsg.h>
 #include <../NetworkProtocol/Requests/getmystocksmsg.h>
 
@@ -25,20 +26,6 @@
 #include <Utils/utils.h>
 
 
-/*
- *  Problems:
- *
- *
- * When adding userConnection, how to handle deleting QTcpSocket* in sender of
- * socket_descriptor ?
- *
- * Who is the sender of descriptor ?
- *
- * QHash needs to be thread safe.
- *
- *
- *
- */
 class TradingServer : public QThread
 {
     Q_OBJECT
@@ -61,6 +48,9 @@ public:
                        NetworkProtocol::DTO::Types::UserIdType);
     void handleRequest(std::shared_ptr<AbstractLogger>,
                        NetworkProtocol::Requests::SellStock*,
+                       NetworkProtocol::DTO::Types::UserIdType);
+    void handleRequest(std::shared_ptr<AbstractLogger>,
+                       NetworkProtocol::Requests::CancelOrder*,
                        NetworkProtocol::DTO::Types::UserIdType);
     void handleRequest(std::shared_ptr<AbstractLogger>,
                        NetworkProtocol::Requests::GetMyOrders*,

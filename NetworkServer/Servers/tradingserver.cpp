@@ -122,6 +122,11 @@ void TradingServer::processMessageFrom(UserIdType userId)
                                   userId);
                 }
                 break;
+                case Message::REQUEST_CANCEL_ORDER:
+                {
+                    handleRequest(logger, static_cast<Requests::CancelOrder*>(request.get()), userId);
+                }
+                break;
                 case Message::REQUEST_GET_MY_STOCKS:
                 {
                     handleRequest(logger, static_cast<Requests::GetMyStocks*>(request.get()),
@@ -130,7 +135,7 @@ void TradingServer::processMessageFrom(UserIdType userId)
                 break;
                 case Message::REQUEST_GET_MY_ORDERS:
                 {
-                    handleRequest(logger, static_cast<Requests::GetMyStocks*>(request.get()),
+                    handleRequest(logger, static_cast<Requests::GetMyOrders*>(request.get()),
                                   userId);
                 }
                 break;
@@ -206,13 +211,16 @@ void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
                                            &status);
     if(status == Failure::NO_FAILURE)
     {
-        LOG_DEBUG(logger, QString("Order accepted: id = %1").arg(order_id.value));
+        LOG_DEBUG(logger, QString("Order(%1) accepted.").arg(order_id.value));
+
         auto response = Responses::OrderAccepted(order_id);
         source->send(&response);
     }
     else
     {
-        LOG_DEBUG(logger, QString("Sending failure: %1").arg(status));
+        LOG_DEBUG(logger, QString("Request failed. Failure status: %1")
+                          .arg(status));
+
         auto response = Responses::Failure(status);
         source->send(&response);
     }
@@ -229,18 +237,53 @@ void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
     auto data_session = _dataStorageFactory->openSession();
 
     Failure::FailureType status;
-    auto order_id = data_session->buyStock(userId, request->getStockId(),
+    auto order_id = data_session->sellStock(userId, request->getStockId(),
                                            request->getAmount(), request->getPrice(),
                                            &status);
     if(status == Failure::NO_FAILURE)
     {
-        LOG_DEBUG(logger, QString("Order accepted: id = %1").arg(order_id.value));
+        LOG_DEBUG(logger, QString("Order(%1) accepted.").arg(order_id.value));
+
         auto response = Responses::OrderAccepted(order_id);
         source->send(&response);
     }
     else
     {
-        LOG_DEBUG(logger, QString("Sending failure: %1").arg(status));
+        LOG_DEBUG(logger, QString("Request failed. Failure status: %1")
+                          .arg(status));
+
+        auto response = Responses::Failure(status);
+        source->send(&response);
+    }
+}
+
+void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
+                                  Requests::CancelOrder* request,
+                                  UserIdType userId)
+{
+    auto order_id = request->getOrderId();
+    auto source = _userConnections[userId];
+
+    LOG_DEBUG(logger, QString("User(%1) wants to cancel order(%2).")
+                      .arg(userId.value).arg(order_id.value));
+
+    auto data_session = _dataStorageFactory->openSession();
+
+    Failure::FailureType status;
+    data_session->cancelOrder(userId, order_id, &status);
+
+    if(status == Failure::NO_FAILURE)
+    {
+        Responses::Ok response;
+
+        LOG_DEBUG(logger, QString("Order(%1) have been successfully canceled.")
+                          .arg(order_id.value));
+        source->send(&response);
+    }
+    else
+    {
+        LOG_DEBUG(logger, QString("Cannot cancel order(%1). Failure status: %2.")
+                          .arg(order_id.value).arg(status));
         auto response = Responses::Failure(status);
         source->send(&response);
     }
@@ -258,28 +301,38 @@ void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
 
     Failure::FailureType status;
     auto user_orders = data_session->getUserOrders(userId, &status);
+
     if(status == Failure::NO_FAILURE)
     {
         Responses::ListOfOrders response;
+
         for(auto it = user_orders.begin(); it != user_orders.end(); it++)
         {
+            LOG_TRACE(logger, QString("Adding to list of orders: (orderId(%1), "\
+                                      "orderType(%2), stockId(%3), amount(%4), price(%5)).")
+                      .arg((*it)->getOrderId().value).arg((*it)->getOrderType())
+                      .arg((*it)->getStockId().value).arg((*it)->getAmount().value)
+                      .arg((*it)->getPrice().value));
+
             response.addOrder(*it);
         }
 
         LOG_DEBUG(logger, QString("Sending list(%1) of orders to user(%2).")
                           .arg(user_orders.size()).arg(userId.value));
+
         source->send(&response);
     }
     else
     {
         LOG_WARNING(logger, QString("That shouldn't happen: %1").arg(status));
+
         auto response = Responses::Failure(status);
         source->send(&response);
     }
 }
 
 void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
-                                  Requests::GetMyStocks* request,
+                                  Requests::GetMyStocks*,
                                   UserIdType userId)
 {
     LOG_DEBUG(logger, QString("User(%1) requested list of his stocks.")
@@ -290,22 +343,29 @@ void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
 
     Failure::FailureType status;
     auto user_stocks = data_session->getUserStocks(userId, &status);
+
     if(status == Failure::NO_FAILURE)
     {
         Responses::ListOfStocks response;
+
         auto stocks = user_stocks.getUserStocks();
+
         for(auto it = stocks->begin(); it != stocks->end(); it++)
         {
+            LOG_TRACE(logger, QString("Adding to list of stocks: (stockId(%1), amount(%2))")
+                              .arg(it->first.value).arg(it->second.value));
             response.addStock(it->first, it->second);
         }
 
         LOG_DEBUG(logger, QString("Sending list(%1) of stocks to user(%2).")
                           .arg(stocks->size()).arg(userId.value));
+
         source->send(&response);
     }
     else
     {
         LOG_WARNING(logger, QString("That shouldn't happen: %1").arg(status));
+
         auto response = Responses::Failure(status);
         source->send(&response);
     }
