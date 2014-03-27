@@ -45,14 +45,14 @@ int main(int argv, char **args)
 
         auto postgre_data_factory = shared_ptr<AbstractDataStorageFactory>(
                     new PostgresDataStorageFactory(logger_factory, settings));
-/*
+
         auto data_factory = shared_ptr<AbstractDataStorageFactory>(
                     new PooledDataStorageFactory(logger_factory,
                                                  move(postgre_data_factory),
                                                  10));
-*/
+
         auto master = unique_ptr<MasterServer>(new MasterServer(logger_factory,
-                                                    postgre_data_factory,
+                                                    data_factory,
                                                     settings));
         master->start();
         master->setPriority(QThread::HighPriority);

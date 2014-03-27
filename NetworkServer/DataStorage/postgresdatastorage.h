@@ -25,8 +25,8 @@ class PostgreDataSession : public AbstractDataSession
 {
 protected:
     std::unique_ptr<QSqlDatabase>       _handle;
-    std::shared_ptr<AbstractLogger>     _logger;
 public:
+
     PostgreDataSession(std::shared_ptr<AbstractLogger> logger,
                        std::unique_ptr<QSqlDatabase> handle);
 

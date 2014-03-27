@@ -100,9 +100,6 @@ std::shared_ptr<AbstractDataSession> PostgresDataStorageFactory::openSession()
 
 
 
-
-
-
 PostgreDataSession::PostgreDataSession(shared_ptr<AbstractLogger> logger,
                                        unique_ptr<QSqlDatabase> handle)
     : _handle(move(handle))

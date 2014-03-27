@@ -19,7 +19,7 @@ void AbstractDataSession::setLogger(shared_ptr<AbstractLogger> logger)
     {
         throw invalid_argument("logger cannot be a nullptr.");
     }
-    _logger = logger;
+    _logger.swap(logger);
     LOG_TRACE(_logger, "Setting logger for session.");
 }
 
@@ -80,8 +80,11 @@ void PooledDataStorageFactory::addToPool(shared_ptr<AbstractDataSession> session
 shared_ptr<AbstractDataSession> PooledDataStorageFactory::openSession()
 {
     _pool_access_lock.lock();
+    if(_pool.empty())
+    {
+        _pool_not_empty.wait(&_pool_access_lock);
+    }
 
-    _pool_not_empty.wait(&_pool_access_lock);
     auto session = move(_pool.dequeue());
 
     _pool_access_lock.unlock();
@@ -113,14 +116,20 @@ PooledDataSession::PooledDataSession(shared_ptr<AbstractLogger> logger,
                                      std::shared_ptr<PooledDataStorageFactory> owner)
     : _session(move(session)), _owner(owner)
 {
-    setLogger(logger);
+    if(!logger)
+    {
+        throw invalid_argument("logger cannot be nullptr.");
+    }
+    _logger.swap(logger);
+
+    LOG_TRACE(_logger, "Logger set.");
 
     if(!_session)
     {
-        LOG_DEBUG(logger, "session == nullptr");
+        LOG_DEBUG(_logger, "session == nullptr");
         throw invalid_argument("session cannot be nullptr");
     }
-    session->setLogger(move(logger));
+    _session->setLogger(_logger);
 }
 
 void PooledDataSession::loginUser(UserIdType userId, const QString& password,
