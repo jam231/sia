@@ -71,7 +71,7 @@ void PooledDataStorageFactory::addToPool(shared_ptr<AbstractDataSession> session
 {
     _pool_access_lock.lock();
 
-    _pool.enqueue(move(session));
+    _pool.enqueue(session);
     _pool_not_empty.wakeOne();
 
     _pool_access_lock.unlock();
@@ -85,7 +85,7 @@ shared_ptr<AbstractDataSession> PooledDataStorageFactory::openSession()
         _pool_not_empty.wait(&_pool_access_lock);
     }
 
-    auto session = move(_pool.dequeue());
+    auto session = _pool.dequeue();
 
     _pool_access_lock.unlock();
 
@@ -95,7 +95,7 @@ shared_ptr<AbstractDataSession> PooledDataStorageFactory::openSession()
     auto pooled_session = shared_ptr<AbstractDataSession>(
                 new PooledDataSession(move(logger), move(session), move(owner)));
 
-    return move(pooled_session);
+    return pooled_session;
 }
 
 
@@ -189,7 +189,7 @@ PooledDataSession::~PooledDataSession()
 {
     if(_owner)
     {
-        LOG_TRACE(_logger, "session object being returned to session pool.");
-        _owner->addToPool(move(_session));
+        LOG_TRACE(_logger, "session object is being returned to session pool.");
+        _owner->addToPool(_session);
     }
 }

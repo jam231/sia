@@ -262,6 +262,7 @@ void LoginServer::handleRequest(shared_ptr<AbstractLogger> logger,
               .arg(source->getId()).arg(request->getUserId().value));
 
     auto user_id = request->getUserId();
+
     auto session = _dataFactory->openSession();
 
     Failure::FailureType status = Failure::NO_FAILURE;

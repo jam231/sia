@@ -36,6 +36,12 @@ class TradingServer : public QThread
     std::shared_ptr<AbstractLoggerFactory> _loggerFactory;
     std::shared_ptr<AbstractDataStorageFactory> _dataStorageFactory;
 
+    std::shared_ptr<NetworkProtocol::DTO::LastTransaction>   _lastTransaction;
+    QHash<NetworkProtocol::DTO::Types::StockIdType,
+          std::shared_ptr<NetworkProtocol::DTO::BestOrder> > _bestBuyOrder;
+    QHash<NetworkProtocol::DTO::Types::StockIdType,
+          std::shared_ptr<NetworkProtocol::DTO::BestOrder> > _bestSellOrder;
+
 public:
     TradingServer(std::shared_ptr<AbstractLoggerFactory> loggerFactory,
                   std::shared_ptr<AbstractDataStorageFactory> datastorageFactory,
@@ -65,6 +71,14 @@ public slots:
    void addUserConnection(UserConnection*);
    void processMessageFrom(NetworkProtocol::DTO::Types::UserIdType);
    void removeConnection(NetworkProtocol::DTO::Types::UserIdType);
+
+   void orderCompleted(NetworkProtocol::DTO::Types::UserIdType, NetworkProtocol::DTO::Types::OrderIdType);
+   void orderRealization(NetworkProtocol::DTO::Types::UserIdType, NetworkProtocol::DTO::Types::OrderIdType,
+                         NetworkProtocol::DTO::Types::AmountType, NetworkProtocol::DTO::Types::PriceType);
+
+   void newLastTransaction(NetworkProtocol::DTO::LastTransaction*);
+   void newBestBuyOrder(NetworkProtocol::DTO::BestOrder*);
+   void newBestSellOrder(NetworkProtocol::DTO::BestOrder*);
 };
 
 

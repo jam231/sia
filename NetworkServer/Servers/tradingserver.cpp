@@ -8,6 +8,10 @@
 #include <../NetworkProtocol/Responses/failuremsg.h>
 #include <../NetworkProtocol/Responses/okmsg.h>
 
+#include <../NetworkProtocol/Responses/ordercompletedmsg.h>
+#include <../NetworkProtocol/Responses/orderrealizationmsg.h>
+#include <../NetworkProtocol/Responses/showbestordermsg.h>
+#include <../NetworkProtocol/Responses/lasttransactionmsg.h>
 #include <../NetworkProtocol/Responses/orderacceptedmsg.h>
 #include <../NetworkProtocol/Responses/listofordersmsg.h>
 #include <../NetworkProtocol/Responses/listofstocksmsg.h>
@@ -31,8 +35,8 @@ TradingServer::TradingServer(std::shared_ptr<AbstractLoggerFactory> loggerFactor
     : _loggerFactory(loggerFactory), _dataStorageFactory(datastorageFactory),
       _online_users(online_users)
 {
-    // Bradley Hughes, I'm doing it right.
     moveToThread(this);
+
     if(!_loggerFactory)
     {
         throw invalid_argument("loggerFactory cannot be nullptr.");
@@ -60,6 +64,7 @@ void TradingServer::addUserConnection(UserConnection *user_connection)
     auto user_id = user_connection->getUserId();
 
     user_connection->configureConnections();
+
     if(!_userConnections.contains(user_id))
     {
         _userConnections.insert(user_id, user_connection);
@@ -67,6 +72,7 @@ void TradingServer::addUserConnection(UserConnection *user_connection)
                 this,              SLOT(removeConnection(NetworkProtocol::DTO::Types::UserIdType)));
         connect(user_connection,  SIGNAL(readyRead(NetworkProtocol::DTO::Types::UserIdType)),
                 this,             SLOT(processMessageFrom(NetworkProtocol::DTO::Types::UserIdType)));
+
         LOG_INFO(logger, QString("Added user(%1)").arg(user_id.value));
         LOG_INFO(logger, QString("Users online: %1").arg(_userConnections.size()));
 
@@ -147,24 +153,28 @@ void TradingServer::processMessageFrom(UserIdType userId)
             catch(Requests::MalformedRequest& e)
             {
                 LOG_TRACE(logger, QString("Malformed request: %1").arg(e.what()));
+
                 auto response = Responses::Failure(Failure::MALFORMED_MESSAGE);
                 source->send(&response);
             }
             catch(Requests::InvalidRequestType& e)
             {
                 LOG_TRACE(logger, QString("Invalid request type: %1").arg(e.what()));
+
                 auto response = Responses::Failure(Failure::UNRECOGNIZED_MESSAGE);
                 source->send(&response);
             }
             catch(Requests::InvalidRequestBody& e)
             {
                 LOG_TRACE(logger, QString("Invalid request body: %1").arg(e.what()));
+
                 auto response = Responses::Failure(Failure::INVALID_MESSAGE_BODY);
                 source->send(&response);
             }
             catch(DatastoreError& e)
             {
                 LOG_WARNING(logger, QString("Database error %1").arg(e.what()));
+
                 auto response = Responses::Failure(Failure::REQUEST_DROPPED);
                 source->send(&response);
             }
@@ -178,6 +188,7 @@ void TradingServer::processMessageFrom(UserIdType userId)
     {
         LOG_ERROR(logger, QString("Connection(%1) has thrown unknown exception")
                           .arg(userId.value));
+
         auto response = Responses::Failure(Failure::REQUEST_DROPPED);
         source->send(&response);
     }
@@ -274,16 +285,17 @@ void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
 
     if(status == Failure::NO_FAILURE)
     {
-        Responses::Ok response;
-
         LOG_DEBUG(logger, QString("Order(%1) have been successfully canceled.")
                           .arg(order_id.value));
+
+        Responses::Ok response;
         source->send(&response);
     }
     else
     {
         LOG_DEBUG(logger, QString("Cannot cancel order(%1). Failure status: %2.")
                           .arg(order_id.value).arg(status));
+
         auto response = Responses::Failure(status);
         source->send(&response);
     }
@@ -354,6 +366,7 @@ void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
         {
             LOG_TRACE(logger, QString("Adding to list of stocks: (stockId(%1), amount(%2))")
                               .arg(it->first.value).arg(it->second.value));
+
             response.addStock(it->first, it->second);
         }
 
@@ -382,4 +395,93 @@ void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
 
     auto response = Responses::Failure(Failure::NOT_AUTHORIZED);
     source->send(&response);
+}
+
+void TradingServer::orderCompleted(UserIdType userId, OrderIdType orderId)
+{
+    auto logger = _loggerFactory->createLoggingSession();
+
+    if(_userConnections.contains(userId))
+    {
+        auto target = _userConnections[userId];
+
+        LOG_DEBUG(logger, QString("Sending notification to user(%1) of"\
+                                  "completion of order(%2)")
+                          .arg(userId.value).arg(orderId.value));
+
+        auto response = Responses::OrderCompleted(orderId);
+        target->send(&response);
+    }
+    else
+    {
+        LOG_TRACE(logger, QString("User(%1) not found on current trading server")
+                            .arg(userId.value));
+    }
+}
+
+void TradingServer::orderRealization(UserIdType userId, OrderIdType orderId,
+                                     AmountType amount, PriceType price)
+{
+    auto logger = _loggerFactory->createLoggingSession();
+
+    if(_userConnections.contains(userId))
+    {
+        auto target = _userConnections[userId];
+
+        LOG_DEBUG(logger, QString("Sending notification to user(%1) of"\
+                                  "(semi-)realization of order(%2) on "\
+                                  "amount(%3) and price(%4).")
+                          .arg(userId.value).arg(orderId.value)
+                          .arg(amount.value).arg(price.value));
+
+        auto response = Responses::OrderCompleted(orderId);
+        target->send(&response);
+    }
+    else
+    {
+        LOG_TRACE(logger, QString("User(%1) not found on current trading server.")
+                            .arg(userId.value));
+    }
+}
+
+void TradingServer::newLastTransaction(LastTransaction* lastTransaction)
+{
+    auto logger = _loggerFactory->createLoggingSession();
+
+    LOG_TRACE(logger, QString("New last transaction - amount(%1), price(%2), date(%3)")
+                      .arg(lastTransaction->getAmount().value)
+                      .arg(lastTransaction->getPrice().value)
+                      .arg(lastTransaction->getDateTime()));
+
+    _lastTransaction.reset(lastTransaction);
+}
+
+void TradingServer::newBestBuyOrder(BestOrder* bestBuy)
+{
+    auto logger = _loggerFactory->createLoggingSession();
+
+    assert(bestBuy->getOrderType() == Order::BUY);
+
+    LOG_TRACE(logger, QString("New best buy order - stockId(%1), amount(%2), price(%3).")
+                      .arg(bestBuy->getStockId().value)
+                      .arg(bestBuy->getAmount().value)
+                      .arg(bestBuy->getPrice().value));
+
+    auto stockId = bestBuy->getStockId();
+    _bestBuyOrder[stockId].reset(bestBuy);
+}
+
+void TradingServer::newBestSellOrder(BestOrder* bestSell)
+{
+    auto logger = _loggerFactory->createLoggingSession();
+
+    assert(bestSell->getOrderType() == Order::SELL);
+
+    LOG_TRACE(logger, QString("New best sell order - stockId(%1), amount(%2), price(%3).")
+                      .arg(bestSell->getStockId().value)
+                      .arg(bestSell->getAmount().value)
+                      .arg(bestSell->getPrice().value));
+
+    auto stockId = bestSell->getStockId();
+    _bestSellOrder[stockId].reset(bestSell);
 }
