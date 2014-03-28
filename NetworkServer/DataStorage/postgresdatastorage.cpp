@@ -73,19 +73,21 @@ std::shared_ptr<AbstractDataSession> PostgresDataStorageFactory::openSession()
 {
     auto logger = _loggerFactory->createLoggingSession();
 
-    int suffix = sessions_created.fetchAndAddOrdered(1);
+    sessions_created.fetchAndAddOrdered(1);
+    auto unique_name = QUuid::createUuid().toString();
+
     unique_ptr<QSqlDatabase> _handle = unique_ptr<QSqlDatabase>(
                     new QSqlDatabase(QSqlDatabase::addDatabase("QPSQL",
-                                                               QString("Rynki finansowe %1")
-                                                                    .arg(suffix).toLatin1())));
+                                                               unique_name.toLatin1())));
     _handle->setHostName(_config["host"]);
     _handle->setDatabaseName(_config["name"]);
     _handle->setUserName(_config["username"]);
     _handle->setPassword(_config["password"]);
     _handle->setPort( _config["port"].toInt());
 
-    LOG_DEBUG(logger, QString("Opening postgres connection to %1:%2.")
-              .arg(_config["host"]).arg(_config["port"]));
+    LOG_DEBUG(logger, QString("Opening postgres connection(%3) to %1:%2.")
+                      .arg(_config["host"]).arg(_config["port"])
+                      .arg(unique_name));
 
     if(!_handle->open())
     {
