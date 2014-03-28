@@ -103,6 +103,10 @@ void EventServer::sessionOn()
     {
         LOG_WARNING(logger, QString("data session returned: %1").arg(status));
     }
+    else
+    {
+        emit sessionActivated();
+    }
 }
 
 void EventServer::sessionOff()
@@ -121,5 +125,9 @@ void EventServer::sessionOff()
     if(status != Failure::NO_FAILURE)
     {
         LOG_WARNING(logger, QString("data session returned: %1").arg(status));
+    }
+    else
+    {
+        emit sessionDisactivated();
     }
 }
