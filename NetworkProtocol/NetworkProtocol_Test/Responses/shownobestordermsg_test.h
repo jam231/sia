@@ -6,7 +6,7 @@
 
 
 /*
- *  Testing against specification in orderrealizationmsg.h
+ *  Testing against specification in OrderChangemsg.h
  */
 class ShowNoBestOrderTest : public QObject
 {

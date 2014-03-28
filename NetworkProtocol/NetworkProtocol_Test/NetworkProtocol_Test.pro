@@ -37,7 +37,7 @@ SOURCES += \
     Responses/listofordersmsg_test.cpp \
     Responses/listofstocksmsg_test.cpp \
     Responses/orderacceptedmsg_test.cpp \
-    Responses/orderrealizationmsg_test.cpp \
+    Responses/orderchangemsg_test.cpp \
     Responses/ordercompletedmsg_test.cpp \
     Responses/shownewordermsg_test.cpp \
     Responses/shownobestordermsg_test.cpp \
@@ -66,7 +66,7 @@ HEADERS += \
     Responses/listofordersmsg_test.h \
     Responses/listofstocksmsg_test.h \
     Responses/orderacceptedmsg_test.h \
-    Responses/orderrealizationmsg_test.h \
+    Responses/orderchangemsg_test.h \
     Responses/ordercompletedmsg_test.h \
     Responses/shownewordermsg_test.h \
     Responses/shownobestordermsg_test.h \

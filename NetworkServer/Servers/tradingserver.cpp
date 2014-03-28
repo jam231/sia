@@ -9,7 +9,7 @@
 #include <../NetworkProtocol/Responses/okmsg.h>
 
 #include <../NetworkProtocol/Responses/ordercompletedmsg.h>
-#include <../NetworkProtocol/Responses/orderrealizationmsg.h>
+#include <../NetworkProtocol/Responses/orderchangemsg.h>
 #include <../NetworkProtocol/Responses/showbestordermsg.h>
 #include <../NetworkProtocol/Responses/lasttransactionmsg.h>
 #include <../NetworkProtocol/Responses/orderacceptedmsg.h>
@@ -419,7 +419,7 @@ void TradingServer::orderCompleted(UserIdType userId, OrderIdType orderId)
     }
 }
 
-void TradingServer::orderRealization(UserIdType userId, OrderIdType orderId,
+void TradingServer::OrderChange(UserIdType userId, OrderIdType orderId,
                                      AmountType amount, PriceType price)
 {
     auto logger = _loggerFactory->createLoggingSession();
@@ -434,7 +434,7 @@ void TradingServer::orderRealization(UserIdType userId, OrderIdType orderId,
                           .arg(userId.value).arg(orderId.value)
                           .arg(amount.value).arg(price.value));
 
-        auto response = Responses::OrderCompleted(orderId);
+        auto response = Responses::OrderChange(logger, orderId, amount, price);
         target->send(&response);
     }
     else

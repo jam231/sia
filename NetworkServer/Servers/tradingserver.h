@@ -73,7 +73,7 @@ public slots:
    void removeConnection(NetworkProtocol::DTO::Types::UserIdType);
 
    void orderCompleted(NetworkProtocol::DTO::Types::UserIdType, NetworkProtocol::DTO::Types::OrderIdType);
-   void orderRealization(NetworkProtocol::DTO::Types::UserIdType, NetworkProtocol::DTO::Types::OrderIdType,
+   void OrderChange(NetworkProtocol::DTO::Types::UserIdType, NetworkProtocol::DTO::Types::OrderIdType,
                          NetworkProtocol::DTO::Types::AmountType, NetworkProtocol::DTO::Types::PriceType);
 
    void newLastTransaction(NetworkProtocol::DTO::LastTransaction*);

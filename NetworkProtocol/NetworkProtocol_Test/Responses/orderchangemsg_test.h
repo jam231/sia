@@ -1,14 +1,14 @@
-#ifndef ORDERREALIZATIONMSG_TEST_H
-#define ORDERREALIZATIONMSG_TEST_H
+#ifndef OrderChangeMSG_TEST_H
+#define OrderChangeMSG_TEST_H
 
 
 #include <QtTest>
 
 
 /*
- *  Testing against specification in orderrealizationmsg.h
+ *  Testing against specification in OrderChangemsg.h
  */
-class OrderRealizationTest : public QObject
+class OrderChangeTest : public QObject
 {
     Q_OBJECT
 
@@ -32,4 +32,4 @@ private Q_SLOTS:
     void creation_invalid();
 };
 
-#endif // ORDERREALIZATIONMSG_TEST_H
+#endif // OrderChangeMSG_TEST_H

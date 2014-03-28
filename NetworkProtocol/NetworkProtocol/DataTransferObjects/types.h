@@ -159,7 +159,7 @@ enum MessageType : MessageTypeType
 
 
     RESPONSE_ORDER_COMPLETED,               // Responses::OrderCompleted
-    RESPONSE_ORDER_REALIZATION,             // Responses::OrderRealization
+    RESPONSE_ORDER_CHANGE,                  // Responses::OrderChange
 
 
     RESPONSE_LAST_TRANSACTION,              // Responses::LastTransaction
@@ -194,9 +194,10 @@ enum MessageType : MessageTypeType
     // Not implemented
 
     REQUEST_GET_SESSION_STATUS,
-    RESPONSE_SESSION_STATUS,
 
-
+    RESPONSE_SESSION_SETTINGS,
+    RESPONSE_SESSION_ON,
+    RESPONSE_SESSION_OFF,
     /* 50-99 */
 
     /* 100+ others */

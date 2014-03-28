@@ -40,7 +40,7 @@ SOURCES += \
     Responses/listofordersmsg.cpp \
     Requests/getcompanystatusmsg.cpp \
     Responses/companystatusmsg.cpp \
-    Responses/orderrealizationmsg.cpp \
+    Responses/orderchangemsg.cpp \
     Responses/ordercompletedmsg.cpp \
     message.cpp \
     Responses/shownobestordermsg.cpp \
@@ -81,7 +81,7 @@ HEADERS += \
     Responses/listofordersmsg.h \
     Requests/getcompanystatusmsg.h \
     Responses/companystatusmsg.h \
-    Responses/orderrealizationmsg.h \
+    Responses/orderchangemsg.h \
     Responses/lasttransactionmsg.h \
     Responses/ordercompletedmsg.h \
     Responses/shownobestordermsg.h \

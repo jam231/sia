@@ -1,6 +1,6 @@
-#include "orderrealizationmsg_test.h"
+#include "orderchangemsg_test.h"
 
-#include <Responses/orderrealizationmsg.h>
+#include <Responses/orderchangemsg.h>
 
 #include <utilities.h>
 
@@ -17,13 +17,13 @@ Q_DECLARE_METATYPE(OrderIdType)
 Q_DECLARE_METATYPE(AmountType)
 Q_DECLARE_METATYPE(PriceType)
 
-void OrderRealizationTest::initTestCase()
+void OrderChangeTest::initTestCase()
 {
     GlobalUtilities::setLogger(move(std::shared_ptr<AbstractLogger>(
                                     make_logger(LoggingLevel::Off))));
 }
 
-void OrderRealizationTest::generate_valid_data()
+void OrderChangeTest::generate_valid_data()
 {
     QTest::addColumn<OrderIdType>("order_id");
     QTest::addColumn<AmountType>("amount");
@@ -41,7 +41,7 @@ void OrderRealizationTest::generate_valid_data()
     }
 }
 
-void OrderRealizationTest::creation_invalid_data()
+void OrderChangeTest::creation_invalid_data()
 {
     QTest::addColumn<OrderIdType>("order_id");
     QTest::addColumn<AmountType>("amount");
@@ -53,7 +53,7 @@ void OrderRealizationTest::creation_invalid_data()
 
 }
 
-void OrderRealizationTest::creation_invalid()
+void OrderChangeTest::creation_invalid()
 {
     QFETCH(OrderIdType, order_id);
     QFETCH(AmountType,  amount);
@@ -61,7 +61,7 @@ void OrderRealizationTest::creation_invalid()
 
     try
     {
-        Responses::OrderRealization order_realization(order_id, amount, price);
+        Responses::OrderChange order_realization(order_id, amount, price);
 
         QFAIL("std::invalid_argument should have been thrown.");
     }
@@ -75,12 +75,12 @@ void OrderRealizationTest::creation_invalid()
     }
 }
 
-void OrderRealizationTest::creation_valid_data()
+void OrderChangeTest::creation_valid_data()
 {
     generate_valid_data();
 }
 
-void OrderRealizationTest::creation_valid()
+void OrderChangeTest::creation_valid()
 {
     QFETCH(OrderIdType, order_id);
     QFETCH(AmountType,  amount);
@@ -88,7 +88,7 @@ void OrderRealizationTest::creation_valid()
 
     try
     {
-        Responses::OrderRealization order_realization(order_id, amount, price);
+        Responses::OrderChange order_realization(order_id, amount, price);
 
         QVERIFY2(order_realization.getOrderId()  == order_id,
                  "Order id is corrupted.");
@@ -103,12 +103,12 @@ void OrderRealizationTest::creation_valid()
     }
 }
 
-void OrderRealizationTest::constant_length_data()
+void OrderChangeTest::constant_length_data()
 {
     generate_valid_data();
 }
 
-void OrderRealizationTest::constant_length()
+void OrderChangeTest::constant_length()
 {
     QFETCH(OrderIdType, order_id);
     QFETCH(AmountType,  amount);
@@ -116,7 +116,7 @@ void OrderRealizationTest::constant_length()
 
     try
     {
-        Responses::OrderRealization order_realization(order_id, amount, price);
+        Responses::OrderChange order_realization(order_id, amount, price);
 
         Message::MessageLengthType should_be_message_length =
                                                    sizeof(Message::MessageLengthType) +
@@ -141,12 +141,12 @@ void OrderRealizationTest::constant_length()
     }
 }
 
-void OrderRealizationTest::send_data()
+void OrderChangeTest::send_data()
 {
     generate_valid_data();
 }
 
-void OrderRealizationTest::send()
+void OrderChangeTest::send()
 {
     QFETCH(OrderIdType, order_id);
     QFETCH(AmountType,  amount);
@@ -154,7 +154,7 @@ void OrderRealizationTest::send()
 
     try
     {
-        Responses::OrderRealization order_realization(order_id, amount, price);
+        Responses::OrderChange order_realization(order_id, amount, price);
 
         QByteArray buffer;
         QDataStream stream(&buffer, QIODevice::ReadWrite);
@@ -196,12 +196,12 @@ void OrderRealizationTest::send()
                             .arg(is_length)
                             .arg(should_be_bytes)));
 
-        assert (Message::RESPONSE_ORDER_REALIZATION == 0x17);
+        assert (Message::RESPONSE_ORDER_CHANGE == 0x17);
 
-        QVERIFY2(is_type == Message::RESPONSE_ORDER_REALIZATION,
+        QVERIFY2(is_type == Message::RESPONSE_ORDER_CHANGE,
                  qPrintable(QString("Message type doesn't match. Is %1 should be %2.")
                             .arg(is_type)
-                            .arg(Message::RESPONSE_ORDER_REALIZATION)));
+                            .arg(Message::RESPONSE_ORDER_CHANGE)));
 
         QVERIFY2(is_order_id == order_id,
                  qPrintable(QString("User id doesn't match. Is %1 should be %2.")

@@ -1,4 +1,4 @@
-#include "orderrealizationmsg.h"
+#include "orderchangemsg.h"
 
 #include <utilities.h>
 #include <stdexcept>
@@ -10,14 +10,14 @@ namespace Responses
 
 using namespace DTO;
 
-OrderRealization::OrderRealization(Types::OrderIdType orderId,
+OrderChange::OrderChange(Types::OrderIdType orderId,
                                    Types::AmountType amount,
                                    Types::PriceType price)
-    : OrderRealization(std::move(GlobalUtilities::getLogger()), orderId, amount,
+    : OrderChange(std::move(GlobalUtilities::getLogger()), orderId, amount,
                        price)
 {}
 
-OrderRealization::OrderRealization(std::shared_ptr<AbstractLogger> logger,
+OrderChange::OrderChange(std::shared_ptr<AbstractLogger> logger,
                                    Types::OrderIdType orderId,
                                    Types::AmountType amount,
                                    Types::PriceType price)
@@ -35,7 +35,7 @@ OrderRealization::OrderRealization(std::shared_ptr<AbstractLogger> logger,
     }
 }
 
-void OrderRealization::send(QIODevice *connection)
+void OrderChange::send(QIODevice *connection)
 {
     QDataStream out(connection);
 
@@ -45,26 +45,26 @@ void OrderRealization::send(QIODevice *connection)
          << _price;
 }
 
-Types::Message::MessageType OrderRealization::type() const
+Types::Message::MessageType OrderChange::type() const
 {
-    return Types::Message::MessageType::RESPONSE_ORDER_REALIZATION;
+    return Types::Message::MessageType::RESPONSE_ORDER_CHANGE;
 }
 
-Types::Message::MessageLengthType OrderRealization::length() const
+Types::Message::MessageLengthType OrderChange::length() const
 {
     return Response::length() + sizeof(_orderId) +
             sizeof(_amount) + sizeof(_price);
 }
 
-Types::OrderIdType OrderRealization::getOrderId() const
+Types::OrderIdType OrderChange::getOrderId() const
 {
     return _orderId;
 }
-Types::AmountType OrderRealization::getAmount() const
+Types::AmountType OrderChange::getAmount() const
 {
     return _amount;
 }
-Types::PriceType OrderRealization::getPrice() const
+Types::PriceType OrderChange::getPrice() const
 {
     return _price;
 }
