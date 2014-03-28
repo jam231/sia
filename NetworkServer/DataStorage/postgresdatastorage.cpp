@@ -110,13 +110,15 @@ PostgreDataSession::PostgreDataSession(shared_ptr<AbstractLogger> logger,
 
     if(!_handle)
     {
-        LOG_DEBUG(_logger, "Database handle == nullptr.");
+        LOG_ERROR(_logger, "Database handle == nullptr.");
         throw invalid_argument("Database handle cannot be a nullptr.");
     }
 }
 
 PostgreDataSession::~PostgreDataSession()
 {
+    LOG_DEBUG(_logger, QString("Closing connection(%1) to postgreSQL.")
+                       .arg(_handle->connectionName()));
     _handle->close();
 }
 
