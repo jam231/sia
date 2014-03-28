@@ -1,14 +1,18 @@
 #include <QCoreApplication>
 #include <QString>
-
-#include "master.h"
-
 #include <QDateTime>
+
+
+
+#include "DataStorage/postgresdatastorage.h"
+#include "DataStorage/datahub.h"
+
+#include "Servers/eventserver.h"
+#include "master.h"
 
 #include <configmanager.h>
 #include <logger.h>
 
-#include "DataStorage/postgresdatastorage.h"
 
 using namespace std;
 
@@ -47,23 +51,24 @@ int main(int argv, char **args)
                     new PostgresDataStorageFactory(logger_factory, settings));
 
         auto data_factory = shared_ptr<AbstractDataStorageFactory>(
-                    new PooledDataStorageFactory(logger_factory,
+                   new PooledDataStorageFactory(logger_factory,
                                                  move(postgre_data_factory),
                                                  10));
 
-        auto master = unique_ptr<MasterServer>(new MasterServer(logger_factory,
-                                                    data_factory,
-                                                    settings));
-        master->start();
-        master->setPriority(QThread::HighPriority);
-        /*
-         * EventServer events(factory, settings);
-         * events.setAutoDelete(false);
-         * // It is ciritical to handle session open/close on without delays.
-         * QThreadPool::globalInstance()->start(&events, QThread::HighestPriority);
-         *
-         *
-         */
+        //MasterServer master(logger_factory, data_factory, settings);
+        //master.start();
+        //master.setPriority(QThread::HighPriority);
+
+
+        auto events_data_factory = shared_ptr<AbstractDataStorageFactory>(
+                    new PostgresDataStorageFactory(logger_factory, settings));
+
+        EventServer events(logger_factory, events_data_factory, settings);
+        events.start();
+        // Session handling must be handled without delays.
+        events.setPriority(QThread::HighestPriority);
+
+
         return app.exec();
 
 

@@ -1,41 +1,44 @@
 #ifndef EVENTSERVER_H
 #define EVENTSERVER_H
 
-#include <QObject>
-#include <QRunnable>
-#include <QEventLoop>
-
 #include <../Utilities/logger.h>
 #include <DataStorage/datastorage.h>
 
 #include <memory>
 
+
+#include <QThread>
+
 /*
  * Event server handles market events, e.g. session starting/stoping
  *
- *
- *
- *
- *
  */
 
-/// STUB
-class EventServer : public QObject, public QRunnable
+class EventServer : public QThread
 {
     std::shared_ptr<AbstractDataStorageFactory> _dataFactory;
     std::shared_ptr<AbstractLoggerFactory> _loggerFactory;
 
+    std::unique_ptr<QTimer> _sessionOnTimer,
+                            _sessionOffTimer;
+
+    int _session_on_interval_ms,
+        _session_off_interval_ms;
 
     Q_OBJECT
 public:
-    explicit EventServer(std::shared_ptr<AbstractDataStorageFactory> dataFactory,
-                         std::shared_ptr<AbstractLoggerFactory> loggerFactory);
+    EventServer(std::shared_ptr<AbstractLoggerFactory>,
+                std::shared_ptr<AbstractDataStorageFactory>,
+                const QHash<QString, QString>& config);
 
     void run();
-
 signals:
+    void sessionActivated();
+    void sessionDisactivated();
 
-public slots:
+protected slots:
+    void sessionOn();
+    void sessionOff();
 
 };
 

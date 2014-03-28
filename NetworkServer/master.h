@@ -48,7 +48,6 @@ public:
                  const QHash<QString, QString>& config);
 
 public slots:
-
     void distributeUser(UserConnection*);
 
 signals:
