@@ -39,7 +39,7 @@ int main(int argv, char **args)
 
 
     LOG_INFO(local_logger, "Start.");
-    // QThread::idealThreadCount()
+
     try {
 
         QString config_file_path = "Files/config.ini";
@@ -50,14 +50,15 @@ int main(int argv, char **args)
         auto postgre_data_factory = shared_ptr<AbstractDataStorageFactory>(
                     new PostgresDataStorageFactory(logger_factory, settings));
 
-        auto data_factory = shared_ptr<AbstractDataStorageFactory>(
+        /*
+         auto data_factory = shared_ptr<AbstractDataStorageFactory>(
                    new PooledDataStorageFactory(logger_factory,
                                                  move(postgre_data_factory),
                                                  10));
-
-        //MasterServer master(logger_factory, data_factory, settings);
-        //master.start();
-        //master.setPriority(QThread::HighPriority);
+         */
+        MasterServer master(logger_factory, postgre_data_factory, settings);
+        master.start();
+        master.setPriority(QThread::HighPriority);
 
 
         auto events_data_factory = shared_ptr<AbstractDataStorageFactory>(
@@ -65,9 +66,13 @@ int main(int argv, char **args)
 
         EventServer events(logger_factory, events_data_factory, settings);
         events.start();
+
         // Session handling must be handled without delays.
         events.setPriority(QThread::HighestPriority);
 
+        PostgreDataHub notifications(logger_factory, settings);
+        notifications.start();
+        notifications.setPriority(QThread::HighPriority);
 
         return app.exec();
 
