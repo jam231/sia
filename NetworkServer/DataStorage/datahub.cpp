@@ -7,10 +7,10 @@ using namespace NetworkProtocol;
 using namespace DTO;
 using namespace Types;
 
-const QString PostgreDataHub::ORDER_COMPLETION_CHANNEL = "";
-const QString PostgreDataHub::ORDER_CHANGE_CHANNEL = "";
-const QString PostgreDataHub::BEST_ORDER_CHANGE_CHANNEL = "";
-const QString PostgreDataHub::LAST_TRANSACTION_CHANGE_CHANNEL = "";
+const QString PostgreDataHub::ORDER_COMPLETION_CHANNEL = "order_completed_ch";
+const QString PostgreDataHub::ORDER_CHANGE_CHANNEL = "order_changed_ch";
+const QString PostgreDataHub::BEST_ORDER_CHANGE_CHANNEL = "best_order_change_ch";
+const QString PostgreDataHub::LAST_TRANSACTION_CHANGE_CHANNEL = "last_transaction_change_ch";
 
 PostgreDataHub::PostgreDataHub(shared_ptr<AbstractLoggerFactory> loggerFactory,
                                const QHash<QString, QString>& config)
@@ -24,37 +24,37 @@ PostgreDataHub::PostgreDataHub(shared_ptr<AbstractLoggerFactory> loggerFactory,
     }
     auto logger = _loggerFactory->createLoggingSession();
 
-    if(!config.contains("username"))
+    if(!config.contains("notifications username"))
     {
-        LOG_TRACE(logger, "key: username not found in config.");
-        throw invalid_argument("key: username not found in config.");
+        LOG_TRACE(logger, "key: 'notifications username' not found in config.");
+        throw invalid_argument("key: 'notifications username' not found in config.");
     }
-    if(!config.contains("password"))
+    if(!config.contains("notifications password"))
     {
-        LOG_TRACE(logger, "key: password not found in config.");
-        throw invalid_argument("key: password not found in config.");
+        LOG_TRACE(logger, "key: 'notifications password' not found in config.");
+        throw invalid_argument("key: 'notifications password' not found in config.");
     }
-    if(!config.contains("host"))
+    if(!config.contains("notifications host"))
     {
         LOG_TRACE(logger, "key: host not found in config.");
         throw invalid_argument("key: host not found in config.");
     }
-    if(!config.contains("port"))
+    if(!config.contains("notifications port"))
     {
-        LOG_TRACE(logger, "key: port not found in config.");
-        throw invalid_argument("key: port not found in config.");
+        LOG_TRACE(logger, "key: 'notifications port' not found in config.");
+        throw invalid_argument("key: 'notifications port' not found in config.");
     }
-    if(!config.contains("name"))
+    if(!config.contains("notifications name"))
     {
-        LOG_TRACE(logger, "key: name not found in config.");
-        throw invalid_argument("key: name not found in config.");
+        LOG_TRACE(logger, "key: 'notifications name' not found in config.");
+        throw invalid_argument("key: 'notifications name' not found in config.");
     }
 
 
-    _config["username"] = config["username"];
-    _config["password"] = config["password"];
-    _config["host"] = config["host"];
-    _config["port"] = config["port"];
+    _config["username"] = config["notifications username"];
+    _config["password"] = config["notifications password"];
+    _config["host"] = config["notifications host"];
+    _config["port"] = config["notifications port"];
 
     bool port_to_int;
     _config["port"].toInt(&port_to_int);
@@ -65,11 +65,8 @@ PostgreDataHub::PostgreDataHub(shared_ptr<AbstractLoggerFactory> loggerFactory,
                   "\"port\"] = ").arg(_config["port"]));
         throw invalid_argument("Error while converting port to int.");
     }
-    _config["name"] = config["name"];
+    _config["name"] = config["notifications name"];
 
-    LOG_DEBUG(logger, "Establishing connection to database.");
-
-    establishConnection();
 }
 
 void PostgreDataHub::establishConnection()
