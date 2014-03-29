@@ -3,16 +3,21 @@
 #include <QSqlError>
 
 using namespace std;
-
+using namespace NetworkProtocol;
+using namespace DTO;
+using namespace Types;
 
 const QString PostgreDataHub::ORDER_COMPLETION_CHANNEL = "";
 const QString PostgreDataHub::ORDER_CHANGE_CHANNEL = "";
 const QString PostgreDataHub::BEST_ORDER_CHANGE_CHANNEL = "";
+const QString PostgreDataHub::LAST_TRANSACTION_CHANGE_CHANNEL = "";
 
 PostgreDataHub::PostgreDataHub(shared_ptr<AbstractLoggerFactory> loggerFactory,
                                const QHash<QString, QString>& config)
     : _loggerFactory(move(loggerFactory))
 {
+    moveToThread(this);
+
     if(!_loggerFactory)
     {
         throw invalid_argument("loggerFactory cannot be nullptr.");
@@ -72,7 +77,7 @@ void PostgreDataHub::establishConnection()
     auto logger = _loggerFactory->createLoggingSession();
 
     _handle = QSqlDatabase::addDatabase("QPSQL",
-                                          QLatin1String("SIA notification hub."));
+                                          QLatin1String("SIA postgres notification hub."));
 
     _handle.setHostName(_config["host"]);
     _handle.setDatabaseName(_config["name"]);
@@ -109,6 +114,16 @@ void PostgreDataHub::establishConnection()
         LOG_WARNING(logger, QString("Failed to subscribe to channel %1")
                              .arg(BEST_ORDER_CHANGE_CHANNEL));
     }
+    if(_handle.driver()->subscribeToNotification(LAST_TRANSACTION_CHANGE_CHANNEL))
+    {
+        LOG_WARNING(logger, QString("Failed to subscribe to channel %1")
+                            .arg(LAST_TRANSACTION_CHANGE_CHANNEL));
+    }
+
+    connect(_handle.driver(),   SIGNAL(notification(const QString&, QSqlDriver::NotificationSource,
+                                                    const QVariant&)),
+            this,               SLOT(notificationHandler(const QString&, QSqlDriver::NotificationSource,
+                                                         const QVariant&)));
 
     LOG_INFO(logger, "Postgre notification hub has been started.");
 }
@@ -116,32 +131,109 @@ void PostgreDataHub::establishConnection()
 void PostgreDataHub::run()
 {
     auto logger = _loggerFactory->createLoggingSession();
+
     LOG_INFO(logger, "Postgre notification hub is starting...");
+
     establishConnection();
 
-    _event_loop.exec();
+    exec();
 }
 
 void PostgreDataHub::handleOrderCompleted(const QVariant& payload)
 {
-    /// TODO: implement
+    auto logger = _loggerFactory->createLoggingSession();
+
+    QStringList data = payload.toString().split('|');
+
+    if(data.size() == 2)
+    {
+        Types::UserIdType ownerId = Types::UserIdType(data[0].toInt());
+        Types::OrderIdType orderId = Types::OrderIdType(data[1].toInt());
+
+        emit orderCompleted(ownerId, orderId);
+    }
+    else
+    {
+        LOG_WARNING(logger, QString("Invalid data in payload(%1)")
+                            .arg(payload.toString()));
+    }
 }
 
 void PostgreDataHub::handleOrderChange(const QVariant& payload)
 {
-    /// TODO: implement
 
+    auto logger = _loggerFactory->createLoggingSession();
+
+    QStringList data = payload.toString().split('|');
+
+    if(data.size() == 4)
+    {
+        Types::UserIdType ownerId = Types::UserIdType(data[0].toInt());
+        Types::OrderIdType orderId = Types::OrderIdType(data[1].toInt());
+        Types::AmountType amount = Types::AmountType(data[2].toInt());
+        Types::PriceType price = Types::PriceType(data[3].toInt());
+
+        emit orderChange(ownerId, orderId, amount, price);
+    }
+    else
+    {
+        LOG_WARNING(logger, QString("Invalid data in payload(%1)")
+                            .arg(payload.toString()));
+    }
 }
 
 void PostgreDataHub::handleBestOrderChange(const QVariant& payload)
 {
-    /// TODO: implement
+    auto logger = _loggerFactory->createLoggingSession();
+
+    QStringList data = payload.toString().split('|');
+
+    if(data.size() == 4)
+    {
+        Types::StockIdType stockId = Types::StockIdType(data[0].toInt());
+        Types::Order::OrderType orderType = Order::toOrderType(data[1].toInt());
+        Types::AmountType amount = Types::AmountType(data[2].toInt());
+        Types::PriceType price = Types::PriceType(data[3].toInt());
+
+        emit bestOrderChange(stockId, orderType, amount, price);
+    }
+    else
+    {
+        LOG_WARNING(logger, QString("Invalid data in payload(%1)")
+                            .arg(payload.toString()));
+    }
+}
+
+void PostgreDataHub::handleLastTransactionChange(const QVariant &payload)
+{
+    auto logger = _loggerFactory->createLoggingSession();
+
+    QStringList data = payload.toString().split('|');
+
+    if(data.size() == 4)
+    {
+        Types::StockIdType stockId = Types::StockIdType(data[0].toInt());
+        Types::AmountType amount = Types::AmountType(data[1].toInt());
+        Types::PriceType price = Types::PriceType(data[2].toInt());
+        QString dateTime = data[3];
+
+        emit lastTransactionChange(stockId, amount, price, dateTime);
+    }
+    else
+    {
+        LOG_WARNING(logger, QString("Invalid data in payload(%1)")
+                            .arg(payload.toString()));
+    }
 }
 
 void PostgreDataHub::notificationHandler(const QString& channelName,
                                          QSqlDriver::NotificationSource source,
                                          const QVariant& payload)
 {
+    auto logger = _loggerFactory->createLoggingSession();
+
+    LOG_TRACE(logger, QString("channel(%1) - payload(%2).")
+                      .arg(channelName).arg(payload.toString()));
 
     if(ORDER_COMPLETION_CHANNEL == channelName)
     {
@@ -157,7 +249,7 @@ void PostgreDataHub::notificationHandler(const QString& channelName,
     }
     else
     {
-        LOG_DEBUG(_loggerFactory->createLoggingSession(),
+        LOG_DEBUG(logger,
                   QString("Message from unhandled channel %1 from %2 with "\
                           "payload = %3 .").arg(channelName).arg(source)
                   .arg(payload.toString()));
@@ -167,7 +259,10 @@ void PostgreDataHub::notificationHandler(const QString& channelName,
 PostgreDataHub::~PostgreDataHub()
 {
     auto logger = _loggerFactory->createLoggingSession();
+
     LOG_INFO(logger, "Postgre notification hub is closing...");
+
     _handle.close();
+
     LOG_INFO(logger, "Postgre notification hub has been closed successufully.");
 }
