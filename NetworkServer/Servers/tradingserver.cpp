@@ -399,13 +399,27 @@ void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
     }
 }
 
+/// FIXME:
+///  We allow user to subscribe to nonexistent stock - this is a potential bug,
+///  as it allows user to allocate new QSet<UserId> objects for
+///  every value possible of StockIdType (which is quint32).
+///
+///  Possible solution is to ask database (before accepting any users) for list
+///  of subscribeable stockIds.
+///
 void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
                                   Requests::SubscribeStock* request,
                                   UserIdType userId)
 {
+    LOG_DEBUG(logger, QString("User(%1) request subscription for stock(%2).")
+                      .arg(userId.value).arg(request->getStockId().value));
+
     auto source = _userConnections[userId];
 
-    auto response = Responses::Failure(Failure::RESOURCE_NOT_AVAILABLE);
+    auto subscribers = _stock_subscribers[request->getStockId()];
+    subscribers.insert(userId);
+
+    Responses::Ok response;
     source->send(&response);
 }
 
@@ -413,9 +427,15 @@ void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
                                   Requests::UnsubscribeStock* request,
                                   UserIdType userId)
 {
+    LOG_DEBUG(logger, QString("User(%1) request canceling subscription for stock(%2).")
+                      .arg(userId.value).arg(request->getStockId().value));
+
     auto source = _userConnections[userId];
 
-    auto response = Responses::Failure(Failure::RESOURCE_NOT_AVAILABLE);
+    auto subscribers = _stock_subscribers[request->getStockId()];
+    subscribers.remove(userId);
+
+    Responses::Ok response;
     source->send(&response);
 }
 

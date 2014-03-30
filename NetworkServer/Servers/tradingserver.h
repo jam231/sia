@@ -32,22 +32,24 @@ class TradingServer : public QThread
 {
     Q_OBJECT
     QHash<NetworkProtocol::DTO::Types::UserIdType,
-          UserConnection* > _userConnections;
+          UserConnection* >                                     _userConnections;
+
     std::shared_ptr<SharedSet<NetworkProtocol::DTO::Types::UserIdType> > _online_users;
 
 
-    std::shared_ptr<AbstractLoggerFactory> _loggerFactory;
-    std::shared_ptr<AbstractDataStorageFactory> _dataStorageFactory;
-
-
-
-    std::shared_ptr<NetworkProtocol::DTO::LastTransaction>   _lastTransaction;
+    std::shared_ptr<AbstractLoggerFactory>                      _loggerFactory;
+    std::shared_ptr<AbstractDataStorageFactory>                 _dataStorageFactory;
 
     QHash<NetworkProtocol::DTO::Types::StockIdType,
-          std::shared_ptr<NetworkProtocol::DTO::BestOrder> > _bestBuyOrder;
+          QSet<NetworkProtocol::DTO::Types::UserIdType> >       _stock_subscribers;
+
+    std::shared_ptr<NetworkProtocol::DTO::LastTransaction>      _lastTransaction;
 
     QHash<NetworkProtocol::DTO::Types::StockIdType,
-          std::shared_ptr<NetworkProtocol::DTO::BestOrder> > _bestSellOrder;
+          std::shared_ptr<NetworkProtocol::DTO::BestOrder> >    _bestBuyOrder;
+
+    QHash<NetworkProtocol::DTO::Types::StockIdType,
+          std::shared_ptr<NetworkProtocol::DTO::BestOrder> >    _bestSellOrder;
 
 public:
     TradingServer(std::shared_ptr<AbstractLoggerFactory> loggerFactory,
