@@ -223,12 +223,12 @@ void TradingServer::removeConnection(UserIdType userId)
     for(auto subscribers = _stock_subscribers.begin();
              subscribers != _stock_subscribers.end(); subscribers++)
     {
-        subscribers.remove(userId);
+        subscribers->remove(userId);
     }
 
     connection->deleteLater();
 }
-`
+
 void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
                                   Requests::BuyStock* request, UserIdType userId)
 {
@@ -532,6 +532,18 @@ void TradingServer::newBestBuyOrder(BestOrder* bestBuy)
 
     auto stockId = bestBuy->getStockId();
     _bestBuyOrder[stockId].reset(bestBuy);
+
+    // Broadcast it to subscribers
+    auto subscribers = _stock_subscribers[stockId];
+    auto show_best_order = Responses::ShowBestOrder(*bestBuy);
+
+    for(auto user_id = subscribers.begin(); user_id != subscribers.end(); user_id++)
+    {
+        if(_userConnections.contains(*user_id))
+        {
+            _userConnections[*user_id]->send(&show_best_order);
+        }
+    }
 }
 
 void TradingServer::newBestSellOrder(BestOrder* bestSell)
@@ -547,4 +559,16 @@ void TradingServer::newBestSellOrder(BestOrder* bestSell)
 
     auto stockId = bestSell->getStockId();
     _bestSellOrder[stockId].reset(bestSell);
+
+    // Broadcast it to subscribers
+    auto subscribers = _stock_subscribers[stockId];
+    auto show_best_order = Responses::ShowBestOrder(*bestSell);
+
+    for(auto user_id = subscribers.begin(); user_id != subscribers.end(); user_id++)
+    {
+        if(_userConnections.contains(*user_id))
+        {
+            _userConnections[*user_id]->send(&show_best_order);
+        }
+    }
 }
