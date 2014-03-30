@@ -16,6 +16,7 @@
 #include <../NetworkProtocol/Responses/listofordersmsg.h>
 #include <../NetworkProtocol/Responses/listofstocksmsg.h>
 
+
 #include <../NetworkProtocol/networkprotocol_utilities.h>
 
 
@@ -26,8 +27,6 @@ using namespace Types;
 using namespace std;
 
 
-
-/*                     Trading server implementation                    */
 
 TradingServer::TradingServer(std::shared_ptr<AbstractLoggerFactory> loggerFactory,
                              std::shared_ptr<AbstractDataStorageFactory> datastorageFactory,
@@ -130,7 +129,8 @@ void TradingServer::processMessageFrom(UserIdType userId)
                 break;
                 case Message::REQUEST_CANCEL_ORDER:
                 {
-                    handleRequest(logger, static_cast<Requests::CancelOrder*>(request.get()), userId);
+                    handleRequest(logger, static_cast<Requests::CancelOrder*>(request.get()),
+                                  userId);
                 }
                 break;
                 case Message::REQUEST_GET_MY_STOCKS:
@@ -142,6 +142,18 @@ void TradingServer::processMessageFrom(UserIdType userId)
                 case Message::REQUEST_GET_MY_ORDERS:
                 {
                     handleRequest(logger, static_cast<Requests::GetMyOrders*>(request.get()),
+                                  userId);
+                }
+                break;
+                case Message::REQUEST_SUBSCRIBE_STOCK:
+                {
+                    handleRequest(logger, static_cast<Requests::SubscribeStock*>(request.get()),
+                                  userId);
+                }
+                break;
+                case Message::REQUEST_UNSUBSCRIBE_STOCK:
+                {
+                    handleRequest(logger, static_cast<Requests::UnsubscribeStock*>(request.get()),
                                   userId);
                 }
                 break;
@@ -199,9 +211,12 @@ void TradingServer::removeConnection(UserIdType userId)
     auto logger = _loggerFactory->createLoggingSession();
 
     LOG_INFO(logger, QString("Removing user connection(%1)").arg(userId.value));
+
     auto connection = _userConnections[userId];
+
     _userConnections.remove(userId);
     _online_users->remove(userId);
+
     connection->disconnect();
     connection->deleteLater();
 }
@@ -382,6 +397,26 @@ void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
         auto response = Responses::Failure(status);
         source->send(&response);
     }
+}
+
+void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
+                                  Requests::SubscribeStock* request,
+                                  UserIdType userId)
+{
+    auto source = _userConnections[userId];
+
+    auto response = Responses::Failure(Failure::RESOURCE_NOT_AVAILABLE);
+    source->send(&response);
+}
+
+void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
+                                  Requests::UnsubscribeStock* request,
+                                  UserIdType userId)
+{
+    auto source = _userConnections[userId];
+
+    auto response = Responses::Failure(Failure::RESOURCE_NOT_AVAILABLE);
+    source->send(&response);
 }
 
 void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,

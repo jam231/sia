@@ -16,6 +16,8 @@
 #include <../NetworkProtocol/Requests/cancelordermsg.h>
 #include <../NetworkProtocol/Requests/getmyordersmsg.h>
 #include <../NetworkProtocol/Requests/getmystocksmsg.h>
+#include <../NetworkProtocol/Requests/subscribestockmsg.h>
+#include <../NetworkProtocol/Requests/unsubscribestockmsg.h>
 
 #include <../Utilities/logger.h>
 
@@ -33,12 +35,17 @@ class TradingServer : public QThread
           UserConnection* > _userConnections;
     std::shared_ptr<SharedSet<NetworkProtocol::DTO::Types::UserIdType> > _online_users;
 
+
     std::shared_ptr<AbstractLoggerFactory> _loggerFactory;
     std::shared_ptr<AbstractDataStorageFactory> _dataStorageFactory;
 
+
+
     std::shared_ptr<NetworkProtocol::DTO::LastTransaction>   _lastTransaction;
+
     QHash<NetworkProtocol::DTO::Types::StockIdType,
           std::shared_ptr<NetworkProtocol::DTO::BestOrder> > _bestBuyOrder;
+
     QHash<NetworkProtocol::DTO::Types::StockIdType,
           std::shared_ptr<NetworkProtocol::DTO::BestOrder> > _bestSellOrder;
 
@@ -52,29 +59,48 @@ public:
     void handleRequest(std::shared_ptr<AbstractLogger>,
                        NetworkProtocol::Requests::BuyStock*,
                        NetworkProtocol::DTO::Types::UserIdType);
+
     void handleRequest(std::shared_ptr<AbstractLogger>,
                        NetworkProtocol::Requests::SellStock*,
                        NetworkProtocol::DTO::Types::UserIdType);
+
     void handleRequest(std::shared_ptr<AbstractLogger>,
                        NetworkProtocol::Requests::CancelOrder*,
                        NetworkProtocol::DTO::Types::UserIdType);
+
     void handleRequest(std::shared_ptr<AbstractLogger>,
                        NetworkProtocol::Requests::GetMyOrders*,
                        NetworkProtocol::DTO::Types::UserIdType);
+
     void handleRequest(std::shared_ptr<AbstractLogger>,
                        NetworkProtocol::Requests::GetMyStocks*,
                        NetworkProtocol::DTO::Types::UserIdType);
+
+    void handleRequest(std::shared_ptr<AbstractLogger>,
+                       NetworkProtocol::Requests::SubscribeStock*,
+                       NetworkProtocol::DTO::Types::UserIdType);
+
+    void handleRequest(std::shared_ptr<AbstractLogger>,
+                       NetworkProtocol::Requests::UnsubscribeStock*,
+                       NetworkProtocol::DTO::Types::UserIdType);
+
     void handleRequest(std::shared_ptr<AbstractLogger>,
                        NetworkProtocol::Requests::Request*,
                        NetworkProtocol::DTO::Types::UserIdType);
 public slots:
    void addUserConnection(UserConnection*);
+
    void processMessageFrom(NetworkProtocol::DTO::Types::UserIdType);
+
    void removeConnection(NetworkProtocol::DTO::Types::UserIdType);
 
-   void orderCompleted(NetworkProtocol::DTO::Types::UserIdType, NetworkProtocol::DTO::Types::OrderIdType);
-   void OrderChange(NetworkProtocol::DTO::Types::UserIdType, NetworkProtocol::DTO::Types::OrderIdType,
-                         NetworkProtocol::DTO::Types::AmountType, NetworkProtocol::DTO::Types::PriceType);
+   void orderCompleted(NetworkProtocol::DTO::Types::UserIdType,
+                       NetworkProtocol::DTO::Types::OrderIdType);
+
+   void OrderChange(NetworkProtocol::DTO::Types::UserIdType,
+                    NetworkProtocol::DTO::Types::OrderIdType,
+                    NetworkProtocol::DTO::Types::AmountType,
+                    NetworkProtocol::DTO::Types::PriceType);
 
    void newLastTransaction(NetworkProtocol::DTO::LastTransaction*);
    void newBestBuyOrder(NetworkProtocol::DTO::BestOrder*);
