@@ -214,13 +214,21 @@ void TradingServer::removeConnection(UserIdType userId)
 
     auto connection = _userConnections[userId];
 
+    connection->disconnect();
+
     _userConnections.remove(userId);
     _online_users->remove(userId);
 
-    connection->disconnect();
+    // Remove user subscriptions
+    for(auto subscribers = _stock_subscribers.begin();
+             subscribers != _stock_subscribers.end(); subscribers++)
+    {
+        subscribers.remove(userId);
+    }
+
     connection->deleteLater();
 }
-
+`
 void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
                                   Requests::BuyStock* request, UserIdType userId)
 {
