@@ -64,9 +64,11 @@ void MasterServer::setupServers()
 
     int trading_servers_count = _config["trading servers"].toInt();
 
-    LOG_INFO(logger, QString("Spinning up %1 trading servers").arg(trading_servers_count));
+    LOG_INFO(logger, QString("Spinning up %1 trading servers")
+                     .arg(trading_servers_count));
 
     _online_users.reset(new SharedSet<UserIdType>());
+
 
     for(int i = 0; i < trading_servers_count; i++)
     {
@@ -88,16 +90,20 @@ void MasterServer::setupServers()
                                         _config, _online_users, this));
 
     _login_server->start();
+
     connect(_login_server.get(), SIGNAL(newUser(UserConnection*)),
             this,                SLOT(distributeUser(UserConnection*)));
+
     _login_server->setPriority(QThread::NormalPriority);
 }
 
 void MasterServer::distributeUser(UserConnection *user)
 {
     auto logger = _loggerFactory->createLoggingSession();
-    LOG_DEBUG(logger, QString("Distributing user(%1)")
+
+    LOG_DEBUG(logger, QString("Distributing user(%1) to a trading server.")
                       .arg(user->getUserId().value));
+
     assert(_online_users->contains(user->getUserId()));
 
     auto target = _balancing_strategy->choose();
