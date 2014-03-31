@@ -30,7 +30,7 @@ void AbstractDataSession::setLogger(shared_ptr<AbstractLogger> logger)
 PooledDataStorageFactory::PooledDataStorageFactory(shared_ptr<AbstractLoggerFactory> loggerFactory,
                                                    shared_ptr<AbstractDataStorageFactory> sessionFactory,
                                                    size_t poolSize)
-    : _loggerFactory(move(loggerFactory)), _sessionFactory(move(sessionFactory))
+    : _loggerFactory(loggerFactory), _sessionFactory(sessionFactory)
 {
     if(!_loggerFactory)
     {
@@ -55,11 +55,14 @@ PooledDataStorageFactory::PooledDataStorageFactory(shared_ptr<AbstractLoggerFact
     LOG_TRACE(logger, QString("Generating %1 postgre sessions.").arg(poolSize));
 
     _pool_access_lock.lock();
+
     for(size_t i = 0; i < poolSize; i++)
     {
         _pool.append(move(_sessionFactory->openSession()));
     }
+
     _pool_access_lock.unlock();
+
     assert(_pool.size() == poolSize);
 
     LOG_TRACE(logger, QString("Created pooled postgres data storage with "\
@@ -70,7 +73,7 @@ void PooledDataStorageFactory::addToPool(shared_ptr<AbstractDataSession> session
 {
     _pool_access_lock.lock();
 
-    _pool.enqueue(session);
+    _pool.enqueue(move(session));
     _pool_not_empty.wakeOne();
 
     _pool_access_lock.unlock();
@@ -79,6 +82,7 @@ void PooledDataStorageFactory::addToPool(shared_ptr<AbstractDataSession> session
 shared_ptr<AbstractDataSession> PooledDataStorageFactory::openSession()
 {
     _pool_access_lock.lock();
+
     if(_pool.empty())
     {
         _pool_not_empty.wait(&_pool_access_lock);
@@ -90,9 +94,9 @@ shared_ptr<AbstractDataSession> PooledDataStorageFactory::openSession()
 
     auto logger = _loggerFactory->createLoggingSession();
     // That is sooo wrong. Well... yolo!
-    auto owner = shared_ptr<PooledDataStorageFactory>(this);
+    auto owner = this;
     auto pooled_session = shared_ptr<AbstractDataSession>(
-                new PooledDataSession(move(logger), move(session), move(owner)));
+                new PooledDataSession(move(logger), move(session), owner));
 
     return pooled_session;
 }
@@ -112,7 +116,7 @@ shared_ptr<AbstractDataSession> PooledDataStorageFactory::openSession()
 
 PooledDataSession::PooledDataSession(shared_ptr<AbstractLogger> logger,
                                      shared_ptr<AbstractDataSession> session,
-                                     std::shared_ptr<PooledDataStorageFactory> owner)
+                                     PooledDataStorageFactory* owner)
     : _session(move(session)), _owner(owner)
 {
     if(!logger)
@@ -186,7 +190,7 @@ void PooledDataSession::stopSession(Failure::FailureType* status)
 
 PooledDataSession::~PooledDataSession()
 {
-    if(_owner)
+    if(_owner != nullptr)
     {
         LOG_TRACE(_logger, "session object is being returned to session pool.");
         _owner->addToPool(_session);

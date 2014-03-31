@@ -9,7 +9,7 @@ using namespace std;
 EventServer::EventServer(shared_ptr<AbstractLoggerFactory> loggerFactory,
                          shared_ptr<AbstractDataStorageFactory> dataStorageFactory,
                          const QHash<QString, QString>& config)
-    : _dataFactory(move(dataStorageFactory)), _loggerFactory(move(loggerFactory))
+    : _dataFactory(dataStorageFactory), _loggerFactory(loggerFactory)
 {
     moveToThread(this);
 
@@ -65,6 +65,7 @@ EventServer::EventServer(shared_ptr<AbstractLoggerFactory> loggerFactory,
 void EventServer::run()
 {
     auto logger = _loggerFactory->createLoggingSession();
+
     LOG_INFO(logger, "Starting new Event Server.");
 
     LOG_TRACE(logger, "Setting up timers for events.");
@@ -99,6 +100,7 @@ void EventServer::sessionOn()
     data_session->startSession(&status);
 
     _sessionOnTimer->start();
+
     if(status != Failure::NO_FAILURE)
     {
         LOG_WARNING(logger, QString("data session returned: %1").arg(status));

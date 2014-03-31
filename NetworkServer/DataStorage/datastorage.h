@@ -96,6 +96,16 @@ public:
 
 class PooledDataSession;
 
+/*
+ *  Beware, code below:
+ *      auto session1 = pooledDataStorageFactory1.openSession();
+ *      auto session2 = pooledDataStorageFactory1.openSession();
+ *
+ *  Can result in deadlock (if pool size == 1).
+ *
+ *  Releasing of acquired instance of AbstractDataSession is done
+ *  automatically via shared_ptr autodelete.
+ */
 class PooledDataStorageFactory : public AbstractDataStorageFactory
 {
 private:
@@ -121,15 +131,20 @@ public:
 
 
 
-
+/*
+ *  BEWARE:
+ *
+ *      If owner is not nullptr, then deleting owner before PooledDataSession
+ *      will cause segmentation fault.
+ */
 class PooledDataSession : public AbstractDataSession
 {
     std::shared_ptr<AbstractDataSession>        _session;
-    std::shared_ptr<PooledDataStorageFactory>   _owner;
+    PooledDataStorageFactory*                   _owner;
 public:
     PooledDataSession(std::shared_ptr<AbstractLogger> logger,
                       std::shared_ptr<AbstractDataSession> session,
-                      std::shared_ptr<PooledDataStorageFactory> owner);
+                      PooledDataStorageFactory* owner);
 
     NetworkProtocol::DTO::Types::UserIdType
          registerAccount(const QString& password,
