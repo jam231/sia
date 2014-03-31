@@ -16,6 +16,7 @@
 #include <../NetworkProtocol/Responses/listofordersmsg.h>
 #include <../NetworkProtocol/Responses/listofstocksmsg.h>
 
+
 #include <../NetworkProtocol/networkprotocol_utilities.h>
 
 
@@ -26,8 +27,6 @@ using namespace Types;
 using namespace std;
 
 
-
-/*                     Trading server implementation                    */
 
 TradingServer::TradingServer(std::shared_ptr<AbstractLoggerFactory> loggerFactory,
                              std::shared_ptr<AbstractDataStorageFactory> datastorageFactory,
@@ -130,7 +129,8 @@ void TradingServer::processMessageFrom(UserIdType userId)
                 break;
                 case Message::REQUEST_CANCEL_ORDER:
                 {
-                    handleRequest(logger, static_cast<Requests::CancelOrder*>(request.get()), userId);
+                    handleRequest(logger, static_cast<Requests::CancelOrder*>(request.get()),
+                                  userId);
                 }
                 break;
                 case Message::REQUEST_GET_MY_STOCKS:
@@ -142,6 +142,18 @@ void TradingServer::processMessageFrom(UserIdType userId)
                 case Message::REQUEST_GET_MY_ORDERS:
                 {
                     handleRequest(logger, static_cast<Requests::GetMyOrders*>(request.get()),
+                                  userId);
+                }
+                break;
+                case Message::REQUEST_SUBSCRIBE_STOCK:
+                {
+                    handleRequest(logger, static_cast<Requests::SubscribeStock*>(request.get()),
+                                  userId);
+                }
+                break;
+                case Message::REQUEST_UNSUBSCRIBE_STOCK:
+                {
+                    handleRequest(logger, static_cast<Requests::UnsubscribeStock*>(request.get()),
                                   userId);
                 }
                 break;
@@ -199,10 +211,21 @@ void TradingServer::removeConnection(UserIdType userId)
     auto logger = _loggerFactory->createLoggingSession();
 
     LOG_INFO(logger, QString("Removing user connection(%1)").arg(userId.value));
+
     auto connection = _userConnections[userId];
+
+    connection->disconnect();
+
     _userConnections.remove(userId);
     _online_users->remove(userId);
-    connection->disconnect();
+
+    // Remove user subscriptions
+    for(auto subscribers = _stock_subscribers.begin();
+             subscribers != _stock_subscribers.end(); subscribers++)
+    {
+        subscribers->remove(userId);
+    }
+
     connection->deleteLater();
 }
 
@@ -384,6 +407,46 @@ void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
     }
 }
 
+/// FIXME:
+///  We allow user to subscribe to nonexistent stock - this is a potential bug,
+///  as it allows user to allocate new QSet<UserId> objects for
+///  every value possible of StockIdType (which is quint32).
+///
+///  Possible solution is to ask database (before accepting any users) for list
+///  of subscribeable stockIds.
+///
+void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
+                                  Requests::SubscribeStock* request,
+                                  UserIdType userId)
+{
+    LOG_DEBUG(logger, QString("User(%1) request subscription for stock(%2).")
+                      .arg(userId.value).arg(request->getStockId().value));
+
+    auto source = _userConnections[userId];
+
+    auto subscribers = _stock_subscribers[request->getStockId()];
+    subscribers.insert(userId);
+
+    Responses::Ok response;
+    source->send(&response);
+}
+
+void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
+                                  Requests::UnsubscribeStock* request,
+                                  UserIdType userId)
+{
+    LOG_DEBUG(logger, QString("User(%1) request canceling subscription for stock(%2).")
+                      .arg(userId.value).arg(request->getStockId().value));
+
+    auto source = _userConnections[userId];
+
+    auto subscribers = _stock_subscribers[request->getStockId()];
+    subscribers.remove(userId);
+
+    Responses::Ok response;
+    source->send(&response);
+}
+
 void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
                                   Requests::Request* request,
                                   UserIdType userId)
@@ -469,6 +532,18 @@ void TradingServer::newBestBuyOrder(BestOrder* bestBuy)
 
     auto stockId = bestBuy->getStockId();
     _bestBuyOrder[stockId].reset(bestBuy);
+
+    // Broadcast it to subscribers
+    auto subscribers = _stock_subscribers[stockId];
+    auto show_best_order = Responses::ShowBestOrder(*bestBuy);
+
+    for(auto user_id = subscribers.begin(); user_id != subscribers.end(); user_id++)
+    {
+        if(_userConnections.contains(*user_id))
+        {
+            _userConnections[*user_id]->send(&show_best_order);
+        }
+    }
 }
 
 void TradingServer::newBestSellOrder(BestOrder* bestSell)
@@ -484,4 +559,16 @@ void TradingServer::newBestSellOrder(BestOrder* bestSell)
 
     auto stockId = bestSell->getStockId();
     _bestSellOrder[stockId].reset(bestSell);
+
+    // Broadcast it to subscribers
+    auto subscribers = _stock_subscribers[stockId];
+    auto show_best_order = Responses::ShowBestOrder(*bestSell);
+
+    for(auto user_id = subscribers.begin(); user_id != subscribers.end(); user_id++)
+    {
+        if(_userConnections.contains(*user_id))
+        {
+            _userConnections[*user_id]->send(&show_best_order);
+        }
+    }
 }
