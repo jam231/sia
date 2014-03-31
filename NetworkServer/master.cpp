@@ -14,7 +14,7 @@ using namespace std;
 MasterServer::MasterServer(std::shared_ptr<AbstractLoggerFactory> loggerFactory,
                            shared_ptr<AbstractDataStorageFactory> dataFactory,
                            const QHash<QString, QString> &config)
-    : _loggerFactory(move(loggerFactory)), _dataFactory(move(dataFactory))
+    : _loggerFactory(loggerFactory), _dataFactory(dataFactory)
 {
     // Bradley Hughes, I'm doing it right.
     moveToThread(this);
