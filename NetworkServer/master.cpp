@@ -16,8 +16,8 @@ MasterServer::MasterServer(std::shared_ptr<AbstractLoggerFactory> loggerFactory,
                            const QHash<QString, QString> &config)
     : _loggerFactory(loggerFactory), _dataFactory(dataFactory)
 {
-    // Bradley Hughes, I'm doing it right.
     moveToThread(this);
+
     if(!_loggerFactory)
     {
         throw invalid_argument("loggerFactory cannot be nullptr.");
