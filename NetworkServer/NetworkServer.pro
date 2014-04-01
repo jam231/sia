@@ -44,6 +44,10 @@ OTHER_FILES += \
     Files/config.ini
 
 
+install_settings.path = $$OUT_PWD/Files/
+install_settings.files = $$PWD/Files/config.ini
+
+INSTALLS += install_settings
 #DEFINES += QT_NO_DEBUG_OUTPUT
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../NetworkProtocol/NetworkProtocol/release/ -lNetworkProtocol
