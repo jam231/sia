@@ -333,7 +333,7 @@ void LoginServer::removeConnection(int id)
     auto connection = connections[id];
     connections.remove(id);
     LOG_INFO(logger, QString("Connections online: %1").arg(connections.size()));
-    connecton->disconnect();
+    connection->disconnect();
     connection->deleteLater();
 }
 
