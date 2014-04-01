@@ -316,6 +316,7 @@ void LoginServer::handleRequest(shared_ptr<AbstractLogger> logger,
             user->moveToThread(_owningThread);
 
             connections.remove(id);
+            source->disconnect();
             source->deleteLater();
             // The Ok response is sent only when user is successfuly moved to trading server.
             // The response is sent by TradingServer.
