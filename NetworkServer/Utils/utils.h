@@ -87,9 +87,9 @@ bool SharedSet<T>::remove(const T& key)
 {
     _lock.lock();
     bool will_be_removed = _set.contains(key);
-    if(!will_be_removed)
+    if(will_be_removed)
     {
-        _set.insert(key);
+        _set.remove(key);
     }
     _lock.unlock();
     return !will_be_removed;

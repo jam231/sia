@@ -219,7 +219,10 @@ void TradingServer::removeConnection(UserIdType userId)
     _online_users->remove(userId);
 
     LOG_INFO(logger, QString("Users on current trading server: %1")
-                    .arg(_online_users->size()));
+                    .arg(_userConnections.size()));
+
+    LOG_DEBUG(logger, QString("Overall user count: %1")
+              .arg(_online_users->size()));
 
     // Remove user subscriptions
     for(auto subscribers = _stock_subscribers.begin();
