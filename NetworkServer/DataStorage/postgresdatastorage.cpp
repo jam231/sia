@@ -158,11 +158,11 @@ void PostgreDataSession::loginUser(NetworkProtocol::DTO::Types::UserIdType userI
     QSqlQuery query(*_handle);
     *status  = Types::Failure::NO_FAILURE;
 
-    query.prepare("SELECT haslo FROM uzytkownik WHERE id_uz = :id ;");
-    query.bindValue(":id", userId.value);
+    //query.prepare("SELECT haslo FROM uzytkownik WHERE id_uz = :id;");
 
     query.setForwardOnly(true);
-    query.exec();
+    query.exec("SELECT haslo FROM uzytkownik WHERE id_uz ="
+               % QString::number(userId.value) % ';');
 
     if(query.first())
     {
@@ -186,16 +186,13 @@ OrderIdType PostgreDataSession::sellStock(UserIdType userId, StockIdType stockId
     QSqlQuery query(*_handle);
     *status  = Types::Failure::NO_FAILURE;
 
-    query.prepare("SELECT * FROM zlec_sprzedaz(:userId, :stockId, :amount, :price);");
-
-    query.bindValue(":userId", userId.value);
-    query.bindValue(":stockId", stockId.value);
-    query.bindValue(":amount", amount.value);
-    query.bindValue(":price", price.value);
+    //query.prepare("SELECT * FROM zlec_sprzedaz(:userId, :stockId, :amount, :price);");
 
     query.setForwardOnly(true);
 
-    query.exec();
+    query.exec("SELECT * FROM zlec_sprzedaz(" % QString::number(userId.value) % ','
+               % QString::number(stockId.value) % ',' % QString::number(amount.value)
+               % ',' % QString::number(price.value) % ");");
 
     OrderIdType order_id;
 
@@ -229,14 +226,11 @@ OrderIdType PostgreDataSession::buyStock(UserIdType userId, StockIdType stockId,
     *status  = Types::Failure::NO_FAILURE;
 
 
-    query.bindValue(":userId", userId.value);
-    query.bindValue(":stockId", stockId.value);
-    query.bindValue(":amount", amount.value);
-    query.bindValue(":price", price.value);
-
     query.setForwardOnly(true);
 
-    query.exec();
+    query.exec("SELECT * FROM zlec_kupno(" % QString::number(userId.value) % ','
+               % QString::number(stockId.value) % ',' % QString::number(amount.value)
+               % ',' % QString::number(price.value) % ");");
 
     OrderIdType order_id;
 
@@ -269,13 +263,12 @@ UserStocks PostgreDataSession::getUserStocks(UserIdType userId,
     QSqlQuery query(*_handle);
     *status  = Types::Failure::NO_FAILURE;
 
-    query.prepare("SELECT id_zasobu, ilosc FROM dobra_uz(:userId);");
-    query.bindValue(":userId", userId.value);
-
+    //query.prepare("SELECT id_zasobu, ilosc FROM dobra_uz(:userId);");
 
     query.setForwardOnly(true);
 
-    query.exec();
+    query.exec("SELECT id_zasobu, ilosc FROM dobra_uz("
+               % QString::number(userId.value) % ");");
 
     while (query.next())
     {
@@ -303,13 +296,13 @@ PostgreDataSession::getUserOrders(UserIdType userId,
     QSqlQuery query(*_handle);
     *status  = Types::Failure::NO_FAILURE;
 
-    query.prepare("SELECT typ, id_zlecenia, id_zasobu, ilosc, limit1 FROM zlecenia_uz(:userId);");
-    query.bindValue(":userId", userId.value);
+    //query.prepare("SELECT typ, id_zlecenia, id_zasobu, ilosc, limit1 FROM zlecenia_uz(:userId);");
 
 
     query.setForwardOnly(true);
 
-    query.exec();
+    query.exec("SELECT typ, id_zlecenia, id_zasobu, ilosc, limit1 FROM zlecenia_uz("
+               % QString::number(userId.value) % ");");
 
     while (query.next())
     {
@@ -342,18 +335,13 @@ void PostgreDataSession::cancelOrder(UserIdType userId, OrderIdType orderId,
                                      Failure::FailureType* status)
 {
     QSqlQuery query1(*_handle),
-            query2(*_handle);
+              query2(*_handle);
 
     *status  = Types::Failure::NO_FAILURE;
 
-    query1.prepare("DELETE FROM zlecenie_kupna AS zk WHERE zk.id_zlecenia = :orderId AND zk.id_uz = :userId;");
-    query1.bindValue(":orderId", orderId.value);
-    query1.bindValue(":userId", userId.value);
+    //query1.prepare("DELETE FROM zlecenie_kupna AS zk WHERE zk.id_zlecenia = :orderId AND zk.id_uz = :userId;");
 
-    query2.prepare("DELETE FROM zlecenie_sprzedazy AS zs WHERE zs.id_zlecenia = :orderId AND zs.id_uz = :userId;");
-    query2.bindValue(":orderId", orderId.value);
-    query2.bindValue(":userId", userId.value);
-
+    //query2.prepare("DELETE FROM zlecenie_sprzedazy AS zs WHERE zs.id_zlecenia = :orderId AND zs.id_uz = :userId;");
 
     query1.setForwardOnly(true);
     query2.setForwardOnly(true);
@@ -361,8 +349,10 @@ void PostgreDataSession::cancelOrder(UserIdType userId, OrderIdType orderId,
 
     _handle->transaction();
 
-    query1.exec();
-    query2.exec();
+    query1.exec("DELETE FROM zlecenie_kupna AS zk WHERE zk.id_zlecenia = :orderId AND zk.id_uz ="
+                % QString::number(userId.value) % ";");
+    query2.exec("DELETE FROM zlecenie_sprzedazy AS zk WHERE zk.id_zlecenia = :orderId AND zk.id_uz ="
+                % QString::number(userId.value) % ";");
 
     if(!(query1.isValid() && query2.isValid()))
     {

@@ -33,16 +33,28 @@ public:
     NetworkProtocol::DTO::Types::UserIdType
     registerAccount(const QString& password,
                     NetworkProtocol::DTO::Types::Failure::FailureType*);
+
+    /*
+     * Beware! Implementation assumes (for performance reasons)
+     *         userId is sql injection proof.
+     */
     void loginUser(NetworkProtocol::DTO::Types::UserIdType, const QString& password,
                    NetworkProtocol::DTO::Types::Failure::FailureType*);
 
+    /*
+     * Beware! Implementation assumes (for performance reasons)
+     *         arguments are sql injection proof.
+     */
     NetworkProtocol::DTO::Types::OrderIdType
     sellStock(NetworkProtocol::DTO::Types::UserIdType userId,
               NetworkProtocol::DTO::Types::StockIdType stockId,
               NetworkProtocol::DTO::Types::AmountType amount,
               NetworkProtocol::DTO::Types::PriceType price,
               NetworkProtocol::DTO::Types::Failure::FailureType*);
-
+    /*
+     * Beware! Implementation assumes (for performance reasons)
+     *         arguments are sql injection proof.
+     */
     NetworkProtocol::DTO::Types::OrderIdType
     buyStock(NetworkProtocol::DTO::Types::UserIdType userId,
              NetworkProtocol::DTO::Types::StockIdType stockId,
@@ -50,14 +62,26 @@ public:
              NetworkProtocol::DTO::Types::PriceType price,
              NetworkProtocol::DTO::Types::Failure::FailureType*);
 
+    /*
+     * Beware! Implementation assumes (for performance reasons)
+     *         userId is sql injection proof.
+     */
     NetworkProtocol::DTO::UserStocks
     getUserStocks(NetworkProtocol::DTO::Types::UserIdType userId,
                   NetworkProtocol::DTO::Types::Failure::FailureType*);
 
+    /*
+     * Beware! Implementation assumes (for performance reasons)
+     *         UserId is sql injection proof.
+     */
     std::vector<std::shared_ptr<NetworkProtocol::DTO::Order > >
     getUserOrders(NetworkProtocol::DTO::Types::UserIdType userId,
                   NetworkProtocol::DTO::Types::Failure::FailureType*);
 
+    /*
+     * Beware! Implementation assumes (for performance reasons)
+     *         arguments are sql injection proof.
+     */
     void cancelOrder(NetworkProtocol::DTO::Types::UserIdType,
                      NetworkProtocol::DTO::Types::OrderIdType,
                      NetworkProtocol::DTO::Types::Failure::FailureType*);
