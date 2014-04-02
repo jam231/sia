@@ -1,6 +1,9 @@
 QMAKE_CXXFLAGS += -std=c++11 -Wall -Wextra -Wundef \
                   -Wpointer-arith
 
+QMAKE_CXXFLAGS_RELEASE -= -O2
+QMAKE_CXXFLAGS_RELEASE += -O3
+
 TARGET = Utilities_TEST
 
 QT       += testlib

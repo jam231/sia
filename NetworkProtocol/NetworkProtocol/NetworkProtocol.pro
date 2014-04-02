@@ -1,7 +1,8 @@
 QMAKE_CXXFLAGS += -std=c++11 -Wall -Wextra -Wundef \
                   -Wpointer-arith
 
-QT       += network
+QMAKE_CXXFLAGS_RELEASE -= -O2
+QMAKE_CXXFLAGS_RELEASE += -O3
 
 QT       -= gui
 

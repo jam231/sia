@@ -1,6 +1,9 @@
 QMAKE_CXXFLAGS += -std=c++11 -Wall -Wextra -Wfloat-equal -Wundef \
                   -Wpointer-arith
 
+QMAKE_CXXFLAGS_RELEASE -= -O2
+QMAKE_CXXFLAGS_RELEASE += -O3
+
 TARGET = NetworkProtocol_Test
 
 QT       += testlib
