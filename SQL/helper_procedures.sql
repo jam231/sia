@@ -1,3 +1,31 @@
+
+CREATE OR REPLACE FUNCTION numeric_min(a numeric, b numeric) RETURNS NUMERIC AS $$
+BEGIN
+	IF a>b THEN RETURN b; END IF;
+	RETURN a;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION podziel_odcinek(na_ile_czesci integer) RETURNS NUMERIC ARRAY AS $$
+DECLARE
+	retval NUMERIC ARRAY;
+	single_value NUMERIC;
+	max_val NUMERIC := 0.5;
+	total NUMERIC := 1.0;
+BEGIN
+	FOR i IN 2..na_ile_czesci LOOP
+		max_val := numeric_min(max_val, total);
+		single_value := (random()::NUMERIC) % max_val;
+		retval := retval||(single_value);
+		total := total - single_value;
+	END LOOP;
+	retval := retval||total;
+	RETURN retval;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION przydziel_zasoby(uz integer) RETURNS VOID AS $$ --kazdy uzytkownik dostaje JAKAS akcje oraz pewna ustalona kwote pieniedzy
 DECLARE
 	wartosc_pieniedzy	integer := 1000000; --10 000zl * 100 gr
@@ -32,33 +60,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION numeric_min(a numeric, b numeric) RETURNS NUMERIC AS $$
-BEGIN
-	IF a>b THEN RETURN b; END IF;
-	RETURN a;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE FUNCTION podziel_odcinek(na_ile_czesci integer) RETURNS NUMERIC ARRAY AS $$
-DECLARE
-	retval NUMERIC ARRAY;
-	single_value NUMERIC;
-	max_val NUMERIC := 0.5;
-	total NUMERIC := 1.0;
-BEGIN
-	FOR i IN 2..na_ile_czesci LOOP
-		max_val := numeric_min(max_val, total);
-		single_value := (random()::NUMERIC) % max_val;
-		retval := retval||(single_value);
-		total := total - single_value;
-	END LOOP;
-	retval := retval||total;
-	RETURN retval;
-END;
-$$ LANGUAGE plpgsql;
-
-
-
 CREATE OR REPLACE FUNCTION przydziel_zasoby_wszystkim() RETURNS VOID AS $$
 DECLARE
 	r integer;
@@ -84,35 +85,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-
-CREATE OR REPLACE FUNCTION zlecenie_kupna_on_delete() RETURNS TRIGGER AS $$
-BEGIN
-	--ZWROT KASY
-	UPDATE posiadane_dobro SET ilosc=ilosc+old.ilosc*old.limit1 WHERE id_uz=old.id_uz AND id_zasobu=1;
-	RETURN old;
-END
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER zk_on_delete BEFORE DELETE on zlecenie_kupna
-	FOR EACH ROW EXECUTE PROCEDURE zlecenie_kupna_on_delete();
-
-
-	
-	
-CREATE OR REPLACE FUNCTION zlecenie_sprzedazy_on_delete() RETURNS TRIGGER AS $$
-BEGIN
-	--ZWROT AKCJI
-	UPDATE posiadane_dobro SET ilosc=ilosc+old.ilosc WHERE id_uz=old.id_uz AND id_zasobu=old.id_zasobu;
-	RETURN old;
-END
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER zs_on_delete BEFORE DELETE on zlecenie_sprzedazy
-	FOR EACH ROW EXECUTE PROCEDURE zlecenie_sprzedazy_on_delete();
-
-	
-	
-
 CREATE OR REPLACE FUNCTION val_min(a integer,b integer) RETURNS INTEGER AS $$
 BEGIN
 	IF (a>=b) THEN
@@ -122,9 +94,9 @@ BEGIN
 	END IF;
 END
 $$ LANGUAGE plpgsql;
-	
-	
-	
+
+
+
 CREATE OR REPLACE FUNCTION przenies_dobra(zl_kupna zlecenie_kupna, zl_sprzedazy zlecenie_sprzedazy, kupno boolean) RETURNS INTEGER AS $$
 DECLARE 
 	cena integer;
@@ -215,56 +187,6 @@ BEGIN
 END
 $$ LANGUAGE plpgsql;
 
-
-
-CREATE OR REPLACE FUNCTION zlecenie_kupna_on_insert() RETURNS TRIGGER AS $$
-BEGIN
-	--wstawianie do tabeli posiadanych dobr juz zasobu w ilosci 0. bazuja na tym update'y w przypadku realizacji zlecenia
-	INSERT INTO posiadane_dobro(id_uz,id_zasobu,ilosc) --pewnie nalezaloby to w przyszlosci wywalic
-       SELECT new.id_uz,new.id_zasobu,0
-		WHERE NOT EXISTS (SELECT 1 FROM posiadane_dobro WHERE id_uz=new.id_uz AND id_zasobu=new.id_zasobu);
-	   
-	UPDATE posiadane_dobro SET ilosc=ilosc-new.ilosc*new.limit1 WHERE id_uz=new.id_uz AND id_zasobu=1;
-	
-	
-	IF (SELECT mozna_handlowac FROM zasob WHERE id_zasobu=new.id_zasobu) THEN
-		PERFORM wykonaj_zlecenie_kupna(new);
-	END IF;
-	
-	RETURN new;
-END
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER zk_on_insert AFTER INSERT on zlecenie_kupna
-	FOR EACH ROW EXECUTE PROCEDURE zlecenie_kupna_on_insert();
-
-	
-CREATE OR REPLACE FUNCTION zlecenie_sprzedazy_on_insert() RETURNS TRIGGER AS $$
-BEGIN
-	UPDATE posiadane_dobro SET ilosc=ilosc-new.ilosc WHERE id_uz=new.id_uz AND id_zasobu=new.id_zasobu;
-	
-	IF (SELECT mozna_handlowac FROM zasob WHERE id_zasobu=new.id_zasobu) THEN
-		PERFORM wykonaj_zlecenie_sprzedazy(new);
-	END IF;
-	
-	RETURN new;
-END
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER zs_on_insert AFTER INSERT on zlecenie_sprzedazy
-	FOR EACH ROW EXECUTE PROCEDURE zlecenie_sprzedazy_on_insert();
-	
-	
-CREATE OR REPLACE FUNCTION zrealizowane_zlecenie_on_insert() RETURNS TRIGGER AS $$
-BEGIN
-	PERFORM pg_notify('ch_zmiana',new.id_zasobu||'|'||new.ilosc||'|'||new.cena||'|'||new.czas);
-	RETURN new;
-END
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER zz_on_insert AFTER INSERT on zrealizowane_zlecenie
-	FOR EACH ROW EXECUTE PROCEDURE zrealizowane_zlecenie_on_insert();
-	
 	
 
 --Z tych funkcji sie korzysta przy wstawianiu. Zwraca ID zlecenia wstawionego
@@ -278,8 +200,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
-
 CREATE OR REPLACE FUNCTION zlec_sprzedaz(uz integer,zasob integer,ile integer,cena integer) RETURNS integer AS $$
 DECLARE
 	nowy_id integer := nextval('nr_zlecenia');
@@ -289,6 +209,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- 							Session management
 
 CREATE OR REPLACE FUNCTION rozpocznij_sesje() RETURNS VOID AS $$
 BEGIN
@@ -304,38 +225,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
-CREATE OR REPLACE FUNCTION zlecenie_kupna_on_update() RETURNS TRIGGER AS $$
-BEGIN
-	PERFORM pg_notify('ch_zlecenia_kupna',new.id_zlecenia||'|'||new.ilosc||'|'||new.id_uz);
-	IF new.ilosc=0 THEN --jesli zlecenie jest zrealizowane to sie usuwa
-		DELETE FROM zlecenie_kupna WHERE id_zlecenia=new.id_zlecenia;
-	END IF;
-	RETURN new;
-END
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER zk_on_update AFTER UPDATE ON zlecenie_kupna
-	FOR EACH ROW EXECUTE PROCEDURE zlecenie_kupna_on_update();
-
-	
-	
-CREATE OR REPLACE FUNCTION zlecenie_sprzedazy_on_update() RETURNS TRIGGER AS $$
-BEGIN
-	PERFORM pg_notify('ch_zlecenia_sprzedazy',new.id_zlecenia||'|'||new.ilosc||'|'||new.id_uz);
-	
-	IF new.ilosc=0 THEN --jesli zlecenie jest zrealizowane to sie usuwa
-		DELETE FROM zlecenie_sprzedazy WHERE id_zlecenia=new.id_zlecenia;
-	END IF;
-		
-	RETURN new;
-END
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER zs_on_update AFTER UPDATE ON zlecenie_sprzedazy
-	FOR EACH ROW EXECUTE PROCEDURE zlecenie_sprzedazy_on_update();
-	
-	
 CREATE OR REPLACE FUNCTION najlepsze_kupno(in zasob integer, out bigint, out int)
     AS $$ SELECT SUM(ilosc),limit1 FROM zlecenie_kupna t WHERE id_zasobu=zasob AND ilosc>0 GROUP BY limit1 ORDER BY 2 DESC LIMIT 1 $$
 LANGUAGE SQL;
