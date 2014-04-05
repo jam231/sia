@@ -96,22 +96,22 @@ void PostgreDataHub::establishConnection()
 
     LOG_DEBUG(logger, "Subscribing to notifications.");
 
-    if(_handle.driver()->subscribeToNotification(ORDER_COMPLETION_CHANNEL))
+    if(!_handle.driver()->subscribeToNotification(ORDER_COMPLETION_CHANNEL))
     {
         LOG_WARNING(logger, QString("Failed to subscribe to channel %1")
                              .arg(ORDER_COMPLETION_CHANNEL));
     }
-    if(_handle.driver()->subscribeToNotification(ORDER_CHANGE_CHANNEL))
+    if(!_handle.driver()->subscribeToNotification(ORDER_CHANGE_CHANNEL))
     {
         LOG_WARNING(logger, QString("Failed to subscribe to channel %1")
                              .arg(ORDER_CHANGE_CHANNEL));
     }
-    if(_handle.driver()->subscribeToNotification(BEST_ORDER_CHANGE_CHANNEL))
+    if(!_handle.driver()->subscribeToNotification(BEST_ORDER_CHANGE_CHANNEL))
     {
         LOG_WARNING(logger, QString("Failed to subscribe to channel %1")
                              .arg(BEST_ORDER_CHANGE_CHANNEL));
     }
-    if(_handle.driver()->subscribeToNotification(LAST_TRANSACTION_CHANGE_CHANNEL))
+    if(!_handle.driver()->subscribeToNotification(LAST_TRANSACTION_CHANGE_CHANNEL))
     {
         LOG_WARNING(logger, QString("Failed to subscribe to channel %1")
                             .arg(LAST_TRANSACTION_CHANGE_CHANNEL));
