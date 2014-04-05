@@ -1,13 +1,3 @@
-
-CREATE OR REPLACE FUNCTION numeric_min(a numeric, b numeric) RETURNS NUMERIC AS $$
-BEGIN
-	IF a>b THEN RETURN b; END IF;
-	RETURN a;
-END;
-$$ LANGUAGE plpgsql;
-
-
-
 CREATE OR REPLACE FUNCTION podziel_odcinek(na_ile_czesci integer) RETURNS NUMERIC ARRAY AS $$
 DECLARE
 	retval NUMERIC ARRAY;
@@ -16,7 +6,7 @@ DECLARE
 	total NUMERIC := 1.0;
 BEGIN
 	FOR i IN 2..na_ile_czesci LOOP
-		max_val := numeric_min(max_val, total);
+		max_val := LEAST(max_val, total);
 		single_value := (random()::NUMERIC) % max_val;
 		retval := retval||(single_value);
 		total := total - single_value;
