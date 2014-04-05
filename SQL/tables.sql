@@ -77,3 +77,7 @@ CREATE VIEW cena_rynkowa AS
 CREATE INDEX zs_idx ON zlecenie_sprzedazy(id_uz);
 CREATE INDEX zk_idx ON zlecenie_kupna(id_uz);
 CREATE INDEX pd_idx ON posiadane_dobro(id_uz);
+
+-- For efficiency of wykonaj_zlecenie_sprzedazy and wykonaj_zlecenie_kupna.
+CREATE INDEX so_idx ON zlecenie_sprzedazy (id_zlecenia, limit1, wazne_od);
+CREATE INDEX bo_idx ON zlecenie_kupna (id_zlecenia ASC, limit1 DESC, wazne_od ASC);
