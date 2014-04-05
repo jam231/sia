@@ -7,10 +7,10 @@ using namespace NetworkProtocol;
 using namespace DTO;
 using namespace Types;
 
-const QString PostgreDataHub::ORDER_COMPLETION_CHANNEL = "order_completed_ch";
-const QString PostgreDataHub::ORDER_CHANGE_CHANNEL = "order_changed_ch";
-const QString PostgreDataHub::BEST_ORDER_CHANGE_CHANNEL = "best_order_change_ch";
-const QString PostgreDataHub::LAST_TRANSACTION_CHANGE_CHANNEL = "last_transaction_change_ch";
+const QString PostgreDataHub::ORDER_COMPLETION_CHANNEL = "ch_order_completed";
+const QString PostgreDataHub::ORDER_CHANGE_CHANNEL = "ch_order_changed";
+const QString PostgreDataHub::BEST_ORDER_CHANGE_CHANNEL = "ch_best_order_change";
+const QString PostgreDataHub::LAST_TRANSACTION_CHANGE_CHANNEL = "ch_last_transaction_change";
 
 PostgreDataHub::PostgreDataHub(shared_ptr<AbstractLoggerFactory> loggerFactory,
                                const QHash<QString, QString>& config)
