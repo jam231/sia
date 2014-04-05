@@ -66,7 +66,7 @@ CREATE TRIGGER zs_on_insert AFTER INSERT on zlecenie_sprzedazy
 	
 CREATE OR REPLACE FUNCTION zrealizowane_zlecenie_on_insert() RETURNS TRIGGER AS $$
 BEGIN
-	PERFORM pg_notify('ch_zmiana',new.id_zasobu||'|'||new.ilosc||'|'||new.cena||'|'||new.czas);
+	PERFORM pg_notify('ch_last_transaction_change',new.id_zasobu||'|'||new.ilosc||'|'||new.cena||'|'||new.czas);
 	RETURN new;
 END
 $$ LANGUAGE plpgsql;
@@ -78,9 +78,9 @@ CREATE TRIGGER zz_on_insert AFTER INSERT on zrealizowane_zlecenie
 
 CREATE OR REPLACE FUNCTION zlecenie_kupna_on_update() RETURNS TRIGGER AS $$
 BEGIN
-	PERFORM pg_notify('ch_zlecenia_kupna',new.id_zlecenia||'|'||new.ilosc||'|'||new.id_uz);
 	IF new.ilosc=0 THEN --jesli zlecenie jest zrealizowane to sie usuwa
 		DELETE FROM zlecenie_kupna WHERE id_zlecenia=new.id_zlecenia;
+		PERFORM pg_notify('ch_order_completed', new.id_uz || '|' || new.id_zlecenia);
 	END IF;
 	RETURN new;
 END
@@ -92,9 +92,10 @@ CREATE TRIGGER zk_on_update AFTER UPDATE ON zlecenie_kupna
 		
 CREATE OR REPLACE FUNCTION zlecenie_sprzedazy_on_update() RETURNS TRIGGER AS $$
 BEGIN
-	PERFORM pg_notify('ch_zlecenia_sprzedazy',new.id_zlecenia||'|'||new.ilosc||'|'||new.id_uz);
+	PERFORM pg_notify('ch_order_change', new.id_uz || '|' || new.id_zlecenia || '|' || old.ilosc - new.ilosc || '|' || new.limit1);
 	
 	IF new.ilosc=0 THEN --jesli zlecenie jest zrealizowane to sie usuwa
+		PERFORM pg_notify('ch_order_completed', new.id_uz || '|' || new.id_zlecenia);
 		DELETE FROM zlecenie_sprzedazy WHERE id_zlecenia=new.id_zlecenia;
 	END IF;
 		
