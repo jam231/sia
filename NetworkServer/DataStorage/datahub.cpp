@@ -8,7 +8,7 @@ using namespace DTO;
 using namespace Types;
 
 const QString PostgreDataHub::ORDER_COMPLETION_CHANNEL = "ch_order_completed";
-const QString PostgreDataHub::ORDER_CHANGE_CHANNEL = "ch_order_changed";
+const QString PostgreDataHub::ORDER_CHANGE_CHANNEL = "ch_order_change";
 const QString PostgreDataHub::BEST_ORDER_CHANGE_CHANNEL = "ch_best_order_change";
 const QString PostgreDataHub::LAST_TRANSACTION_CHANGE_CHANNEL = "ch_last_transaction_change";
 
@@ -229,7 +229,7 @@ void PostgreDataHub::notificationHandler(const QString& channelName,
 {
     auto logger = _loggerFactory->createLoggingSession();
 
-    LOG_TRACE(logger, QString("channel(%1) - payload(%2).")
+    LOG_DEBUG(logger, QString("channel(%1) - payload(%2).")
                       .arg(channelName).arg(payload.toString()));
 
     if(ORDER_COMPLETION_CHANNEL == channelName)

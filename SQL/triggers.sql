@@ -92,8 +92,6 @@ CREATE TRIGGER zk_on_update AFTER UPDATE ON zlecenie_kupna
 		
 CREATE OR REPLACE FUNCTION zlecenie_sprzedazy_on_update() RETURNS TRIGGER AS $$
 BEGIN
-	PERFORM pg_notify('ch_order_change', new.id_uz || '|' || new.id_zlecenia || '|' || old.ilosc - new.ilosc || '|' || new.limit1);
-	
 	IF new.ilosc=0 THEN --jesli zlecenie jest zrealizowane to sie usuwa
 		PERFORM pg_notify('ch_order_completed', new.id_uz || '|' || new.id_zlecenia);
 		DELETE FROM zlecenie_sprzedazy WHERE id_zlecenia=new.id_zlecenia;

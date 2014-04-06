@@ -97,7 +97,7 @@ BEGIN
 	--RAISE NOTICE 'ile = % old_cached_ilosc = % old_ilosc = %',ile,zl_kupna.ilosc,(SELECT ilosc FROM zlecenie_kupna WHERE id_zlecenia=zl_kupna.id_zlecenia);
 	UPDATE zlecenie_kupna SET ilosc=ilosc-ile WHERE id_zlecenia=zl_kupna.id_zlecenia;
 	UPDATE zlecenie_sprzedazy SET ilosc=ilosc-ile WHERE id_zlecenia=zl_sprzedazy.id_zlecenia;
-	
+
 	PERFORM pg_notify('ch_order_change', zl_kupna.id_uz || '|' || zl_kupna.id_zlecenia || '|' || zl_kupna.ilosc - ile || '|' || cena);
 	PERFORM pg_notify('ch_order_change', zl_sprzedazy.id_uz || '|' || zl_sprzedazy.id_zlecenia || '|' || zl_sprzedazy.ilosc - ile || '|' || cena);
 
@@ -130,6 +130,9 @@ BEGIN
 		SELECT * INTO zlecenie FROM zlecenie_sprzedazy 
 			WHERE id_zasobu=rekord.id_zasobu AND limit1<=rekord.limit1 AND ilosc>0 ORDER BY limit1,wazne_od ASC LIMIT 1;
 			
+		--Why is it here ? Fix to what? Order in record can be somehow updated "in the meantime" ?
+		--Then why could it not be NULL ? If its null then przenies_dobra can't handle it properly.  
+
 		--Quick and dirty fix
 		SELECT * INTO rekord FROM zlecenie_kupna 
 			WHERE id_zlecenia=rekord.id_zlecenia;			
