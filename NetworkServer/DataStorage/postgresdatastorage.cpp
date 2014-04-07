@@ -205,7 +205,7 @@ OrderIdType PostgreDataSession::sellStock(UserIdType userId, StockIdType stockId
         LOG_DEBUG(_logger, QString("Query not valid: %1")
                            .arg(query.lastError().text()));
         /// TODO: Discern between RESOURCE_NOT_AVAILABLE and INSUFFICENT_FUNDS
-        *status = Failure::INSUFFICENT_FUNDS;
+        *status = Failure::INSUFFICIENT_FUNDS;
     }
 
     query.finish();
@@ -237,7 +237,7 @@ OrderIdType PostgreDataSession::buyStock(UserIdType userId, StockIdType stockId,
         LOG_DEBUG(_logger, QString("Query not valid: %1")
                            .arg(query.lastError().text()));
         /// TODO: Discern between RESOURCE_NOT_AVAILABLE and INSUFFICENT_FUNDS
-        *status = Failure::INSUFFICENT_FUNDS;
+        *status = Failure::INSUFFICIENT_FUNDS;
     }
     query.finish();
     return order_id;
