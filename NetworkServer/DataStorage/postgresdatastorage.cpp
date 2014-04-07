@@ -196,24 +196,18 @@ OrderIdType PostgreDataSession::sellStock(UserIdType userId, StockIdType stockId
 
     OrderIdType order_id;
 
-    if(query.isValid())
+    if(query.first())
     {
-        if(query.first())
-        {
-            order_id = query.value(0).toInt();
-        }
-        else
-        {
-            LOG_ERROR(_logger, "No first value for sellStock query.");
-        }
+        order_id = query.value(0).toInt();
     }
     else
     {
         LOG_DEBUG(_logger, QString("Query not valid: %1")
-                  .arg(query.lastError().text()));
+                           .arg(query.lastError().text()));
         /// TODO: Discern between RESOURCE_NOT_AVAILABLE and INSUFFICENT_FUNDS
-        *status = Failure::RESOURCE_NOT_AVAILABLE;
+        *status = Failure::INSUFFICENT_FUNDS;
     }
+
     query.finish();
     return order_id;
 }
@@ -234,23 +228,16 @@ OrderIdType PostgreDataSession::buyStock(UserIdType userId, StockIdType stockId,
 
     OrderIdType order_id;
 
-    if(query.isValid())
+    if(query.first())
     {
-        if(query.first())
-        {
-            order_id = query.value(0).toInt();
-        }
-        else
-        {
-            LOG_ERROR(_logger, "No first value for buyStock query.");
-        }
+        order_id = query.value(0).toInt();
     }
     else
     {
         LOG_DEBUG(_logger, QString("Query not valid: %1")
-                  .arg(query.lastError().text()));
+                           .arg(query.lastError().text()));
         /// TODO: Discern between RESOURCE_NOT_AVAILABLE and INSUFFICENT_FUNDS
-        *status = Failure::RESOURCE_NOT_AVAILABLE;
+        *status = Failure::INSUFFICENT_FUNDS;
     }
     query.finish();
     return order_id;
