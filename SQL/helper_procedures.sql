@@ -122,20 +122,24 @@ BEGIN
 	
 	LOOP
 		--RAISE NOTICE 'k looping at % stock is % (%)',ile, rekord.id_zasobu, (SELECT COUNT(*) FROM zlecenie_sprzedazy WHERE id_zasobu=rekord.id_zasobu AND limit1<=rekord.limit1 AND ilosc>0);
-		IF ile=0 OR (SELECT COUNT(*) FROM zlecenie_sprzedazy WHERE id_zasobu=rekord.id_zasobu AND limit1<=rekord.limit1 AND ilosc>0)=0 THEN --to jest aktualnie straszne. nalezy zrealizowac to w kursorach. Chyba.
+		IF ile = 0 THEN 
 			EXIT;
 		END IF;
 		
 		--Wypelnij zawartosc zmiennej "zlecenie"
-		SELECT * INTO zlecenie FROM zlecenie_sprzedazy 
-			WHERE id_zasobu=rekord.id_zasobu AND limit1<=rekord.limit1 AND ilosc>0 ORDER BY limit1,wazne_od ASC LIMIT 1;
+		-- We must do it each iteration because of concurrent nature of db computation.
+		SELECT * INTO zlecenie FROM zlecenie_sprzedazy
+			WHERE id_zasobu = rekord.id_zasobu AND limit1 >= rekord.limit1 AND ilosc > 0 AND wazne_od >= CURRENT_TIMESTAMP LIMIT 1;
 			
-		--Why is it here ? Fix to what? Order in record can be somehow updated "in the meantime" ?
-		--Then why could it not be NULL ? If its null then przenies_dobra can't handle it properly.  
 
-		--Quick and dirty fix
+		IF (SELECT COUNT(*) FROM zlecenie) = 0 THEN
+			EXIT;
+		END IF;
+	
+		--Quick and dirty fix --- for what ???
 		SELECT * INTO rekord FROM zlecenie_kupna 
 			WHERE id_zlecenia=rekord.id_zlecenia;			
+		
 		ile := ile - przenies_dobra(rekord, zlecenie, true);
 		
 	END LOOP;
@@ -150,24 +154,28 @@ DECLARE
 	ile INTEGER;
 BEGIN
 	ile := rekord.ilosc;
-	
 	LOOP
 		--RAISE NOTICE 's looping at%',ile;
-		IF ile=0 OR (SELECT COUNT(*) FROM zlecenie_kupna WHERE id_zasobu=rekord.id_zasobu AND limit1>=rekord.limit1 AND ilosc>0)=0 THEN --to jest aktualnie straszne. nalezy zrealizowac to w kursorach. Chyba.
+		IF ile = 0 THEN 
 			EXIT;
 		END IF;
 		
 		--Wypelnij zawartosc zmiennej "zlecenie"
+		-- We must do it each iteration because of concurrent nature of db computation.
 		SELECT * INTO zlecenie FROM zlecenie_kupna 
-			WHERE id_zasobu=rekord.id_zasobu AND limit1>=rekord.limit1 AND ilosc>0 ORDER BY limit1 DESC,wazne_od ASC LIMIT 1;
+			WHERE id_zasobu = rekord.id_zasobu AND limit1 >= rekord.limit1 AND ilosc > 0 AND wazne_od >= CURRENT_TIMESTAMP LIMIT 1;
 
-		--Quick and dirty fix
+		IF (SELECT COUNT(*) FROM zlecenie) = 0 THEN
+			EXIT;
+		END IF;
+
+		--Quick and dirty fix --- for what ???
 		SELECT * INTO rekord FROM zlecenie_sprzedazy 
-			WHERE id_zlecenia=rekord.id_zlecenia;				
+			WHERE id_zlecenia=rekord.id_zlecenia;		
+
 		ile := ile - przenies_dobra(zlecenie, rekord, false);
 		
 	END LOOP;
-	
 END
 $$ LANGUAGE plpgsql;
 
