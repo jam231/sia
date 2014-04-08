@@ -336,9 +336,11 @@ void PostgreDataSession::cancelOrder(UserIdType userId, OrderIdType orderId,
 
     _handle->transaction();
 
-    query1.exec("DELETE FROM zlecenie_kupna AS zk WHERE zk.id_zlecenia = :orderId AND zk.id_uz ="
+    query1.exec("DELETE FROM zlecenie_kupna AS zk WHERE zk.id_zlecenia ="
+                % QString::number(orderId.value) % " AND zk.id_uz ="
                 % QString::number(userId.value) % ";");
-    query2.exec("DELETE FROM zlecenie_sprzedazy AS zk WHERE zk.id_zlecenia = :orderId AND zk.id_uz ="
+    query2.exec("DELETE FROM zlecenie_sprzedazy AS zs WHERE zs.id_zlecenia ="
+                % QString::number(orderId.value) % " AND zs.id_uz ="
                 % QString::number(userId.value) % ";");
 
     if(!(query1.isValid() && query2.isValid()))
