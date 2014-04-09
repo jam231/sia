@@ -101,6 +101,9 @@ void EventServer::sessionOn()
 
     _sessionOnTimer->start();
 
+    LOG_TRACE(logger, QString("Session on interval: %1 [sec]")
+                      .arg(_sessionOnTimer->interval() / 1000));
+
     if(status != Failure::NO_FAILURE)
     {
         LOG_WARNING(logger, QString("data session returned: %1").arg(status));
@@ -124,6 +127,10 @@ void EventServer::sessionOff()
     data_session->stopSession(&status);
 
     _sessionOffTimer->start();
+
+    LOG_TRACE(logger, QString("Session off interval: %1 [sec]")
+                      .arg(_sessionOffTimer->interval() / 1000));
+
     if(status != Failure::NO_FAILURE)
     {
         LOG_WARNING(logger, QString("data session returned: %1").arg(status));
