@@ -336,22 +336,26 @@ void PostgreDataSession::cancelOrder(UserIdType userId, OrderIdType orderId,
 
     _handle->transaction();
 
-    query1.exec("DELETE FROM zlecenie_kupna AS zk WHERE zk.id_zlecenia ="
-                % QString::number(orderId.value) % " AND zk.id_uz ="
-                % QString::number(userId.value) % ";");
-    query2.exec("DELETE FROM zlecenie_sprzedazy AS zs WHERE zs.id_zlecenia ="
-                % QString::number(orderId.value) % " AND zs.id_uz ="
-                % QString::number(userId.value) % ";");
+    bool query1_valid = query1.exec("DELETE FROM zlecenie_kupna AS zk WHERE zk.id_zlecenia ="
+                                    % QString::number(orderId.value) % " AND zk.id_uz ="
+                                    % QString::number(userId.value) % ";");
+    bool query2_valid = query2.exec("DELETE FROM zlecenie_sprzedazy AS zs WHERE zs.id_zlecenia ="
+                                    % QString::number(orderId.value) % " AND zs.id_uz ="
+                                    % QString::number(userId.value) % ";");
 
-    if(!(query1.isValid() && query2.isValid()))
+    // Unfortunately we are unable to check if order was found and deleted or not.
+    // We can only check for errors.
+    if(!query1_valid || !query2_valid)
     {
-        LOG_TRACE(_logger, QString("Query error(s) : %1  and  %2.")
-                           .arg(query1.lastError().text())
-                           .arg(query2.lastError().text()));
+        LOG_WARNING(_logger, QString("Query error(s) : %1  and  %2.")
+                             .arg(query1.lastError().text())
+                             .arg(query2.lastError().text()));
         *status = Types::Failure::RESOURCE_NOT_AVAILABLE;
     }
+
     query1.finish();
     query2.finish();
+
     _handle->commit();
 }
 
