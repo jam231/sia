@@ -129,13 +129,13 @@ BEGIN
 		--Wypelnij zawartosc zmiennej "zlecenie"
 		-- We must do it each iteration because of concurrent nature of db computation.
 		SELECT * INTO zlecenie FROM zlecenie_sprzedazy
-			WHERE id_zasobu = rekord.id_zasobu AND limit1 >= rekord.limit1 AND ilosc > 0 AND wazne_od >= CURRENT_TIMESTAMP LIMIT 1;
+			WHERE id_zasobu = rekord.id_zasobu AND limit1 >= rekord.limit1 AND ilosc > 0 AND wazne_od <= CURRENT_TIMESTAMP LIMIT 1;
 			
 
-		IF (SELECT COUNT(*) FROM zlecenie) = 0 THEN
+		IF zlecenie.id_zlecenia IS NULL THEN
 			EXIT;
 		END IF;
-	
+
 		--Quick and dirty fix --- for what ???
 		SELECT * INTO rekord FROM zlecenie_kupna 
 			WHERE id_zlecenia=rekord.id_zlecenia;			
@@ -163,9 +163,9 @@ BEGIN
 		--Wypelnij zawartosc zmiennej "zlecenie"
 		-- We must do it each iteration because of concurrent nature of db computation.
 		SELECT * INTO zlecenie FROM zlecenie_kupna 
-			WHERE id_zasobu = rekord.id_zasobu AND limit1 >= rekord.limit1 AND ilosc > 0 AND wazne_od >= CURRENT_TIMESTAMP LIMIT 1;
+			WHERE id_zasobu = rekord.id_zasobu AND limit1 >= rekord.limit1 AND ilosc > 0 AND wazne_od <= CURRENT_TIMESTAMP LIMIT 1;
 
-		IF (SELECT COUNT(*) FROM zlecenie) = 0 THEN
+		IF zlecenie.id_zlecenia IS NULL THEN
 			EXIT;
 		END IF;
 
