@@ -104,6 +104,13 @@ BEGIN
 
 	INSERT INTO zrealizowane_zlecenie(uz_kupil,uz_sprzedal,id_zasobu,ilosc,cena) VALUES(zl_kupna.id_uz, zl_sprzedazy.id_uz, zl_kupna.id_zasobu, ile, cena);
 
+	IF zl_kupna.ilosc-ile = 0 THEN
+		PERFORM pg_notify('ch_order_completed', zl_kupna.id_uz || '|' || zl_kupna.id_zlecenia);
+	END IF;
+
+	IF zl_sprzedazy.ilosc-ile = 0 THEN
+		PERFORM pg_notify('ch_order_completed', zl_sprzedazy.id_uz || '|' || zl_sprzedazy.id_zlecenia);
+	END IF;
 	--RAISE NOTICE 'sold %', ile;
 	RETURN ile;
 END

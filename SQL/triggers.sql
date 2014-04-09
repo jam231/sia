@@ -30,7 +30,7 @@ CREATE OR REPLACE FUNCTION zlecenie_kupna_on_insert() RETURNS TRIGGER AS $$
 BEGIN
 	--wstawianie do tabeli posiadanych dobr juz zasobu w ilosci 0. bazuja na tym update'y w przypadku realizacji zlecenia
 	INSERT INTO posiadane_dobro(id_uz,id_zasobu,ilosc) --pewnie nalezaloby to w przyszlosci wywalic
-       SELECT new.id_uz,new.id_zasobu,0
+    SELECT new.id_uz,new.id_zasobu,0
 		WHERE NOT EXISTS (SELECT 1 FROM posiadane_dobro WHERE id_uz=new.id_uz AND id_zasobu=new.id_zasobu);
 	   
 	UPDATE posiadane_dobro SET ilosc=ilosc-new.ilosc*new.limit1 WHERE id_uz=new.id_uz AND id_zasobu=1;
@@ -80,7 +80,6 @@ CREATE OR REPLACE FUNCTION zlecenie_kupna_on_update() RETURNS TRIGGER AS $$
 BEGIN
 	IF new.ilosc=0 THEN --jesli zlecenie jest zrealizowane to sie usuwa
 		DELETE FROM zlecenie_kupna WHERE id_zlecenia=new.id_zlecenia;
-		PERFORM pg_notify('ch_order_completed', new.id_uz || '|' || new.id_zlecenia);
 	END IF;
 	RETURN new;
 END
@@ -93,7 +92,6 @@ CREATE TRIGGER zk_on_update AFTER UPDATE ON zlecenie_kupna
 CREATE OR REPLACE FUNCTION zlecenie_sprzedazy_on_update() RETURNS TRIGGER AS $$
 BEGIN
 	IF new.ilosc=0 THEN --jesli zlecenie jest zrealizowane to sie usuwa
-		PERFORM pg_notify('ch_order_completed', new.id_uz || '|' || new.id_zlecenia);
 		DELETE FROM zlecenie_sprzedazy WHERE id_zlecenia=new.id_zlecenia;
 	END IF;
 		
