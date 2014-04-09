@@ -94,7 +94,7 @@ BEGIN
 
 	UPDATE posiadane_dobro SET ilosc=ilosc+ile*(zl_kupna.limit1-cena) WHERE id_uz=zl_kupna.id_uz AND id_zasobu=1; --kupujacemu oddaj ew. pieniadze
 	
-	--RAISE NOTICE 'ile = % old_cached_ilosc = % old_ilosc = %',ile,zl_kupna.ilosc,(SELECT ilosc FROM zlecenie_kupna WHERE id_zlecenia=zl_kupna.id_zlecenia);
+	--RAISE NOTICE 'ile = % old_cached_ilosc = % old_ilosc = %',ile,zl_kupna.ilosc,(SELECT ilosc FROM zlecenie_kupna WHERE id_zlecenia=zl_kupna.id_zlecenia); 
 	UPDATE zlecenie_kupna SET ilosc=ilosc-ile WHERE id_zlecenia=zl_kupna.id_zlecenia;
 	UPDATE zlecenie_sprzedazy SET ilosc=ilosc-ile WHERE id_zlecenia=zl_sprzedazy.id_zlecenia;
 
@@ -129,9 +129,9 @@ BEGIN
 		
 		--Wypelnij zawartosc zmiennej "zlecenie"
 		-- We must do it each iteration because of concurrent nature of db computation.
-		SELECT * INTO zlecenie FROM zlecenie_sprzedazy
-			WHERE id_zasobu = rekord.id_zasobu AND limit1 >= rekord.limit1 AND ilosc > 0 AND wazne_od <= CURRENT_TIMESTAMP LIMIT 1;
-			
+		SELECT zlecenie_sprzedazy.* INTO zlecenie FROM zlecenie_sprzedazy join zasob USING(id_zasobu)
+			WHERE id_zasobu = rekord.id_zasobu AND limit1 >= rekord.limit1 AND ilosc > 0 AND 
+				  wazne_od <= CURRENT_TIMESTAMP AND mozna_handlowac LIMIT 1;
 
 		IF zlecenie.id_zlecenia IS NULL THEN
 			EXIT;
@@ -175,12 +175,16 @@ BEGIN
 			WHERE id_zlecenia=rekord.id_zlecenia;		
 
 		ile := ile - przenies_dobra(zlecenie, rekord, false);
-		
 	END LOOP;
 END
 $$ LANGUAGE plpgsql;
 
-	
+CREATE OR REPLACE FUNCTION process_buy_orders() RETURNS VOID AS $$
+BEGIN
+	PERFORM wykonaj_zlecenie_kupna(zlecenie_kupna.*) 
+		FROM zlecenie_kupna WHERE wazne_od <= CURRENT_TIMESTAMP;
+END
+$$ LANGUAGE plpgsql;
 
 --Z tych funkcji sie korzysta przy wstawianiu. Zwraca ID zlecenia wstawionego
 CREATE OR REPLACE FUNCTION zlec_kupno(uz integer,zasob integer,ile integer,cena integer) RETURNS integer AS $$
@@ -206,14 +210,19 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION rozpocznij_sesje() RETURNS VOID AS $$
 BEGIN
+	LOCK TABLE zasob IN ACCESS EXCLUSIVE MODE;	-- Without it postgres deadlocks- e.g. when orders are still being processed when session changes status
 	UPDATE zasob SET mozna_handlowac=true;
-	PERFORM wykonaj_zlecenie_kupna(zlecenie_kupna.*) FROM zlecenie_kupna ORDER BY wazne_od ASC;
+	--- Async - I don't care about the result.
+	PERFORM dblink_connect('conn1', 'dbname=' || CURRENT_DATABASE());
+	PERFORM dblink_send_query('conn1', 'select process_buy_orders();');
+	PERFORM dblink_disconnect('conn1');
 END;
 $$ LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION zakoncz_sesje() RETURNS VOID AS $$
 BEGIN
+	LOCK TABLE zasob IN ACCESS EXCLUSIVE MODE; 	-- Without it postgres deadlocks- e.g. when orders are still being processed when session changes status
 	UPDATE zasob SET mozna_handlowac=false;
 END;
 $$ LANGUAGE plpgsql;
