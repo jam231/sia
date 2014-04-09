@@ -67,6 +67,13 @@ PostgreDataHub::PostgreDataHub(shared_ptr<AbstractLoggerFactory> loggerFactory,
     }
     _config["name"] = config["notifications name"];
 
+
+    LOG_TRACE(logger, "Registering qmetatypes.");
+
+    qRegisterMetaType<NetworkProtocol::DTO::Types::UserIdType>();
+    qRegisterMetaType<NetworkProtocol::DTO::Types::OrderIdType>();
+    qRegisterMetaType<NetworkProtocol::DTO::Types::AmountType>();
+    qRegisterMetaType<NetworkProtocol::DTO::Types::PriceType>();
 }
 
 void PostgreDataHub::establishConnection()

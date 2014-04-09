@@ -84,6 +84,8 @@ int main(int argv, char **args)
         notifications.start();
         notifications.setPriority(QThread::HighPriority);
 
+        master.connectDataHubToTradingServers(notifications);
+
         return app.exec();
 
 

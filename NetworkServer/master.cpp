@@ -97,6 +97,16 @@ void MasterServer::setupServers()
     _login_server->setPriority(QThread::NormalPriority);
 }
 
+void MasterServer::connectDataHubToTradingServers(const AbstractDataHub& hub)
+{
+    auto logger = _loggerFactory->createLoggingSession();
+    LOG_INFO(logger, "Connecting datahub signals to trading servers.");
+
+    for(auto it = _trading_server_pool.begin(); it != _trading_server_pool.end(); it++)
+    {
+        (*it)->connectDataHub(hub);
+    }
+}
 void MasterServer::distributeUser(UserConnection *user)
 {
     auto logger = _loggerFactory->createLoggingSession();

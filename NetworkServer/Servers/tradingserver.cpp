@@ -78,7 +78,7 @@ void TradingServer::addUserConnection(UserConnection *user_connection)
         Responses::Ok confirm_login;
         user_connection->send(&confirm_login);
 
-        //processMessageFrom(user_id);
+        processMessageFrom(user_id);
     }
     else
     {
@@ -465,6 +465,23 @@ void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
     source->send(&response);
 }
 
+void TradingServer::connectDataHub(const AbstractDataHub& hub)
+{
+    connect(&hub, SIGNAL(orderChange(NetworkProtocol::DTO::Types::UserIdType,
+                                               NetworkProtocol::DTO::Types::OrderIdType,
+                                               NetworkProtocol::DTO::Types::AmountType,
+                                               NetworkProtocol::DTO::Types::PriceType)),
+            this, SLOT(orderChange(NetworkProtocol::DTO::Types::UserIdType,
+                                        NetworkProtocol::DTO::Types::OrderIdType,
+                                        NetworkProtocol::DTO::Types::AmountType,
+                                        NetworkProtocol::DTO::Types::PriceType)));
+
+    connect(&hub, SIGNAL(orderCompleted(NetworkProtocol::DTO::Types::UserIdType,
+                                        NetworkProtocol::DTO::Types::OrderIdType)),
+            this, SLOT(orderCompleted(NetworkProtocol::DTO::Types::UserIdType,
+                                      NetworkProtocol::DTO::Types::OrderIdType)));
+}
+
 void TradingServer::orderCompleted(UserIdType userId, OrderIdType orderId)
 {
     auto logger = _loggerFactory->createLoggingSession();
@@ -487,7 +504,7 @@ void TradingServer::orderCompleted(UserIdType userId, OrderIdType orderId)
     }
 }
 
-void TradingServer::OrderChange(UserIdType userId, OrderIdType orderId,
+void TradingServer::orderChange(UserIdType userId, OrderIdType orderId,
                                      AmountType amount, PriceType price)
 {
     auto logger = _loggerFactory->createLoggingSession();

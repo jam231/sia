@@ -47,6 +47,7 @@ public:
                  std::shared_ptr<AbstractDataStorageFactory> dataFactory,
                  const QHash<QString, QString>& config);
 
+    void connectDataHubToTradingServers(const AbstractDataHub&);
 public slots:
     void distributeUser(UserConnection*);
 

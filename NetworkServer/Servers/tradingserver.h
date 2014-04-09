@@ -22,6 +22,7 @@
 #include <../Utilities/logger.h>
 
 #include <DataStorage/datastorage.h>
+#include <DataStorage/datahub.h>
 
 #include "connections.h"
 
@@ -89,7 +90,10 @@ public:
     void handleRequest(std::shared_ptr<AbstractLogger>,
                        NetworkProtocol::Requests::Request*,
                        NetworkProtocol::DTO::Types::UserIdType);
+
 public slots:
+   void connectDataHub(const AbstractDataHub&);
+
    void addUserConnection(UserConnection*);
 
    void processMessageFrom(NetworkProtocol::DTO::Types::UserIdType);
@@ -99,7 +103,7 @@ public slots:
    void orderCompleted(NetworkProtocol::DTO::Types::UserIdType,
                        NetworkProtocol::DTO::Types::OrderIdType);
 
-   void OrderChange(NetworkProtocol::DTO::Types::UserIdType,
+   void orderChange(NetworkProtocol::DTO::Types::UserIdType,
                     NetworkProtocol::DTO::Types::OrderIdType,
                     NetworkProtocol::DTO::Types::AmountType,
                     NetworkProtocol::DTO::Types::PriceType);

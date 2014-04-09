@@ -6,10 +6,14 @@
 #include <QSqlDatabase>
 #include <QEventLoop>
 
-//#include "datastorage.h"
 #include <logger.h>
 
 #include <../NetworkProtocol/DataTransferObjects/types.h>
+
+Q_DECLARE_METATYPE(NetworkProtocol::DTO::Types::UserIdType)
+Q_DECLARE_METATYPE(NetworkProtocol::DTO::Types::OrderIdType)
+Q_DECLARE_METATYPE(NetworkProtocol::DTO::Types::AmountType)
+Q_DECLARE_METATYPE(NetworkProtocol::DTO::Types::PriceType)
 
 /*
  *  Class for handling notifications.
