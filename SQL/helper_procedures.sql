@@ -98,8 +98,9 @@ BEGIN
 	UPDATE zlecenie_kupna SET ilosc=ilosc-ile WHERE id_zlecenia=zl_kupna.id_zlecenia;
 	UPDATE zlecenie_sprzedazy SET ilosc=ilosc-ile WHERE id_zlecenia=zl_sprzedazy.id_zlecenia;
 
-	PERFORM pg_notify('ch_order_change', zl_kupna.id_uz || '|' || zl_kupna.id_zlecenia || '|' || zl_kupna.ilosc - ile || '|' || cena);
-	PERFORM pg_notify('ch_order_change', zl_sprzedazy.id_uz || '|' || zl_sprzedazy.id_zlecenia || '|' || zl_sprzedazy.ilosc - ile || '|' || cena);
+	
+	PERFORM pg_notify('ch_order_change', zl_kupna.id_uz || '|' || zl_kupna.id_zlecenia || '|' || ile || '|' || cena);
+	PERFORM pg_notify('ch_order_change', zl_sprzedazy.id_uz || '|' || zl_sprzedazy.id_zlecenia || '|' || ile  || '|' || cena);
 
 	INSERT INTO zrealizowane_zlecenie(uz_kupil,uz_sprzedal,id_zasobu,ilosc,cena) VALUES(zl_kupna.id_uz, zl_sprzedazy.id_uz, zl_kupna.id_zasobu, ile, cena);
 
