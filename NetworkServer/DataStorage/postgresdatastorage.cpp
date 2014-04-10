@@ -386,3 +386,30 @@ void PostgreDataSession::stopSession(Failure::FailureType* status)
                     .arg(query.lastError().text()));
     }
 }
+
+
+std::vector<NetworkProtocol::DTO::Types::StockIdType> PostgreDataSession::getAvailableStocks()
+{
+    QSqlQuery query(*_handle);
+    query.setForwardOnly(true);
+
+    query.exec("SELECT get_available_stocks();");
+
+    vector<StockIdType> stocks;
+
+    while (query.next())
+    {
+        if(query.value(0).isValid())
+        {
+            // RETURNS TABLE(typ integer, id_zasobu integer)
+            auto stock_id   = StockIdType(query.value(0).toInt());
+            stocks.push_back(stock_id);
+        }
+        else
+        {
+            LOG_ERROR(_logger, "Record doesn't have a valid field.");
+        }
+    }
+    query.finish();
+    return stocks;
+}

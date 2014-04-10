@@ -54,7 +54,25 @@ void TradingServer::run()
 {
     LOG_INFO(_loggerFactory->createLoggingSession(),
              "Starting new Trading Server...");
+    loadSubscriptionSet();
     QThread::run();
+}
+
+void TradingServer::loadSubscriptionSet()
+{
+    auto session = _dataStorageFactory->openSession();
+    auto logger = _loggerFactory->createLoggingSession();
+
+    auto stocks = session->getAvailableStocks();
+
+    _stock_subscribers.clear();
+    LOG_DEBUG(logger, "Loading subscription set.");
+    for(auto it = stocks.begin(); it != stocks.end(); it++)
+    {
+        LOG_TRACE(logger, QString("Stock(%1) inserted into subscription set.")
+                          .arg(it->value));
+        _stock_subscribers[*it] = QSet<UserIdType>();
+    }
 }
 
 void TradingServer::addUserConnection(UserConnection *user_connection)
@@ -412,44 +430,68 @@ void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
     }
 }
 
-/// FIXME:
-///  We allow user to subscribe to nonexistent stock - this is a potential bug,
-///  as it allows user to allocate new QSet<UserId> objects for
-///  every value possible of StockIdType (which is quint32).
-///
-///  Possible solution is to ask database (before accepting any users) for list
-///  of subscribeable stockIds.
-///
+//     _stocks_subscribers are initialized with subscribeable stock to prevent
+//    malicious user behaviour.
 void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
                                   Requests::SubscribeStock* request,
                                   UserIdType userId)
 {
-    LOG_DEBUG(logger, QString("User(%1) request subscription for stock(%2).")
-                      .arg(userId.value).arg(request->getStockId().value));
-
     auto source = _userConnections[userId];
+    auto stock_id = request->getStockId();
 
-    auto subscribers = _stock_subscribers[request->getStockId()];
-    subscribers.insert(userId);
+    LOG_DEBUG(logger, QString("User(%1) request subscription for stock(%2).")
+                      .arg(userId.value).arg(stock_id.value));
 
-    Responses::Ok response;
-    source->send(&response);
+    if(_stock_subscribers.contains(stock_id))
+    {
+        auto subscribers = _stock_subscribers[stock_id];
+        subscribers.insert(userId);
+
+        LOG_TRACE(logger,  QString("User(%1) subscribed to stock(%2).")
+                           .arg(userId.value).arg(stock_id.value));
+
+        Responses::Ok response;
+        source->send(&response);
+    }
+    else
+    {
+        LOG_TRACE(logger,  QString("Stock(%1) not found in subscription set.")
+                           .arg(stock_id.value));
+
+        Responses::Failure response(Failure::RESOURCE_NOT_AVAILABLE);
+        source->send(&response);
+    }
 }
 
 void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
                                   Requests::UnsubscribeStock* request,
                                   UserIdType userId)
 {
-    LOG_DEBUG(logger, QString("User(%1) request canceling subscription for stock(%2).")
-                      .arg(userId.value).arg(request->getStockId().value));
-
+    auto stock_id = request->getStockId();
     auto source = _userConnections[userId];
 
-    auto subscribers = _stock_subscribers[request->getStockId()];
-    subscribers.remove(userId);
+    LOG_DEBUG(logger, QString("User(%1) request canceling subscription to stock(%2).")
+                      .arg(userId.value).arg(stock_id.value));
 
-    Responses::Ok response;
-    source->send(&response);
+    if(_stock_subscribers.contains(stock_id))
+    {
+        auto subscribers = _stock_subscribers[stock_id];
+        subscribers.remove(userId);
+
+        LOG_TRACE(logger,  QString("User(%1) unsubscribed from stock(%2).")
+                           .arg(userId.value).arg(stock_id.value));
+
+        Responses::Ok response;
+        source->send(&response);
+    }
+    else
+    {
+        LOG_TRACE(logger,  QString("Stock(%1) not found in subscription set.")
+                           .arg(stock_id.value));
+
+        Responses::Failure response(Failure::RESOURCE_NOT_AVAILABLE);
+        source->send(&response);
+    }
 }
 
 void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,

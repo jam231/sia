@@ -90,6 +90,8 @@ public:
 
     void stopSession(NetworkProtocol::DTO::Types::Failure::FailureType*);
 
+    std::vector<NetworkProtocol::DTO::Types::StockIdType> getAvailableStocks();
+
     ~PostgreDataSession();
 
 };

@@ -188,6 +188,11 @@ void PooledDataSession::stopSession(Failure::FailureType* status)
     _session->stopSession(status);
 }
 
+std::vector<NetworkProtocol::DTO::Types::StockIdType> PooledDataSession::getAvailableStocks()
+{
+    return _session->getAvailableStocks();
+}
+
 PooledDataSession::~PooledDataSession()
 {
     if(_owner != nullptr)

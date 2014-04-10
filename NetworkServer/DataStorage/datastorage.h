@@ -77,6 +77,8 @@ public:
     virtual void startSession(NetworkProtocol::DTO::Types::Failure::FailureType*) = 0;
 
     virtual void stopSession(NetworkProtocol::DTO::Types::Failure::FailureType*) = 0;
+
+    virtual std::vector<NetworkProtocol::DTO::Types::StockIdType> getAvailableStocks() = 0;
 };
 
 
@@ -182,6 +184,8 @@ public:
     void startSession(NetworkProtocol::DTO::Types::Failure::FailureType*);
 
     void stopSession(NetworkProtocol::DTO::Types::Failure::FailureType*);
+
+    std::vector<NetworkProtocol::DTO::Types::StockIdType> getAvailableStocks();
 
     ~PooledDataSession();
 };

@@ -62,6 +62,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION get_available_stocks() RETURNS TABLE(id_zasobu integer) 
+AS $$ SELECT id_zasobu FROM zasob WHERE id_zasobu != 1; $$ LANGUAGE SQL; 
+
 
 
 CREATE OR REPLACE FUNCTION nowy_uzytkownik(nowe_haslo varchar(15)) RETURNS integer AS $$
@@ -138,7 +141,7 @@ BEGIN
 		-- We must do it each iteration because of concurrent nature of db computation.
 		SELECT zlecenie_sprzedazy.* INTO zlecenie FROM zlecenie_sprzedazy join zasob USING(id_zasobu)
 			WHERE id_zasobu = rekord.id_zasobu AND limit1 >= rekord.limit1 AND ilosc > 0 AND 
-				  wazne_od <= CURRENT_TIMESTAMP AND mozna_handlowac LIMIT 1;
+				  wazne_od <= CURRENT_TIMESTAMP AND mozna_handlowac ORDER BY limit1, wazne_od LIMIT 1;
 
 		IF zlecenie.id_zlecenia IS NULL THEN
 			EXIT;
@@ -171,7 +174,8 @@ BEGIN
 		--Wypelnij zawartosc zmiennej "zlecenie"
 		-- We must do it each iteration because of concurrent nature of db computation.
 		SELECT * INTO zlecenie FROM zlecenie_kupna 
-			WHERE id_zasobu = rekord.id_zasobu AND limit1 >= rekord.limit1 AND ilosc > 0 AND wazne_od <= CURRENT_TIMESTAMP LIMIT 1;
+			WHERE id_zasobu = rekord.id_zasobu AND limit1 >= rekord.limit1 AND ilosc > 0 AND wazne_od <= CURRENT_TIMESTAMP
+			ORDER BY limit1 DESC, wazne_od ASC  LIMIT 1;
 
 		IF zlecenie.id_zlecenia IS NULL THEN
 			EXIT;
@@ -203,6 +207,7 @@ BEGIN
 	RETURN nowy_id;
 END;
 $$ LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE FUNCTION zlec_sprzedaz(uz integer,zasob integer,ile integer,cena integer) RETURNS integer AS $$
 DECLARE

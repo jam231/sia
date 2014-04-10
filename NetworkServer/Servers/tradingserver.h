@@ -58,7 +58,10 @@ public:
                   std::shared_ptr<SharedSet<NetworkProtocol::DTO::Types::UserIdType> > );
 protected:
     virtual void run();
+
+    void loadSubscriptionSet();
 public:
+
     void handleRequest(std::shared_ptr<AbstractLogger>,
                        NetworkProtocol::Requests::BuyStock*,
                        NetworkProtocol::DTO::Types::UserIdType);
