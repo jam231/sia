@@ -161,7 +161,7 @@ void PostgreDataSession::loginUser(NetworkProtocol::DTO::Types::UserIdType userI
     //query.prepare("SELECT haslo FROM uzytkownik WHERE id_uz = :id;");
 
     query.setForwardOnly(true);
-    query.exec("SELECT haslo FROM uzytkownik WHERE id_uz ="
+    query.exec("SELECT password FROM uzytkownik WHERE user_id="
                % QString::number(userId.value) % ';');
 
     if(query.first())
@@ -254,7 +254,7 @@ UserStocks PostgreDataSession::getUserStocks(UserIdType userId,
 
     query.setForwardOnly(true);
 
-    query.exec("SELECT id_zasobu, ilosc FROM dobra_uz("
+    query.exec("SELECT stock_id, amount FROM dobra_uz("
                % QString::number(userId.value) % ");");
 
     while (query.next())
@@ -288,7 +288,7 @@ PostgreDataSession::getUserOrders(UserIdType userId,
 
     query.setForwardOnly(true);
 
-    query.exec("SELECT typ, id_zlecenia, id_zasobu, ilosc, limit1 FROM zlecenia_uz("
+    query.exec("SELECT type, order_id, stock_id, amount, limit1 FROM zlecenia_uz("
                % QString::number(userId.value) % ");");
 
     while (query.next())
@@ -296,7 +296,7 @@ PostgreDataSession::getUserOrders(UserIdType userId,
         if(query.value(0).isValid() && query.value(1).isValid() &&
                 query.value(2).isValid() && query.value(3).isValid())
         {
-            // RETURNS TABLE(typ integer, id_zlecenia integer, id_zasobu integer,ilosc integer, limit1 integer)
+            // RETURNS TABLE(type integer, order_id integer, stock_id integer,amount integer, limit1 integer)
             auto order_type = Order::toOrderType(query.value(0).toInt());
             auto order_id   = OrderIdType(query.value(1).toInt());
             auto stock_id   = StockIdType(query.value(2).toInt());
@@ -336,11 +336,11 @@ void PostgreDataSession::cancelOrder(UserIdType userId, OrderIdType orderId,
 
     _handle->transaction();
 
-    bool query1_valid = query1.exec("DELETE FROM zlecenie_kupna AS zk WHERE zk.id_zlecenia ="
-                                    % QString::number(orderId.value) % " AND zk.id_uz ="
+    bool query1_valid = query1.exec("DELETE FROM buy_order AS bo WHERE zk.order_id="
+                                    % QString::number(orderId.value) % " AND zk.user_id="
                                     % QString::number(userId.value) % ";");
-    bool query2_valid = query2.exec("DELETE FROM zlecenie_sprzedazy AS zs WHERE zs.id_zlecenia ="
-                                    % QString::number(orderId.value) % " AND zs.id_uz ="
+    bool query2_valid = query2.exec("DELETE FROM sell_order AS so WHERE so.order_id="
+                                    % QString::number(orderId.value) % " AND so.user_id="
                                     % QString::number(userId.value) % ";");
 
     // Unfortunately we are unable to check if order was found and deleted or not.
@@ -368,7 +368,7 @@ void PostgreDataSession::startSession(Failure::FailureType* status)
 
     if(!query.exec())
     {
-        LOG_WARNING(_logger, QString("Error while executing startSession : %1")
+        LOG_WARNING(_logger, QString("Error while executing query : %1")
                     .arg(query.lastError().text()));
     }
 }

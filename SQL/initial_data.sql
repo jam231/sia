@@ -1,6 +1,6 @@
-DELETE FROM zasob;
-SELECT setval('nr_zasobu',1,false);
-INSERT INTO zasob(nazwa,w_ksiegowa,zysk,liczba_akcji) VALUES
+DELETE FROM stock;
+SELECT setval('stock_id_seq',1,false);
+INSERT INTO stock(name,book_value,profit,volume) VALUES
 ('PLN',1,0,0),
 ('ACP',7482,358,8300030),
 ('LWP',2366,260,3401359),
@@ -22,9 +22,9 @@ INSERT INTO zasob(nazwa,w_ksiegowa,zysk,liczba_akcji) VALUES
 ('SNS',3064,485,132325000),
 ('TPE',17316,1626,175254939),
 ('TPS',13045,693,133564902);
-SELECT setval('nr_uz',1,false);
-SELECT nowy_uzytkownik('abcdef'); --szef wszystkich szefow
-UPDATE posiadane_dobro SET ilosc=2000000000 WHERE id_uz=1;
-INSERT INTO posiadane_dobro(id_uz,id_zasobu,ilosc)
-	SELECT 1,id_zasobu,1000000000 FROM zasob WHERE id_zasobu NOT IN (SELECT id_zasobu FROM posiadane_dobro WHERE id_uz=1);
+SELECT setval('order_id_seq',1,false);
+SELECT nowy_uzytkownik('12jfdd3eęęfdsŋ'); --szef wszystkich szefow
+UPDATE owned_stock SET amount=2000000000 WHERE user_id=1;
+INSERT INTO owned_stock(user_id,stock_id,amount)
+	SELECT 1,stock_id,1000000000 FROM stock WHERE stock_id NOT IN (SELECT stock_id FROM owned_stock WHERE user_id=1);
 	
