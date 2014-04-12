@@ -30,10 +30,10 @@ int main(int argv, char **args)
     auto log_writer = shared_ptr<AbstractWriter>(composed_writer);
 
     auto local_logger = shared_ptr<AbstractLogger>(
-                            make_logger(LoggingLevel::Trace, log_writer));
+                            make_logger(LoggingLevel::Info, log_writer));
 
     auto logger_factory = shared_ptr<AbstractLoggerFactory>(
-                        new SimpleLoggerFactory(LoggingLevel::Trace,
+                        new SimpleLoggerFactory(LoggingLevel::Info,
                                                   shared_ptr<AbstractWriter>(
                                                       log_writer)));
 
@@ -64,7 +64,7 @@ int main(int argv, char **args)
         auto master_data_factory = shared_ptr<AbstractDataStorageFactory>(
                    new PooledDataStorageFactory(logger_factory,
                                                  postgre_data_factory,
-                                                 10));
+                                                 db_connections_count));
 
         MasterServer master(logger_factory, master_data_factory, settings);
         master.start();
