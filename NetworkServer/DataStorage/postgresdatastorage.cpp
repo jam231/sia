@@ -161,7 +161,7 @@ void PostgreDataSession::loginUser(NetworkProtocol::DTO::Types::UserIdType userI
     //query.prepare("SELECT haslo FROM uzytkownik WHERE id_uz = :id;");
 
     query.setForwardOnly(true);
-    query.exec("SELECT password FROM uzytkownik WHERE user_id="
+    query.exec("SELECT password FROM users WHERE user_id="
                % QString::number(userId.value) % ';');
 
     if(query.first())
@@ -249,8 +249,6 @@ UserStocks PostgreDataSession::getUserStocks(UserIdType userId,
 
     QSqlQuery query(*_handle);
     *status  = Types::Failure::NO_FAILURE;
-
-    //query.prepare("SELECT id_zasobu, ilosc FROM dobra_uz(:userId);");
 
     query.setForwardOnly(true);
 
