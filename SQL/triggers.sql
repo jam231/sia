@@ -36,7 +36,7 @@ BEGIN
 	UPDATE owned_stock SET amount=amount-new.amount*new.limit1 WHERE user_id=new.user_id AND stock_id=1;
 	
 	IF (SELECT active FROM stock WHERE stock_id=new.stock_id) THEN
-		PERFORM wykonaj_buy_order(new);
+		PERFORM process_buy_order(new);
 	END IF;
 	
 	RETURN new;
@@ -52,7 +52,7 @@ BEGIN
 	UPDATE owned_stock SET amount=amount-new.amount WHERE user_id=new.user_id AND stock_id=new.stock_id;
 	
 	IF (SELECT active FROM stock WHERE stock_id=new.stock_id) THEN
-		PERFORM wykonaj_zlecenie_sprzedazy(new);
+		PERFORM process_sell_order(new);
 	END IF;
 	
 	RETURN new;

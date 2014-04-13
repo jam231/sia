@@ -1,11 +1,11 @@
-CREATE OR REPLACE FUNCTION podziel_odcinek(na_ile_czesci integer) RETURNS NUMERIC ARRAY AS $$
+CREATE OR REPLACE FUNCTION partition_segment(parts_count integer) RETURNS NUMERIC ARRAY AS $$
 DECLARE
 	retval NUMERIC ARRAY;
 	single_value NUMERIC;
 	max_val NUMERIC := 0.5;
 	total NUMERIC := 1.0;
 BEGIN
-	FOR i IN 2..na_ile_czesci LOOP
+	FOR i IN 2..parts_count LOOP
 		max_val := LEAST(max_val, total);
 		single_value := (random()::NUMERIC) % max_val;
 		retval := retval||(single_value);
@@ -16,7 +16,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION przydziel_zasoby(uz integer) RETURNS VOID AS $$ --kazdy user dostaje JAKAS akcje oraz pewna ustalona kwote pieniedzy
+CREATE OR REPLACE FUNCTION distribute_stocks_to(uz integer) RETURNS VOID AS $$ --kazdy user dostaje JAKAS akcje oraz pewna ustalona kwote pieniedzy
 DECLARE
 	wartosc_pieniedzy	integer := 1000000; --10 000zl * 100 gr
 	l_zasobow			integer;
@@ -34,7 +34,7 @@ BEGIN
 	
 	INSERT INTO owned_stock(user_id,stock_id,amount) VALUES(uz,1,wartosc_pieniedzy);
 	
-	FOREACH val IN ARRAY podziel_odcinek(l_zasobow_dla_uz) LOOP
+	FOREACH val IN ARRAY partition_segment(l_zasobow_dla_uz) LOOP
 		LOOP
 			id_zas := FLOOR(RANDOM()*(l_zasobow-1))+2;
 			IF NOT(przydzielone_id @> array[id_zas]) THEN
@@ -50,14 +50,14 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION przydziel_zasoby_wszystkim() RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION distribute_stocks() RETURNS VOID AS $$
 DECLARE
 	r integer;
 BEGIN
 	FOR r IN --petla przydzielania po wszystkich userach
 		(SELECT user_id FROM users)
 	LOOP
-		PERFORM przydziel_zasoby(r);
+		PERFORM distribute_stocks_to(r);
 	END LOOP;
 END;
 $$ LANGUAGE plpgsql;
@@ -72,7 +72,7 @@ DECLARE
 	nowy_id integer := nextval('user_id_seq');
 BEGIN
 	INSERT INTO users(user_id, password) VALUES(nowy_id, new_password);
-	PERFORM przydziel_zasoby(nowy_id);
+	PERFORM distribute_stocks_to(nowy_id);
 	RETURN nowy_id;
 END;
 $$ LANGUAGE plpgsql;
@@ -124,7 +124,7 @@ $$ LANGUAGE plpgsql;
 --na danym zasobie:
 --PERFORM wykonaj_zlecenie_kupna(buy_order.*) FROM buy_order WHERE stock_id=[X] ORDER BY wazne_od ASC;
 
-CREATE OR REPLACE FUNCTION wykonaj_zlecenie_kupna(rekord buy_order) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION process_buy_order(rekord buy_order) RETURNS VOID AS $$
 DECLARE
 	zlecenie sell_order%rowtype; --"placeholder" na zlecenie, z ktorym bedzie parowane to nasze
 	ile INTEGER;
@@ -160,7 +160,7 @@ $$ LANGUAGE plpgsql;
 
 
 
-CREATE OR REPLACE FUNCTION wykonaj_zlecenie_sprzedazy(rekord sell_order) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION process_sell_order(rekord sell_order) RETURNS VOID AS $$
 DECLARE
 	zlecenie buy_order%rowtype;  --"placeholder" na zlecenie, z ktorym bedzie parowane to nasze
 	ile INTEGER;
@@ -194,7 +194,7 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION process_buy_orders() RETURNS VOID AS $$
 BEGIN
-	PERFORM wykonaj_zlecenie_kupna(buy_order.*) 
+	PERFORM process_buy_order(buy_order.*) 
 		FROM buy_order WHERE available_since <= CURRENT_TIMESTAMP;
 END
 $$ LANGUAGE plpgsql;
@@ -259,7 +259,7 @@ LANGUAGE SQL;
 
 
 
-CREATE OR REPLACE FUNCTION dobra_uz(uz integer) RETURNS TABLE(stock_id integer,ilosc integer)
+CREATE OR REPLACE FUNCTION dobra_uz(uz integer) RETURNS TABLE(stock_id integer, amount integer)
 	AS $$ SELECT stock_id, amount FROM owned_stock WHERE user_id=uz AND (amount>0 OR stock_id=1) $$
 LANGUAGE SQL;
 
