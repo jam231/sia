@@ -1,4 +1,4 @@
-QMAKE_CXXFLAGS += -std=c++11 -Wall -Wextra -Wundef \
+QMAKE_CXXFLAGS += -flto -std=c++11 -Wall -Wextra -Wundef \
                   -Wpointer-arith
 
 QMAKE_CXXFLAGS_RELEASE -= -O2
