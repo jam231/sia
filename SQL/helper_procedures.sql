@@ -2,7 +2,7 @@
 --
 --		x_1 + x_2 + ... + x_(parts_count) = 1.0, where forall i. x_i in [0.1, 1.0)
 --
--- 	x_i are choosen randomly.
+-- 	x_i are chosen randomly.
 CREATE OR REPLACE FUNCTION generate_random_partition(parts_count integer) RETURNS NUMERIC ARRAY AS $$
 DECLARE
 	parts 			 NUMERIC ARRAY;
@@ -225,9 +225,10 @@ $$ LANGUAGE plpgsql;
 
 -- 							Session management
 
-CREATE OR REPLACE FUNCTION rozpocznij_sesje() RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION begin_session() RETURNS VOID AS $$
 BEGIN
-	LOCK TABLE stock IN ACCESS EXCLUSIVE MODE;	-- Without it postgres deadlocks- e.g. when orders are still being processed when session changes status
+	LOCK TABLE stock IN ACCESS EXCLUSIVE MODE;	-- Without it postgres deadlocks- e.g. when orders are 
+												-- still being processed when session changes status
 	UPDATE stock SET active=true;
 	--- Async - I don't care about the result.
 	PERFORM dblink_connect('start_session_conn', 'dbname=' || CURRENT_DATABASE());
@@ -237,20 +238,23 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION zakoncz_sesje() RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION end_session() RETURNS VOID AS $$
 BEGIN
-	LOCK TABLE stock IN ACCESS EXCLUSIVE MODE; 	-- Without it postgres deadlocks- e.g. when orders are still being processed when session changes status
-	UPDATE stock SET active=false;
+	LOCK TABLE stock IN ACCESS EXCLUSIVE MODE; 	-- Without it postgres deadlocks, e.g. when orders are 
+												-- still being processed when session changes status
+	UPDATE stock SET active = false;
 END;
 $$ LANGUAGE plpgsql;
+
+
+
+--						Varia
 
 CREATE OR REPLACE FUNCTION best_buy_metric(in stock_id integer, out bigint, out int) AS $$ 
 	SELECT SUM(amount), limit1 FROM buy_order WHERE buy_order.stock_id = stock_id AND amount > 0 
 	GROUP BY limit1 ORDER BY 2 DESC 
 	LIMIT 1 
 $$ LANGUAGE SQL;
-
-
 
 CREATE OR REPLACE FUNCTION best_sell_metric(in stock_id integer, out bigint, out int) AS $$ 
     SELECT SUM(amount),limit1 FROM sell_order WHERE sell_order.stock_id = stock_id AND amount > 0 

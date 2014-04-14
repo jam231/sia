@@ -252,7 +252,7 @@ UserStocks PostgreDataSession::getUserStocks(UserIdType userId,
 
     query.setForwardOnly(true);
 
-    query.exec("SELECT stock_id, amount FROM dobra_uz("
+    query.exec("SELECT stock_id, amount FROM user_resources("
                % QString::number(userId.value) % ");");
 
     while (query.next())
@@ -286,7 +286,7 @@ PostgreDataSession::getUserOrders(UserIdType userId,
 
     query.setForwardOnly(true);
 
-    query.exec("SELECT type, order_id, stock_id, amount, limit1 FROM zlecenia_uz("
+    query.exec("SELECT type, order_id, stock_id, amount, limit1 FROM user_orders("
                % QString::number(userId.value) % ");");
 
     while (query.next())
@@ -360,7 +360,7 @@ void PostgreDataSession::cancelOrder(UserIdType userId, OrderIdType orderId,
 void PostgreDataSession::startSession(Failure::FailureType* status)
 {
     QSqlQuery query(*_handle);
-    query.prepare("SELECT rozpocznij_sesje();");
+    query.prepare("SELECT begin_session();");
     query.setForwardOnly(true);
     *status  = Types::Failure::NO_FAILURE;
 
@@ -374,7 +374,7 @@ void PostgreDataSession::startSession(Failure::FailureType* status)
 void PostgreDataSession::stopSession(Failure::FailureType* status)
 {
     QSqlQuery query(*_handle);
-    query.prepare("SELECT zakoncz_sesje();");
+    query.prepare("SELECT end_session();");
     query.setForwardOnly(true);
     *status  = Types::Failure::NO_FAILURE;
 
