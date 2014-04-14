@@ -65,21 +65,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION get_available_stocks() RETURNS TABLE(stock_id integer) 
-AS $$ SELECT stock_id FROM stock WHERE stock_id != 0; $$ LANGUAGE SQL; 
-
-
-
-CREATE OR REPLACE FUNCTION create_user(password varchar(15)) RETURNS integer AS $$
-DECLARE
-	user_id integer := nextval('user_id_seq');
-BEGIN
-	INSERT INTO users(user_id, password) VALUES(user_id, password);
-	PERFORM distribute_stocks_to(user_id);
-	RETURN user_id;
-END;
-$$ LANGUAGE plpgsql;
-
 
 CREATE OR REPLACE FUNCTION przenies_dobra(zl_kupna buy_order, zl_sprzedazy sell_order, kupno boolean) RETURNS INTEGER AS $$
 DECLARE 
@@ -202,24 +187,22 @@ BEGIN
 END
 $$ LANGUAGE plpgsql;
 
---Z tych funkcji sie korzysta przy wstawianiu. Zwraca ID zlecenia wstawionego
-CREATE OR REPLACE FUNCTION zlec_kupno(uz integer,zasob integer,ile integer,cena integer) RETURNS integer AS $$
+CREATE OR REPLACE FUNCTION create_buy_order(user_id integer, stock_id integer, amount integer, price integer) RETURNS integer AS $$
 DECLARE
-	nowy_id integer := nextval('order_id_seq');
+	order_id integer := nextval('order_id_seq');
 BEGIN
-    --RAISE NOTICE 'zlec_kupno u: % z: % i: % c: %',uz,zasob,ile,cena;
-	INSERT INTO buy_order(order_id,user_id, stock_id, amount, limit1) VALUES(nowy_id, uz, zasob, ile,cena);
-	RETURN nowy_id;
+	INSERT INTO buy_order(order_id,user_id, stock_id, amount, limit1) VALUES(order_id, user_id, stock_id, amount, price);
+	RETURN order_id;
 END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION zlec_sprzedaz(uz integer,zasob integer,ile integer,cena integer) RETURNS integer AS $$
+CREATE OR REPLACE FUNCTION create_sell_order(user_id integer, stock_id integer, amount integer, price integer) RETURNS integer AS $$
 DECLARE
-	nowy_id integer := nextval('order_id_seq');
+	order_id integer := nextval('order_id_seq');
 BEGIN
-	INSERT INTO sell_order(order_id, user_id, stock_id, amount, limit1) VALUES(nowy_id, uz, zasob, ile,cena);
-	RETURN nowy_id;
+	INSERT INTO sell_order(order_id, user_id, stock_id, amount, limit1) VALUES(order_id, user_id, stock_id, amount, price);
+	RETURN order_id;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -249,6 +232,23 @@ $$ LANGUAGE plpgsql;
 
 
 --						Varia
+
+
+CREATE OR REPLACE FUNCTION available_stocks() RETURNS TABLE(stock_id integer) AS $$ 
+	SELECT stock_id FROM stock WHERE stock_id != 0; 
+$$ LANGUAGE SQL; 
+
+
+CREATE OR REPLACE FUNCTION create_user(password varchar(15)) RETURNS integer AS $$
+DECLARE
+	user_id integer := nextval('user_id_seq');
+BEGIN
+	INSERT INTO users(user_id, password) VALUES(user_id, password);
+	PERFORM distribute_stocks_to(user_id);
+	RETURN user_id;
+END;
+$$ LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE FUNCTION best_buy_metric(in stock_id integer, out bigint, out int) AS $$ 
 	SELECT SUM(amount), limit1 FROM buy_order WHERE buy_order.stock_id = stock_id AND amount > 0 

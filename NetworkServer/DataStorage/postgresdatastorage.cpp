@@ -391,7 +391,7 @@ std::vector<NetworkProtocol::DTO::Types::StockIdType> PostgreDataSession::getAva
     QSqlQuery query(*_handle);
     query.setForwardOnly(true);
 
-    query.exec("SELECT get_available_stocks();");
+    query.exec("SELECT available_stocks();");
 
     vector<StockIdType> stocks;
 
