@@ -23,7 +23,7 @@ INSERT INTO stock(name,book_value,profit,volume) VALUES
 ('TPE',17316,1626,175254939),
 ('TPS',13045,693,133564902);
 SELECT setval('order_id_seq',1,false);
-SELECT nowy_uzytkownik('12jfdd3eęęfdsŋ'); --szef wszystkich szefow
+SELECT create_user('12jfdd3eęęfdsŋ'); --szef wszystkich szefow
 UPDATE owned_stock SET amount=2000000000 WHERE user_id=1;
 INSERT INTO owned_stock(user_id,stock_id,amount)
 	SELECT 1,stock_id,1000000000 FROM stock WHERE stock_id NOT IN (SELECT stock_id FROM owned_stock WHERE user_id=1);

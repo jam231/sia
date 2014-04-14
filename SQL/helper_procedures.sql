@@ -12,8 +12,8 @@ DECLARE
 BEGIN  
 	FOR i IN 1..parts_count LOOP
 		--- Generate
-		numerator = (random() * max_denominator)::INTEGER + 1;
-		parts := parts || numerator;
+		numerator = (random() * max_numerator)::INTEGER + 1;
+		parts := parts || (numerator :: NUMERIC);
 		denominator := denominator + numerator;
 	END LOOP;
 	-- Map parts array with function (\numerator -> numerator/denominator)
@@ -26,8 +26,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Gives user a (hardcoded - 1_000_000) constant amount of money, 
--- picks randomly (from range [1,6]) how many stocks user will get.
--- Lastly, for every picked stock user gets amount of its shares with equal worth to randomly picked fraction of 10_000_000.
+-- picks randomly (from range [1,6]) how many stocks user will get. Next it chooses randomly shares money equivalent from [0, 10_000_000)
+-- Lastly, for every picked stock user gets amount of its shares with equal worth to randomly picked fraction of shares money equivalent. 
 -- Overall owned shares worth will not exceed 10_000_000.  
 CREATE OR REPLACE FUNCTION distribute_stocks_to(user_id integer) RETURNS VOID AS $$ 
 DECLARE
@@ -36,40 +36,32 @@ DECLARE
 	user_owned_stocks_count			integer;
 	shares_equivalent_in_money		integer;
 	stock_market_value				integer;
-	stock_id						integer;
+	candidate_stock_id				integer;
 	distributed_stock_ids 			INTEGER ARRAY := array[1::integer];
 	part							NUMERIC;
 BEGIN
 	overall_stocks_count 			:= (SELECT COUNT(*) FROM stock WHERE stock_id != 1); -- stock_id=1 is money
-	user_owned_stocks_count 		:= (random()::numeric * 5)::integer + 1;
+	user_owned_stocks_count 		:= (random() * 6)::integer + 1;
 	shares_equivalent_in_money 		:= (random() * 10000000)::integer; 		-- how much worth in shares user gets.
 	
 	INSERT INTO owned_stock(user_id,stock_id,amount) VALUES(user_id,1,money_to_distribute);
 	
-	-- Is there no function for generating random combination ? Or ruby's sample-like function ? 
 	FOREACH part IN ARRAY generate_random_partition(user_owned_stocks_count) LOOP
+		-- Is there no function for generating random combination ? Or ruby's sample-like function ? 
+		-- It generates random sequence of length user_owned_stocks_count of stock_ids without duplicates 
 		LOOP
-			stock_id := FLOOR(RANDOM() * overall_stocks_count) + 1;
-			IF NOT(distributed_stock_ids @> array[stock_id]) THEN
-				distributed_stock_ids := distributed_stock_ids || stock_id;
+			candidate_stock_id := (random() * overall_stocks_count) :: integer + 2;		-- 0.0 <= random() < 1.0 
+			IF NOT(distributed_stock_ids @> array[candidate_stock_id]) THEN
+				distributed_stock_ids := distributed_stock_ids || candidate_stock_id;
 				EXIT;
 			END IF;
 		END LOOP;
 		
-		stock_market_value := (SELECT price FROM market_value WHERE stock_id = stock_id);
+		stock_market_value := (SELECT price FROM market_value WHERE stock_id = candidate_stock_id);
 
 		INSERT INTO owned_stock(user_id,stock_id,amount) 
-			VALUES(user_id,stock_id, (part * shares_equivalent_in_money / stock_market_value)::int);
+			VALUES(user_id, candidate_stock_id, (part * shares_equivalent_in_money / stock_market_value)::int);
 	END LOOP;
-END;
-$$ LANGUAGE plpgsql;
-
-
-CREATE OR REPLACE FUNCTION distribute_stocks() RETURNS VOID AS $$
-DECLARE
-	user_id integer;
-BEGIN
-	PERFORM distribute_stocks(user_id) FROM users;
 END;
 $$ LANGUAGE plpgsql;
 
