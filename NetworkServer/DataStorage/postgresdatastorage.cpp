@@ -128,7 +128,7 @@ UserIdType PostgreDataSession::registerAccount(const QString& password,
     QSqlQuery query(*_handle);
     *status  = Types::Failure::NO_FAILURE;
 
-    query.prepare("SELECT nowy_uzytkownik(:password);");
+    query.prepare("SELECT create_user(:password);");
     query.bindValue(":password", password);
 
     query.setForwardOnly(true);

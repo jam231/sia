@@ -1,50 +1,65 @@
-CREATE OR REPLACE FUNCTION partition_segment(parts_count integer) RETURNS NUMERIC ARRAY AS $$
+--	It generates array [x_1, x_2, ..., x_(parts_count)] for which
+--
+--		x_1 + x_2 + ... + x_(parts_count) = 1.0, where forall i. x_i in [0.1, 1.0)
+--
+-- 	x_i are choosen randomly.
+CREATE OR REPLACE FUNCTION generate_random_partition(parts_count integer) RETURNS NUMERIC ARRAY AS $$
 DECLARE
-	retval NUMERIC ARRAY;
-	single_value NUMERIC;
-	max_val NUMERIC := 0.5;
-	total NUMERIC := 1.0;
-BEGIN
-	FOR i IN 2..parts_count LOOP
-		max_val := LEAST(max_val, total);
-		single_value := (random()::NUMERIC) % max_val;
-		retval := retval||(single_value);
-		total := total - single_value;
+	parts 			 NUMERIC ARRAY;
+	max_numerator  	 INTEGER := parts_count * 10;		-- arbitrary, it defines the amplitude of x_i values . 
+	numerator 	 	 INTEGER := 0;						-- for example with max_numerator = 2 and parts_count = 2 there are only 3  
+	denominator 	 INTEGER := 0;						-- such partitions: [0.3333, 0.66666], [0.5, 0.5], [0.666666, 0.333333]
+BEGIN  
+	FOR i IN 1..parts_count LOOP
+		--- Generate
+		numerator = (random() * max_denominator)::INTEGER + 1;
+		parts := parts || numerator;
+		denominator := denominator + numerator;
 	END LOOP;
-	retval := retval||total;
-	RETURN retval;
+	-- Map parts array with function (\numerator -> numerator/denominator)
+	FOR i IN 1..parts_count LOOP
+		parts[i] = parts[i] / denominator;
+	END LOOP;
+	
+	RETURN parts;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION distribute_stocks_to(uz integer) RETURNS VOID AS $$ --kazdy user dostaje JAKAS akcje oraz pewna ustalona kwote pieniedzy
+-- Gives user a (hardcoded - 1_000_000) constant amount of money, 
+-- picks randomly (from range [1,6]) how many stocks user will get.
+-- Lastly, for every picked stock user gets amount of its shares with equal worth to randomly picked fraction of 10_000_000.
+-- Overall owned shares worth will not exceed 10_000_000.  
+CREATE OR REPLACE FUNCTION distribute_stocks_to(user_id integer) RETURNS VOID AS $$ 
 DECLARE
-	wartosc_pieniedzy	integer := 1000000; --10 000zl * 100 gr
-	l_zasobow			integer;
-	l_zasobow_dla_uz	integer;
-	zasob				integer;
-	kasa_w_akcjach		integer;
-	wartosc_zasobu		integer;
-	id_zas				integer;
-	przydzielone_id 	INTEGER ARRAY := array[1::integer];
-	val					NUMERIC;
+	money_to_distribute				integer := 1000000; --10 000zl * 100 gr
+	overall_stocks_count			integer;
+	user_owned_stocks_count			integer;
+	shares_equivalent_in_money		integer;
+	stock_market_value				integer;
+	stock_id						integer;
+	distributed_stock_ids 			INTEGER ARRAY := array[1::integer];
+	part							NUMERIC;
 BEGIN
-	l_zasobow := (SELECT COUNT(*) FROM stock);
-	l_zasobow_dla_uz := (random()::numeric*5)::integer+1;
-	kasa_w_akcjach := (random()*10000000)::integer; -- poki co po prostu liczba akcji :(
+	overall_stocks_count 			:= (SELECT COUNT(*) FROM stock WHERE stock_id != 1); -- stock_id=1 is money
+	user_owned_stocks_count 		:= (random()::numeric * 5)::integer + 1;
+	shares_equivalent_in_money 		:= (random() * 10000000)::integer; 		-- how much worth in shares user gets.
 	
-	INSERT INTO owned_stock(user_id,stock_id,amount) VALUES(uz,1,wartosc_pieniedzy);
+	INSERT INTO owned_stock(user_id,stock_id,amount) VALUES(user_id,1,money_to_distribute);
 	
-	FOREACH val IN ARRAY partition_segment(l_zasobow_dla_uz) LOOP
+	-- Is there no function for generating random combination ? Or ruby's sample-like function ? 
+	FOREACH part IN ARRAY generate_random_partition(user_owned_stocks_count) LOOP
 		LOOP
-			id_zas := FLOOR(RANDOM()*(l_zasobow-1))+2;
-			IF NOT(przydzielone_id @> array[id_zas]) THEN
-				przydzielone_id := przydzielone_id || id_zas;
+			stock_id := FLOOR(RANDOM() * overall_stocks_count) + 1;
+			IF NOT(distributed_stock_ids @> array[stock_id]) THEN
+				distributed_stock_ids := distributed_stock_ids || stock_id;
 				EXIT;
 			END IF;
 		END LOOP;
-		wartosc_zasobu := (SELECT price FROM market_value WHERE stock_id = id_zas);
-		--RAISE NOTICE  'WZ=% VAL=% KWA=% IA=%', wartosc_zasobu, val, kasa_w_akcjach, (val*kasa_w_akcjach/wartosc_zasobu)::int;
-		INSERT INTO owned_stock(user_id,stock_id,amount) VALUES(uz,id_zas,(val*kasa_w_akcjach/wartosc_zasobu)::int ); --kazdy otrzymuje losowy zasob
+		
+		stock_market_value := (SELECT price FROM market_value WHERE stock_id = stock_id);
+
+		INSERT INTO owned_stock(user_id,stock_id,amount) 
+			VALUES(user_id,stock_id, (part * shares_equivalent_in_money / stock_market_value)::int);
 	END LOOP;
 END;
 $$ LANGUAGE plpgsql;
@@ -52,13 +67,9 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION distribute_stocks() RETURNS VOID AS $$
 DECLARE
-	r integer;
+	user_id integer;
 BEGIN
-	FOR r IN --petla przydzielania po wszystkich userach
-		(SELECT user_id FROM users)
-	LOOP
-		PERFORM distribute_stocks_to(r);
-	END LOOP;
+	PERFORM distribute_stocks(user_id) FROM users;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -67,13 +78,13 @@ AS $$ SELECT stock_id FROM stock WHERE stock_id != 0; $$ LANGUAGE SQL;
 
 
 
-CREATE OR REPLACE FUNCTION nowy_uzytkownik(new_password varchar(15)) RETURNS integer AS $$
+CREATE OR REPLACE FUNCTION create_user(password varchar(15)) RETURNS integer AS $$
 DECLARE
-	nowy_id integer := nextval('user_id_seq');
+	user_id integer := nextval('user_id_seq');
 BEGIN
-	INSERT INTO users(user_id, password) VALUES(nowy_id, new_password);
-	PERFORM distribute_stocks_to(nowy_id);
-	RETURN nowy_id;
+	INSERT INTO users(user_id, password) VALUES(user_id, password);
+	PERFORM distribute_stocks_to(user_id);
+	RETURN user_id;
 END;
 $$ LANGUAGE plpgsql;
 
