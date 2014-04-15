@@ -128,8 +128,9 @@ BEGIN
 		--Wypelnij zawartosc zmiennej "zlecenie"
 		-- We must do it each iteration because of concurrent nature of db computation.
 		SELECT sell_order.* INTO zlecenie FROM sell_order JOIN stock USING(stock_id)
-			WHERE stock_id = rekord.stock_id AND limit1 >= rekord.limit1 AND amount > 0 AND 
-				  available_since <= CURRENT_TIMESTAMP AND active 
+			WHERE stock_id = rekord.stock_id AND limit1 >= rekord.limit1 AND 
+				  amount > 0 AND available_since <= CURRENT_TIMESTAMP AND 
+				  active AND matching_order.user_id != base_order.user_id 
 			ORDER BY limit1, available_since LIMIT 1;
 
 		IF zlecenie.order_id IS NULL THEN
@@ -148,34 +149,33 @@ $$ LANGUAGE plpgsql;
 
 
 
-CREATE OR REPLACE FUNCTION process_sell_order(rekord sell_order) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION process_sell_order(base_order sell_order) RETURNS VOID AS $$
 DECLARE
-	zlecenie buy_order%rowtype;  --"placeholder" na zlecenie, z ktorym bedzie parowane to nasze
-	ile INTEGER;
+	matching_order buy_order%rowtype;
 BEGIN
-	ile := rekord.amount;
 	LOOP
-		--RAISE NOTICE 's looping at%',ile;
-		IF ile = 0 THEN 
+		IF base_order.amount = 0 THEN 
 			EXIT;
 		END IF;
 		
-		--Wypelnij zawartosc zmiennej "zlecenie"
-		-- We must do it each iteration because of concurrent nature of db computation.
-		SELECT * INTO zlecenie FROM buy_order 
-			WHERE stock_id = rekord.stock_id AND limit1 >= rekord.limit1 AND 
-				  amount > 0 AND available_since <= CURRENT_TIMESTAMP AND active
-			ORDER BY limit1 DESC, available_since ASC LIMIT 1;
+		-- Pick matching order for reduction.
+		SELECT * INTO matching_order FROM buy_order JOIN stock USING(stock_id)
+		WHERE stock_id = base_order.stock_id AND limit1 >= base_order.limit1 AND 
+			  amount > 0 AND available_since <= CURRENT_TIMESTAMP AND active AND
+			  matching_order.user_id != base_order.user_id
+		ORDER BY limit1 DESC, available_since ASC 
+		LIMIT 1;
 
-		IF zlecenie.order_id IS NULL THEN
+		-- No matching order found.
+		IF matching_order.order_id IS NULL THEN
 			EXIT;
 		END IF;
 
 		--Quick and dirty fix --- for what ???
-		SELECT * INTO rekord FROM sell_order 
-			WHERE order_id=rekord.order_id;		
+		SELECT * INTO base_order FROM sell_order 
+		WHERE order_id = base_order.order_id;		
 
-		ile := ile - przenies_dobra(zlecenie, rekord, false);
+		base_order.amount := base_order.amount - przenies_dobra(matching_order, base_order, false);
 	END LOOP;
 END
 $$ LANGUAGE plpgsql;
