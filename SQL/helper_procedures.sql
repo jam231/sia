@@ -66,82 +66,75 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION przenies_dobra(zl_kupna buy_order, zl_sprzedazy sell_order, kupno boolean) RETURNS INTEGER AS $$
+CREATE OR REPLACE FUNCTION transfer_resources(buy buy_order, sell sell_order, is_purchase boolean) RETURNS INTEGER AS $$
 DECLARE 
-	cena integer;
-	ile  integer;
+	price 				integer;
+	shares_count	   integer;
 BEGIN
-	ile := LEAST(zl_kupna.amount, zl_sprzedazy.amount);
+	shares_count := LEAST(buy.amount, sell.amount);
 	
-	IF kupno=true THEN --najpierw byla sprzedaz. dopasowalo sie kupno
-		cena := zl_sprzedazy.limit1;
+	IF is_purchase = true THEN 
+		price := sell.limit1;
 	ELSE
-		cena := zl_kupna.limit1;
+		price := buy.limit1;
 	END IF;
 	
-	--UWAGA, nie zabieramy nic nikomu, bo to robi sie juz przy momencie wstawienia zlecenia
-	UPDATE owned_stock SET amount=amount+ile*cena WHERE user_id=zl_sprzedazy.user_id AND stock_id=1; --DODAJ KASE SPRZEDAJACEMU
-	UPDATE owned_stock SET amount=amount+ile WHERE user_id=zl_kupna.user_id AND stock_id=zl_kupna.stock_id;        --DODAJ ZASOB KUPUJACEMU
-
-	UPDATE owned_stock SET amount=amount+ile*(zl_kupna.limit1-cena) WHERE user_id=zl_kupna.user_id AND stock_id=1; --kupujacemu oddaj ew. pieniadze
+	--- Resource reservation is done on inserting the orders.
+	UPDATE owned_stock SET amount = amount + shares_count * price 
+	WHERE user_id = sell.user_id AND stock_id = 1; 					-- Give seller the money
 	
-	--RAISE NOTICE 'ile = % old_cached_ilosc = % old_ilosc = %',ile,zl_kupna.ilosc,(SELECT ilosc FROM buy_order WHERE order_id=zl_kupna.order_id); 
-	UPDATE buy_order SET amount=amount-ile WHERE order_id=zl_kupna.order_id;
-	UPDATE sell_order SET amount=amount-ile WHERE order_id=zl_sprzedazy.order_id;
+	UPDATE owned_stock SET amount = amount + shares_count 
+	WHERE user_id = buy.user_id AND stock_id = buy.stock_id;        -- Give buyer the shares
+
+	UPDATE owned_stock SET amount = amount + shares_count * (buy.limit1 - price) 
+	WHERE user_id = buy.user_id AND stock_id = 1; 					-- Give back part of the frozen money to the buyer.
+	
+	UPDATE buy_order SET amount = amount - shares_count WHERE order_id = buy.order_id;
+	UPDATE sell_order SET amount = amount - shares_count WHERE order_id = sell.order_id;
 
 	
-	PERFORM pg_notify('ch_order_change', zl_kupna.user_id || '|' || zl_kupna.order_id || '|' || ile || '|' || cena);
-	PERFORM pg_notify('ch_order_change', zl_sprzedazy.user_id || '|' || zl_sprzedazy.order_id || '|' || ile  || '|' || cena);
+	PERFORM pg_notify('ch_order_change', buy.user_id || '|' || buy.order_id || '|' || shares_count || '|' || price);
+	PERFORM pg_notify('ch_order_change', sell.user_id || '|' || sell.order_id || '|' || shares_count || '|' || price);
 
-	INSERT INTO transaction(buyer_id,seller_id,stock_id,amount,price) VALUES(zl_kupna.user_id, zl_sprzedazy.user_id, zl_kupna.stock_id, ile, cena);
+	INSERT INTO transaction(buyer_id,seller_id,stock_id,amount,price) VALUES(buy.user_id, sell.user_id, buy.stock_id, shares_count, price);
 
-	IF zl_kupna.amount-ile = 0 THEN
-		PERFORM pg_notify('ch_order_completed', zl_kupna.user_id || '|' || zl_kupna.order_id);
+	IF buy.amount = shares_count THEN
+		PERFORM pg_notify('ch_order_completed', buy.user_id || '|' || buy.order_id);
 	END IF;
 
-	IF zl_sprzedazy.amount-ile = 0 THEN
-		PERFORM pg_notify('ch_order_completed', zl_sprzedazy.user_id || '|' || zl_sprzedazy.order_id);
+	IF sell.amount = shares_count THEN
+		PERFORM pg_notify('ch_order_completed', sell.user_id || '|' || sell.order_id);
 	END IF;
-	--RAISE NOTICE 'sold %', ile;
-	RETURN ile;
+
+	RETURN shares_count;
 END
 $$ LANGUAGE plpgsql;
 
---Aby zrealizowac wszystkie zlecenia z kolejki, tj. uruchomic sesje:
---PERFORM wykonaj_zlecenie_kupna(buy_order.*) FROM buy_order ORDER BY wazne_od ASC;
---na danym zasobie:
---PERFORM wykonaj_zlecenie_kupna(buy_order.*) FROM buy_order WHERE stock_id=[X] ORDER BY wazne_od ASC;
-
-CREATE OR REPLACE FUNCTION process_buy_order(rekord buy_order) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION process_buy_order(base_order buy_order) RETURNS VOID AS $$
 DECLARE
-	zlecenie sell_order%rowtype; --"placeholder" na zlecenie, z ktorym bedzie parowane to nasze
-	ile INTEGER;
-BEGIN
-	ile := rekord.amount;
-	
+	matching_order sell_order%rowtype;
+BEGIN	
 	LOOP
-		--RAISE NOTICE 'k looping at % stock is % (%)',ile, rekord.stock_id, (SELECT COUNT(*) FROM sell_order WHERE stock_id=rekord.stock_id AND limit1<=rekord.limit1 AND ilosc>0);
-		IF ile = 0 THEN 
+		IF base_order.amount = 0 THEN 
 			EXIT;
 		END IF;
-		
-		--Wypelnij zawartosc zmiennej "zlecenie"
-		-- We must do it each iteration because of concurrent nature of db computation.
-		SELECT sell_order.* INTO zlecenie FROM sell_order JOIN stock USING(stock_id)
-			WHERE stock_id = rekord.stock_id AND limit1 >= rekord.limit1 AND 
+
+		SELECT sell_order.* INTO matching_order FROM sell_order JOIN stock USING(stock_id)
+			WHERE stock_id = base_order.stock_id AND limit1 >= base_order.limit1 AND 
 				  amount > 0 AND available_since <= CURRENT_TIMESTAMP AND 
-				  active AND matching_order.user_id != base_order.user_id 
+				  active AND user_id != base_order.user_id 
 			ORDER BY limit1, available_since LIMIT 1;
 
-		IF zlecenie.order_id IS NULL THEN
+		-- Stop if there is no matching orders.
+		IF matching_order.order_id IS NULL THEN
 			EXIT;
 		END IF;
 
 		--Quick and dirty fix --- for what ???
-		SELECT * INTO rekord FROM buy_order 
-			WHERE order_id=rekord.order_id;			
+		SELECT * INTO base_order FROM buy_order 
+			WHERE order_id = base_order.order_id;			
 		
-		ile := ile - przenies_dobra(rekord, zlecenie, true);
+		base_order.amount := base_order.amount - transfer_resources(base_order, matching_order, true);
 		
 	END LOOP;
 END
@@ -157,12 +150,11 @@ BEGIN
 		IF base_order.amount = 0 THEN 
 			EXIT;
 		END IF;
-		
 		-- Pick matching order for reduction.
-		SELECT * INTO matching_order FROM buy_order JOIN stock USING(stock_id)
+		SELECT buy_order.* INTO matching_order FROM buy_order JOIN stock USING(stock_id)
 		WHERE stock_id = base_order.stock_id AND limit1 >= base_order.limit1 AND 
 			  amount > 0 AND available_since <= CURRENT_TIMESTAMP AND active AND
-			  matching_order.user_id != base_order.user_id
+			  user_id != base_order.user_id
 		ORDER BY limit1 DESC, available_since ASC 
 		LIMIT 1;
 
@@ -175,7 +167,7 @@ BEGIN
 		SELECT * INTO base_order FROM sell_order 
 		WHERE order_id = base_order.order_id;		
 
-		base_order.amount := base_order.amount - przenies_dobra(matching_order, base_order, false);
+		base_order.amount := base_order.amount - transfer_resources(matching_order, base_order, false);
 	END LOOP;
 END
 $$ LANGUAGE plpgsql;
@@ -251,13 +243,13 @@ $$ LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION best_buy_metric(in stock_id integer, out bigint, out int) AS $$ 
-	SELECT SUM(amount), limit1 FROM buy_order WHERE buy_order.stock_id = stock_id AND amount > 0 
+	SELECT SUM(amount) as volume, limit1 FROM buy_order WHERE buy_order.stock_id = stock_id AND amount > 0 
 	GROUP BY limit1 ORDER BY 2 DESC 
 	LIMIT 1 
 $$ LANGUAGE SQL;
 
 CREATE OR REPLACE FUNCTION best_sell_metric(in stock_id integer, out bigint, out int) AS $$ 
-    SELECT SUM(amount),limit1 FROM sell_order WHERE sell_order.stock_id = stock_id AND amount > 0 
+    SELECT SUM(amount) as volume,limit1 FROM sell_order WHERE sell_order.stock_id = stock_id AND amount > 0 
     GROUP BY limit1 ORDER BY 2 ASC 
     LIMIT 1 
 $$ LANGUAGE SQL;
