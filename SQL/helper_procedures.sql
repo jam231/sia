@@ -312,9 +312,9 @@ BEGIN
 
 	IF best_sell_metric.volume IS NULL and best_sell_metric.limit1 IS NULL THEN
 		-- No best order
-		PERFORM pg_notify('ch_best_order_metric_change', 1 || '|' || stock_id);
+		PERFORM pg_notify('ch_best_order_metric_change', 2 || '|' || stock_id);
 	ELSE
-		PERFORM pg_notify('ch_best_order_metric_change', 1 || '|' || stock_id || '|' || best_sell_metric.volume || '|' || best_sell_metric.limit1);
+		PERFORM pg_notify('ch_best_order_metric_change', 2 || '|' || stock_id || '|' || best_sell_metric.volume || '|' || best_sell_metric.limit1);
 	END IF;
 END;
 $$ LANGUAGE plpgsql;

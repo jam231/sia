@@ -6,8 +6,6 @@ BEGIN
 	-- return money to the buyer
 	UPDATE owned_stock SET amount=amount+old.amount*old.limit1 WHERE user_id=old.user_id AND stock_id=1;
 
-	PERFORM notify_best_buy_metric(old.stock_id);
-
 	RETURN old;
 END
 $$ LANGUAGE plpgsql;
@@ -15,13 +13,21 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER bo_on_delete BEFORE DELETE on buy_order
 	FOR EACH ROW EXECUTE PROCEDURE buy_order_on_delete();
 
+CREATE OR REPLACE FUNCTION buy_order_after_delete() RETURNS TRIGGER AS $$
+BEGIN
+	PERFORM notify_best_buy_metric(old.stock_id);
+
+	RETURN old;
+END
+$$ LANGUAGE plpgsql;
 	
+CREATE TRIGGER bo_after_delete AFTER DELETE on buy_order
+	FOR EACH ROW EXECUTE PROCEDURE buy_order_after_delete();
+
 CREATE OR REPLACE FUNCTION sell_order_on_delete() RETURNS TRIGGER AS $$
 BEGIN
 	--return shares to the seller
 	UPDATE owned_stock SET amount=amount+old.amount WHERE user_id=old.user_id AND stock_id=old.stock_id;
-	
-	PERFORM notify_best_sell_metric(old.stock_id);
 
 	RETURN old;
 END
@@ -29,6 +35,17 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER so_on_delete BEFORE DELETE on sell_order
 	FOR EACH ROW EXECUTE PROCEDURE sell_order_on_delete();
+
+
+CREATE OR REPLACE FUNCTION sell_order_after_delete() RETURNS TRIGGER AS $$
+BEGIN
+	PERFORM notify_best_sell_metric(old.stock_id);
+	RETURN old;
+END
+$$ LANGUAGE plpgsql;
+	
+CREATE TRIGGER so_after_delete AFTER DELETE on sell_order
+	FOR EACH ROW EXECUTE PROCEDURE sell_order_after_delete();
 	
 --				 INSERT TRIGGERS
 
@@ -90,9 +107,9 @@ CREATE OR REPLACE FUNCTION buy_order_on_update() RETURNS TRIGGER AS $$
 BEGIN
 	IF new.amount=0 THEN --if order is completed, i.e. have amount = 0 then delete it from buy_order table
 		DELETE FROM buy_order WHERE order_id=new.order_id;
+	ELSE
+		PERFORM notify_best_buy_metric(new.stock_id);
 	END IF;
-
-	PERFORM notify_best_buy_metric(new.stock_id);
 	
 	RETURN new;
 END
@@ -106,9 +123,9 @@ CREATE OR REPLACE FUNCTION sell_order_on_update() RETURNS TRIGGER AS $$
 BEGIN
 	IF new.amount=0 THEN --if order is completed, i.e. have amount = 0 then delete it from buy_order table
 		DELETE FROM sell_order WHERE order_id=new.order_id;
+	ELSE
+		PERFORM notify_best_sell_metric(new.stock_id);
 	END IF;
-		
-	PERFORM notify_best_sell_metric(new.stock_id);
 
 	RETURN new;
 END
