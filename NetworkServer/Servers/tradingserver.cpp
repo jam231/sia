@@ -15,7 +15,7 @@
 #include <../NetworkProtocol/Responses/orderacceptedmsg.h>
 #include <../NetworkProtocol/Responses/listofordersmsg.h>
 #include <../NetworkProtocol/Responses/listofstocksmsg.h>
-
+#include <../NetworkProtocol/Responses/shownobestordermsg.h>
 
 #include <../NetworkProtocol/networkprotocol_utilities.h>
 
@@ -510,18 +510,40 @@ void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
 void TradingServer::connectDataHub(const AbstractDataHub& hub)
 {
     connect(&hub, SIGNAL(orderChange(NetworkProtocol::DTO::Types::UserIdType,
-                                               NetworkProtocol::DTO::Types::OrderIdType,
-                                               NetworkProtocol::DTO::Types::AmountType,
-                                               NetworkProtocol::DTO::Types::PriceType)),
+                                     NetworkProtocol::DTO::Types::OrderIdType,
+                                     NetworkProtocol::DTO::Types::AmountType,
+                                     NetworkProtocol::DTO::Types::PriceType)),
             this, SLOT(orderChange(NetworkProtocol::DTO::Types::UserIdType,
-                                        NetworkProtocol::DTO::Types::OrderIdType,
-                                        NetworkProtocol::DTO::Types::AmountType,
-                                        NetworkProtocol::DTO::Types::PriceType)));
+                                   NetworkProtocol::DTO::Types::OrderIdType,
+                                   NetworkProtocol::DTO::Types::AmountType,
+                                   NetworkProtocol::DTO::Types::PriceType)));
 
     connect(&hub, SIGNAL(orderCompleted(NetworkProtocol::DTO::Types::UserIdType,
                                         NetworkProtocol::DTO::Types::OrderIdType)),
             this, SLOT(orderCompleted(NetworkProtocol::DTO::Types::UserIdType,
                                       NetworkProtocol::DTO::Types::OrderIdType)));
+
+    connect(&hub, SIGNAL(lastTransactionChange(NetworkProtocol::DTO::Types::StockIdType,
+                                               NetworkProtocol::DTO::Types::AmountType,
+                                               NetworkProtocol::DTO::Types::PriceType, QString)),
+            this, SLOT(newLastTransaction(NetworkProtocol::DTO::Types::StockIdType,
+                                          NetworkProtocol::DTO::Types::AmountType,
+                                          NetworkProtocol::DTO::Types::PriceType, QString)));
+
+    connect(&hub, SIGNAL(bestOrderChange(NetworkProtocol::DTO::Types::Order::OrderType,
+                                         NetworkProtocol::DTO::Types::StockIdType,
+                                         NetworkProtocol::DTO::Types::AmountType,
+                                         NetworkProtocol::DTO::Types::PriceType)),
+            this, SLOT(newBestOrder(NetworkProtocol::DTO::Types::Order::OrderType,
+                                    NetworkProtocol::DTO::Types::StockIdType,
+                                    NetworkProtocol::DTO::Types::AmountType,
+                                    NetworkProtocol::DTO::Types::PriceType)));
+
+    connect(&hub, SIGNAL(noBestOrder(NetworkProtocol::DTO::Types::Order::OrderType,
+                                     NetworkProtocol::DTO::Types::StockIdType)),
+            this, SLOT(noBestOrder(NetworkProtocol::DTO::Types::Order::OrderType,
+                                   NetworkProtocol::DTO::Types::StockIdType)));
+
 }
 
 void TradingServer::orderCompleted(UserIdType userId, OrderIdType orderId)
@@ -547,7 +569,7 @@ void TradingServer::orderCompleted(UserIdType userId, OrderIdType orderId)
 }
 
 void TradingServer::orderChange(UserIdType userId, OrderIdType orderId,
-                                     AmountType amount, PriceType price)
+                                AmountType amount, PriceType price)
 {
     auto logger = _loggerFactory->createLoggingSession();
 
@@ -571,35 +593,49 @@ void TradingServer::orderChange(UserIdType userId, OrderIdType orderId,
     }
 }
 
-void TradingServer::newLastTransaction(LastTransaction* lastTransaction)
+void TradingServer::newLastTransaction(StockIdType, AmountType amount, PriceType price, QString dateTime)
 {
     auto logger = _loggerFactory->createLoggingSession();
 
     LOG_TRACE(logger, QString("New last transaction - amount(%1), price(%2), date(%3)")
-                      .arg(lastTransaction->getAmount().value)
-                      .arg(lastTransaction->getPrice().value)
-                      .arg(lastTransaction->getDateTime()));
+                      .arg(amount.value)
+                      .arg(price.value)
+                      .arg(dateTime));
 
-    _lastTransaction.reset(lastTransaction);
+    _lastTransaction.reset(new LastTransaction(logger, amount, price, dateTime));
 }
 
-void TradingServer::newBestBuyOrder(BestOrder* bestBuy)
+void TradingServer::newBestOrder(Types::Order::OrderType orderType, StockIdType stockId,
+                                 AmountType amount, PriceType price)
 {
     auto logger = _loggerFactory->createLoggingSession();
 
-    assert(bestBuy->getOrderType() == Order::BUY);
+    LOG_TRACE(logger, QString("New best order - type(%1), stockId(%2), amount(%3), price(%4).")
+                      .arg(orderType)
+                      .arg(stockId.value)
+                      .arg(amount.value)
+                      .arg(price.value));
 
-    LOG_TRACE(logger, QString("New best buy order - stockId(%1), amount(%2), price(%3).")
-                      .arg(bestBuy->getStockId().value)
-                      .arg(bestBuy->getAmount().value)
-                      .arg(bestBuy->getPrice().value));
+    auto bestOrder = shared_ptr<BestOrder>(new BestOrder(logger, orderType, stockId, amount, price));
 
-    auto stockId = bestBuy->getStockId();
-    _bestBuyOrder[stockId].reset(bestBuy);
+    if(orderType == Types::Order::BUY)
+    {
+        _bestBuyOrder[stockId] = bestOrder;
+    }
+    else if( orderType == Types::Order::SELL)
+    {
+        _bestSellOrder[stockId] = bestOrder;
+    }
+    else
+    {
+        LOG_WARNING(logger, QString("Unrecognized order type(%1).")
+                            .arg(orderType));
+        return;
+    }
 
     // Broadcast it to subscribers
     auto subscribers = _stock_subscribers[stockId];
-    auto show_best_order = Responses::ShowBestOrder(*bestBuy);
+    auto show_best_order = Responses::ShowBestOrder(*bestOrder);
 
     for(auto user_id = subscribers.begin(); user_id != subscribers.end(); user_id++)
     {
@@ -610,23 +646,33 @@ void TradingServer::newBestBuyOrder(BestOrder* bestBuy)
     }
 }
 
-void TradingServer::newBestSellOrder(BestOrder* bestSell)
+
+void TradingServer::noBestOrder(Types::Order::OrderType orderType, StockIdType stockId)
 {
     auto logger = _loggerFactory->createLoggingSession();
 
-    assert(bestSell->getOrderType() == Order::SELL);
+    LOG_TRACE(logger, QString("No best order - type(%1), stockId(%2).")
+                      .arg(orderType)
+                      .arg(stockId.value));
 
-    LOG_TRACE(logger, QString("New best sell order - stockId(%1), amount(%2), price(%3).")
-                      .arg(bestSell->getStockId().value)
-                      .arg(bestSell->getAmount().value)
-                      .arg(bestSell->getPrice().value));
-
-    auto stockId = bestSell->getStockId();
-    _bestSellOrder[stockId].reset(bestSell);
+    if(orderType == Types::Order::BUY)
+    {
+        _bestBuyOrder[stockId].reset();
+    }
+    else if(orderType == Types::Order::SELL)
+    {
+        _bestSellOrder[stockId].reset();
+    }
+    else
+    {
+        LOG_WARNING(logger, QString("Unrecognized order type(%1).")
+                            .arg(orderType));
+        return;
+    }
 
     // Broadcast it to subscribers
     auto subscribers = _stock_subscribers[stockId];
-    auto show_best_order = Responses::ShowBestOrder(*bestSell);
+    auto show_best_order = Responses::ShowNoBestOrder(logger, orderType, stockId);
 
     for(auto user_id = subscribers.begin(); user_id != subscribers.end(); user_id++)
     {

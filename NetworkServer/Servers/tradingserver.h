@@ -111,9 +111,18 @@ public slots:
                     NetworkProtocol::DTO::Types::AmountType,
                     NetworkProtocol::DTO::Types::PriceType);
 
-   void newLastTransaction(NetworkProtocol::DTO::LastTransaction*);
-   void newBestBuyOrder(NetworkProtocol::DTO::BestOrder*);
-   void newBestSellOrder(NetworkProtocol::DTO::BestOrder*);
+   void newLastTransaction(NetworkProtocol::DTO::Types::StockIdType,
+                           NetworkProtocol::DTO::Types::AmountType,
+                           NetworkProtocol::DTO::Types::PriceType,
+                           QString dateTime);
+
+   void newBestOrder(NetworkProtocol::DTO::Types::Order::OrderType,
+                     NetworkProtocol::DTO::Types::StockIdType,
+                     NetworkProtocol::DTO::Types::AmountType,
+                     NetworkProtocol::DTO::Types::PriceType);
+
+   void noBestOrder(NetworkProtocol::DTO::Types::Order::OrderType,
+                    NetworkProtocol::DTO::Types::StockIdType);
 };
 
 
