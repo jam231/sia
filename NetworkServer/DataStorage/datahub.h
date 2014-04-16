@@ -9,12 +9,14 @@
 #include <logger.h>
 
 #include <../NetworkProtocol/DataTransferObjects/types.h>
+#include <../NetworkProtocol/DataTransferObjects/bestorder.h>
 
 Q_DECLARE_METATYPE(NetworkProtocol::DTO::Types::UserIdType)
 Q_DECLARE_METATYPE(NetworkProtocol::DTO::Types::OrderIdType)
 Q_DECLARE_METATYPE(NetworkProtocol::DTO::Types::AmountType)
 Q_DECLARE_METATYPE(NetworkProtocol::DTO::Types::PriceType)
-
+Q_DECLARE_METATYPE(NetworkProtocol::DTO::Types::StockIdType)
+Q_DECLARE_METATYPE(NetworkProtocol::DTO::Types::Order::OrderType)
 /*
  *  Class for handling notifications.
  */
@@ -33,10 +35,13 @@ signals:
     void orderCompleted(NetworkProtocol::DTO::Types::UserIdType orderOwner,
                         NetworkProtocol::DTO::Types::OrderIdType);
 
-    void bestOrderChange(NetworkProtocol::DTO::Types::StockIdType,
-                         NetworkProtocol::DTO::Types::Order::OrderType,
+    void bestOrderChange(NetworkProtocol::DTO::Types::Order::OrderType,
+                         NetworkProtocol::DTO::Types::StockIdType,
                          NetworkProtocol::DTO::Types::AmountType,
                          NetworkProtocol::DTO::Types::PriceType);
+
+    void noBestOrder(NetworkProtocol::DTO::Types::Order::OrderType,
+                     NetworkProtocol::DTO::Types::StockIdType);
 
     void lastTransactionChange(NetworkProtocol::DTO::Types::StockIdType,
                                NetworkProtocol::DTO::Types::AmountType,

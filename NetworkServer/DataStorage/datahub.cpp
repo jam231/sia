@@ -9,7 +9,7 @@ using namespace Types;
 
 const QString PostgreDataHub::ORDER_COMPLETION_CHANNEL = "ch_order_completed";
 const QString PostgreDataHub::ORDER_CHANGE_CHANNEL = "ch_order_change";
-const QString PostgreDataHub::BEST_ORDER_CHANGE_CHANNEL = "ch_best_order_change";
+const QString PostgreDataHub::BEST_ORDER_CHANGE_CHANNEL = "ch_best_order_metric_change";
 const QString PostgreDataHub::LAST_TRANSACTION_CHANGE_CHANNEL = "ch_last_transaction_change";
 
 PostgreDataHub::PostgreDataHub(shared_ptr<AbstractLoggerFactory> loggerFactory,
@@ -71,9 +71,11 @@ PostgreDataHub::PostgreDataHub(shared_ptr<AbstractLoggerFactory> loggerFactory,
     LOG_TRACE(logger, "Registering qmetatypes.");
 
     qRegisterMetaType<NetworkProtocol::DTO::Types::UserIdType>();
+    qRegisterMetaType<NetworkProtocol::DTO::Types::StockIdType>();
     qRegisterMetaType<NetworkProtocol::DTO::Types::OrderIdType>();
     qRegisterMetaType<NetworkProtocol::DTO::Types::AmountType>();
     qRegisterMetaType<NetworkProtocol::DTO::Types::PriceType>();
+    qRegisterMetaType<NetworkProtocol::DTO::Types::Order::OrderType>();
 }
 
 void PostgreDataHub::establishConnection()
@@ -194,12 +196,19 @@ void PostgreDataHub::handleBestOrderChange(const QVariant& payload)
 
     if(data.size() == 4)
     {
-        Types::StockIdType stockId = Types::StockIdType(data[0].toInt());
-        Types::Order::OrderType orderType = Order::toOrderType(data[1].toInt());
+        Types::Order::OrderType orderType = Order::toOrderType(data[0].toInt());
+        Types::StockIdType stockId = Types::StockIdType(data[1].toInt());
         Types::AmountType amount = Types::AmountType(data[2].toInt());
         Types::PriceType price = Types::PriceType(data[3].toInt());
 
-        emit bestOrderChange(stockId, orderType, amount, price);
+        emit bestOrderChange(orderType, stockId, amount, price);
+    }
+    else if(data.size() == 2)
+    {
+        Types::Order::OrderType orderType = Order::toOrderType(data[0].toInt());
+        Types::StockIdType stockId = Types::StockIdType(data[1].toInt());
+
+        emit noBestOrder(orderType, stockId);
     }
     else
     {
@@ -250,6 +259,10 @@ void PostgreDataHub::notificationHandler(const QString& channelName,
     else if(BEST_ORDER_CHANGE_CHANNEL == channelName)
     {
         handleBestOrderChange(payload);
+    }
+    else if(LAST_TRANSACTION_CHANGE_CHANNEL == channelName)
+    {
+        handleLastTransactionChange(payload);
     }
     else
     {
