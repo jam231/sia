@@ -105,7 +105,7 @@ BEGIN
 	IF sell.amount = shares_count THEN
 		PERFORM pg_notify('ch_order_completed', sell.user_id || '|' || sell.order_id);
 	END IF;
-
+	
 	RETURN shares_count;
 END
 $$ LANGUAGE plpgsql;
@@ -242,14 +242,14 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION best_buy_metric(in stock_id integer, out bigint, out int) AS $$ 
+CREATE OR REPLACE FUNCTION best_buy_metric(stock_id integer) RETURNS TABLE(volume bigint, limit1 int) AS $$ 
 	SELECT SUM(amount) as volume, limit1 FROM buy_order WHERE buy_order.stock_id = stock_id AND amount > 0 
 	GROUP BY limit1 ORDER BY 2 DESC 
 	LIMIT 1 
 $$ LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION best_sell_metric(in stock_id integer, out bigint, out int) AS $$ 
-    SELECT SUM(amount) as volume,limit1 FROM sell_order WHERE sell_order.stock_id = stock_id AND amount > 0 
+CREATE OR REPLACE FUNCTION best_sell_metric(stock_id integer) RETURNS TABLE(volume bigint, limit1 int) AS $$ 
+    SELECT SUM(amount) as volume, limit1 FROM sell_order WHERE sell_order.stock_id = stock_id AND amount > 0 
     GROUP BY limit1 ORDER BY 2 ASC 
     LIMIT 1 
 $$ LANGUAGE SQL;
@@ -286,3 +286,35 @@ CREATE OR REPLACE FUNCTION user_orders(user_id integer) RETURNS TABLE(type integ
 	UNION
 	SELECT 2, order_id, stock_id, amount, limit1 FROM sell_order WHERE sell_order.user_id = user_id;
 $$ LANGUAGE SQL;
+
+
+CREATE OR REPLACE FUNCTION notify_best_buy_metric(stock_id integer) RETURNS VOID AS $$
+DECLARE
+	best_buy_metric RECORD;
+BEGIN 
+	SELECT * INTO best_buy_metric FROM best_buy_metric(stock_id);
+
+	IF best_buy_metric.volume IS NULL and best_buy_metric.limit1 IS NULL THEN
+		-- No best order
+		PERFORM pg_notify('ch_best_order_metric_change', 1 || '|' || stock_id);
+	ELSE
+		PERFORM pg_notify('ch_best_order_metric_change', 1 || '|' || stock_id || '|' || best_buy_metric.volume || '|' || best_buy_metric.limit1);
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION notify_best_sell_metric(stock_id integer) RETURNS VOID AS $$
+DECLARE
+	best_sell_metric RECORD;
+BEGIN 
+	SELECT * INTO best_sell_metric FROM best_sell_metric(stock_id);
+
+	IF best_sell_metric.volume IS NULL and best_sell_metric.limit1 IS NULL THEN
+		-- No best order
+		PERFORM pg_notify('ch_best_order_metric_change', 1 || '|' || stock_id);
+	ELSE
+		PERFORM pg_notify('ch_best_order_metric_change', 1 || '|' || stock_id || '|' || best_sell_metric.volume || '|' || best_sell_metric.limit1);
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
