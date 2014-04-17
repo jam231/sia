@@ -68,8 +68,8 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION transfer_resources(buy buy_order, sell sell_order, is_purchase boolean) RETURNS INTEGER AS $$
 DECLARE 
-	price 				integer;
-	shares_count	   integer;
+	price				integer;
+	shares_count		integer;
 BEGIN
 	shares_count := LEAST(buy.amount, sell.amount);
 	
@@ -242,31 +242,31 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION best_buy_metric(stock_id integer) RETURNS TABLE(volume bigint, limit1 int) AS $$ 
-	SELECT SUM(amount) as volume, limit1 FROM buy_order WHERE buy_order.stock_id = stock_id AND amount > 0 
+CREATE OR REPLACE FUNCTION best_buy_metric(_stock_id integer) RETURNS TABLE(volume bigint, limit1 int) AS $$ 
+	SELECT SUM(amount) as volume, limit1 FROM buy_order WHERE buy_order.stock_id = _stock_id AND amount > 0 
 	GROUP BY limit1 ORDER BY 2 DESC 
 	LIMIT 1 
 $$ LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION best_sell_metric(stock_id integer) RETURNS TABLE(volume bigint, limit1 int) AS $$ 
-    SELECT SUM(amount) as volume, limit1 FROM sell_order WHERE sell_order.stock_id = stock_id AND amount > 0 
+CREATE OR REPLACE FUNCTION best_sell_metric(_stock_id integer) RETURNS TABLE(volume bigint, limit1 int) AS $$ 
+    SELECT SUM(amount) as volume, limit1 FROM sell_order WHERE sell_order.stock_id = _stock_id AND amount > 0 
     GROUP BY limit1 ORDER BY 2 ASC 
     LIMIT 1 
 $$ LANGUAGE SQL;
 
 
 
-CREATE OR REPLACE FUNCTION last_transaction_for_stock(in stock_id integer, out integer, out integer, out timestamp without time zone) AS $$ 
-	SELECT price, amount, time FROM transaction WHERE transaction.stock_id = stock_id 
+CREATE OR REPLACE FUNCTION last_transaction_for_stock(in _stock_id integer, out integer, out integer, out timestamp without time zone) AS $$ 
+	SELECT price, amount, time FROM transaction WHERE transaction.stock_id = _stock_id 
     ORDER BY time ASC 
     LIMIT 1
 $$ LANGUAGE SQL;
 
 
 
-CREATE OR REPLACE FUNCTION user_resources(user_id integer) RETURNS TABLE(stock_id integer, amount integer) AS $$ 
+CREATE OR REPLACE FUNCTION user_resources(_user_id integer) RETURNS TABLE(stock_id integer, amount integer) AS $$ 
 	SELECT stock_id, amount FROM owned_stock 
-	WHERE owned_stock.user_id = user_id AND (amount > 0 OR stock_id = 1) 
+	WHERE owned_stock.user_id = _user_id AND (amount > 0 OR stock_id = 1) 
 $$ LANGUAGE SQL;
 
 
@@ -276,13 +276,13 @@ CREATE OR REPLACE FUNCTION user_transactions(user_id integer, how_many integer) 
 	LIMIT how_many;
 $$ LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION transactions_for_stock(stock_id integer) RETURNS SETOF transaction AS $$
-	SELECT * from transaction WHERE transaction.stock_id = stock_id 
+CREATE OR REPLACE FUNCTION transactions_for_stock(_stock_id integer) RETURNS SETOF transaction AS $$
+	SELECT * from transaction WHERE transaction.stock_id = _stock_id  
 	ORDER BY time DESC;
 $$ LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION user_orders(user_id integer) RETURNS TABLE(type integer, order_id integer, stock_id integer, amount integer, limit1 integer) AS $$ 
-	SELECT 1, order_id, stock_id, amount, limit1 FROM buy_order WHERE buy_order.user_id = user_id
+CREATE OR REPLACE FUNCTION user_orders(_user_id integer) RETURNS TABLE(type integer, order_id integer, stock_id integer, amount integer, limit1 integer) AS $$ 
+	SELECT 1, order_id, stock_id, amount, limit1 FROM buy_order WHERE buy_order.user_id = _user_id
 	UNION
 	SELECT 2, order_id, stock_id, amount, limit1 FROM sell_order WHERE sell_order.user_id = user_id;
 $$ LANGUAGE SQL;
