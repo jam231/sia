@@ -190,7 +190,7 @@ OrderIdType PostgreDataSession::sellStock(UserIdType userId, StockIdType stockId
 
     query.setForwardOnly(true);
 
-    query.exec("SELECT * FROM zlec_sprzedaz(" % QString::number(userId.value) % ','
+    query.exec("SELECT * FROM create_sell_order(" % QString::number(userId.value) % ','
                % QString::number(stockId.value) % ',' % QString::number(amount.value)
                % ',' % QString::number(price.value) % ");");
 
@@ -222,7 +222,7 @@ OrderIdType PostgreDataSession::buyStock(UserIdType userId, StockIdType stockId,
 
     query.setForwardOnly(true);
 
-    query.exec("SELECT * FROM zlec_kupno(" % QString::number(userId.value) % ','
+    query.exec("SELECT * FROM create_buy_order(" % QString::number(userId.value) % ','
                % QString::number(stockId.value) % ',' % QString::number(amount.value)
                % ',' % QString::number(price.value) % ");");
 
