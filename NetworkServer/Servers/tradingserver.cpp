@@ -16,6 +16,7 @@
 #include <../NetworkProtocol/Responses/listofordersmsg.h>
 #include <../NetworkProtocol/Responses/listofstocksmsg.h>
 #include <../NetworkProtocol/Responses/shownobestordermsg.h>
+#include <../NetworkProtocol/Responses/stockinfomsg.h>
 
 #include <../NetworkProtocol/networkprotocol_utilities.h>
 
@@ -160,6 +161,12 @@ void TradingServer::processMessageFrom(UserIdType userId)
                 case Message::REQUEST_GET_MY_ORDERS:
                 {
                     handleRequest(logger, static_cast<Requests::GetMyOrders*>(request.get()),
+                                  userId);
+                }
+                break;
+                case Message::REQUEST_GET_STOCK_INFO:
+                {
+                    handleRequest(logger, static_cast<Requests::GetStockInfo*>(request.get()),
                                   userId);
                 }
                 break;
@@ -430,6 +437,25 @@ void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
     }
 }
 
+void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
+                                  Requests::GetStockInfo* request,
+                                  UserIdType userId)
+{
+    auto source = _userConnections[userId];
+    auto stock_id = request->getStockId();
+
+    LOG_DEBUG(logger, QString("User(%1) requestsed stockinfo for stock(%2)")
+                      .arg(userId.value).arg(stock_id.value));
+
+    auto best_sell_order = _bestSellOrder[stock_id];
+    auto best_buy_order  = _bestBuyOrder[stock_id];
+
+    auto last_transaction = _lastTransaction[stock_id];
+
+    Responses::StockInfo response(logger, stock_id, best_buy_order, best_sell_order, last_transaction);
+    source->send(&response);
+}
+
 //     _stocks_subscribers are initialized with subscribeable stock to prevent
 //    malicious user behaviour.
 void TradingServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
@@ -593,7 +619,7 @@ void TradingServer::orderChange(UserIdType userId, OrderIdType orderId,
     }
 }
 
-void TradingServer::newLastTransaction(StockIdType, AmountType amount, PriceType price, QString dateTime)
+void TradingServer::newLastTransaction(StockIdType stockId, AmountType amount, PriceType price, QString dateTime)
 {
     auto logger = _loggerFactory->createLoggingSession();
 
@@ -602,7 +628,7 @@ void TradingServer::newLastTransaction(StockIdType, AmountType amount, PriceType
                       .arg(price.value)
                       .arg(dateTime));
 
-    _lastTransaction.reset(new LastTransaction(logger, amount, price, dateTime));
+    _lastTransaction[stockId].reset(new LastTransaction(logger, amount, price, dateTime));
 }
 
 void TradingServer::newBestOrder(Types::Order::OrderType orderType, StockIdType stockId,

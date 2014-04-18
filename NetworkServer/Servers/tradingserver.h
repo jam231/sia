@@ -16,6 +16,7 @@
 #include <../NetworkProtocol/Requests/cancelordermsg.h>
 #include <../NetworkProtocol/Requests/getmyordersmsg.h>
 #include <../NetworkProtocol/Requests/getmystocksmsg.h>
+#include <../NetworkProtocol/Requests/getstockinfomsg.h>
 #include <../NetworkProtocol/Requests/subscribestockmsg.h>
 #include <../NetworkProtocol/Requests/unsubscribestockmsg.h>
 
@@ -33,28 +34,30 @@ class TradingServer : public QThread
 {
     Q_OBJECT
     QHash<NetworkProtocol::DTO::Types::UserIdType,
-          UserConnection* >                                     _userConnections;
+          UserConnection* >                                             _userConnections;
 
     std::shared_ptr<SharedSet<NetworkProtocol::DTO::Types::UserIdType> > _online_users;
 
 
-    std::shared_ptr<AbstractLoggerFactory>                      _loggerFactory;
-    std::shared_ptr<AbstractDataStorageFactory>                 _dataStorageFactory;
+    std::shared_ptr<AbstractLoggerFactory>                              _loggerFactory;
+    std::shared_ptr<AbstractDataStorageFactory>                         _dataStorageFactory;
 
     QHash<NetworkProtocol::DTO::Types::StockIdType,
-          QSet<NetworkProtocol::DTO::Types::UserIdType> >       _stock_subscribers;
+          QSet<NetworkProtocol::DTO::Types::UserIdType> >               _stock_subscribers;
 
-    std::shared_ptr<NetworkProtocol::DTO::LastTransaction>      _lastTransaction;
-
-    QHash<NetworkProtocol::DTO::Types::StockIdType,
-          std::shared_ptr<NetworkProtocol::DTO::BestOrder> >    _bestBuyOrder;
 
     QHash<NetworkProtocol::DTO::Types::StockIdType,
-          std::shared_ptr<NetworkProtocol::DTO::BestOrder> >    _bestSellOrder;
+          std::shared_ptr<NetworkProtocol::DTO::LastTransaction> >      _lastTransaction;
+
+    QHash<NetworkProtocol::DTO::Types::StockIdType,
+          std::shared_ptr<NetworkProtocol::DTO::BestOrder> >            _bestBuyOrder;
+
+    QHash<NetworkProtocol::DTO::Types::StockIdType,
+          std::shared_ptr<NetworkProtocol::DTO::BestOrder> >            _bestSellOrder;
 
 public:
-    TradingServer(std::shared_ptr<AbstractLoggerFactory> loggerFactory,
-                  std::shared_ptr<AbstractDataStorageFactory> datastorageFactory,
+    TradingServer(std::shared_ptr<AbstractLoggerFactory>,
+                  std::shared_ptr<AbstractDataStorageFactory>,
                   std::shared_ptr<SharedSet<NetworkProtocol::DTO::Types::UserIdType> > );
 protected:
     virtual void run();
@@ -94,6 +97,9 @@ public:
                        NetworkProtocol::Requests::Request*,
                        NetworkProtocol::DTO::Types::UserIdType);
 
+    void handleRequest(std::shared_ptr<AbstractLogger>,
+                       NetworkProtocol::Requests::GetStockInfo*,
+                       NetworkProtocol::DTO::Types::UserIdType);
 public slots:
    void connectDataHub(const AbstractDataHub&);
 
