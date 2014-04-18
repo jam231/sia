@@ -71,7 +71,7 @@ void StockInfo::send(BestOrder* bestOrder, QDataStream &out)
 {
     if(bestOrder == nullptr)
     {
-        out << 0;
+        out << static_cast<quint32>(0);
     }
     else
     {
@@ -83,7 +83,7 @@ void StockInfo::send(LastTransaction* lastTransaction, QDataStream& out)
 {
     if(lastTransaction == nullptr)
     {
-        out << 0;
+        out << static_cast<quint32>(0);
     }
     else
     {
@@ -95,7 +95,7 @@ Message::MessageLengthType StockInfo::getSerializedLength(DTO::BestOrder* best_o
 {
     if(best_order == nullptr)
     {
-        return sizeof(qint32);
+        return sizeof(quint32);
     }
     else
     {
@@ -108,7 +108,7 @@ Message::MessageLengthType StockInfo::getSerializedLength(
 {
     if(last_transaction == nullptr)
     {
-        return sizeof(qint32);
+        return sizeof(quint32);
     }
     else
     {

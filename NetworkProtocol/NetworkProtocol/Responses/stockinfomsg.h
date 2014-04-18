@@ -30,7 +30,7 @@ namespace Responses
  *      <last_transaction : ?>  when no last transaction  = <0 : 4>
  *      <last_transaction : ?>  otherwise                 = <amount : 4><price : 4><data_time_str_length : 2><date_time_str : data_time_str_length>
  *
- *  0 value is a safe choice for guard value, i.e. amount or price cannot be equal to 0.
+ *  0 value is a safe choice for guard value, i.e. neither amount nor price can be equal to 0.
  */
 class NETWORKPROTOCOLSHARED_EXPORT StockInfo : public Response
 {
