@@ -318,3 +318,19 @@ BEGIN
 	END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION delete_order(_order_id integer, _user_id integer) RETURNS integer AS $$
+DECLARE
+	deleted_sell_orders integer;
+	deleted_buy_orders  integer;
+BEGIN
+	WITH dbo AS (DELETE FROM buy_order WHERE _order_id = order_id AND _user_id = user_id RETURNING 1)
+	SELECT COUNT(*) INTO deleted_buy_orders FROM dbo;
+
+	WITH dso AS (DELETE FROM sell_order WHERE _order_id = order_id AND _user_id = user_id  RETURNING 1)
+	SELECT COUNT(*) INTO deleted_sell_orders FROM dso;
+
+	RETURN deleted_buy_orders + deleted_sell_orders;
+END;
+$$ LANGUAGE plpgsql;

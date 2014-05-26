@@ -319,42 +319,39 @@ PostgreDataSession::getUserOrders(UserIdType userId,
 void PostgreDataSession::cancelOrder(UserIdType userId, OrderIdType orderId,
                                      Failure::FailureType* status)
 {
-    QSqlQuery query1(*_handle),
-              query2(*_handle);
+    QSqlQuery query(*_handle);
 
     *status  = Types::Failure::NO_FAILURE;
 
-    //query1.prepare("DELETE FROM zlecenie_kupna AS zk WHERE zk.id_zlecenia = :orderId AND zk.id_uz = :userId;");
+    query.setForwardOnly(true);
 
-    //query2.prepare("DELETE FROM zlecenie_sprzedazy AS zs WHERE zs.id_zlecenia = :orderId AND zs.id_uz = :userId;");
+    query.exec("select delete_order(" % QString::number(orderId.value) % ","
+                % QString::number(userId.value) % ");");
 
-    query1.setForwardOnly(true);
-    query2.setForwardOnly(true);
-
-
-    _handle->transaction();
-
-    bool query1_valid = query1.exec("DELETE FROM buy_order AS bo WHERE zk.order_id="
-                                    % QString::number(orderId.value) % " AND zk.user_id="
-                                    % QString::number(userId.value) % ";");
-    bool query2_valid = query2.exec("DELETE FROM sell_order AS so WHERE so.order_id="
-                                    % QString::number(orderId.value) % " AND so.user_id="
-                                    % QString::number(userId.value) % ";");
-
-    // Unfortunately we are unable to check if order was found and deleted or not.
-    // We can only check for errors.
-    if(!query1_valid || !query2_valid)
+    if(query.first())
     {
-        LOG_WARNING(_logger, QString("Query error(s) : %1  and  %2.")
-                             .arg(query1.lastError().text())
-                             .arg(query2.lastError().text()));
-        *status = Types::Failure::RESOURCE_NOT_AVAILABLE;
+        int deleted_orders = query.value(0).toInt();
+        if(deleted_orders == 0)
+        {
+            *status = Types::Failure::RESOURCE_NOT_AVAILABLE;
+        }
+        // deleted_orders in (-inf, 0) v (1, inf) means something is wrong
+        // deleted_orders == 0 means nothing was deleted
+        // deleted_orders == 1 means order was deleted sucessfuly, and as such do nothing (*status is already in NO_FAILURE)
+        else if(deleted_orders < 0 || deleted_orders > 1)
+        {
+            *status = Types::Failure::REQUEST_DROPPED;
+            LOG_ERROR(_logger, QString("deleted_orders(%1) for user(%2) and order(%3)")
+                               .arg(deleted_orders).arg(userId.value).arg(orderId.value));
+        }
     }
-
-    query1.finish();
-    query2.finish();
-
-    _handle->commit();
+    else
+    {
+        LOG_WARNING(_logger, QString("Query error : %1.")
+                             .arg(query.lastError().text()));
+        *status = Types::Failure::REQUEST_DROPPED;
+    }
+    query.finish();
 }
 
 void PostgreDataSession::startSession(Failure::FailureType* status)
