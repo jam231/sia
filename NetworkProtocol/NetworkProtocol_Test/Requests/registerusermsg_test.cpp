@@ -121,7 +121,7 @@ void RegisterUserTest::from_invalid_body()
         QDataStream stream(&byte_array, QIODevice::ReadOnly);
         Requests::RegisterUser request(stream);
     }
-    catch(Requests::InvalidRequestBody&)
+    catch(Requests::InvalidRequestBodyError&)
     {
         return;
     }
@@ -159,7 +159,7 @@ void RegisterUserTest::from_malformed()
         QDataStream stream(&byte_array, QIODevice::ReadOnly);
         Requests::RegisterUser request(stream);
     }
-    catch(Requests::MalformedRequest&)
+    catch(Requests::MalformedRequestError&)
     {
         return;
     }

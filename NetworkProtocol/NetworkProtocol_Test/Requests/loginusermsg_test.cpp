@@ -134,7 +134,7 @@ void LoginUserTest::from_invalid_body()
         QDataStream stream(&byte_array, QIODevice::ReadOnly);
         Requests::LoginUser request(stream);
     }
-    catch(Requests::InvalidRequestBody&)
+    catch(Requests::InvalidRequestBodyError&)
     {
         return;
     }
@@ -186,7 +186,7 @@ void LoginUserTest::from_malformed()
         QDataStream stream(&byte_array, QIODevice::ReadOnly);
         Requests::LoginUser request(stream);
     }
-    catch(Requests::MalformedRequest&)
+    catch(Requests::MalformedRequestError&)
     {
         return;
     }

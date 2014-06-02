@@ -126,7 +126,7 @@ void NetworkProtocolUtilitiesTest::readLength_valid()
                                     "Is %1.")
                             .arg(stream.device()->bytesAvailable())));
     }
-    catch(IncompleteRequest& e)
+    catch(IncompleteRequestError& e)
     {
         QFAIL(qPrintable(QString("Caught: %1").arg(e.what())));
     }
@@ -148,7 +148,7 @@ void NetworkProtocolUtilitiesTest::readLength_invalid()
 
         QFAIL("IncompleteRequest exception should have been thrown.");
     }
-    catch(IncompleteRequest& e)
+    catch(IncompleteRequestError& e)
     {
         return;
     }
@@ -211,7 +211,7 @@ void NetworkProtocolUtilitiesTest::readType_valid()
                                     "Is %1.")
                             .arg(stream.device()->bytesAvailable())));
     }
-    catch(InvalidRequestType& e)
+    catch(InvalidRequestTypeError& e)
     {
         QFAIL(qPrintable(QString("Caught: %1").arg(e.what())));
     }
@@ -233,7 +233,7 @@ void NetworkProtocolUtilitiesTest::readType_invalid_empty()
 
         QFAIL("InvalidRequestType exception should have been thrown.");
     }
-    catch(InvalidRequestType& e)
+    catch(InvalidRequestTypeError& e)
     {
         return;
     }
@@ -259,7 +259,7 @@ void NetworkProtocolUtilitiesTest::readType_invalid()
         Requests::readType(stream);
         QFAIL("InvalidRequestType exception should have been thrown.");
     }
-    catch(InvalidRequestType& e)
+    catch(InvalidRequestTypeError& e)
     {
         QVERIFY2(stream.device()->bytesAvailable() == 0,
                  qPrintable(QString("Incorrect number of bytes left in stream. "\
@@ -306,7 +306,7 @@ void NetworkProtocolUtilitiesTest::readType_NoEx_valid()
                                     "Is %1.")
                             .arg(stream.device()->bytesAvailable())));
     }
-    catch(InvalidRequestType& e)
+    catch(InvalidRequestTypeError& e)
     {
         QFAIL(qPrintable(QString("Caught: %1").arg(e.what())));
     }
@@ -330,7 +330,7 @@ void NetworkProtocolUtilitiesTest::readType_NoEx_invalid_empty()
                             .arg(type)
                             .arg(Message::MESSAGE_UNDEFINED)));
     }
-    catch(InvalidRequestType& e)
+    catch(InvalidRequestTypeError& e)
     {
         QFAIL(qPrintable(QString("Caught: %1").arg(e.what())));
     }
@@ -363,7 +363,7 @@ void NetworkProtocolUtilitiesTest::readType_NoEx_invalid()
                                     "Is %1.")
                             .arg(stream.device()->bytesAvailable())));
     }
-    catch(InvalidRequestType& e)
+    catch(InvalidRequestTypeError& e)
     {
         QFAIL(qPrintable(QString("Caught: %1").arg(e.what())));
     }
@@ -611,7 +611,7 @@ void NetworkProtocolUtilitiesTest::fromStream_invalid_incomplete()
                                           stream);
 
         }
-        catch(IncompleteRequest&)
+        catch(IncompleteRequestError&)
         {
             QVERIFY2(stream.device()->bytesAvailable() == length,
                      qPrintable(QString("Incorrect number of bytes left in stream. "\
@@ -745,7 +745,7 @@ void NetworkProtocolUtilitiesTest::fromStream_invalid_body()
                                           */stream);
 
         }
-        catch(InvalidRequestBody&)
+        catch(InvalidRequestBodyError&)
         {
             QVERIFY2(stream.device()->bytesAvailable() == 0,
                      qPrintable(QString("Incorrect number of bytes left in stream. "\
@@ -864,7 +864,7 @@ void NetworkProtocolUtilitiesTest::fromStream_malformed()
                                           */stream);
 
         }
-        catch(MalformedRequest&)
+        catch(MalformedRequestError&)
         {
             QVERIFY2(stream.device()->bytesAvailable() == data_size_left,
                      qPrintable(QString("Incorrect number of bytes left in stream. "\

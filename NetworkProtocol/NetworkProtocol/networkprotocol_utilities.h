@@ -23,6 +23,16 @@ namespace NetworkProtocol
 namespace Requests
 {
 
+enum RequestParseStatus
+{
+    Ok,
+    MalformedRequest,
+    InvalidRequestType,
+    InvalidRequestBody,
+    IncompleteRequest
+};
+
+
 class NETWORKPROTOCOLSHARED_EXPORT InvalidRequest : public std::runtime_error
 {
 public:
@@ -33,44 +43,47 @@ public:
 
 
 // Use when there is not enough bytes in stream to read request
-class NETWORKPROTOCOLSHARED_EXPORT IncompleteRequest : public InvalidRequest
+class NETWORKPROTOCOLSHARED_EXPORT IncompleteRequestError : public InvalidRequest
 {
 public:
-    explicit IncompleteRequest(DTO::Types::Message::MessageLengthType request_length)
+    explicit IncompleteRequestError(DTO::Types::Message::MessageLengthType request_length)
         : InvalidRequest(QString("Stream has less than %1 bytes.")
                          .arg(request_length).toStdString())
     {}
 };
 
 // Use when there is not enough bytes in stream to read *body* of the request.
-class NETWORKPROTOCOLSHARED_EXPORT MalformedRequest : public InvalidRequest
+class NETWORKPROTOCOLSHARED_EXPORT MalformedRequestError : public InvalidRequest
 {
 public:
-    explicit MalformedRequest (const std::string& what_arg)
+    explicit MalformedRequestError (const std::string& what_arg)
         : InvalidRequest(what_arg)
     {}
 };
 
 
 // Use when type == Message::UNDEFINED_MESSAGE
-class NETWORKPROTOCOLSHARED_EXPORT InvalidRequestType : public InvalidRequest
+class NETWORKPROTOCOLSHARED_EXPORT InvalidRequestTypeError : public InvalidRequest
 {
 public:
-    explicit InvalidRequestType()
+    explicit InvalidRequestTypeError()
         : InvalidRequest("Invalid request type.")
     {}
 };
 // Use when body contents are well formed, but violate data constrains
-class NETWORKPROTOCOLSHARED_EXPORT InvalidRequestBody : public InvalidRequest
+class NETWORKPROTOCOLSHARED_EXPORT InvalidRequestBodyError : public InvalidRequest
 {
 public:
-    explicit InvalidRequestBody (const std::string& what_arg)
+    explicit InvalidRequestBodyError (const std::string& what_arg)
         : InvalidRequest(what_arg)
     {}
 };
 
 
 
+
+NETWORKPROTOCOLSHARED_EXPORT std::shared_ptr<Request> fromStream(std::shared_ptr<AbstractLogger>,
+                                                                 QDataStream&, RequestParseStatus&);
 NETWORKPROTOCOLSHARED_EXPORT std::shared_ptr<Request> fromStream(std::shared_ptr<AbstractLogger>,
                                                                  QDataStream&);
 NETWORKPROTOCOLSHARED_EXPORT std::shared_ptr<Request> fromStream(QDataStream&);
@@ -89,6 +102,11 @@ NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageLengthType readLength(s
 // if there are at least request_length bytes in stream. If not then it throws RequestIncomplete exception.
 NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageLengthType tryReadLength(
                                          std::shared_ptr<AbstractLogger>, QDataStream&);
+
+NETWORKPROTOCOLSHARED_EXPORT DTO::Types::Message::MessageLengthType tryReadLength(
+                                         std::shared_ptr<AbstractLogger>, QDataStream&,
+                                         RequestParseStatus&);
+
 
 /*
  * Gets request type and discards sizeof(Message::MessageType) bytes from stream.

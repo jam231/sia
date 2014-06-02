@@ -122,112 +122,122 @@ void TradingServer::processMessageFrom(UserIdType userId)
     auto socket = source->getSocket();
 
     QDataStream stream(socket);
-    try
+    while(_userConnections.contains(userId))
     {
-        while(_userConnections.contains(userId))
+        try
         {
-            try
-            {
             // Log transaction: request -> data access -> response
             auto logger = _loggerFactory->createLoggingSession();
-            auto request = Requests::fromStream(logger, stream);
+            Requests::RequestParseStatus status;
+            auto request = Requests::fromStream(logger, stream, status);
 
-            switch(request->type())
+            if(status != Requests::RequestParseStatus::Ok)
             {
+                switch(status)
+                {
+                case Requests::RequestParseStatus::MalformedRequest:
+                {
+                    auto response_malformed_request = Responses::Failure(Failure::MALFORMED_MESSAGE);
+                    source->send(&response_malformed_request);
+                    break;
+                }
+                case Requests::RequestParseStatus::InvalidRequestType:
+                {
+                    auto response_unrecognized_request = Responses::Failure(Failure::UNRECOGNIZED_MESSAGE);
+                    source->send(&response_unrecognized_request);
+                    break;
+                }
+                case Requests::RequestParseStatus::InvalidRequestBody:
+                {
+                    auto response_invalid_request_body = Responses::Failure(Failure::INVALID_MESSAGE_BODY);
+                    source->send(&response_invalid_request_body);
+                    break;
+                }
+                case Requests::RequestParseStatus::IncompleteRequest:
+                {
+                    // Packet not yet ready. Time to return from method.
+                    return;
+                }
+                default:
+                {
+                    throw std::runtime_error("Unrecognized status.");
+                    break;
+                }
+                }
+            }
+            else
+            {
+                switch(request->type())
+                {
                 case Message::REQUEST_SELL_STOCK_ORDER:
                 {
                     handleRequest(logger, static_cast<Requests::SellStock*>(request.get()),
                                   userId);
                 }
-                break;
+                    break;
                 case Message::REQUEST_BUY_STOCK_ORDER:
                 {
                     handleRequest(logger, static_cast<Requests::BuyStock*>(request.get()),
                                   userId);
                 }
-                break;
+                    break;
                 case Message::REQUEST_CANCEL_ORDER:
                 {
                     handleRequest(logger, static_cast<Requests::CancelOrder*>(request.get()),
                                   userId);
                 }
-                break;
+                    break;
                 case Message::REQUEST_GET_MY_STOCKS:
                 {
                     handleRequest(logger, static_cast<Requests::GetMyStocks*>(request.get()),
                                   userId);
                 }
-                break;
+                    break;
                 case Message::REQUEST_GET_MY_ORDERS:
                 {
                     handleRequest(logger, static_cast<Requests::GetMyOrders*>(request.get()),
                                   userId);
                 }
-                break;
+                    break;
                 case Message::REQUEST_GET_STOCK_INFO:
                 {
                     handleRequest(logger, static_cast<Requests::GetStockInfo*>(request.get()),
                                   userId);
                 }
-                break;
+                    break;
                 case Message::REQUEST_SUBSCRIBE_STOCK:
                 {
                     handleRequest(logger, static_cast<Requests::SubscribeStock*>(request.get()),
                                   userId);
                 }
-                break;
+                    break;
                 case Message::REQUEST_UNSUBSCRIBE_STOCK:
                 {
                     handleRequest(logger, static_cast<Requests::UnsubscribeStock*>(request.get()),
                                   userId);
                 }
-                break;
+                    break;
                 default:
                     handleRequest(logger, request.get(), userId);
-                break;
-            }
-            }
-            catch(Requests::MalformedRequest& e)
-            {
-                LOG_TRACE(logger, QString("Malformed request: %1").arg(e.what()));
-
-                auto response = Responses::Failure(Failure::MALFORMED_MESSAGE);
-                source->send(&response);
-            }
-            catch(Requests::InvalidRequestType& e)
-            {
-                LOG_TRACE(logger, QString("Invalid request type: %1").arg(e.what()));
-
-                auto response = Responses::Failure(Failure::UNRECOGNIZED_MESSAGE);
-                source->send(&response);
-            }
-            catch(Requests::InvalidRequestBody& e)
-            {
-                LOG_TRACE(logger, QString("Invalid request body: %1").arg(e.what()));
-
-                auto response = Responses::Failure(Failure::INVALID_MESSAGE_BODY);
-                source->send(&response);
-            }
-            catch(DatastoreError& e)
-            {
-                LOG_WARNING(logger, QString("Database error %1").arg(e.what()));
-
-                auto response = Responses::Failure(Failure::REQUEST_DROPPED);
-                source->send(&response);
+                    break;
+                }
             }
         }
-    }
-    catch(Requests::IncompleteRequest& e)
-    {
-        LOG_TRACE(logger, QString("Request not yet ready: %1").arg(e.what()));
-    }
-    catch(...)
-    {
-        LOG_ERROR(logger, QString("Connection(%1) has thrown unknown exception")
-                          .arg(userId.value));
+        catch(DatastoreError& e)
+        {
+            LOG_WARNING(logger, QString("Database error %1").arg(e.what()));
 
-        auto response = Responses::Failure(Failure::REQUEST_DROPPED);
-        source->send(&response);
+            auto response = Responses::Failure(Failure::REQUEST_DROPPED);
+            source->send(&response);
+        }
+        catch(...)
+        {
+            LOG_ERROR(logger, QString("Connection(%1) has thrown unknown exception")
+                      .arg(userId.value));
+
+            auto response = Responses::Failure(Failure::REQUEST_DROPPED);
+            source->send(&response);
+        }
     }
 }
 

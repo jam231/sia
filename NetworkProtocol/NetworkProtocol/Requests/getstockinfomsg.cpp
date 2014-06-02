@@ -25,7 +25,7 @@ GetStockInfo::GetStockInfo(std::shared_ptr<AbstractLogger> logger,
                         .arg(serialized_request.device()->bytesAvailable())
                         .arg(sizeof(_stockId)));
 
-        throw MalformedRequest("Not enough bytes in serialized_request to read"\
+        throw MalformedRequestError("Not enough bytes in serialized_request to read"\
                                " stock id.");
     }
 
@@ -36,7 +36,7 @@ GetStockInfo::GetStockInfo(std::shared_ptr<AbstractLogger> logger,
         LOG_TRACE(logger, QString("Invalid stock id. stockId(%1) <= 0.")
                           .arg(_stockId.value));
 
-        throw InvalidRequestBody("stock id <= 0.");
+        throw InvalidRequestBodyError("stock id <= 0.");
     }
 }
 

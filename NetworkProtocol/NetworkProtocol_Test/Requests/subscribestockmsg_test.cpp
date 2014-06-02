@@ -109,7 +109,7 @@ void SubscribeStockTest::from_invalid_body()
         QDataStream stream(&byte_array, QIODevice::ReadOnly);
         Requests::SubscribeStock subscribe_stock(stream);
     }
-    catch(Requests::InvalidRequestBody&)
+    catch(Requests::InvalidRequestBodyError&)
     {
         return;
     }
@@ -144,7 +144,7 @@ void SubscribeStockTest::from_malformed()
         QDataStream stream(&byte_array, QIODevice::ReadOnly);
         Requests::SubscribeStock subscribe_stock(stream);
     }
-    catch(Requests::MalformedRequest&)
+    catch(Requests::MalformedRequestError&)
     {
         return;
     }

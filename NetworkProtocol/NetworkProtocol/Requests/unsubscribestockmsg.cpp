@@ -22,7 +22,7 @@ UnsubscribeStock::UnsubscribeStock(std::shared_ptr<AbstractLogger> logger,
                           "serialized_request to read stock id. Is %1 should be >%2.")
                   .arg(serialized_request.device()->bytesAvailable())
                   .arg(sizeof(_stockId)));
-        throw MalformedRequest("Wrong number bytes in serialized_request for"\
+        throw MalformedRequestError("Wrong number bytes in serialized_request for"\
                                " stock id.");
     }
     serialized_request >> _stockId;
@@ -31,7 +31,7 @@ UnsubscribeStock::UnsubscribeStock(std::shared_ptr<AbstractLogger> logger,
         LOG_TRACE(logger,
                   QString("Invalid request body: stockId(%1) <= 0")
                   .arg(_stockId.value));
-        throw InvalidRequestBody("stockId <= 0.");
+        throw InvalidRequestBodyError("stockId <= 0.");
     }
 }
 

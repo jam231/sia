@@ -64,7 +64,7 @@ LoginServer::LoginServer(shared_ptr<AbstractLoggerFactory> loggerFactory,
     if(!port_to_int)
     {
         LOG_TRACE(logger, QString("Cannot convert port to int. config["\
-                  "\"server port\"] = ").arg(config["server port"]));
+                                  "\"server port\"] = ").arg(config["server port"]));
         throw invalid_argument("Error while converting port to int.");
     }
 
@@ -83,7 +83,7 @@ void LoginServer::setupTcpServer()
     if(!_server->listen(QHostAddress::Any, _port))
     {
         LOG_WARNING(logger, QString("Error occured while establishing tcp server. "\
-                    "Error message: %1").arg(_server->errorString()));
+                                    "Error message: %1").arg(_server->errorString()));
         throw TcpConnectionError();
     }
     LOG_INFO(logger, QString("Tcp server listening on port %1.").arg(_port));
@@ -97,8 +97,8 @@ void LoginServer::newConnection()
 
     auto socket = _server->nextPendingConnection();
     LOG_INFO(logger, QString("New connection: %1:%2")
-                        .arg(socket->peerAddress().toString())
-                        .arg(socket->peerPort()));
+             .arg(socket->peerAddress().toString())
+             .arg(socket->peerPort()));
     int socket_descriptor = socket->socketDescriptor();
 
     if(!connections.contains(socket_descriptor))
@@ -110,12 +110,12 @@ void LoginServer::newConnection()
          *
          */
         LOG_TRACE(logger, QString("Inserting new connection to connection pool"\
-                              "with key = %1")
-                          .arg(socket_descriptor));
+                                  "with key = %1")
+                  .arg(socket_descriptor));
         connections.insert(socket_descriptor, connection);
 
         LOG_INFO(logger, QString("Active connections: %1")
-                         .arg(connections.size()));
+                 .arg(connections.size()));
 
 
         connect(connection,  SIGNAL(disconnected(int)),
@@ -142,69 +142,87 @@ void LoginServer::processMessageFrom(int id)
     LOG_TRACE(logger, QString("Bytes available: %1").arg(socket->bytesAvailable()));
 
     QDataStream stream(socket);
-    try
+    // Previous request might moved current connection out, e.g. to trading server.
+    while(connections.contains(id))
     {
-        // Previous request might moved current connection out, e.g. to trading server.
-        while(connections.contains(id))
+        try
         {
-            try
-            {
             // Log transaction: request -> data access -> response
             auto logger = _loggerFactory->createLoggingSession();
-            auto request = Requests::fromStream(logger, stream);
-            switch(request->type())
+            Requests::RequestParseStatus status;
+            auto request = Requests::fromStream(logger, stream, status);
+
+            if(status != Requests::RequestParseStatus::Ok)
             {
-                case Message::REQUEST_LOGIN_USER:
+                switch(status)
                 {
-                    handleRequest(logger, static_cast<Requests::LoginUser*>(request.get()), id);
-                }
-                break;
-                case Message::REQUEST_REGISTER_USER:
+                case Requests::RequestParseStatus::MalformedRequest:
                 {
-                    handleRequest(logger, static_cast<Requests::RegisterUser*>(request.get()), id);
+                    auto response_malformed_request = Responses::Failure(Failure::MALFORMED_MESSAGE);
+                    source->send(&response_malformed_request);
+                    break;
                 }
-                break;
+                case Requests::RequestParseStatus::InvalidRequestType:
+                {
+                    auto response_unrecognized_request = Responses::Failure(Failure::UNRECOGNIZED_MESSAGE);
+                    source->send(&response_unrecognized_request);
+                    break;
+                }
+                case Requests::RequestParseStatus::InvalidRequestBody:
+                {
+                    auto response_invalid_request_body = Responses::Failure(Failure::INVALID_MESSAGE_BODY);
+                    source->send(&response_invalid_request_body);
+                    break;
+                }
+                case Requests::RequestParseStatus::IncompleteRequest:
+                {
+                    // Packet not yet ready. Time to return from method.
+                    return;
+                }
                 default:
-                    handleRequest(logger, request.get(), id);
-                break;
+                {
+                    throw std::runtime_error("Unrecognized status.");
+                    break;
+                }
+                }
             }
-            }
-            catch(Requests::MalformedRequest& e)
+            else
             {
-                LOG_TRACE(logger, QString("Malformed request: %1").arg(e.what()));
-                auto response = Responses::Failure(Failure::MALFORMED_MESSAGE);
-                source->send(&response);
-            }
-            catch(Requests::InvalidRequestType& e)
-            {
-                LOG_TRACE(logger, QString("Invalid request type: %1").arg(e.what()));
-                auto response = Responses::Failure(Failure::UNRECOGNIZED_MESSAGE);
-                source->send(&response);
-            }
-            catch(Requests::InvalidRequestBody& e)
-            {
-                LOG_TRACE(logger, QString("Invalid request body: %1").arg(e.what()));
-                auto response = Responses::Failure(Failure::INVALID_MESSAGE_BODY);
-                source->send(&response);
-            }
-            catch(DatastoreError& e)
-            {
-                LOG_WARNING(logger, QString("Database error %1").arg(e.what()));
-                auto response = Responses::Failure(Failure::REQUEST_DROPPED);
-                source->send(&response);
+                try
+                {
+                    switch(request->type())
+                    {
+                    case Message::REQUEST_LOGIN_USER:
+                    {
+                        handleRequest(logger, static_cast<Requests::LoginUser*>(request.get()), id);
+                    }
+                        break;
+                    case Message::REQUEST_REGISTER_USER:
+                    {
+                        handleRequest(logger, static_cast<Requests::RegisterUser*>(request.get()), id);
+                    }
+                        break;
+                    default:
+                        handleRequest(logger, request.get(), id);
+                        break;
+                    }
+                }
+                catch(DatastoreError& e)
+                {
+                    LOG_WARNING(logger, QString("Database error %1").arg(e.what()));
+                    auto response = Responses::Failure(Failure::REQUEST_DROPPED);
+                    source->send(&response);
+                }
             }
         }
-    }
-    catch(Requests::IncompleteRequest& e)
-    {
-        LOG_TRACE(logger, QString("Request not yet ready: %1").arg(e.what()));
-    }
-    catch(...)
-    {
-        LOG_ERROR(logger, QString("Connection with id = %1 has thrown "\
-                                    "unknown exception").arg(id));
-        auto response = Responses::Failure(Failure::REQUEST_DROPPED);
-        source->send(&response);
+
+        catch(...)
+        {
+            LOG_ERROR(logger, QString("Connection with id = %1 has thrown "\
+                                      "unknown exception").arg(id));
+            auto response = Responses::Failure(Failure::REQUEST_DROPPED);
+            source->send(&response);
+        }
     }
 }
 
@@ -216,7 +234,7 @@ void LoginServer::handleRequest(shared_ptr<AbstractLogger> logger,
     auto source = connections[id];
 
     LOG_DEBUG(logger, QString("Sending failure: not authorized to request %1")
-             .arg(request->type()));
+              .arg(request->type()));
 
     auto response = Responses::Failure(Failure::NOT_AUTHORIZED);
     source->send(&response);
@@ -226,7 +244,7 @@ void LoginServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
                                 Requests::RegisterUser* request, int id)
 {
     LOG_DEBUG(logger, QString("Connection(%1) requested registration.")
-                      .arg(id));
+              .arg(id));
     auto source = connections[id];
 
     auto session = _dataFactory->openSession();
@@ -245,7 +263,7 @@ void LoginServer::handleRequest(std::shared_ptr<AbstractLogger> logger,
     {
         LOG_DEBUG(logger, QString("Connection(%1) registered successfully. "\
                                   "New user_id = %2.")
-                          .arg(id).arg(user_id.value));
+                  .arg(id).arg(user_id.value));
 
         auto response = Responses::RegisterUserSuccess(logger, user_id);
         source->send(&response);
@@ -291,7 +309,7 @@ void LoginServer::handleRequest(shared_ptr<AbstractLogger> logger,
         else
         {
             LOG_TRACE(logger, QString("User(%1) added to online users set.")
-                              .arg(user_id.value));
+                      .arg(user_id.value));
 
             // Should moveToThread socket
             // Also remember that moveToThread should be called from thread

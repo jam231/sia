@@ -24,7 +24,7 @@ CancelOrder::CancelOrder(std::shared_ptr<AbstractLogger> logger,
                   .arg(serialized_request.device()->bytesAvailable())
                   .arg(sizeof(_orderId)));
 
-        throw MalformedRequest("Not enough bytes in serialized_request to read"\
+        throw MalformedRequestError("Not enough bytes in serialized_request to read"\
                                " order id.");
     }
 
@@ -35,7 +35,7 @@ CancelOrder::CancelOrder(std::shared_ptr<AbstractLogger> logger,
         LOG_TRACE(logger, QString("Invalid order id. orderId(%1) <= 0.")
                           .arg(_orderId.value));
 
-        throw InvalidRequestBody("order id <= 0.");
+        throw InvalidRequestBodyError("order id <= 0.");
     }
 }
 

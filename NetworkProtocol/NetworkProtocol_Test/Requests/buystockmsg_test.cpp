@@ -140,7 +140,7 @@ void BuyStockTest::from_invalid_body()
         QDataStream stream(&byte_array, QIODevice::ReadOnly);
         Requests::BuyStock buy_stock(stream);
     }
-    catch(Requests::InvalidRequestBody&)
+    catch(Requests::InvalidRequestBodyError&)
     {
         return;
     }
@@ -185,7 +185,7 @@ void BuyStockTest::from_malformed()
         QDataStream stream(&byte_array, QIODevice::ReadOnly);
         Requests::BuyStock buy_stock(stream);
     }
-    catch(Requests::MalformedRequest&)
+    catch(Requests::MalformedRequestError&)
     {
         return;
     }

@@ -28,7 +28,7 @@ BuyStock::BuyStock(std::shared_ptr<AbstractLogger> logger,
                   .arg(serialized_request.device()->bytesAvailable())
                   .arg(sizeof(_stockId) + sizeof(_amount) + sizeof(_price)));
 
-        throw MalformedRequest("Wrong number bytes in serialized_request for"\
+        throw MalformedRequestError("Wrong number bytes in serialized_request for"\
                                " stock id, amount and price.");
     }
     serialized_request >> _stockId;
@@ -41,7 +41,7 @@ BuyStock::BuyStock(std::shared_ptr<AbstractLogger> logger,
                           "|| price(%3) <= 0.")
                   .arg(_stockId.value).arg(_amount.value).arg(_price.value));
 
-        throw InvalidRequestBody("One of stockId, amount, price is <= 0.");
+        throw InvalidRequestBodyError("One of stockId, amount, price is <= 0.");
     }
 }
 

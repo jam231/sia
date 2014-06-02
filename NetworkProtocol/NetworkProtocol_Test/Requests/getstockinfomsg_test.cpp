@@ -108,7 +108,7 @@ void GetStockInfoTest::from_invalid_body()
         QDataStream stream(&byte_array, QIODevice::ReadOnly);
         Requests::GetStockInfo get_stock_info(stream);
     }
-    catch(Requests::InvalidRequestBody&)
+    catch(Requests::InvalidRequestBodyError&)
     {
         return;
     }
@@ -143,7 +143,7 @@ void GetStockInfoTest::from_malformed()
         QDataStream stream(&byte_array, QIODevice::ReadOnly);
         Requests::GetStockInfo get_stock_info(stream);
     }
-    catch(Requests::MalformedRequest&)
+    catch(Requests::MalformedRequestError&)
     {
         return;
     }

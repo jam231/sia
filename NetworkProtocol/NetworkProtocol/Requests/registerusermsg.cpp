@@ -25,7 +25,7 @@ RegisterUser::RegisterUser(std::shared_ptr<AbstractLogger> logger,
                   .arg(serialized_request.device()->bytesAvailable())
                   .arg(sizeof(password_length)));
 
-        throw MalformedRequest("Not enough bytes in serialized_request to read"\
+        throw MalformedRequestError("Not enough bytes in serialized_request to read"\
                                " password length.");
     }
 
@@ -36,7 +36,7 @@ RegisterUser::RegisterUser(std::shared_ptr<AbstractLogger> logger,
                   QString("Invalid password length. Is %1 should be > 4.")
                   .arg(password_length));
 
-        throw InvalidRequestBody("Password is <= 4.");
+        throw InvalidRequestBodyError("Password is <= 4.");
     }
     if(serialized_request.device()->bytesAvailable() != password_length)
     {
@@ -46,7 +46,7 @@ RegisterUser::RegisterUser(std::shared_ptr<AbstractLogger> logger,
                   .arg(serialized_request.device()->bytesAvailable())
                   .arg(password_length));
 
-        throw MalformedRequest("Wrong number of bytes in serialized_request"\
+        throw MalformedRequestError("Wrong number of bytes in serialized_request"\
                                "for password.");
     }
 

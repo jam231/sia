@@ -109,7 +109,7 @@ void UnsubscribeStockTest::from_invalid_body()
         QDataStream stream(&byte_array, QIODevice::ReadOnly);
         Requests::UnsubscribeStock unsubscribe_stock(stream);
     }
-    catch(Requests::InvalidRequestBody&)
+    catch(Requests::InvalidRequestBodyError&)
     {
         return;
     }
@@ -144,7 +144,7 @@ void UnsubscribeStockTest::from_malformed()
         QDataStream stream(&byte_array, QIODevice::ReadOnly);
         Requests::UnsubscribeStock unsubscribe_stock(stream);
     }
-    catch(Requests::MalformedRequest&)
+    catch(Requests::MalformedRequestError&)
     {
         return;
     }

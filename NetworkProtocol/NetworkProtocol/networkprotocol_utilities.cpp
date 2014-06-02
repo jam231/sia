@@ -16,23 +16,32 @@ std::shared_ptr<Request> fromStream(QDataStream& stream)
     return fromStream(std::move(GlobalUtilities::getLogger()), stream);
 }
 
-std::shared_ptr<Request> fromStream(std::shared_ptr<AbstractLogger> logger,
-                                    QDataStream& stream)
-{
 
-    Message::MessageLengthType length = tryReadLength(logger, stream);
+std::shared_ptr<Request> fromStream(std::shared_ptr<AbstractLogger> logger,
+                                    QDataStream& stream,
+                                    RequestParseStatus& status)
+{
+    status = Ok;
+    Message::MessageLengthType length = tryReadLength(logger, stream, status);
+
+    if(status != Ok)
+    {
+        return std::shared_ptr<Request>();
+    }
 
     length -= 2;
 
     if(length < sizeof(Message::MessageType))
     {
-        throw MalformedRequest("length < sizeof(Message::MessageType)");
+        status = MalformedRequest;
+        return std::shared_ptr<Request>();
     }
     Message::MessageType       type   = readType(logger, stream);
     length -= 1;
     // Read length bytes even if request is malformed.
     QDataStream serialized_request_body(stream.device()->read(length));
     Request* request;
+
     try{
     switch(type)
     {
@@ -75,16 +84,46 @@ std::shared_ptr<Request> fromStream(std::shared_ptr<AbstractLogger> logger,
     default:
         LOG_ERROR(logger, QString("Invalid type(%1). This shouldn't happpen.")
                          .arg(type));
-        throw InvalidRequestType();
+        status = InvalidRequestType;
         break;
     };
     }catch(std::invalid_argument& e)
     {
         LOG_TRACE(logger, e.what());
-        throw InvalidRequestBody(e.what());
+        status = InvalidRequestBody;
     }
 
     return std::shared_ptr<Request>(request);
+}
+
+std::shared_ptr<Request> fromStream(std::shared_ptr<AbstractLogger> logger,
+                                    QDataStream& stream)
+{
+
+    RequestParseStatus status = RequestParseStatus::Ok;
+    auto request = fromStream(std::move(logger), stream, status);
+
+    switch(status)
+    {
+        case Ok:
+            return request;
+        break;
+        case MalformedRequest:
+            throw MalformedRequestError("Malformed request");
+        break;
+        case InvalidRequestType:
+            throw InvalidRequestTypeError();
+        break;
+        case InvalidRequestBody:
+            throw InvalidRequestBodyError("Unknown type.");
+        break;
+        case IncompleteRequest:
+            throw IncompleteRequestError(0);
+        break;
+        default:
+            throw std::runtime_error("Unrecognized request parse status.");
+        break;
+    }
 }
 
 Message::MessageLengthType getLength(QIODevice* data)
@@ -112,12 +151,9 @@ Message::MessageLengthType getLength(std::shared_ptr<AbstractLogger> logger,
     return message_length;
 }
 
-/// TODO:
-///
-///         Refactor !!
-
 Message::MessageLengthType tryReadLength(std::shared_ptr<AbstractLogger> logger,
-                                         QDataStream& stream)
+                                         QDataStream &stream,
+                                         RequestParseStatus& status)
 {
     Message::MessageLengthType request_length = getLength(logger,
                                                           stream.device());
@@ -131,14 +167,15 @@ Message::MessageLengthType tryReadLength(std::shared_ptr<AbstractLogger> logger,
                           " Available bytes in stream %2.")
                   .arg(sizeof(request_length))
                   .arg(stream.device()->bytesAvailable()));
-        throw IncompleteRequest(sizeof(request_length));
+        status = IncompleteRequest;
+        return request_length;
     }
     if(request_length < sizeof(Message::MessageLengthType) &&
             stream.device()->bytesAvailable() >= sizeof(Message::MessageLengthType))
     {
         stream.skipRawData(stream.device()->bytesAvailable());
-        throw MalformedRequest(QString("Malformed request with length = %1.")
-                               .arg(request_length).toStdString());
+        status = MalformedRequest;
+        return request_length;
     }
     if(request_length > stream.device()->bytesAvailable())
     {
@@ -147,12 +184,36 @@ Message::MessageLengthType tryReadLength(std::shared_ptr<AbstractLogger> logger,
                           " Available bytes in stream %2.")
                   .arg(request_length)
                   .arg(stream.device()->bytesAvailable()));
-        throw IncompleteRequest(request_length);
+        status = IncompleteRequest;
+        return request_length;
     }
     stream.skipRawData(sizeof(request_length));
     return request_length;
 }
 
+Message::MessageLengthType tryReadLength(std::shared_ptr<AbstractLogger> logger,
+                                         QDataStream& stream)
+{
+    RequestParseStatus status = Ok;
+    Message::MessageLengthType request_length = tryReadLength(logger, stream, status);
+
+    switch(status)
+    {
+        case Ok:
+            return request_length;
+        break;
+        case MalformedRequest:
+            throw MalformedRequestError("Malformed request");
+        break;
+        case IncompleteRequest:
+            throw IncompleteRequestError(request_length);
+        break;
+        default:
+            throw std::runtime_error("Unrecognized request parse status.");
+        break;
+    }
+
+}
 
 Message::MessageLengthType readLength(QDataStream& stream)
 {
@@ -171,7 +232,7 @@ Message::MessageLengthType readLength(std::shared_ptr<AbstractLogger> logger,
                           " Available bytes in stream %2.")
                   .arg(sizeof(request_length))
                   .arg(stream.device()->bytesAvailable()));
-        throw IncompleteRequest(sizeof(request_length));
+        throw IncompleteRequestError(sizeof(request_length));
     }  
 
     stream.skipRawData(sizeof(request_length));
@@ -213,7 +274,7 @@ Message::MessageType readType(std::shared_ptr<AbstractLogger> logger,
     {
         LOG_TRACE(logger,
                   QString("Invalid request type."));
-        throw InvalidRequestType();
+        throw InvalidRequestTypeError();
     }
 
     return type;
