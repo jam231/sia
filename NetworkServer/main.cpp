@@ -17,6 +17,20 @@
 using namespace std;
 
 
+int get_db_connection_count(const QHash<QString, QString>& settings)
+{
+    auto db_connections_count_tmp = settings["database connections"];
+    bool db_connections_can_convert;
+    auto db_connections_count = db_connections_count_tmp.toInt(&db_connections_can_convert);
+
+    if(!db_connections_can_convert || db_connections_count < 1)
+    {
+        throw std::runtime_error(QString("config for 'database connections' invalid value: %1.")
+                                 .arg(db_connections_count_tmp)
+                                 .toStdString());
+    }
+    return db_connections_count;
+}
 
 int main(int argv, char **args)
 {
@@ -50,16 +64,7 @@ int main(int argv, char **args)
         auto postgre_data_factory = shared_ptr<AbstractDataStorageFactory>(
                     new PostgresDataStorageFactory(logger_factory, settings));
 
-        auto db_connections_count_tmp = settings["database connections"];
-        bool db_connections_can_convert;
-        auto db_connections_count = db_connections_count_tmp.toInt(&db_connections_can_convert);
-
-        if(!db_connections_can_convert || db_connections_count < 1)
-        {
-            throw std::runtime_error(QString("config for 'database connections' invalid value: %1.")
-                                     .arg(db_connections_count_tmp)
-                                     .toStdString());
-        }
+        int db_connections_count = get_db_connection_count(settings);
 
         auto master_data_factory = shared_ptr<AbstractDataStorageFactory>(
                    new PooledDataStorageFactory(logger_factory,
