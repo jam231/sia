@@ -66,10 +66,6 @@ public:
                              getUserOrders(NetworkProtocol::DTO::Types::UserIdType userId,
                                            NetworkProtocol::DTO::Types::Failure::FailureType*) = 0;
 
-    //virtual std::shared_ptr<NetworkProtocol::DTO::StockInfo>
-    //                          getStockInfo(NetworkProtocol::DTO::Types::StockIdType stockId,
-    //                                       NetworkProtocol::DTO::Types::Failure::FailureType*) = 0;
-
     virtual void cancelOrder(NetworkProtocol::DTO::Types::UserIdType,
                              NetworkProtocol::DTO::Types::OrderIdType,
                              NetworkProtocol::DTO::Types::Failure::FailureType*) = 0;
