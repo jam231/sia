@@ -206,7 +206,7 @@ BEGIN
 												-- still being processed when session changes status
 	UPDATE stock SET active=true;
 	--- Async - I don't care about the result.
-	PERFORM dblink_connect('start_session_conn', 'dbname=' || CURRENT_DATABASE());
+	PERFORM dblink_connect('start_session_conn', 'dbname=' || CURRENT_DATABASE() || ' user=' || CURRENT_USER);
 	PERFORM dblink_send_query('start_session_conn', 'select process_buy_orders();');
 	PERFORM dblink_disconnect('start_session_conn');
 END;
